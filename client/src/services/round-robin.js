@@ -6,17 +6,26 @@ const getRange = n => {
   const range = Range(1, n + 1).toList();
 
   if (n % 2 === 0) {
-    return [n, range.toArray()];
+    return range.toList();
   }
 
-  return [n + 1, range.push(DUMMY).toArray()];
+  return range.push(DUMMY).toList();
 };
 
 export default numberOfTeams => {
-  const [n, ps] = getRange(numberOfTeams);
+  const px = getRange(numberOfTeams);
+  const n = px.count();
 
-  const rs = Range(1, n).map(j => {
-    // const r = []; // create inner match array for round j
+  console.log("n", n);
+
+  // const ps = px.toArray();
+
+  const rs = Range(0, n - 1).map(j => {
+    const ps = px
+      .take(1)
+      .concat(px.takeLast(j))
+      .concat(px.slice(1, n - j))
+      .toArray();
 
     const r = Range(0, n / 2)
       .map(
@@ -24,8 +33,6 @@ export default numberOfTeams => {
       )
       .filterNot(pair => pair.includes(DUMMY))
       .toArray();
-
-    ps.splice(1, 0, ps.pop()); // permutate for next round
 
     return r;
   });
