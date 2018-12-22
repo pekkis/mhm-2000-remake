@@ -2,33 +2,22 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Root from "./Root";
 
-import { createStore } from "./services/redux";
-import {
-  getMiddlewares,
-  getReducers,
-  getEnhancers,
-  getSagaMiddleware
-} from "./config/redux";
 import { getInitialState } from "./config/state";
+
+import createStore from "./store";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import getSagas from "./getSagas";
+
 library.add(faSpinner);
 
 const initialState = getInitialState();
 
-const store = createStore(
-  getReducers(),
-  getMiddlewares(),
-  getEnhancers(),
-  initialState
-);
+const store = createStore(initialState);
 
-const sagaMiddleware = getSagaMiddleware();
-
-// then run the saga
-sagaMiddleware.run(getSagas(), {});
+store.dispatch({
+  type: "GAME_START_REQUEST"
+});
 
 // Just a small DRY abstraction here.
 function render(Component, rootElement, method = "render") {
