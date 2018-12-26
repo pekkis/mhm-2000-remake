@@ -18,12 +18,14 @@ import gamedayListener from "../listeners/gameday";
 import nextTurnListener from "../listeners/next-turn";
 import eventListener from "../listeners/event";
 import eventProcessListener from "../listeners/event-process";
+import seedListener from "../listeners/seed";
 
 const listeners = List.of(
   gamedayListener,
   nextTurnListener,
   eventListener,
-  eventProcessListener
+  eventProcessListener,
+  seedListener
 ).sortBy(l => l.phase());
 
 function* gameday(action) {
@@ -187,11 +189,9 @@ function* advance(action) {
 }
 
 function* seasonStart() {
-  for (const [key, competitionObj] of competitionData) {
-    const competition = yield select(state =>
-      state.game.getIn(["competitions", key])
-    );
+  const competitions = yield select(state => state.game.get("competitions"));
 
+  for (const [key, competitionObj] of competitionData) {
     yield put({
       type: "COMPETITION_START",
       payload: {
@@ -204,7 +204,7 @@ function* seasonStart() {
       payload: {
         competition: key,
         phase: 0,
-        seed: competitionObj.getIn(["seed", 0])(competition)
+        seed: competitionObj.getIn(["seed", 0])(competitions)
       }
     });
   }
@@ -262,12 +262,20 @@ function* relegate(action) {
   });
 }
 
+function* nextTurn() {
+  yield put({ type: "GAME_NEXT_TURN" });
+}
+
 function* watchGameday() {
   yield takeEvery("GAME_GAMEDAY_REQUEST", gameday);
 }
 
 function* watchSeasonStart() {
   yield takeLatest("SEASON_START_REQUEST", seasonStart);
+}
+
+function* watchNextTurn() {
+  yield takeLatest("GAME_NEXT_TURN_REQUEST", nextTurn);
 }
 
 function* watchPromotionsAndRelegations() {
@@ -280,6 +288,7 @@ export default function* gameSagas() {
     advanceLoop(),
     watchSeasonStart(),
     watchGameday(),
+    watchNextTurn(),
     watchPromotionsAndRelegations()
   ]);
 }

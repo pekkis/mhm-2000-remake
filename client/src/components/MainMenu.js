@@ -1,9 +1,10 @@
 import React from "react";
 import TurnIndicator from "./game/TurnIndicator";
-import Table from "./league-table/Table";
+
 import Events from "./events/Events";
 import { Link } from "react-router-dom";
 import Button from "./form/Button";
+import Situation from "./context-sensitive/Situation";
 
 const MainMenu = props => {
   const {
@@ -52,19 +53,7 @@ const MainMenu = props => {
 
       <hr />
 
-      {["phl", "division"].map(competition => {
-        return (
-          <div key={competition}>
-            <h3>{competition}</h3>
-            <Table
-              players={players}
-              competition={competitions.get(competition)}
-              teams={teams}
-              phase={0}
-            />
-          </div>
-        );
-      })}
+      <Situation player={player} competitions={competitions} teams={teams} />
     </div>
   );
 };

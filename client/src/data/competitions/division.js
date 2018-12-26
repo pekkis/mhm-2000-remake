@@ -1,5 +1,7 @@
-import { Map, List } from "immutable";
+import { Map, List, Range } from "immutable";
 import rr from "../../services/round-robin";
+import playoffScheduler from "../../services/playoffs";
+import table from "../../services/league";
 
 /*
 {
@@ -42,7 +44,7 @@ export default Map({
   relegateTo: false,
   promoteTo: "phl",
 
-  gamedays: List.of(5, 10, 15),
+  gamedays: Range(1, 47).toList(),
 
   gameBalance: (facts, player) => {
     if (facts.isLoss) {
@@ -70,18 +72,40 @@ export default Map({
     }
   }),
 
-  seed: List.of(competition => {
-    const teams = competition.get("teams");
-    const times = 2;
-    return Map({
-      round: 0,
-      name: "runkosarja",
-      type: "round-robin",
-      teams,
-      times,
-      schedule: rr(teams.count(), times)
-    });
-  })
+  seed: List.of(
+    competitions => {
+      const competition = competitions.get("division");
+      const teams = competition.get("teams");
+      const times = 2;
+      return Map({
+        round: 0,
+        name: "runkosarja",
+        type: "round-robin",
+        teams,
+        times,
+        schedule: rr(teams.count(), times)
+      });
+    },
+    competitions => {
+      const teams = table(competitions.getIn(["division", "phases", 0]))
+        .map(e => e.id)
+        .take(6);
+
+      const matchups = List.of(List.of(0, 5), List.of(1, 4), List.of(2, 3));
+
+      const winsToAdvance = 3;
+
+      return Map({
+        round: 0,
+        name: "quarterfinals",
+        type: "playoffs",
+        teams,
+        matchups,
+        winsToAdvance,
+        schedule: playoffScheduler(matchups, 3)
+      });
+    }
+  )
 
   /*
   hooks: Map({

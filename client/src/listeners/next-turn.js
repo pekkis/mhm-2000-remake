@@ -1,4 +1,4 @@
-import { select, put } from "redux-saga/effects";
+import { select, put, take } from "redux-saga/effects";
 
 export default {
   phase: () => 2000,
@@ -12,7 +12,9 @@ export default {
     // console.log("generatore!", state);
 
     yield put({
-      type: "GAME_NEXT_TURN"
+      type: "GAME_NEXT_TURN_REQUEST"
     });
+
+    yield take("GAME_NEXT_TURN");
   }
 };

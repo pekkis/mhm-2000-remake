@@ -12,9 +12,8 @@ export default {
 
   stop: () => false,
 
-  suggestedPhase: () => undefined,
-
   generator: function*() {
+    return;
     console.log("events", events);
 
     const player = 0;
