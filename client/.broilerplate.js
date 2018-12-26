@@ -16,7 +16,7 @@ const {
 } = require("@dr-kobros/broilerplate");
 
 const postCssFeature = require("@dr-kobros/broilerplate-postcss");
-const babelPolyfillFeature = require("@dr-kobros/broilerplate/lib/features/babelPolyfillFeature");
+// const babelPolyfillFeature = require("@dr-kobros/broilerplate/lib/features/babelPolyfillFeature");
 const nodeExternalsFeature = require("@dr-kobros/broilerplate/lib/features/nodeExternalsFeature");
 const externalCssFeature = require("@dr-kobros/broilerplate/lib/features/externalCssFeature");
 const extractCssFeature = require("@dr-kobros/broilerplate-mini-css-extract");

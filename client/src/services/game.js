@@ -14,7 +14,7 @@ gl(a) = CINT(mla(a)): gl(b) = CINT(mla(b))
 mal(a) = CINT(v(a) * RND) + talg(a) + fucka
 */
 
-const simulate = game => {
+export const simulate = game => {
   // console.log("game to simulate", game.toJS());
 
   const homeTeam = game.get("home");
@@ -56,4 +56,26 @@ const simulate = game => {
 
 export default {
   simulate
+};
+
+export const gameFacts = (game, team) => {
+  const isHome = team === game.get("home");
+
+  const myKey = isHome ? "home" : "away";
+  const theirKey = isHome ? "away" : "home";
+
+  const isWin =
+    game.getIn(["result", myKey]) > game.getIn(["result", theirKey]);
+
+  const isDraw =
+    game.getIn(["result", myKey]) === game.getIn(["result", theirKey]);
+
+  const isLoss =
+    game.getIn(["result", myKey]) < game.getIn(["result", theirKey]);
+
+  return {
+    isWin,
+    isDraw,
+    isLoss
+  };
 };

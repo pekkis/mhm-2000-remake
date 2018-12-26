@@ -1,13 +1,13 @@
 import { connect } from "react-redux";
 import App from "../App";
-import { advance } from "../../ducks/game";
+import { startGame, loadGame } from "../../ducks/meta";
+import { withRouter } from "react-router";
 
-export default connect(
-  state => ({
-    turn: state.game.get("turn"),
-    player: state.player.getIn(["players", state.player.get("active")]),
-    teams: state.game.get("teams"),
-    competitions: state.game.get("competitions")
-  }),
-  { advance }
-)(App);
+export default withRouter(
+  connect(
+    state => ({
+      started: state.meta.get("started")
+    }),
+    { startGame, loadGame }
+  )(App)
+);

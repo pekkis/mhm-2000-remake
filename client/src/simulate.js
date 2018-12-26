@@ -24,8 +24,8 @@ const game = Map({
   base: () => 20
 });
 
-console.log(game.toJS());
+// console.log(game.toJS());
 
 const result = gameService.simulate(game);
 
-console.log("result", result.toJS());
+// console.log("result", result.toJS());

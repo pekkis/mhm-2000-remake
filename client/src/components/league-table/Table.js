@@ -39,17 +39,17 @@ const changedStats = (stats, game, team) => {
 };
 
 const Table = props => {
-  const { teams, competition, phase } = props;
+  const { players, teams, competition, phase } = props;
 
   const cteams = competition.get("teams").map(tid => teams.get(tid));
   const cphase = competition.getIn(["phases", phase]);
 
   const table = cphase
     .get("teams")
-    .map((_, team) => {
+    .map((id, index) => {
       return cphase
         .get("schedule")
-        .map(round => round.filter(p => p.includes(team)))
+        .map(round => round.filter(p => p.includes(index)))
         .flatten(true)
         .reduce(
           (stats, game) => {
@@ -60,18 +60,20 @@ const Table = props => {
 
             return {
               ...stats,
-              ...changedStats(stats, game, team)
+              ...changedStats(stats, game, index)
             };
           },
           {
-            id: team,
+            index,
+            id,
             gamesPlayed: 0,
             wins: 0,
             draws: 0,
             losses: 0,
             goalsFor: 0,
             goalsAgainst: 0,
-            points: 0
+            points: 0,
+            playerControlled: players.map(p => p.get("team")).includes(id)
           }
         );
     })
@@ -100,7 +102,13 @@ const Table = props => {
           {table.map(t => {
             return (
               <tr key={t.id}>
-                <td>{cteams.getIn([t.id, "name"])}</td>
+                <td>
+                  {t.playerControlled ? (
+                    <strong>{cteams.getIn([t.index, "name"])}</strong>
+                  ) : (
+                    cteams.getIn([t.index, "name"])
+                  )}
+                </td>
                 <td>{t.gamesPlayed}</td>
                 <td>{t.wins}</td>
                 <td>{t.draws}</td>

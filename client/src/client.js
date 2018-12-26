@@ -15,10 +15,6 @@ const initialState = getInitialState();
 
 const store = createStore(initialState);
 
-store.dispatch({
-  type: "GAME_START_REQUEST"
-});
-
 // Just a small DRY abstraction here.
 function render(Component, rootElement, method = "render") {
   ReactDOM[method](<Component store={store} />, rootElement);

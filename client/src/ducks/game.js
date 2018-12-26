@@ -1,5 +1,4 @@
-import { Map, List } from "immutable";
-import turnService from "../services/turn";
+import { Map, List, fromJS } from "immutable";
 
 import gameService from "../services/game";
 import competitionData from "../data/competitions";
@@ -16,38 +15,64 @@ const defaultState = Map({
     phase: 1
   }),
 
+  managers: List.of(
+    "Marcó Harcimó",
+    "Hannes DeAnsas",
+    "Carlos Numminen",
+    "Marty Saariganges",
+    "Per von Bachman",
+    "Micho Magelä",
+    "Sven Stenvall",
+    "Curt Lindman",
+    "Jannu Hortikka",
+    "Kari P.A. Sietilä",
+    "Sulpo Ahonen",
+    "Aimo S. Rummanen",
+    "Juri Simonov",
+    "Nykan Hågren",
+    "Juri Simonov Jr."
+  ),
+
+  /*
+
+  .of(
+        Map({
+          round: 0,
+          name: "runkosarja",
+          type: "round-robin",
+          teams: 12,
+          times: 2,
+          schedule: List()
+        })
+      )
+
+  .of(
+        Map({
+          round: 0,
+          name: "runkosarja",
+          type: "round-robin",
+          teams: 12,
+          times: 2,
+          schedule: List()
+        })
+      )
+
+  */
+
   competitions: Map({
     phl: Map({
       id: "phl",
       phase: 0,
       name: "PHL",
       teams: List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
-      phases: List.of(
-        Map({
-          round: 0,
-          name: "runkosarja",
-          type: "round-robin",
-          teams: 12,
-          times: 2,
-          schedule: List()
-        })
-      )
+      phases: List()
     }),
     division: Map({
       id: "division",
       phase: 0,
       name: "Divisioona",
       teams: List.of(12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23),
-      phases: List.of(
-        Map({
-          round: 0,
-          name: "runkosarja",
-          type: "round-robin",
-          teams: 12,
-          times: 2,
-          schedule: List()
-        })
-      )
+      phases: List()
     })
   }),
 
@@ -64,7 +89,7 @@ const defaultState = Map({
     Map({ name: "Lukko", strength: 160 }),
     Map({ name: "Ässät", strength: 220 }),
     Map({ name: "SaiPa", strength: 195 }),
-    Map({ name: "Maso HT", strength: 65 }),
+    Map({ name: "Maso HT", strength: 35 }),
     Map({ name: "Karhut", strength: 80 }),
     Map({ name: "Kärpät", strength: 145 }),
     Map({ name: "TuTo", strength: 65 }),
@@ -96,77 +121,83 @@ export default function gameReducer(state = defaultState, action) {
   const { type, payload } = action;
 
   switch (type) {
-    case SEASON_START:
+    case "META_GAME_LOAD_STATE":
+      return fromJS(payload.game);
+
+    case "COMPETITION_REMOVE_TEAM":
+      console.log(payload, "peilodu");
+      return state.updateIn(
+        ["competitions", payload.competition, "teams"],
+        teams => teams.filterNot(t => t === payload.team)
+      );
+
+    case "COMPETITION_ADD_TEAM":
+      return state.updateIn(
+        ["competitions", payload.competition, "teams"],
+        teams => teams.push(payload.team)
+      );
+
+    case "COMPETITION_START":
+      return state.updateIn(["competitions", payload.competition], c => {
+        return c.set("phases", List());
+      });
+
+    case "COMPETITION_SEED":
       return state
-        .update("teams", teams =>
-          teams.map(t => {
-            return t.set("effects", List());
-          })
+        .setIn(
+          ["competitions", payload.competition, "phases", payload.phase],
+          payload.seed
         )
-        .update("competitions", competitions => {
-          return competitions.map((c, k) =>
-            competitionData.getIn([k, "hooks", SEASON_START])(c)
-          );
-        });
+        .setIn(["competitions", payload.competition, "phase"], payload.phase);
+
+    case SEASON_START:
+      return state.update("teams", teams =>
+        teams.map(t => {
+          return t.set("effects", List()).set("morale", 0);
+        })
+      );
+
+    case "GAME_RESULT":
+      // console.log("pl", payload);
+
+      return state.updateIn(
+        [
+          "competitions",
+          payload.competition,
+          "phases",
+          payload.phase,
+          "schedule",
+          payload.round,
+          payload.pairing
+        ],
+        r => r.set("result", payload.result)
+      );
+
+    case "GAME_GAMEDAY_COMPLETE":
+      return state.updateIn(
+        ["competitions", payload.competition, "phases", payload.phase, "round"],
+        r => r + 1
+      );
 
     case "GAME_SET_PHASE":
       return state.setIn(["turn", "phase"], payload);
+
+    case "TEAM_INCREMENT_MORALE":
+      return state.updateIn(
+        ["teams", payload.team, "morale"],
+        m => m + payload.amount
+      );
+
+    case "TEAM_INCREMENT_STRENGTH":
+      return state.updateIn(
+        ["teams", payload.team, "strength"],
+        m => m + payload.amount
+      );
 
     case "GAME_NEXT_TURN":
       return state
         .setIn(["turn", "phase"], 1)
         .updateIn(["turn", "round"], r => r + 1);
-
-    case "GAME_GAMEDAY":
-      return state.update("competitions", competitions => {
-        return competitions.update(payload, c => {
-          const teams = c.get("teams");
-
-          console.log("competishöön", c.toJS());
-
-          return c.updateIn(["phases", 0], phase => {
-            return phase
-              .updateIn(["schedule", phase.get("round")], round => {
-                return round.map(pairing => {
-                  // console.log("pairing", pairing.toJS());
-
-                  const home = state.getIn([
-                    "teams",
-                    teams.get(pairing.get("home"))
-                  ]);
-
-                  const away = state.getIn([
-                    "teams",
-                    teams.get(pairing.get("away"))
-                  ]);
-
-                  const gameParams = competitionData.getIn([
-                    c.get("id"),
-                    "parameters",
-                    "gameday"
-                  ]);
-
-                  // console.log(gameParams);
-
-                  const game = Map({
-                    ...gameParams,
-                    home,
-                    away
-                  });
-
-                  // console.log(game, "geim");
-
-                  const result = gameService.simulate(game);
-
-                  // console.log(result, "reslut");
-
-                  return pairing.set("result", result);
-                });
-              })
-              .update("round", r => r + 1);
-          });
-        });
-      });
 
     default:
       return state;

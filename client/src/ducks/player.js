@@ -1,4 +1,5 @@
-import { Map, List } from "immutable";
+import { Map, List, fromJS } from "immutable";
+import uuid from "uuid";
 import { GAME_ADVANCE } from "./game";
 
 export const PLAYER_NEXT = "PLAYER_NEXT";
@@ -7,7 +8,17 @@ const defaultState = Map({
   active: 0,
   players: List.of(
     Map({
-      name: "Gaylord Lohiposki"
+      id: 0,
+      name: "Gaylord Lohiposki",
+      team: 12,
+      difficulty: 3,
+      insurance: false,
+      balance: 1400000,
+      arena: Map({
+        name: "Anonyymi Areena",
+        level: 1
+      }),
+      extra: 0
     })
     /*
     Map({
@@ -17,10 +28,39 @@ const defaultState = Map({
   )
 });
 
+export const buyPlayer = (player, playerType) => {
+  return {
+    type: "PLAYER_BUY_PLAYER",
+    payload: {
+      player,
+      playerType
+    }
+  };
+};
+
+export const sellPlayer = (player, playerType) => {
+  return {
+    type: "PLAYER_SELL_PLAYER",
+    payload: {
+      player,
+      playerType
+    }
+  };
+};
+
 export default function playerReducer(state = defaultState, action) {
   const { type, payload } = action;
 
   switch (type) {
+    case "META_GAME_LOAD_STATE":
+      return fromJS(payload.player);
+
+    case "PLAYER_INCREMENT_BALANCE":
+      return state.updateIn(
+        ["players", payload.player, "balance"],
+        b => b + payload.amount
+      );
+
     case GAME_ADVANCE:
       return state.set("active", 0);
 

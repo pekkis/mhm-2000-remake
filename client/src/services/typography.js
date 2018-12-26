@@ -4,20 +4,18 @@ const typography = new Typography({
   includeNormalize: true,
   baseFontSize: "18px",
   baseLineHeight: 1.45,
-  headerFontFamily: ["Comic Sans MS", "serif"],
-  bodyFontFamily: ["Comic Sans MS", "serif"]
-  /*
+  headerFontFamily: ["Maven Pro", "sans-serif"],
+  bodyFontFamily: ["Maven Pro", "sans-serif"],
   googleFonts: [
     {
-      name: "Montserrat",
+      name: "Maven Pro",
       styles: ["700"]
     },
     {
-      name: "Merriweather",
+      name: "Maven Pro",
       styles: ["400", "400i", "700", "700i"]
     }
   ]
-  */
 });
 
 export default typography;

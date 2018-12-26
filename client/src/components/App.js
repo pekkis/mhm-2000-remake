@@ -1,38 +1,44 @@
 import React from "react";
-import TurnIndicator from "./game/TurnIndicator";
-import Table from "./league-table/Table";
+import { Switch, Route } from "react-router";
+import MainMenu from "./containers/MainMenuContainer";
+import TransferMarket from "./containers/TransferMarketContainer";
+import Button from "./form/Button";
 
 const App = props => {
-  const { turn, advance, player, teams, competitions } = props;
+  const { started, startGame, loadGame } = props;
+
+  if (!started) {
+    return (
+      <div>
+        <h1>Welcome to MHM 97</h1>
+
+        <Button
+          onClick={() => {
+            startGame();
+          }}
+        >
+          Uusi peli
+        </Button>
+
+        <Button
+          onClick={() => {
+            loadGame();
+          }}
+        >
+          Lataa peli
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <h1>MHM 97 Browser Edition</h1>
+      <h1>MHM 97</h1>
 
-      <div>
-        <button type="button" onClick={() => advance()}>
-          eteenpäin!
-        </button>
-      </div>
-
-      <h2>{player.get("name")}</h2>
-
-      <TurnIndicator turn={turn} />
-
-      <hr />
-
-      {["phl", "division"].map(competition => {
-        return (
-          <div key={competition}>
-            <h3>{competition}</h3>
-            <Table
-              competition={competitions.get(competition)}
-              teams={teams}
-              phase={0}
-            />
-          </div>
-        );
-      })}
+      <Switch>
+        <Route exact path="/" component={MainMenu} />
+        <Route exact path="/pelaajamarkkinat" component={TransferMarket} />
+      </Switch>
     </div>
   );
 };
