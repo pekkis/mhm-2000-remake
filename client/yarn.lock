@@ -902,6 +902,36 @@
     hey-listen "^1.0.5"
     style-value-types "^3.0.7"
 
+"@redux-saga/deferred@^1.0.0-rc.0":
+  version "1.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@redux-saga/deferred/-/deferred-1.0.0-rc.0.tgz#d66fa46297dd3f38a6c85f18725fbc16e0ac375e"
+  integrity sha512-N962UiqxSYR6whg1L9B8sNeNiR6PJtBZOeqHbLwN4VqlL33nDRSkBn9yitXXIMWRLz5TlIvZZhQH6pi6dCTfdg==
+
+"@redux-saga/delay-p@^1.0.0-rc.0":
+  version "1.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@redux-saga/delay-p/-/delay-p-1.0.0-rc.0.tgz#ce44f7426e8ad9497c8e87a5877ee4f8a62252a6"
+  integrity sha512-bKFhVKiBC2BgnEpRMNO63D6iKydtQli0m/85CV/3kKeiCchJuBaQfVuGHJO/KsXjvMKDgLeYRvWBhLZdRXmyfw==
+  dependencies:
+    "@redux-saga/symbols" "^1.0.0-rc.0"
+
+"@redux-saga/is@^1.0.0-rc.0":
+  version "1.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@redux-saga/is/-/is-1.0.0-rc.0.tgz#4b293b8da821ca4c9533d38085ef0b7d8959ad7f"
+  integrity sha512-UzyBNsX2GIYDcEF7dvDapQEiLI95boEsDSsaF3eMrm7j35Nb7/jTnTlf9sUS5RZHb8XXhJUyYTTTmPgnw4cnRw==
+  dependencies:
+    "@redux-saga/symbols" "^1.0.0-rc.0"
+    "@redux-saga/types" "^1.0.0-rc.0"
+
+"@redux-saga/symbols@^1.0.0-rc.0":
+  version "1.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@redux-saga/symbols/-/symbols-1.0.0-rc.0.tgz#f3aa0dc66fac77920087c919da59e70cc4b4f92d"
+  integrity sha512-A5ZCEDw06LE3AbVgIX7twz3BZHkMojI0W6pNDTpsFULnqeotpwOPLbueuHow6le5yleCUn8fRF1DE++ySHnnYA==
+
+"@redux-saga/types@^1.0.0-rc.0":
+  version "1.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@redux-saga/types/-/types-1.0.0-rc.0.tgz#72cd7ea40066b73b327144c9f838c9a76f6e5aed"
+  integrity sha512-qY4dMARhYYr7sfy6VYhhGcrZmR4lh5DW7gmTEcxCZoEN2EmxE2Nxt+SU9LDu72g/j+OXKlcP6qKwb3oMf2cS9g==
+
 "@types/async@2.0.50":
   version "2.0.50"
   resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.50.tgz#117540e026d64e1846093abbd5adc7e27fda7bcb"
@@ -7795,16 +7825,25 @@ redux-promise-middleware@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/redux-promise-middleware/-/redux-promise-middleware-5.1.1.tgz#37689339a58a33d1fda675ed1ba2053a2d196b8d"
 
-redux-saga@^0.16.2:
-  version "0.16.2"
-  resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.16.2.tgz#993662e86bc945d8509ac2b8daba3a8c615cc971"
-  integrity sha512-iIjKnRThI5sKPEASpUvySemjzwqwI13e3qP7oLub+FycCRDysLSAOwt958niZW6LhxfmS6Qm1BzbU70w/Koc4w==
+redux-saga@^1.0.0-rc.0:
+  version "1.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-1.0.0-rc.0.tgz#ab798552e340602d4587714ffbac308e4ed5b96a"
+  integrity sha512-vD+hU68Z4PWzqVHSJeUoDhk1KK+xkF7CE6WbDzmxyoAm30RpyUBZhuPAFBkMKJkt+OehKRoHZlF+BrherJl1Mg==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "@redux-saga/deferred" "^1.0.0-rc.0"
+    "@redux-saga/delay-p" "^1.0.0-rc.0"
+    "@redux-saga/is" "^1.0.0-rc.0"
+    "@redux-saga/symbols" "^1.0.0-rc.0"
+    "@redux-saga/types" "^1.0.0-rc.0"
+    redux ">=0.10 <5"
+    typescript-tuple "^2.1.0"
 
 redux-thunk@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.3.0.tgz#51c2c19a185ed5187aaa9a2d08b666d0d6467622"
 
-redux@^4.0.1:
+"redux@>=0.10 <5", redux@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/redux/-/redux-4.0.1.tgz#436cae6cc40fbe4727689d7c8fae44808f1bfef5"
   dependencies:
@@ -9009,6 +9048,25 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
+
+typescript-compare@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/typescript-compare/-/typescript-compare-0.0.2.tgz#7ee40a400a406c2ea0a7e551efd3309021d5f425"
+  integrity sha512-8ja4j7pMHkfLJQO2/8tut7ub+J3Lw2S3061eJLFQcvs3tsmJKp8KG5NtpLn7KcY2w08edF74BSVN7qJS0U6oHA==
+  dependencies:
+    typescript-logic "^0.0.0"
+
+typescript-logic@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/typescript-logic/-/typescript-logic-0.0.0.tgz#66ebd82a2548f2b444a43667bec120b496890196"
+  integrity sha512-zXFars5LUkI3zP492ls0VskH3TtdeHCqu0i7/duGt60i5IGPIpAHE/DWo5FqJ6EjQ15YKXrt+AETjv60Dat34Q==
+
+typescript-tuple@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/typescript-tuple/-/typescript-tuple-2.1.0.tgz#22f0c5c605ecb659e8af310152e4f5abf1f80bd5"
+  integrity sha512-yoi2Bsa/OHzGh7PO5zpyFj6g+0dUbR5DbdQLPFkbEulOImQtCliShqzoDpAjcpsPCfibhr2Q92y5NqYzYkaK6Q==
+  dependencies:
+    typescript-compare "^0.0.2"
 
 typography-normalize@^0.16.18:
   version "0.16.18"
