@@ -3,6 +3,7 @@ import { put } from "redux-saga/effects";
 
 import pirka from "./events/pirka";
 import kasino from "./events/kasino";
+import mauto from "./events/mauto";
 
 /*
 x = CINT(14 * RND) + 1
@@ -12,6 +13,6 @@ PRINT "joten pelko romahduttaa moraalin vaikkei jutussa olekaan per„„!"
 mo = mo - 40
 */
 
-const events = List.of(pirka, kasino);
+const events = List.of(pirka, kasino, mauto);
 
 export default events;

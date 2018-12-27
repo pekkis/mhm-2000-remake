@@ -5,16 +5,11 @@ import events from "../data/events";
 export function* resolveEvent(action) {
   const { event, value } = action.payload;
 
-  const eventObj = events.get(event.get("eventId"));
-  const resolvedEvent = eventObj.resolve(event, value);
+  console.log(event.toJS(), "tussi");
 
-  yield put({
-    type: "EVENT_RESOLVE",
-    payload: {
-      id: resolvedEvent.get("id"),
-      event: resolvedEvent
-    }
-  });
+  const eventObj = events.get(event.get("eventId"));
+
+  yield eventObj.resolve(event, value);
 }
 
 export function* processEvents() {

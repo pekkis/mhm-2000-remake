@@ -61,6 +61,12 @@ export default function playerReducer(state = defaultState, action) {
         b => b + payload.amount
       );
 
+    case "PLAYER_RENAME_ARENA":
+      return state.setIn(
+        ["players", payload.player, "arena", "name"],
+        payload.name
+      );
+
     case GAME_ADVANCE:
       return state.set("active", 0);
 

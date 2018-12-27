@@ -1,8 +1,8 @@
 import { Map, List } from "immutable";
-import { put, select } from "redux-saga/effects";
+import { put } from "redux-saga/effects";
 import r from "../../services/random";
 
-const t2 = data => {
+const texts = data => {
   const t = List.of(
     `Olet eräänä iltana kasinolla.
 
@@ -57,19 +57,27 @@ const event = {
     });
   },
 
-  resolve: (data, value) => {
+  resolve: function*(data, value) {
     if (value === "e") {
-      return data.set("resolved", true).set("participate", false);
+      data = data.set("resolved", true).set("participate", false);
     }
 
-    return data
+    data = data
       .set("resolved", true)
       .set("success", r.pick([true, false]))
       .set("participate", true);
+
+    yield put({
+      type: "EVENT_RESOLVE",
+      payload: {
+        id: data.get("id"),
+        event: data
+      }
+    });
   },
 
   render: data => {
-    return t2(data);
+    return texts(data);
   },
 
   generator: function*(data) {

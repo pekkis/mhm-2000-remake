@@ -15,6 +15,8 @@ const defaultState = Map({
     phase: 1
   }),
 
+  flags: Map(),
+
   managers: List.of(
     "Marcó Harcimó",
     "Hannes DeAnsas",
@@ -101,7 +103,7 @@ const defaultState = Map({
     Map({ name: "Haukat", strength: 55 }),
     Map({ name: "Ahmat", strength: 40 }),
     Map({ name: "Sport", strength: 80 })
-  )
+  ).map((t, i) => t.set("id", i))
 });
 
 /*
@@ -194,10 +196,16 @@ export default function gameReducer(state = defaultState, action) {
         m => m + payload.amount
       );
 
+    case "TEAM_RENAME":
+      return state.setIn(["teams", payload.team, "name"], payload.name);
+
     case "GAME_NEXT_TURN":
       return state
         .setIn(["turn", "phase"], 1)
         .updateIn(["turn", "round"], r => r + 1);
+
+    case "GAME_SET_FLAG":
+      return state.setIn(["flags", payload.flag], payload.value);
 
     default:
       return state;

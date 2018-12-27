@@ -13,12 +13,13 @@ export default {
   stop: () => false,
 
   generator: function*() {
-    return;
     console.log("events", events);
 
     const player = 0;
 
-    const eventId = r.integer(0, 1);
+    const eventId = r.integer(0, 2);
+
+    // const eventId = 2;
 
     console.log("eventid", eventId);
 
