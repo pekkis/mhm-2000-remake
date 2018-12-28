@@ -89,15 +89,7 @@ export function* afterGameday(action) {
   // console.log("äkshuun!", action);
 }
 
-function* watchGameday() {
-  yield takeEvery("GAME_GAMEDAY_COMPLETE", afterGameday);
-}
-
-function* watchTransferMarket() {
+export function* watchTransferMarket() {
   yield takeEvery("PLAYER_BUY_PLAYER", buyPlayer);
   yield takeEvery("PLAYER_SELL_PLAYER", sellPlayer);
-}
-
-export default function* gameSagas() {
-  yield all([watchGameday(), watchTransferMarket()]);
 }

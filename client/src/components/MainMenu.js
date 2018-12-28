@@ -16,7 +16,8 @@ const MainMenu = props => {
     competitions,
     resolveEvent,
     events,
-    saveGame
+    saveGame,
+    quitToMainMenu
   } = props;
 
   return (
@@ -26,8 +27,16 @@ const MainMenu = props => {
           eteenpäin!
         </Button>
 
-        <Button type="button" onClick={() => saveGame()}>
+        <Button
+          disabled={turn.get("phase") !== "action"}
+          type="button"
+          onClick={() => saveGame()}
+        >
           Tallenna
+        </Button>
+
+        <Button type="button" onClick={() => quitToMainMenu()}>
+          Lopeta!
         </Button>
       </div>
 

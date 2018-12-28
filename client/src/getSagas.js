@@ -10,10 +10,10 @@ export default function getSagas() {
   return function* getSagas(context) {
     yield setContext(context);
     yield all([
-      metaSagas(),
-      gameSagas(),
-      eventSagas(),
-      playerSagas()
+      metaSagas()
+      // gameSagas(),
+      // eventSagas(),
+      // playerSagas()
       // userSagas(),
       // uiSagas(),
       // chatSagas(),

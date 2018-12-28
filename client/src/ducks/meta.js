@@ -6,6 +6,12 @@ const defaultState = Map({
   saving: false
 });
 
+export const quitToMainMenu = () => {
+  return {
+    type: "META_QUIT_TO_MAIN_MENU"
+  };
+};
+
 export const startGame = () => {
   return {
     type: "META_GAME_START_REQUEST"
@@ -28,6 +34,9 @@ export default function eventReducer(state = defaultState, action) {
   const { type, payload } = action;
 
   switch (type) {
+    case "META_QUIT_TO_MAIN_MENU":
+      return defaultState;
+
     case "SEASON_START_REQUEST":
       return state.set("loading", true);
 

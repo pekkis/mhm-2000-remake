@@ -12,7 +12,7 @@ const defaultState = Map({
   turn: Map({
     season: 1997,
     round: 1,
-    phase: 1
+    phase: "action"
   }),
 
   flags: Map(),
@@ -123,6 +123,9 @@ export default function gameReducer(state = defaultState, action) {
   const { type, payload } = action;
 
   switch (type) {
+    case "META_QUIT_TO_MAIN_MENU":
+      return defaultState;
+
     case "META_GAME_LOAD_STATE":
       return fromJS(payload.game);
 
@@ -200,9 +203,7 @@ export default function gameReducer(state = defaultState, action) {
       return state.setIn(["teams", payload.team, "name"], payload.name);
 
     case "GAME_NEXT_TURN":
-      return state
-        .setIn(["turn", "phase"], 1)
-        .updateIn(["turn", "round"], r => r + 1);
+      return state.updateIn(["turn", "round"], r => r + 1);
 
     case "GAME_SET_FLAG":
       return state.setIn(["flags", payload.flag], payload.value);

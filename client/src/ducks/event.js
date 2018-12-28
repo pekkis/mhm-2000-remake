@@ -19,6 +19,9 @@ export default function eventReducer(state = defaultState, action) {
   const { type, payload } = action;
 
   switch (type) {
+    case "META_QUIT_TO_MAIN_MENU":
+      return defaultState;
+
     case "META_GAME_LOAD_STATE":
       return fromJS(payload.event);
 

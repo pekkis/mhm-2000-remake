@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import MainMenu from "../MainMenu";
 import { advance } from "../../ducks/game";
 import { resolveEvent } from "../../ducks/event";
-import { saveGame } from "../../ducks/meta";
+import { saveGame, quitToMainMenu } from "../../ducks/meta";
 export default connect(
   state => ({
     turn: state.game.get("turn"),
@@ -12,5 +12,5 @@ export default connect(
     competitions: state.game.get("competitions"),
     events: state.event.get("events")
   }),
-  { advance, resolveEvent, saveGame }
+  { advance, resolveEvent, saveGame, quitToMainMenu }
 )(MainMenu);

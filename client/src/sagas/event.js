@@ -1,4 +1,4 @@
-import { put, takeLatest, all, select } from "redux-saga/effects";
+import { put, select } from "redux-saga/effects";
 
 import events from "../data/events";
 
@@ -31,12 +31,4 @@ export function* processEvents() {
       }
     });
   }
-}
-
-function* watchEventResolve() {
-  yield takeLatest("EVENT_RESOLVE_REQUEST", resolveEvent);
-}
-
-export default function* gameSagas() {
-  yield all([watchEventResolve()]);
 }
