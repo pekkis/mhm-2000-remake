@@ -13,8 +13,6 @@ const Situation = props => {
           const phaseNo = competition.get("phase");
           const phase = competition.getIn(["phases", phaseNo]);
 
-          console.log(phase.toJS(), "phase");
-
           return (
             <div key={competition}>
               <h3>{key}</h3>

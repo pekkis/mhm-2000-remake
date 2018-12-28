@@ -4,7 +4,7 @@ import table from "../../services/league";
 import playoffScheduler from "../../services/playoffs";
 
 export default Map({
-  gamedays: Range(1, 47).toList(),
+  gamedays: Range(1, 50).toList(),
 
   gameBalance: (facts, player) => {
     // raha = raha + 10000 + 3000 * hjalli + extra:

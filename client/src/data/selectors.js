@@ -36,7 +36,6 @@ export const randomTeamFrom = (competitions, canBeHumanControlled) => state => {
     .map(c => c.get("teams"))
     .flatten(true)
     .filter(t => {
-      console.log("t", t);
       return canBeHumanControlled || !playersTeams.includes(t);
     });
 

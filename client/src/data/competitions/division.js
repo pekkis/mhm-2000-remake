@@ -44,7 +44,7 @@ export default Map({
   relegateTo: false,
   promoteTo: "phl",
 
-  gamedays: Range(1, 47).toList(),
+  gamedays: Range(1, 50).toList(),
 
   gameBalance: (facts, player) => {
     if (facts.isLoss) {

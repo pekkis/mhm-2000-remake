@@ -16,11 +16,9 @@ const Matchups = props => {
   return (
     <table>
       <tbody>
-        {matches.map(m => {
-          console.log("m", m);
-
+        {matches.map((m, i) => {
           return (
-            <tr>
+            <tr key={i}>
               <td>{teams.getIn([m.home.id, "name"])}</td>
               <td>-</td>
               <td>{teams.getIn([m.away.id, "name"])}</td>

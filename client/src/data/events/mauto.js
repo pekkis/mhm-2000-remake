@@ -84,8 +84,6 @@ const event = {
     const player = data.get("player");
     const difficulty = yield select(playersDifficulty(player));
 
-    console.log("difficulty", difficulty);
-
     let team;
     if (value === "n") {
       team = yield select(randomTeamFrom(["phl", "division"], false));

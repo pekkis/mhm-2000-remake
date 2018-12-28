@@ -1,9 +1,20 @@
-import { Range, Map, Seq } from "immutable";
+import { Range, Map, Seq, List } from "immutable";
 import { gameFacts } from "./game";
+
+export const victors = phase => {
+  const winsToAdvance = phase.get("winsToAdvance");
+
+  const tussihovi = matchups(phase)
+    .map(m => List.of(m.home, m.away))
+    .flatten(true);
+
+  console.log(tussihovi.toJS(), "tussi helvetin hovi?");
+
+  return tussihovi.filter(m => m.wins === winsToAdvance).sortBy(m => m.index);
+};
 
 export const matchups = phase => {
   const teams = phase.get("teams");
-  console.log(phase.toJS(), "pheiz");
 
   return phase.get("matchups").map(matchup => {
     const [home, away] = ["home", "away"].map(which => {
@@ -13,11 +24,11 @@ export const matchups = phase => {
         .get("schedule")
         .map(pairings => pairings.find(p => p.includes(matchup.get(index))))
         .filter(g => g.get("result"));
-      console.log(games, "games!");
+      // console.log(games, "games!");
 
       const facts = games.map(g => gameFacts(g, matchup.get(index)));
 
-      console.log(facts.toJS(), "the facts");
+      // console.log(facts.toJS(), "the facts");
 
       return {
         index: matchup.get(index),

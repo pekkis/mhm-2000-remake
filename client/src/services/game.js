@@ -14,6 +14,24 @@ gl(a) = CINT(mla(a)): gl(b) = CINT(mla(b))
 mal(a) = CINT(v(a) * RND) + talg(a) + fucka
 */
 
+const playOvertime = (homeStrength, awayStrength, result) => {
+  let victor = null;
+  do {
+    const home = r.integer(0, homeStrength);
+    const away = r.integer(0, awayStrength);
+
+    if (home > away) {
+      victor = "home";
+    }
+
+    if (home < away) {
+      victor = "away";
+    }
+  } while (!victor);
+
+  return result.update(victor, g => g + 1).set("ot", true);
+};
+
 export const simulate = game => {
   // console.log("game to simulate", game.toJS());
 
@@ -24,22 +42,23 @@ export const simulate = game => {
 
   const base = game.get("base");
 
+  const overtime = game.get("overtime");
+
   // console.log("base", base);
 
-  const homeGoals = pipe(
+  const homeStrength = pipe(
     team => team.get("strength"),
     game.getIn(["advantage", "home"]),
-    ...homeTeam.get("effects").toArray(),
-    strength => r.integer(0, strength),
-    val => val / base(),
-    val => (val < 0 ? 0 : val),
-    number => parseInt(number.toFixed(0), 10)
-  );
+    ...homeTeam.get("effects").toArray()
+  )(homeTeam);
 
-  const awayGoals = pipe(
+  const awayStrength = pipe(
     team => team.get("strength"),
     game.getIn(["advantage", "away"]),
-    ...awayTeam.get("effects").toArray(),
+    ...awayTeam.get("effects").toArray()
+  )(awayTeam);
+
+  const goals = pipe(
     strength => r.integer(0, strength),
     val => val / base(),
     val => (val < 0 ? 0 : val),
@@ -47,11 +66,22 @@ export const simulate = game => {
   );
 
   const result = Map({
-    home: homeGoals(homeTeam),
-    away: awayGoals(awayTeam)
+    home: goals(homeStrength),
+    away: goals(awayStrength),
+    ot: false
   });
 
-  return result;
+  const needsOvertime = overtime(result);
+
+  if (!needsOvertime) {
+    return result;
+  }
+
+  console.log("OVETIME NEEDED, RESULT", result.toJS());
+  const afterOvertime = playOvertime(homeStrength, awayStrength, result);
+  console.log("RESULT AFTER OVERTIME", afterOvertime.toJS());
+
+  return afterOvertime;
 };
 
 export default {

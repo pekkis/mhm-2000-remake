@@ -1,6 +1,6 @@
 import { select, call, put } from "redux-saga/effects";
 import competitionData from "../../data/competitions";
-import { gameday } from "../game";
+import { gameday } from "../gameday";
 
 export default function* gamedayPhase() {
   yield put({
@@ -12,8 +12,6 @@ export default function* gamedayPhase() {
 
   for (const item of ["phl", "division"]) {
     const gamedays = competitionData.getIn([item, "gamedays"]);
-
-    console.log(gamedays.toJS(), "gamedays");
 
     if (!gamedays.includes(round)) {
       continue;

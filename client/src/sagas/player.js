@@ -36,8 +36,6 @@ export function* sellPlayer(action) {
 }
 
 export function* afterGameday(action) {
-  console.log("PUUPPA DOORE", action);
-
   const { payload } = action;
 
   const players = yield select(state => state.player.get("players"));
@@ -91,5 +89,4 @@ export function* afterGameday(action) {
 
 export function* watchTransferMarket() {
   yield takeEvery("PLAYER_BUY_PLAYER", buyPlayer);
-  yield takeEvery("PLAYER_SELL_PLAYER", sellPlayer);
 }

@@ -1,6 +1,4 @@
-import { Map } from "immutable";
 import competitionData from "../data/competitions";
-import gameService from "../services/game";
 
 import { call, put, select, takeEvery } from "redux-saga/effects";
 
@@ -11,70 +9,8 @@ import seedPhase from "./phase/seed";
 
 import { afterGameday } from "./player";
 
-export function* gameday(payload) {
-  const teams = yield select(state => state.game.get("teams"));
-
-  const competition = yield select(state =>
-    state.game.getIn(["competitions", payload])
-  );
-
-  const phase = competition.getIn(["phases", competition.get("phase")]);
-
-  const round = phase.get("round");
-
-  console.log("gameday for", competition);
-
-  const pairings = phase.getIn(["schedule", round]);
-
-  console.log(pairings, "pairings");
-
-  const gameParams = competitionData.getIn([
-    competition.get("id"),
-    "parameters",
-    "gameday"
-  ]);
-
-  for (let x = 0; x < pairings.count(); x = x + 1) {
-    const pairing = pairings.get(x);
-    const home = teams.get(phase.getIn(["teams", pairing.get("home")]));
-    const away = teams.get(phase.getIn(["teams", pairing.get("away")]));
-
-    // console.log("game pairing", pairing);
-
-    const game = Map({
-      ...gameParams,
-      home,
-      away
-    });
-
-    const result = yield call(gameService.simulate, game);
-
-    yield put({
-      type: "GAME_RESULT",
-      payload: {
-        competition: competition.get("id"),
-        phase: competition.get("phase"),
-        round,
-        result: result,
-        pairing: x
-      }
-    });
-
-    // console.log("reslut", result.toJS());
-  }
-
-  yield put({
-    type: "GAME_GAMEDAY_COMPLETE",
-    payload: {
-      competition: competition.get("id"),
-      phase: competition.get("phase"),
-      round
-    }
-  });
-}
-
 export function* gameLoop() {
-  const task = yield takeEvery("GAME_GAMEDAY_COMPLETE", afterGameday);
+  yield takeEvery("GAME_GAMEDAY_COMPLETE", afterGameday);
 
   do {
     console.log("ACTION PHASE");

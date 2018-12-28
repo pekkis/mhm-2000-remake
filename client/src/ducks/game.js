@@ -130,7 +130,6 @@ export default function gameReducer(state = defaultState, action) {
       return fromJS(payload.game);
 
     case "COMPETITION_REMOVE_TEAM":
-      console.log(payload, "peilodu");
       return state.updateIn(
         ["competitions", payload.competition, "teams"],
         teams => teams.filterNot(t => t === payload.team)
