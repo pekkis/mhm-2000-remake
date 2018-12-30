@@ -8,9 +8,17 @@ export const victors = phase => {
     .map(m => List.of(m.home, m.away))
     .flatten(true);
 
-  console.log(tussihovi.toJS(), "tussi helvetin hovi?");
-
   return tussihovi.filter(m => m.wins === winsToAdvance).sortBy(m => m.index);
+};
+
+export const eliminated = phase => {
+  const winsToAdvance = phase.get("winsToAdvance");
+
+  const tussihovi = matchups(phase)
+    .map(m => List.of(m.home, m.away))
+    .flatten(true);
+
+  return tussihovi.filter(m => m.losses === winsToAdvance).sortBy(m => m.index);
 };
 
 export const matchups = phase => {

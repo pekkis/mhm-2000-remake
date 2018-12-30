@@ -2,7 +2,9 @@ import React from "react";
 import { Switch, Route } from "react-router";
 import MainMenu from "./containers/MainMenuContainer";
 import TransferMarket from "./containers/TransferMarketContainer";
+import LeagueTables from "./containers/LeagueTablesContainer";
 import Button from "./form/Button";
+import DeveloperMenu from "./containers/DeveloperMenuContainer";
 
 const App = props => {
   const { started, startGame, loadGame } = props;
@@ -37,7 +39,9 @@ const App = props => {
 
       <Switch>
         <Route exact path="/" component={MainMenu} />
+        <Route exact path="/sarjataulukot" component={LeagueTables} />
         <Route exact path="/pelaajamarkkinat" component={TransferMarket} />
+        <Route exact path="/debug" component={DeveloperMenu} />
       </Switch>
     </div>
   );

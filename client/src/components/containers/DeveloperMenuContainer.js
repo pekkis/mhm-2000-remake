@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import MainMenu from "../MainMenu";
+import DeveloperMenu from "../DeveloperMenu";
 import { advance } from "../../ducks/game";
 import { resolveEvent } from "../../ducks/event";
 import { saveGame, quitToMainMenu } from "../../ducks/meta";
@@ -14,4 +14,4 @@ export default connect(
     news: state.news.get("news")
   }),
   { advance, resolveEvent, saveGame, quitToMainMenu }
-)(MainMenu);
+)(DeveloperMenu);

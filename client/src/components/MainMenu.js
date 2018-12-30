@@ -2,6 +2,7 @@ import React from "react";
 import TurnIndicator from "./game/TurnIndicator";
 
 import Events from "./events/Events";
+import News from "./news/News";
 import { Link } from "react-router-dom";
 import Button from "./form/Button";
 import Situation from "./context-sensitive/Situation";
@@ -17,7 +18,8 @@ const MainMenu = props => {
     resolveEvent,
     events,
     saveGame,
-    quitToMainMenu
+    quitToMainMenu,
+    news
   } = props;
 
   return (
@@ -53,16 +55,27 @@ const MainMenu = props => {
           <li>
             <Link to="/pelaajamarkkinat">Pelaajamarkkinat</Link>
           </li>
+          <li>
+            <Link to="/sarjataulukot">Sarjataulukot</Link>
+          </li>
+          <li>
+            <Link to="/debug">Devausmenukka</Link>
+          </li>
         </ul>
       </nav>
+
+      <hr />
+
+      <Situation player={player} competitions={competitions} teams={teams} />
+      <hr />
+
+      <News player={player} news={news} />
 
       <hr />
 
       <Events player={player} events={events} resolveEvent={resolveEvent} />
 
       <hr />
-
-      <Situation player={player} competitions={competitions} teams={teams} />
     </div>
   );
 };

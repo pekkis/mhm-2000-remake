@@ -161,6 +161,11 @@ export default function gameReducer(state = defaultState, action) {
         })
       );
 
+    case "SEASON_END":
+      return state.update("turn", turn => {
+        return turn.update("season", season => season + 1).set("round", 0);
+      });
+
     case "GAME_RESULT":
       // console.log("pl", payload);
 

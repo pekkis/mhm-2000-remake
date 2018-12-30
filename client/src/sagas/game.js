@@ -6,6 +6,7 @@ import actionPhase from "./phase/action";
 import eventPhase from "./phase/event";
 import gamedayPhase from "./phase/gameday";
 import seedPhase from "./phase/seed";
+import endOfSeasonPhase from "./phase/end-of-season";
 
 import { afterGameday } from "./player";
 
@@ -22,6 +23,8 @@ export function* gameLoop() {
     yield call(eventPhase);
 
     yield call(seedPhase);
+
+    yield call(endOfSeasonPhase);
 
     yield call(nextTurn);
   } while (true);
@@ -49,15 +52,15 @@ export function* seasonStart() {
   }
 
   yield put({
+    type: "NEWS_CLEAR"
+  });
+
+  yield put({
     type: "SEASON_START"
   });
 }
 
-function* promote(action) {
-  const {
-    payload: { competition, team }
-  } = action;
-
+export function* promote(competition, team) {
   const promoteTo = competitionData.getIn([competition, "promoteTo"]);
 
   yield put({
@@ -77,11 +80,7 @@ function* promote(action) {
   });
 }
 
-function* relegate(action) {
-  const {
-    payload: { competition, team }
-  } = action;
-
+export function* relegate(competition, team) {
   const relegateTo = competitionData.getIn([competition, "relegateTo"]);
 
   yield put({

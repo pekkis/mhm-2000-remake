@@ -1,10 +1,10 @@
 import { Map, List, Range } from "immutable";
 import rr from "../../services/round-robin";
 import table from "../../services/league";
-import playoffScheduler from "../../services/playoffs";
+import playoffScheduler, { victors, eliminated } from "../../services/playoffs";
 
 export default Map({
-  gamedays: Range(1, 50).toList(),
+  gamedays: Range(1, 62).toList(),
 
   gameBalance: (facts, player) => {
     // raha = raha + 10000 + 3000 * hjalli + extra:
@@ -60,6 +60,48 @@ export default Map({
         winsToAdvance,
         matchups,
         schedule: playoffScheduler(matchups, 3)
+      });
+    },
+    competitions => {
+      const teams = victors(competitions.getIn(["phl", "phases", 1])).map(
+        t => t.id
+      );
+
+      const matchups = List.of(List.of(0, 3), List.of(1, 2));
+
+      const winsToAdvance = 3;
+
+      return Map({
+        round: 0,
+        name: "semifinals",
+        type: "playoffs",
+        teams,
+        matchups,
+        winsToAdvance,
+        schedule: playoffScheduler(matchups, winsToAdvance)
+      });
+    },
+    competitions => {
+      const teams = victors(competitions.getIn(["phl", "phases", 2]))
+        .map(t => t.id)
+        .concat(
+          eliminated(competitions.getIn(["phl", "phases", 2])).map(t => t.id)
+        );
+
+      console.log("teamssssss", teams.toJS());
+
+      const matchups = List.of(List.of(0, 1), List.of(2, 3));
+
+      const winsToAdvance = 4;
+
+      return Map({
+        round: 0,
+        name: "semifinals",
+        type: "playoffs",
+        teams,
+        matchups,
+        winsToAdvance,
+        schedule: playoffScheduler(matchups, winsToAdvance)
       });
     }
   )
