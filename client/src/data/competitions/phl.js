@@ -1,4 +1,4 @@
-import { Map, List, Range } from "immutable";
+import { Map, List, Range, Repeat } from "immutable";
 import rr from "../../services/round-robin";
 import table from "../../services/league";
 import playoffScheduler, { victors, eliminated } from "../../services/playoffs";
@@ -7,9 +7,19 @@ export default Map({
   gamedays: Range(1, 62).toList(),
 
   gameBalance: (facts, player) => {
-    // raha = raha + 10000 + 3000 * hjalli + extra:
-    return 0;
-    // raha = raha + 3000 + 2000 * hjalli
+    if (facts.isLoss) {
+      return player.get("extra");
+    }
+
+    if (facts.isDraw) {
+      return (
+        5000 + 3000 * player.getIn(["arena", "level"]) + player.get("extra")
+      );
+    }
+
+    return (
+      10000 + 3000 * player.getIn(["arena", "level"]) + player.get("extra")
+    );
   },
 
   relegateTo: "division",
@@ -36,7 +46,21 @@ export default Map({
         type: "round-robin",
         teams,
         times,
-        schedule: rr(teams.count(), times)
+        schedule: rr(teams.count(), times),
+        colors: List.of(
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "l",
+          "l",
+          "l",
+          "d"
+        )
       });
     },
     competitions => {

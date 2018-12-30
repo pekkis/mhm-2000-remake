@@ -4,6 +4,7 @@ import TurnIndicator from "./game/TurnIndicator";
 import Events from "./events/Events";
 import News from "./news/News";
 import { Link } from "react-router-dom";
+import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
 import Situation from "./context-sensitive/Situation";
 
@@ -24,7 +25,7 @@ const MainMenu = props => {
 
   return (
     <div>
-      <div>
+      <ButtonRow>
         <Button type="button" onClick={() => advance()}>
           eteenpäin!
         </Button>
@@ -40,7 +41,7 @@ const MainMenu = props => {
         <Button type="button" onClick={() => quitToMainMenu()}>
           Lopeta!
         </Button>
-      </div>
+      </ButtonRow>
 
       <h2>
         {player.get("name")} ({player.get("balance")} pks)

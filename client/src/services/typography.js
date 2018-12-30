@@ -2,7 +2,7 @@ import Typography from "typography";
 
 const typography = new Typography({
   includeNormalize: true,
-  baseFontSize: "18px",
+  baseFontSize: "16px",
   baseLineHeight: 1.45,
   headerFontFamily: ["Maven Pro", "sans-serif"],
   bodyFontFamily: ["Maven Pro", "sans-serif"],

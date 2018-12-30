@@ -58,8 +58,6 @@ export function* afterGameday(action) {
       continue;
     }
 
-    console.log("playersIndex", playersIndex);
-
     const game = phase.getIn(["schedule", payload.round]).find(pairing => {
       return pairing.includes(playersIndex);
     });

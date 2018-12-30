@@ -40,9 +40,19 @@ const load = () => {
 };
 
 function* gameStart() {
+  const action = yield take("GAME_ADVANCE_REQUEST");
+
+  yield putResolve({
+    type: "PLAYER_INITIALIZE",
+    payload: {
+      player: 0,
+      details: action.payload
+    }
+  });
+
   yield call(seasonStart);
 
-  yield put({
+  yield putResolve({
     type: "GAME_START"
   });
 }

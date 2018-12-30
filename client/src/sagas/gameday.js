@@ -35,7 +35,6 @@ export function* gameday(payload) {
 
   for (let x = 0; x < pairings.count(); x = x + 1) {
     const playMatch = competitionType.playMatch(phase, round, x);
-    console.log("play match", playMatch);
 
     if (playMatch) {
       const pairing = pairings.get(x);

@@ -1,5 +1,14 @@
 import React from "react";
 import table from "../../services/league";
+import styled from "styled-components";
+
+const TableRow = styled.tr`
+  ${props =>
+    props.dark &&
+    `
+    background-color: rgb(238, 238, 238)
+  `}
+`;
 
 const Table = props => {
   const { players, teams, competition, phase } = props;
@@ -7,14 +16,15 @@ const Table = props => {
   const cteams = competition.get("teams").map(tid => teams.get(tid));
 
   const cphase = competition.getIn(["phases", phase]);
+
+  const colors = cphase.get("colors");
+
   const tbl = table(cphase).map(entry => {
     return {
       ...entry,
       playerControlled: players.map(p => p.get("team")).includes(entry.id)
     };
   });
-
-  //
 
   return (
     <div>
@@ -33,9 +43,9 @@ const Table = props => {
           </tr>
         </thead>
         <tbody>
-          {tbl.map(t => {
+          {tbl.map((t, i) => {
             return (
-              <tr key={t.id}>
+              <TableRow key={t.id} dark={colors.get(i) === "d"}>
                 <td>
                   {t.playerControlled ? (
                     <strong>{cteams.getIn([t.index, "name"])}</strong>
@@ -51,7 +61,7 @@ const Table = props => {
                 <td>-</td>
                 <td>{t.goalsAgainst}</td>
                 <td>{t.points}</td>
-              </tr>
+              </TableRow>
             );
           })}
         </tbody>

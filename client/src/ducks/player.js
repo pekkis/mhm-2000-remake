@@ -38,6 +38,16 @@ export const buyPlayer = (player, playerType) => {
   };
 };
 
+export const selectStrategy = (player, strategy) => {
+  return {
+    type: "PLAYER_SELECT_STRATEGY",
+    payload: {
+      player,
+      strategy
+    }
+  };
+};
+
 export const sellPlayer = (player, playerType) => {
   return {
     type: "PLAYER_SELL_PLAYER",
@@ -63,6 +73,14 @@ export default function playerReducer(state = defaultState, action) {
         ["players", payload.player, "balance"],
         b => b + payload.amount
       );
+
+    case "PLAYER_INITIALIZE":
+      return state.updateIn(["players", payload.player], p => {
+        return p
+          .set("name", payload.details.name)
+          .set("difficulty", payload.details.difficulty)
+          .setIn(["arena", "name"], payload.details.arena);
+      });
 
     case "PLAYER_RENAME_ARENA":
       return state.setIn(

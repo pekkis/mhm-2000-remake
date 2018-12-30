@@ -10,6 +10,11 @@ const GlobalStyle = createGlobalStyle`
   body {
     padding: 1em;
   }
+
+  p {
+    margin: 1em 0;
+  }
+
 `;
 
 const Root = props => {

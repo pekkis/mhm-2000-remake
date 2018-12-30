@@ -1,7 +1,6 @@
 import { Map, List, fromJS } from "immutable";
 
-import gameService from "../services/game";
-import competitionData from "../data/competitions";
+import teams from "../data/teams";
 
 export const GAME_START = "GAME_START";
 export const SEASON_START = "SEASON_START";
@@ -78,44 +77,13 @@ const defaultState = Map({
     })
   }),
 
-  teams: List.of(
-    Map({ name: "KalPa", strength: 95 }),
-    Map({ name: "Jokerit", strength: 221 }),
-    Map({ name: "TPS", strength: 250 }),
-    Map({ name: "JyP HT", strength: 158 }),
-    Map({ name: "HPK", strength: 155 }),
-    Map({ name: "HIFK", strength: 260 }),
-    Map({ name: "Ilves", strength: 262 }),
-    Map({ name: "Tappara", strength: 180 }),
-    Map({ name: "Kiekko-Espoo", strength: 185 }),
-    Map({ name: "Lukko", strength: 160 }),
-    Map({ name: "Ässät", strength: 220 }),
-    Map({ name: "SaiPa", strength: 195 }),
-    Map({ name: "Maso HT", strength: 35 }),
-    Map({ name: "Karhut", strength: 80 }),
-    Map({ name: "Kärpät", strength: 145 }),
-    Map({ name: "TuTo", strength: 65 }),
-    Map({ name: "Hermes", strength: 96 }),
-    Map({ name: "Pelicans", strength: 99 }),
-    Map({ name: "Diskos", strength: 55 }),
-    Map({ name: "Jääkotkat", strength: 40 }),
-    Map({ name: "SaPKo", strength: 74 }),
-    Map({ name: "Haukat", strength: 55 }),
-    Map({ name: "Ahmat", strength: 40 }),
-    Map({ name: "Sport", strength: 80 })
-  ).map((t, i) => t.set("id", i))
+  teams
 });
 
-/*
-"KalPa   ","Jokerit ","TPS     ","JyP HT  ","HPK     ","HIFK    ","Ilves   ","Tappara ","K-Espoo ","Lukko   ","Žss„t   ","SaiPa   "
-"Maso HT ","Karhut  ","K„rp„t  ","TuTo    ","Hermes  ","Pelicans","Diskos  ","J-Kotkat","SaPKo   ","Haukat  ","Ahmat   ","Sport   "
-95,221,250,158,155,260,262,180,185,160,220,195
-65,80,145,65,96,99,55,40,74,55,40,80
-*/
-
-export const advance = () => {
+export const advance = payload => {
   return {
-    type: GAME_ADVANCE_REQUEST
+    type: GAME_ADVANCE_REQUEST,
+    payload
   };
 };
 
@@ -157,7 +125,10 @@ export default function gameReducer(state = defaultState, action) {
     case SEASON_START:
       return state.update("teams", teams =>
         teams.map(t => {
-          return t.set("effects", List()).set("morale", 0);
+          return t
+            .set("effects", List())
+            .set("morale", 0)
+            .set("strategy", 2);
         })
       );
 
@@ -196,6 +167,9 @@ export default function gameReducer(state = defaultState, action) {
         ["teams", payload.team, "morale"],
         m => m + payload.amount
       );
+
+    case "TEAM_SET_STRATEGY":
+      return state.setIn(["teams", payload.team, "strategy"], payload.strategy);
 
     case "TEAM_INCREMENT_STRENGTH":
       return state.updateIn(

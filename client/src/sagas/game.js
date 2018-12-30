@@ -7,6 +7,7 @@ import eventPhase from "./phase/event";
 import gamedayPhase from "./phase/gameday";
 import seedPhase from "./phase/seed";
 import endOfSeasonPhase from "./phase/end-of-season";
+import startOfSeasonPhase from "./phase/start-of-season";
 
 import { afterGameday } from "./player";
 
@@ -14,6 +15,12 @@ export function* gameLoop() {
   yield takeEvery("GAME_GAMEDAY_COMPLETE", afterGameday);
 
   do {
+    const turn = yield select(state => state.game.get("turn"));
+
+    if (turn.get("round") === 1) {
+      yield call(startOfSeasonPhase);
+    }
+
     console.log("ACTION PHASE");
 
     yield call(actionPhase);

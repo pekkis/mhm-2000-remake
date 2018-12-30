@@ -1,4 +1,4 @@
-import { Map, List, Range } from "immutable";
+import { Map, List, Range, Repeat } from "immutable";
 import rr from "../../services/round-robin";
 import playoffScheduler, { victors } from "../../services/playoffs";
 import table from "../../services/league";
@@ -83,7 +83,21 @@ export default Map({
         type: "round-robin",
         teams,
         times,
-        schedule: rr(teams.count(), times)
+        schedule: rr(teams.count(), times),
+        colors: List.of(
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "d",
+          "l",
+          "l",
+          "l",
+          "l",
+          "l",
+          "l"
+        )
       });
     },
     competitions => {

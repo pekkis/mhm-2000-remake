@@ -3,7 +3,13 @@ import { Map } from "immutable";
 const defaultState = Map({
   started: false,
   loading: false,
-  saving: false
+  saving: false,
+  starting: false,
+  player: Map({
+    name: "Gaylord Lohiposki",
+    arena: "MasoSports Areena",
+    difficulty: "3"
+  })
 });
 
 export const quitToMainMenu = () => {
@@ -43,6 +49,9 @@ export default function eventReducer(state = defaultState, action) {
     case "SEASON_START":
     case "META_GAME_LOADED":
       return state.set("started", true).set("loading", false);
+
+    case "META_GAME_START_REQUEST":
+      return state.set("starting", true);
 
     default:
       return state;
