@@ -676,7 +676,7 @@ const yieldAwards = function*(awards, to) {
 const award = function*() {
   const phl = yield select(competition("phl"));
 
-  const finalPhase = phl.getIn(["phases", 3]);
+  const finalPhase = phl.getIn(["phases", 3, "groups", 0]);
 
   const winners = victors(finalPhase);
   const losers = eliminated(finalPhase);
@@ -690,7 +690,7 @@ const award = function*() {
 
   yield call(yieldAwards, medalAwards, ranking);
 
-  const tableEntries = table(phl.getIn(["phases", 0]))
+  const tableEntries = table(phl.getIn(["phases", 0, "groups", 0]))
     .map(t => t.id)
     .take(8);
 
@@ -698,26 +698,11 @@ const award = function*() {
 
   const teams = yield select(allTeams);
 
-  console.log("Bum tsih 1");
-
-  // console.log("random events", randomEvents);
-
-  for (const [index, team] of teams.entries()) {
+  for (const [, team] of teams.entries()) {
     for (const randomEvent of randomEvents) {
       yield call(randomEvent, team.get("id"));
     }
   }
-
-  console.log("Bum tsih 2");
-
-  /*
-  const awards = ranking.map((r, i) => {
-    const team = teams.get(r);
-    const award = medalAwards.get(i);
-
-    const data = award.data(team);
-  });
-  */
 };
 
 export default award;

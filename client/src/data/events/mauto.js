@@ -9,6 +9,8 @@ import {
   playersDifficulty
 } from "../selectors";
 
+const eventId = "mauto";
+
 const texts = data => {
   const t = List.of(
     `Monikansallinen autotehdas __Mautomobiles__ haluaa sponsoroida joukkuettasi!
@@ -44,7 +46,7 @@ const event = {
   type: "player",
 
   create: function*(data) {
-    const { eventId, player } = data;
+    const { player } = data;
 
     /*    const competesInPHL = yield select(playerCompetesIn(player, "phl"));
     if (!competesInPHL) {
@@ -114,7 +116,7 @@ const event = {
     return texts(data);
   },
 
-  generator: function*(data) {
+  process: function*(data) {
     yield put({
       type: "GAME_SET_FLAG",
       payload: {

@@ -32,6 +32,9 @@ export default function eventReducer(state = defaultState, action) {
     case "EVENT_RESOLVE":
       return state.setIn(["events", payload.id], payload.event);
 
+    case "EVENT_CLEAR_EVENTS":
+      return state.set("events", Map());
+
     case "EVENT_SET_PROCESSED":
       return state.setIn(["events", payload.id, "processed"], true);
 

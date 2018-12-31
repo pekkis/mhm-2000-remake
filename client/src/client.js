@@ -25,6 +25,7 @@ const rootElement = document.getElementById("app");
 render(Root, rootElement, initialState ? "hydrate" : "render");
 
 // Webpack's hot reloading magic happens here.
+
 if (module.hot) {
   module.hot.accept("./Root", () => {
     const HotReloadedRoot = require("./Root").default;

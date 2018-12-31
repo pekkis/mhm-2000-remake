@@ -34,8 +34,10 @@ export default function* endOfSeasonPhase() {
 
   const phl = yield select(state => state.game.getIn(["competitions", "phl"]));
 
-  const divisionVictor = victors(division.getIn(["phases", 3])).first().id;
-  const phlLoser = table(phl.getIn(["phases", 0])).last().id;
+  const divisionVictor = victors(
+    division.getIn(["phases", 3, "groups", 0])
+  ).first().id;
+  const phlLoser = table(phl.getIn(["phases", 0, "groups", 0])).last().id;
 
   if (divisionVictor !== phlLoser) {
     yield all([promote("division", divisionVictor), relegate("phl", phlLoser)]);

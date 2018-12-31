@@ -5,6 +5,7 @@ import TransferMarket from "./containers/TransferMarketContainer";
 import LeagueTables from "./containers/LeagueTablesContainer";
 import DeveloperMenu from "./containers/DeveloperMenuContainer";
 import SelectStrategy from "./containers/SelectStrategyContainer";
+import Events from "./containers/EventsContainer";
 
 const Phase = props => {
   const { turn } = props;
@@ -12,6 +13,9 @@ const Phase = props => {
   switch (true) {
     case turn.get("phase") === "select-strategy":
       return <SelectStrategy />;
+
+    case turn.get("phase") === "event":
+      return <Events />;
 
     default:
       return (

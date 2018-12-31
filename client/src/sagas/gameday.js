@@ -15,14 +15,6 @@ export function* gameday(payload) {
 
   const competitionType = competitionTypes[phase.get("type")];
 
-  const round = phase.get("round");
-
-  // console.log("gameday for", competition.toJS(), phase.toJS());
-
-  const pairings = phase.getIn(["schedule", round]);
-
-  //  console.log(pairings, "pairings");
-
   const gameParams = competitionData.getIn([
     competition.get("id"),
     "parameters",
@@ -31,48 +23,57 @@ export function* gameday(payload) {
 
   const overtime = competitionType.overtime;
 
-  // console.log(gameParams, "game params");
+  for (const [groupIndex, group] of phase.get("groups").entries()) {
+    const round = group.get("round");
+    const pairings = group.getIn(["schedule", round]);
+    for (let x = 0; x < pairings.count(); x = x + 1) {
+      const playMatch = competitionType.playMatch(group, round, x);
 
-  for (let x = 0; x < pairings.count(); x = x + 1) {
-    const playMatch = competitionType.playMatch(phase, round, x);
+      if (playMatch) {
+        const pairing = pairings.get(x);
+        const home = teams.get(phase.getIn(["teams", pairing.get("home")]));
+        const away = teams.get(phase.getIn(["teams", pairing.get("away")]));
 
-    if (playMatch) {
-      const pairing = pairings.get(x);
-      const home = teams.get(phase.getIn(["teams", pairing.get("home")]));
-      const away = teams.get(phase.getIn(["teams", pairing.get("away")]));
+        const game = Map({
+          ...gameParams,
+          overtime,
+          home,
+          away
+        });
+
+        const result = yield call(gameService.simulate, game);
+
+        yield put({
+          type: "GAME_RESULT",
+          payload: {
+            competition: competition.get("id"),
+            phase: competition.get("phase"),
+            group: groupIndex,
+            round,
+            result: result,
+            pairing: x
+          }
+        });
+      }
+
+      // console.log("GAMEDAY");
+
+      // console.log("gameday for", competition.toJS(), phase.toJS());
+
+      //  console.log(pairings, "pairings");
+
+      // console.log(gameParams, "game params");
 
       // console.log("game pairing", pairing);
-
-      const game = Map({
-        ...gameParams,
-        overtime,
-        home,
-        away
-      });
-
-      const result = yield call(gameService.simulate, game);
-
-      yield put({
-        type: "GAME_RESULT",
-        payload: {
-          competition: competition.get("id"),
-          phase: competition.get("phase"),
-          round,
-          result: result,
-          pairing: x
-        }
-      });
     }
-
-    // console.log("reslut", result.toJS());
-  }
-
-  yield put({
-    type: "GAME_GAMEDAY_COMPLETE",
-    payload: {
-      competition: competition.get("id"),
-      phase: competition.get("phase"),
-      round
-    }
-  });
+    yield put({
+      type: "GAME_GAMEDAY_COMPLETE",
+      payload: {
+        competition: competition.get("id"),
+        phase: competition.get("phase"),
+        group: groupIndex,
+        round
+      }
+    });
+  } // console.log("reslut", result.toJS());
 }

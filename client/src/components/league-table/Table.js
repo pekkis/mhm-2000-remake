@@ -11,21 +11,18 @@ const TableRow = styled.tr`
 `;
 
 const Table = props => {
-  const { players, teams, competition, phase } = props;
+  const { players, teams, division } = props;
 
-  const cteams = competition.get("teams").map(tid => teams.get(tid));
+  // const cteams = competition.get("teams").map(tid => teams.get(tid));
 
-  const cphase = competition.getIn(["phases", phase]);
+  const colors = division.get("colors");
 
-  const colors = cphase.get("colors");
-
-  const tbl = table(cphase).map(entry => {
+  const tbl = table(division).map(entry => {
     return {
       ...entry,
       playerControlled: players.map(p => p.get("team")).includes(entry.id)
     };
   });
-
   return (
     <div>
       <table border="1">
@@ -48,9 +45,9 @@ const Table = props => {
               <TableRow key={t.id} dark={colors.get(i) === "d"}>
                 <td>
                   {t.playerControlled ? (
-                    <strong>{cteams.getIn([t.index, "name"])}</strong>
+                    <strong>{teams.getIn([t.id, "name"])}</strong>
                   ) : (
-                    cteams.getIn([t.index, "name"])
+                    teams.getIn([t.id, "name"])
                   )}
                 </td>
                 <td>{t.gamesPlayed}</td>

@@ -48,14 +48,14 @@ export const simulate = game => {
 
   const homeStrength = pipe(
     team => team.get("strength"),
-    game.getIn(["advantage", "home"]),
-    ...homeTeam.get("effects").toArray()
+    game.getIn(["advantage", "home"])
+    // ...homeTeam.get("effects").toArray()
   )(homeTeam);
 
   const awayStrength = pipe(
     team => team.get("strength"),
-    game.getIn(["advantage", "away"]),
-    ...awayTeam.get("effects").toArray()
+    game.getIn(["advantage", "away"])
+    // ...awayTeam.get("effects").toArray()
   )(awayTeam);
 
   const goals = pipe(

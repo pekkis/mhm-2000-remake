@@ -1,11 +1,9 @@
-import { Map, List, Range, Repeat } from "immutable";
+import { Map, List } from "immutable";
 import rr from "../../services/round-robin";
 import table from "../../services/league";
 import playoffScheduler, { victors, eliminated } from "../../services/playoffs";
 
 export default Map({
-  gamedays: Range(1, 62).toList(),
-
   gameBalance: (facts, player) => {
     if (facts.isLoss) {
       return player.get("extra");
@@ -41,30 +39,36 @@ export default Map({
       const teams = competition.get("teams");
       const times = 2;
       return Map({
-        round: 0,
         name: "runkosarja",
         type: "round-robin",
         teams,
-        times,
-        schedule: rr(teams.count(), times),
-        colors: List.of(
-          "d",
-          "d",
-          "d",
-          "d",
-          "d",
-          "d",
-          "d",
-          "d",
-          "l",
-          "l",
-          "l",
-          "d"
+        groups: List.of(
+          Map({
+            round: 0,
+            name: "runkosarja",
+            teams,
+            times,
+            schedule: rr(teams.count(), times),
+            colors: List.of(
+              "d",
+              "d",
+              "d",
+              "d",
+              "d",
+              "d",
+              "d",
+              "d",
+              "l",
+              "l",
+              "l",
+              "d"
+            )
+          })
         )
       });
     },
     competitions => {
-      const teams = table(competitions.getIn(["phl", "phases", 0]))
+      const teams = table(competitions.getIn(["phl", "phases", 0, "groups", 0]))
         .take(8)
         .map(e => e.id);
 
@@ -77,69 +81,73 @@ export default Map({
       );
 
       return Map({
-        round: 0,
         name: "quarterfinals",
         type: "playoffs",
         teams,
-        winsToAdvance,
-        matchups,
-        schedule: playoffScheduler(matchups, 3)
+        groups: List.of(
+          Map({
+            round: 0,
+            teams,
+            winsToAdvance,
+            matchups,
+            schedule: playoffScheduler(matchups, 3)
+          })
+        )
       });
     },
     competitions => {
-      const teams = victors(competitions.getIn(["phl", "phases", 1])).map(
-        t => t.id
-      );
+      const teams = victors(
+        competitions.getIn(["phl", "phases", 1, "groups", 0])
+      ).map(t => t.id);
 
       const matchups = List.of(List.of(0, 3), List.of(1, 2));
 
       const winsToAdvance = 3;
 
       return Map({
-        round: 0,
         name: "semifinals",
         type: "playoffs",
         teams,
-        matchups,
-        winsToAdvance,
-        schedule: playoffScheduler(matchups, winsToAdvance)
+        groups: List.of(
+          Map({
+            round: 0,
+            teams,
+            matchups,
+            winsToAdvance,
+            schedule: playoffScheduler(matchups, winsToAdvance)
+          })
+        )
       });
     },
     competitions => {
-      const teams = victors(competitions.getIn(["phl", "phases", 2]))
+      const teams = victors(
+        competitions.getIn(["phl", "phases", 2, "groups", 0])
+      )
         .map(t => t.id)
         .concat(
-          eliminated(competitions.getIn(["phl", "phases", 2])).map(t => t.id)
+          eliminated(competitions.getIn(["phl", "phases", 2, "groups", 0])).map(
+            t => t.id
+          )
         );
-
-      console.log("teamssssss", teams.toJS());
 
       const matchups = List.of(List.of(0, 1), List.of(2, 3));
 
       const winsToAdvance = 4;
 
       return Map({
-        round: 0,
         name: "semifinals",
         type: "playoffs",
         teams,
-        matchups,
-        winsToAdvance,
-        schedule: playoffScheduler(matchups, winsToAdvance)
+        groups: List.of(
+          Map({
+            teams,
+            round: 0,
+            matchups,
+            winsToAdvance,
+            schedule: playoffScheduler(matchups, winsToAdvance)
+          })
+        )
       });
     }
   )
-
-  /*
-  hooks: Map({
-    SEASON_START: competition => {
-      const teams = competition.get("teams");
-      return competition.updateIn(["phases", 0], phase => {
-        return phase
-          .set("teams", teams)
-          .set("schedule", rr(teams.count(), phase.get("times")));
-      });
-    }
-  })
-  */
 });

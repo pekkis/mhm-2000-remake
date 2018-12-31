@@ -1,5 +1,4 @@
 import { Map, List, fromJS } from "immutable";
-import uuid from "uuid";
 import { GAME_ADVANCE } from "./game";
 
 export const PLAYER_NEXT = "PLAYER_NEXT";
@@ -12,19 +11,19 @@ const defaultState = Map({
       name: "Gaylord Lohiposki",
       team: 12,
       difficulty: 3,
-      insurance: false,
+      services: Map({
+        insurance: true,
+        microphone: false,
+        cheerleaders: false
+      }),
       balance: 1400000,
       arena: Map({
         name: "Anonyymi Areena",
         level: 1
       }),
-      extra: 0
+      extra: 0,
+      insuranceExtra: 0
     })
-    /*
-    Map({
-      name: "Tussi Lärvilöinen"
-    })
-    */
   )
 });
 
@@ -74,11 +73,23 @@ export default function playerReducer(state = defaultState, action) {
         b => b + payload.amount
       );
 
+    case "PLAYER_DECREMENT_BALANCE":
+      return state.updateIn(
+        ["players", payload.player, "balance"],
+        b => b - payload.amount
+      );
+
+    case "PLAYER_INCREMENT_INSURANCE_EXTRA":
+      return state.updateIn(
+        ["players", payload.player, "insuranceExtra"],
+        ie => ie + payload.amount
+      );
+
     case "PLAYER_INITIALIZE":
       return state.updateIn(["players", payload.player], p => {
         return p
           .set("name", payload.details.name)
-          .set("difficulty", payload.details.difficulty)
+          .set("difficulty", parseInt(payload.details.difficulty, 10))
           .setIn(["arena", "name"], payload.details.arena);
       });
 

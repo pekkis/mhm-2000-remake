@@ -1,18 +1,38 @@
-import { List, Map } from "immutable";
-import { put } from "redux-saga/effects";
+import { Map } from "immutable";
 
 import pirka from "./events/pirka";
 import kasino from "./events/kasino";
 import mauto from "./events/mauto";
+import jaralahti from "./events/jaralahti";
+import kuralahti from "./events/kuralahti";
+import russianAgent from "./events/russian-agent";
+import taxEvasion from "./events/tax-evasion";
+import suddenDeath from "./events/sudden-death";
+import ralliala from "./events/ralliala";
 
-/*
-x = CINT(14 * RND) + 1
-PRINT "Manageri "; lm(x); " kytt„„ paikkaa joukkueessa."
-PRINT "Mies tunnetaan tappavan raskaista harjoituksistaan ja pirullisuudestaan,"
-PRINT "joten pelko romahduttaa moraalin vaikkei jutussa olekaan per„„!"
-mo = mo - 40
-*/
+import concert from "./events/concert";
+import swedenTransfer from "./events/sweden-transfer";
+import jarko from "./events/jarko";
+import moreTaxes from "./events/more-taxes";
 
-const events = List.of(pirka, kasino, mauto);
+import cleandrug from "./events/cleandrug";
+
+const events = Map({
+  pirka,
+  kasino,
+  mauto,
+  jaralahti,
+  kuralahti,
+  russianAgent,
+  taxEvasion,
+  suddenDeath,
+  ralliala,
+  concert,
+  swedenTransfer,
+  jarko,
+  moreTaxes,
+
+  cleandrug
+});
 
 export default events;

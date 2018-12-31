@@ -1,7 +1,9 @@
 import { Map, List } from "immutable";
-import { put, select } from "redux-saga/effects";
+import { select, put } from "redux-saga/effects";
+import { playersTeam } from "../selectors";
+import { amount as a } from "../../services/format";
 
-const eventId = "pirka";
+const eventId = "cleandrug";
 
 const event = {
   type: "player",
@@ -9,14 +11,18 @@ const event = {
   create: function*(data) {
     const { player } = data;
 
+    const team = yield select(playersTeam(player));
+
     yield put({
       type: "EVENT_ADD",
       payload: {
         event: Map({
+          team: team.get("id"),
+          teamName: team.get("name"),
           eventId,
           player,
           resolved: true,
-          amount: 80000
+          amount: 70000
         })
       }
     });
@@ -26,9 +32,11 @@ const event = {
 
   render: data => {
     return List.of(
-      `Ikääntynyt rokkitähti, __Pirka__, kuolee ja lahjoittaa koko omaisuutensa joukkueelle (${data.get(
-        "amount"
-      )} pekkaa ja kiinanpalatsikoiran).`
+      `Lavakoomikko __Aape Ralliala__ julistaa kääntyneensä ${data.get(
+        "teamName"
+      )}:n kannattajaksi ja lahjoittaa sen osoitukseksi joukkueelle ${a(
+        data.get("amount")
+      )} pekkaa.`
     );
   },
 

@@ -30,13 +30,14 @@ const Events = props => {
               {!e.get("resolved") && (
                 <ul>
                   {event
-                    .options()
+                    .options(e)
                     .map((option, key) => {
                       return (
                         <li key={key}>
                           <a
                             href="#"
-                            onClick={() => {
+                            onClick={evt => {
+                              evt.preventDefault();
                               resolveEvent(e, key);
                             }}
                           >

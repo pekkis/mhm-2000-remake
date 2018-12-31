@@ -3,6 +3,21 @@ import Table from "../league-table/Table";
 import Matchups from "../playoffs/Matchups";
 import { List } from "immutable";
 
+/*
+
+
+              {phase.get("type") === "round-robin" && (
+                <div>
+                      <Table
+                        players={List.of(player)}
+                        teams={teams}
+                        division={division}
+                      />
+                </div>
+              )}
+
+              */
+
 const Situation = props => {
   const { competitions, teams, player } = props;
 
@@ -15,23 +30,29 @@ const Situation = props => {
 
           return (
             <div key={competition}>
-              <h3>{key}</h3>
-              {phase.get("type") === "round-robin" && (
-                <Table
-                  players={List.of(player)}
-                  competition={competition}
-                  teams={teams}
-                  phase={phaseNo}
-                />
-              )}
-              {phase.get("type") === "playoffs" && (
-                <Matchups
-                  players={List.of(player)}
-                  competition={competition}
-                  teams={teams}
-                  phase={phaseNo}
-                />
-              )}
+              {phase.get("groups").map((group, i) => {
+                return (
+                  <div key={i}>
+                    <h3>{key}</h3>
+                    {phase.get("type") === "round-robin" && (
+                      <div>
+                        <Table
+                          players={List.of(player)}
+                          teams={teams}
+                          division={group}
+                        />
+                      </div>
+                    )}
+                    {phase.get("type") === "playoffs" && (
+                      <Matchups
+                        players={List.of(player)}
+                        teams={teams}
+                        group={group}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           );
         })

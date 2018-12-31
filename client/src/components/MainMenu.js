@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
 import Situation from "./context-sensitive/Situation";
+import PlayerInfo from "./player/PlayerInfo";
 
 const MainMenu = props => {
   const {
@@ -25,6 +26,8 @@ const MainMenu = props => {
 
   return (
     <div>
+      <PlayerInfo player={player} teams={teams} />
+
       <ButtonRow>
         <Button type="button" onClick={() => advance()}>
           eteenpäin!
@@ -42,10 +45,6 @@ const MainMenu = props => {
           Lopeta!
         </Button>
       </ButtonRow>
-
-      <h2>
-        {player.get("name")} ({player.get("balance")} pks)
-      </h2>
 
       <TurnIndicator turn={turn} />
 

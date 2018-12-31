@@ -1,6 +1,6 @@
 import competitionData from "../data/competitions";
 
-import { call, put, select, takeEvery } from "redux-saga/effects";
+import { call, put, putResolve, select, takeEvery } from "redux-saga/effects";
 
 import actionPhase from "./phase/action";
 import eventPhase from "./phase/event";
@@ -25,6 +25,8 @@ export function* gameLoop() {
 
     yield call(actionPhase);
 
+    yield putResolve({ type: "GAME_DECREMENT_DURATIONS" });
+
     yield call(gamedayPhase);
 
     yield call(eventPhase);
@@ -32,6 +34,8 @@ export function* gameLoop() {
     yield call(seedPhase);
 
     yield call(endOfSeasonPhase);
+
+    yield putResolve({ type: "GAME_CLEAR_EXPIRED" });
 
     yield call(nextTurn);
   } while (true);
@@ -108,5 +112,6 @@ export function* relegate(competition, team) {
 }
 
 function* nextTurn() {
+  yield put({ type: "EVENT_CLEAR_EVENTS" });
   yield put({ type: "GAME_NEXT_TURN" });
 }

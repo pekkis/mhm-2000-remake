@@ -36,11 +36,11 @@ const changedStats = (stats, game, team) => {
   };
 };
 
-const table = cphase =>
-  cphase
+const table = division => {
+  return division
     .get("teams")
     .map((id, index) => {
-      return cphase
+      return division
         .get("schedule")
         .map(round => round.filter(p => p.includes(index)))
         .flatten(true)
@@ -74,5 +74,6 @@ const table = cphase =>
     .sortBy(t => -t.goalsFor)
     .sortBy(t => -(t.goalsFor - t.goalsAgainst))
     .sortBy(t => -t.points);
+};
 
 export default table;

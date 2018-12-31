@@ -2,11 +2,11 @@ import React from "react";
 import { matchups } from "../../services/playoffs";
 
 const Matchups = props => {
-  const { players, teams, competition, phase } = props;
+  const { players, teams, group } = props;
 
-  const cphase = competition.getIn(["phases", phase]);
+  console.log(group.toJS(), "group");
 
-  const matches = matchups(cphase).map(entry => {
+  const matches = matchups(group).map(entry => {
     return {
       ...entry,
       playerControlled: players.map(p => p.get("team")).includes(entry.id)

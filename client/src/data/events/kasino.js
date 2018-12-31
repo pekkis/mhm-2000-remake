@@ -2,6 +2,8 @@ import { Map, List } from "immutable";
 import { put } from "redux-saga/effects";
 import r from "../../services/random";
 
+const eventId = "kasino";
+
 const texts = data => {
   const t = List.of(
     `Olet eräänä iltana kasinolla.
@@ -32,7 +34,7 @@ const event = {
   type: "player",
 
   create: function*(data) {
-    const { eventId, player } = data;
+    const { player } = data;
 
     yield put({
       type: "EVENT_ADD",
@@ -80,7 +82,7 @@ const event = {
     return texts(data);
   },
 
-  generator: function*(data) {
+  process: function*(data) {
     if (!data.get("participate")) {
       return;
     }

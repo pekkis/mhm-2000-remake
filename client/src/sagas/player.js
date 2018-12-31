@@ -40,17 +40,19 @@ export function* afterGameday(action) {
 
   const players = yield select(state => state.player.get("players"));
 
-  const phase = yield select(state =>
+  const group = yield select(state =>
     state.game.getIn([
       "competitions",
       payload.competition,
       "phases",
-      payload.phase
+      payload.phase,
+      "groups",
+      payload.group
     ])
   );
 
   for (const player of players) {
-    const playersIndex = phase
+    const playersIndex = group
       .get("teams")
       .findIndex(t => t === player.get("team"));
 
@@ -58,7 +60,7 @@ export function* afterGameday(action) {
       continue;
     }
 
-    const game = phase.getIn(["schedule", payload.round]).find(pairing => {
+    const game = group.getIn(["schedule", payload.round]).find(pairing => {
       return pairing.includes(playersIndex);
     });
 
