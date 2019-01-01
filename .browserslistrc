@@ -1,4 +1,5 @@
 chrome > 65
+firefox > 60
 not ie <= 11
 not op_mini all
 not android <= 600
@@ -6,5 +7,4 @@ not edge < 100
 not safari < 100
 not ios < 10000
 not opera < 1000000
-not firefox < 10000
 

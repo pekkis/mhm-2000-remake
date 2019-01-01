@@ -21,7 +21,7 @@ const defaultState = Map({
     canada: false
   }),
 
-  ehlParticipants: List.of(2, 3, 12),
+  ehlParticipants: List.of(2, 3, 5),
   insurancePrice: 1000,
 
   managers,
@@ -39,7 +39,7 @@ const defaultState = Map({
       id: "phl",
       phase: 0,
       name: "PHL",
-      teams: List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12),
+      teams: List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
       phases: List()
     }),
     division: Map({
@@ -47,7 +47,7 @@ const defaultState = Map({
       id: "division",
       phase: 0,
       name: "Divisioona",
-      teams: List.of(11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23),
+      teams: List.of(12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23),
       phases: List()
     })
   }),
