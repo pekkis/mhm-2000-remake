@@ -1,4 +1,4 @@
-import { select, call, put } from "redux-saga/effects";
+import { select, call, put, take } from "redux-saga/effects";
 import competitionData from "../../data/competitions";
 import { gameday } from "../gameday";
 import calendar from "../../data/calendar";
@@ -15,7 +15,16 @@ export default function* gamedayPhase() {
   const calendarEntry = calendar.get(round);
   const gamedays = calendarEntry.get("gamedays", List());
 
+  yield take("GAME_ADVANCE_REQUEST");
+
   for (const item of gamedays) {
     yield call(gameday, item);
   }
+
+  yield put({
+    type: "GAME_SET_PHASE",
+    payload: "results"
+  });
+
+  yield take("GAME_ADVANCE_REQUEST");
 }

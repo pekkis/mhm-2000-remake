@@ -2,7 +2,9 @@ import { Map, List, Range } from "immutable";
 import { select, putResolve } from "redux-saga/effects";
 import rr from "../../services/round-robin";
 import playoffScheduler, { victors } from "../../services/playoffs";
-import table from "../../services/league";
+import tournamentScheduler from "../../services/tournament";
+
+import table, { sortStats } from "../../services/league";
 import r from "../../services/random";
 
 export default Map({
@@ -65,8 +67,6 @@ export default Map({
 
       const teams = ehl.get("teams");
 
-      console.log(teams, "tiims");
-
       const groups = Range(0, 5)
         .map(groupId => {
           const teamSlice = teams.slice(groupId * 4, groupId * 4 + 4);
@@ -88,83 +88,31 @@ export default Map({
       });
     },
     competitions => {
-      const teams = table(
-        competitions.getIn(["division", "phases", 0, "groups", 0])
-      )
-        .map(e => e.id)
-        .take(6);
+      const ehlGroups = competitions.getIn(["ehl", "phases", 0, "groups"]);
+      const ehlTables = ehlGroups.map(table);
 
-      const matchups = List.of(List.of(0, 5), List.of(1, 4), List.of(2, 3));
+      const qualifiedVictors = ehlTables.map(table => table.first());
 
-      const winsToAdvance = 3;
+      const sortedSeconds = sortStats(ehlTables.flatMap(table => table.rest()));
+
+      const qualifiedSecond = sortedSeconds.first();
+
+      const teams = qualifiedVictors.push(qualifiedSecond).map(e => e.id);
+
+      console.log("Qualified teams", teams);
 
       return Map({
-        name: "neljännesfinaalit",
-        type: "playoffs",
+        name: "lopputurnaus",
+        type: "tournament",
         teams,
         groups: List.of(
           Map({
+            type: "tournament",
+            colors: List.of("d", "l", "l", "l", "l", "l"),
             teams,
             round: 0,
-            name: "quarterfinals",
-            matchups,
-            winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
-          })
-        )
-      });
-    },
-    competitions => {
-      const teams = List.of(
-        table(competitions.getIn(["phl", "phases", 0, "groups", 0]))
-          .map(e => e.id)
-          .last()
-      ).concat(
-        victors(competitions.getIn(["division", "phases", 1, "groups", 0])).map(
-          t => t.id
-        )
-      );
-
-      const matchups = List.of(List.of(0, 3), List.of(1, 2));
-
-      const winsToAdvance = 3;
-
-      return Map({
-        name: "semifinaalit",
-        type: "playoffs",
-        teams,
-        groups: List.of(
-          Map({
-            round: 0,
-            name: "semifinals",
-            teams,
-            matchups,
-            winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
-          })
-        )
-      });
-    },
-    competitions => {
-      const teams = victors(
-        competitions.getIn(["division", "phases", 2, "groups", 0])
-      ).map(t => t.id);
-
-      const matchups = List.of(List.of(0, 1));
-
-      const winsToAdvance = 4;
-
-      return Map({
-        name: "finaalit",
-        type: "playoffs",
-        teams,
-        groups: List.of(
-          Map({
-            round: 0,
-            teams,
-            matchups,
-            winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
+            name: "lopputurnaus",
+            schedule: tournamentScheduler(teams.count())
           })
         )
       });

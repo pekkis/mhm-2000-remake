@@ -13,16 +13,11 @@ export default function* seedPhase() {
   const seeds = calendar.getIn([round, "seed"], List());
 
   if (seeds.count() === 0) {
-    console.log("NO SEEDING WILL HAPPEN");
     return;
   }
 
-  console.log("WILL PLANT MY SEEDS NOW", seeds.entries());
-
   const competitions = yield select(state => state.game.get("competitions"));
-  for (const [i, seed] of seeds.entries()) {
-    console.log("seed", seed);
-
+  for (const [, seed] of seeds.entries()) {
     const competitionId = seed.get("competition");
     const phaseId = seed.get("phase");
     const competitionObj = competitionData.get(competitionId);

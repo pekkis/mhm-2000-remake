@@ -15,7 +15,6 @@ const PlayerForm = props => {
       <Formik
         initialValues={player.toJS()}
         onSubmit={values => {
-          console.log("Hilpataheijaa", values);
           advance(values);
         }}
       >

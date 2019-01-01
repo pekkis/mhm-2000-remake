@@ -3,12 +3,11 @@ import competitionData from "../data/competitions";
 import gameService from "../services/game";
 import competitionTypes from "../services/competition-type";
 
-import { call, put, select } from "redux-saga/effects";
+import { call, put, select, take } from "redux-saga/effects";
 
-export function* gameday(payload) {
-  const teams = yield select(state => state.game.get("teams"));
+function* tournament(id, phaseId) {
   const competition = yield select(state =>
-    state.game.getIn(["competitions", payload])
+    state.game.getIn(["competitions", id])
   );
 
   const phase = competition.getIn(["phases", competition.get("phase")]);
@@ -24,24 +23,22 @@ export function* gameday(payload) {
   const overtime = competitionType.overtime;
 
   for (const [groupIndex, group] of phase.get("groups").entries()) {
-    const round = group.get("round");
-    const pairings = group.getIn(["schedule", round]);
-    for (let x = 0; x < pairings.count(); x = x + 1) {
-      const playMatch = competitionType.playMatch(group, round, x);
+    // console.log("ENTERING A TOURNAMENT", group.toJS());
 
-      if (playMatch) {
+    let round = group.get("round");
+
+    do {
+      const pairings = group.getIn(["schedule", round]);
+      for (let x = 0; x < pairings.count(); x = x + 1) {
         const pairing = pairings.get(x);
-        const home = teams.get(phase.getIn(["teams", pairing.get("home")]));
-        const away = teams.get(phase.getIn(["teams", pairing.get("away")]));
 
-        const game = Map({
-          ...gameParams,
-          overtime,
-          home,
-          away
-        });
-
-        const result = yield call(gameService.simulate, game);
+        const result = yield call(
+          playGame,
+          group,
+          pairing,
+          gameParams,
+          overtime
+        );
 
         yield put({
           type: "GAME_RESULT",
@@ -56,24 +53,119 @@ export function* gameday(payload) {
         });
       }
 
-      // console.log("GAMEDAY");
+      yield put({
+        type: "GAME_GAMEDAY_COMPLETE",
+        payload: {
+          competition: competition.get("id"),
+          phase: competition.get("phase"),
+          group: groupIndex,
+          round
+        }
+      });
 
-      // console.log("gameday for", competition.toJS(), phase.toJS());
+      yield take("GAME_ADVANCE_REQUEST");
+      round = round + 1;
+    } while (round < group.get("schedule").count());
+  }
 
-      //  console.log(pairings, "pairings");
+  // todo: play tournament
+}
 
-      // console.log(gameParams, "game params");
+function* playGame(group, pairing, gameParams, overtime) {
+  /*
+  console.log("tussi", {
+    group: group.toJS(),
+    pairing: pairing.toJS(),
+    gameParams,
+    overtime
+  });
+  */
 
-      // console.log("game pairing", pairing);
-    }
-    yield put({
-      type: "GAME_GAMEDAY_COMPLETE",
-      payload: {
-        competition: competition.get("id"),
-        phase: competition.get("phase"),
-        group: groupIndex,
-        round
+  const teams = yield select(state => state.game.get("teams"));
+
+  const home = teams.get(group.getIn(["teams", pairing.get("home")]));
+  const away = teams.get(group.getIn(["teams", pairing.get("away")]));
+
+  const game = Map({
+    ...gameParams,
+    overtime,
+    home,
+    away
+  });
+
+  const result = yield call(gameService.simulate, game);
+
+  return result;
+}
+
+export function* gameday(payload) {
+  const competition = yield select(state =>
+    state.game.getIn(["competitions", payload])
+  );
+
+  const phase = competition.getIn(["phases", competition.get("phase")]);
+
+  if (phase.get("type") === "tournament") {
+    yield call(tournament, competition.get("id"), competition.get("phase"));
+  } else {
+    const competitionType = competitionTypes[phase.get("type")];
+    const gameParams = competitionData.getIn([
+      competition.get("id"),
+      "parameters",
+      "gameday"
+    ]);
+
+    const overtime = competitionType.overtime;
+
+    for (const [groupIndex, group] of phase.get("groups").entries()) {
+      const round = group.get("round");
+      const pairings = group.getIn(["schedule", round]);
+      for (let x = 0; x < pairings.count(); x = x + 1) {
+        const playMatch = competitionType.playMatch(group, round, x);
+
+        if (playMatch) {
+          const pairing = pairings.get(x);
+
+          const result = yield call(
+            playGame,
+            group,
+            pairing,
+            gameParams,
+            overtime
+          );
+
+          yield put({
+            type: "GAME_RESULT",
+            payload: {
+              competition: competition.get("id"),
+              phase: competition.get("phase"),
+              group: groupIndex,
+              round,
+              result: result,
+              pairing: x
+            }
+          });
+        }
+
+        // console.log("GAMEDAY");
+
+        // console.log("gameday for", competition.toJS(), phase.toJS());
+
+        //  console.log(pairings, "pairings");
+
+        // console.log(gameParams, "game params");
+
+        // console.log("game pairing", pairing);
       }
-    });
-  } // console.log("reslut", result.toJS());
+      yield put({
+        type: "GAME_GAMEDAY_COMPLETE",
+        payload: {
+          competition: competition.get("id"),
+          phase: competition.get("phase"),
+          group: groupIndex,
+          round
+        }
+      });
+    } // console.log("reslut", result.toJS());
+  }
 }

@@ -5,8 +5,6 @@ import events from "../data/events";
 export function* resolveEvent(action) {
   const { event, value } = action.payload;
 
-  console.log(event.toJS(), "tussi");
-
   const eventObj = events.get(event.get("eventId"));
 
   yield eventObj.resolve(event, value);

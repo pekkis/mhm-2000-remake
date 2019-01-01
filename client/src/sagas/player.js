@@ -1,7 +1,8 @@
-import { takeEvery, all, select, put } from "redux-saga/effects";
+import { takeEvery, select, put } from "redux-saga/effects";
 import { gameFacts } from "../services/game";
 import competitionList from "../data/competitions";
 import playerTypes from "../data/transfer-market";
+import { playersTeamId } from "../data/selectors";
 
 export function* buyPlayer(action) {
   console.log("buy player", action);
@@ -75,6 +76,18 @@ export function* afterGameday(action) {
       player
     );
 
+    const moraleBoost = getMoraleBoost(facts);
+    if (moraleBoost) {
+      const team = yield select(playersTeamId(player.get("id")));
+      yield put({
+        type: "TEAM_INCREMENT_MORALE",
+        payload: {
+          team,
+          amount: moraleBoost
+        }
+      });
+    }
+
     yield put({
       type: "PLAYER_INCREMENT_BALANCE",
       payload: {
@@ -86,6 +99,16 @@ export function* afterGameday(action) {
 
   // console.log("äkshuun!", action);
 }
+
+const getMoraleBoost = facts => {
+  if (facts.isWin) {
+    return 1;
+  } else if (facts.isLoss) {
+    return -1;
+  }
+
+  return 0;
+};
 
 export function* watchTransferMarket() {
   yield takeEvery("PLAYER_BUY_PLAYER", buyPlayer);

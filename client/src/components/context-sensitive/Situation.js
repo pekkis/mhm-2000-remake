@@ -55,6 +55,16 @@ const Situation = props => {
                         />
                       </div>
                     )}
+                    {phase.get("type") === "tournament" && (
+                      <div>
+                        <Table
+                          players={List.of(player)}
+                          teams={teams}
+                          division={group}
+                        />
+                      </div>
+                    )}
+
                     {phase.get("type") === "playoffs" && (
                       <Matchups
                         players={List.of(player)}

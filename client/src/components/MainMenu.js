@@ -8,6 +8,8 @@ import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
 import Situation from "./context-sensitive/Situation";
 import PlayerInfo from "./player/PlayerInfo";
+import Header from "./containers/HeaderContainer";
+import HeaderedPage from "./ui/HeaderedPage";
 
 const MainMenu = props => {
   const {
@@ -25,14 +27,12 @@ const MainMenu = props => {
   } = props;
 
   return (
-    <div>
+    <HeaderedPage>
+      <Header />
+
       <PlayerInfo player={player} teams={teams} />
 
       <ButtonRow>
-        <Button type="button" onClick={() => advance()}>
-          eteenpäin!
-        </Button>
-
         <Button
           disabled={turn.get("phase") !== "action"}
           type="button"
@@ -74,9 +74,7 @@ const MainMenu = props => {
       <hr />
 
       <Events player={player} events={events} resolveEvent={resolveEvent} />
-
-      <hr />
-    </div>
+    </HeaderedPage>
   );
 };
 

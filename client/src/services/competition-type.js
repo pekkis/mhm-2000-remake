@@ -5,6 +5,10 @@ const competitionTypes = {
     playMatch: () => true,
     overtime: () => false
   },
+  tournament: {
+    playMatch: () => true,
+    overtime: () => false
+  },
   playoffs: {
     playMatch: (phase, round, matchup) => {
       const situation = matchups(phase);

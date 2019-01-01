@@ -183,11 +183,9 @@ export default function* eventPhase() {
 
   const player = 0;
 
-  const key = eventsMap.last();
+  // const key = eventsMap.last();
 
-  console.log(key, "kii");
-  // hard code event parameter for this func for testing.
-  const eventId = getEventId(key);
+  const eventId = getEventId();
 
   if (eventId) {
     yield events.get(eventId).create({

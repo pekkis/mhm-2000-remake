@@ -31,11 +31,10 @@ export function* gameLoop() {
 
     const phases = roundData.get("phases");
 
-    console.log(roundData.toJS(), "round data");
+    // console.log(roundData.toJS(), "round data");
 
+    // don't do any calculations for "hidden" turns
     if (phases.includes("action")) {
-      console.log("ACTION PHASE");
-
       yield call(actionPhase);
       yield putResolve({ type: "GAME_DECREMENT_DURATIONS" });
     }
@@ -70,13 +69,10 @@ function* competitionStart(competitionId) {
   const competitionStarter = competitionData.getIn([competitionId, "start"]);
   if (competitionStarter) {
     yield call(competitionStarter);
-  } else {
-    console.log("NO START");
   }
 }
 
 export function* seasonStart() {
-  const competitions = yield select(state => state.game.get("competitions"));
   const teams = yield select(allTeams);
 
   const reStrengths = teams.slice(24).map(t => {

@@ -77,9 +77,9 @@ export const simulate = game => {
     return result;
   }
 
-  console.log("OVETIME NEEDED, RESULT", result.toJS());
+  // console.log("OVERTIME NEEDED, RESULT", result.toJS());
   const afterOvertime = playOvertime(homeStrength, awayStrength, result);
-  console.log("RESULT AFTER OVERTIME", afterOvertime.toJS());
+  // console.log("RESULT AFTER OVERTIME", afterOvertime.toJS());
 
   return afterOvertime;
 };
