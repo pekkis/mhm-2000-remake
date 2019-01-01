@@ -1,5 +1,7 @@
 import { select, put } from "redux-saga/effects";
 import competitionData from "../../data/competitions";
+import calendar from "../../data/calendar";
+import { List } from "immutable";
 
 export default function* seedPhase() {
   yield put({
@@ -8,51 +10,29 @@ export default function* seedPhase() {
   });
 
   const round = yield select(state => state.game.getIn(["turn", "round"]));
+  const seeds = calendar.getIn([round, "seed"], List());
 
-  if (round === 44) {
-    const competitions = yield select(state => state.game.get("competitions"));
-    for (const key of ["division", "phl"]) {
-      const competitionObj = competitionData.get(key);
-
-      yield put({
-        type: "COMPETITION_SEED",
-        payload: {
-          competition: key,
-          phase: 1,
-          seed: competitionObj.getIn(["seed", 1])(competitions)
-        }
-      });
-    }
-  }
-  if (round === 49) {
-    const competitions = yield select(state => state.game.get("competitions"));
-    for (const key of ["division", "phl"]) {
-      const competitionObj = competitionData.get(key);
-
-      yield put({
-        type: "COMPETITION_SEED",
-        payload: {
-          competition: key,
-          phase: 2,
-          seed: competitionObj.getIn(["seed", 2])(competitions)
-        }
-      });
-    }
+  if (seeds.count() === 0) {
+    console.log("NO SEEDING WILL HAPPEN");
+    return;
   }
 
-  if (round === 54) {
-    const competitions = yield select(state => state.game.get("competitions"));
-    for (const key of ["division", "phl"]) {
-      const competitionObj = competitionData.get(key);
+  console.log("WILL PLANT MY SEEDS NOW", seeds.entries());
 
-      yield put({
-        type: "COMPETITION_SEED",
-        payload: {
-          competition: key,
-          phase: 3,
-          seed: competitionObj.getIn(["seed", 3])(competitions)
-        }
-      });
-    }
+  const competitions = yield select(state => state.game.get("competitions"));
+  for (const [i, seed] of seeds.entries()) {
+    console.log("seed", seed);
+
+    const competitionId = seed.get("competition");
+    const phaseId = seed.get("phase");
+    const competitionObj = competitionData.get(competitionId);
+    yield put({
+      type: "COMPETITION_SEED",
+      payload: {
+        competition: competitionId,
+        phase: phaseId,
+        seed: competitionObj.getIn(["seed", phaseId])(competitions)
+      }
+    });
   }
 }

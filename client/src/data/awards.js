@@ -3,6 +3,7 @@ import {
   competition,
   playerWhoControlsTeam,
   allTeams,
+  pekkalandianTeams,
   teamCompetesIn,
   teamsStrength,
   teamsPositionInRoundRobin,
@@ -92,7 +93,6 @@ const randomEvents = List.of(
       )}__ kaatuu sisäisiin riitoihin! Pelaajat kävelevät ulos!`;
     }
   ),
-
   createRandom(
     12,
     5,
@@ -554,7 +554,10 @@ const randomEvents = List.of(
       )}__ on jo luopumassa sarjapaikastaan, mutta uusi omistaja pelastaa joukkueen viime hetkellä!`;
     }
   )
-);
+).map((r, i) => {
+  r.id = i;
+  return r;
+});
 
 /*
 
@@ -690,19 +693,28 @@ const award = function*() {
 
   yield call(yieldAwards, medalAwards, ranking);
 
+  console.log("HELLUREI? 1");
+
   const tableEntries = table(phl.getIn(["phases", 0, "groups", 0]))
     .map(t => t.id)
     .take(8);
 
-  yield call(yieldAwards, roundRobinAwards, tableEntries);
+  console.log("HELLUREI? 2");
 
-  const teams = yield select(allTeams);
+  yield call(yieldAwards, roundRobinAwards, tableEntries);
+  console.log("HELLUREI? 3");
+  const teams = yield select(pekkalandianTeams);
+
+  console.log("HELLUREI? 4");
 
   for (const [, team] of teams.entries()) {
     for (const randomEvent of randomEvents) {
+      console.log(randomEvent.id, team.get("id"));
       yield call(randomEvent, team.get("id"));
     }
   }
+
+  console.log("HELLUREI? 5");
 };
 
 export default award;

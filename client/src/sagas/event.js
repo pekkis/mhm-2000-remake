@@ -21,8 +21,6 @@ export function* processEvents() {
   );
 
   for (const [, event] of eventsToProcess) {
-    console.log(event, "event being processed", event);
-
     yield events.get(event.get("eventId")).process(event);
     yield put({
       type: "EVENT_SET_PROCESSED",

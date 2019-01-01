@@ -11,16 +11,31 @@ export const GAME_ADVANCE = "GAME_ADVANCE";
 const defaultState = Map({
   turn: Map({
     season: 1997,
-    round: 1,
-    phase: "action"
+    round: 0,
+    phase: undefined
   }),
 
-  flags: Map(),
+  flags: Map({
+    jarko: false,
+    usa: false,
+    canada: false
+  }),
+
+  ehlParticipants: List.of(2, 3, 12),
+  insurancePrice: 1000,
 
   managers,
 
   competitions: Map({
+    ehl: Map({
+      weight: 2000,
+      id: "ehl",
+      phase: 0,
+      name: "EHL",
+      phases: List()
+    }),
     phl: Map({
+      weight: 1000,
       id: "phl",
       phase: 0,
       name: "PHL",
@@ -28,6 +43,7 @@ const defaultState = Map({
       phases: List()
     }),
     division: Map({
+      weight: 1000,
       id: "division",
       phase: 0,
       name: "Divisioona",
@@ -68,6 +84,12 @@ export default function gameReducer(state = defaultState, action) {
         teams => teams.push(payload.team)
       );
 
+    case "COMPETITION_SET_TEAMS":
+      return state.setIn(
+        ["competitions", payload.competition, "teams"],
+        payload.teams
+      );
+
     case "COMPETITION_START":
       return state.updateIn(["competitions", payload.competition], c => {
         return c.set("phases", List());
@@ -95,7 +117,7 @@ export default function gameReducer(state = defaultState, action) {
 
     case "SEASON_END":
       return state.update("turn", turn => {
-        return turn.update("season", season => season + 1).set("round", 0);
+        return turn.update("season", season => season + 1).set("round", -1);
       });
 
     case "GAME_RESULT":
@@ -155,6 +177,11 @@ export default function gameReducer(state = defaultState, action) {
 
     case "TEAM_SET_STRENGTH":
       return state.setIn(["teams", payload.team, "strength"], payload.amount);
+
+    case "TEAM_SET_STRENGTHS":
+      return payload.reduce((state, entry) => {
+        return state.setIn(["teams", entry.id, "strength"], entry.strength);
+      }, state);
 
     case "TEAM_DECREMENT_STRENGTH":
       return state.updateIn(

@@ -1,6 +1,14 @@
 import competitionData from "../data/competitions";
+import teamData from "../data/teams";
 
-import { call, put, putResolve, select, takeEvery } from "redux-saga/effects";
+import {
+  call,
+  put,
+  putResolve,
+  select,
+  takeEvery,
+  take
+} from "redux-saga/effects";
 
 import actionPhase from "./phase/action";
 import eventPhase from "./phase/event";
@@ -8,8 +16,10 @@ import gamedayPhase from "./phase/gameday";
 import seedPhase from "./phase/seed";
 import endOfSeasonPhase from "./phase/end-of-season";
 import startOfSeasonPhase from "./phase/start-of-season";
+import calendar from "../data/calendar";
 
 import { afterGameday } from "./player";
+import { allTeams } from "../data/selectors";
 
 export function* gameLoop() {
   yield takeEvery("GAME_GAMEDAY_COMPLETE", afterGameday);
@@ -17,23 +27,38 @@ export function* gameLoop() {
   do {
     const turn = yield select(state => state.game.get("turn"));
 
-    if (turn.get("round") === 1) {
+    const roundData = calendar.get(turn.get("round"));
+
+    const phases = roundData.get("phases");
+
+    console.log(roundData.toJS(), "round data");
+
+    if (phases.includes("action")) {
+      console.log("ACTION PHASE");
+
+      yield call(actionPhase);
+      yield putResolve({ type: "GAME_DECREMENT_DURATIONS" });
+    }
+
+    if (phases.includes("gameday")) {
+      yield call(gamedayPhase);
+    }
+
+    if (phases.includes("event")) {
+      yield call(eventPhase);
+    }
+
+    if (phases.includes("seed")) {
+      yield call(seedPhase);
+    }
+
+    if (phases.includes("startOfSeason")) {
       yield call(startOfSeasonPhase);
     }
 
-    console.log("ACTION PHASE");
-
-    yield call(actionPhase);
-
-    yield putResolve({ type: "GAME_DECREMENT_DURATIONS" });
-
-    yield call(gamedayPhase);
-
-    yield call(eventPhase);
-
-    yield call(seedPhase);
-
-    yield call(endOfSeasonPhase);
+    if (phases.includes("endOfSeason")) {
+      yield call(endOfSeasonPhase);
+    }
 
     yield putResolve({ type: "GAME_CLEAR_EXPIRED" });
 
@@ -41,10 +66,36 @@ export function* gameLoop() {
   } while (true);
 }
 
+function* competitionStart(competitionId) {
+  const competitionStarter = competitionData.getIn([competitionId, "start"]);
+  if (competitionStarter) {
+    yield call(competitionStarter);
+  } else {
+    console.log("NO START");
+  }
+}
+
 export function* seasonStart() {
   const competitions = yield select(state => state.game.get("competitions"));
+  const teams = yield select(allTeams);
+
+  const reStrengths = teams.slice(24).map(t => {
+    return {
+      id: t.get("id"),
+      strength: teamData.get(t.get("id")).get("strength")()
+    };
+  });
+
+  yield put({
+    type: "TEAM_SET_STRENGTHS",
+    payload: reStrengths.toJS()
+  });
 
   for (const [key, competitionObj] of competitionData) {
+    yield competitionStart(key);
+
+    const competitions = yield select(state => state.game.get("competitions"));
+
     yield put({
       type: "COMPETITION_START",
       payload: {

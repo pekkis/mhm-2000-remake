@@ -25,7 +25,25 @@ const teams = List.of(
   Map({ name: "SaPKo", strength: () => 74 }),
   Map({ name: "Haukat", strength: () => 55 }),
   Map({ name: "Ahmat", strength: () => 40 }),
-  Map({ name: "Sport", strength: () => 80 })
+  Map({ name: "Sport", strength: () => 80 }),
+
+  Map({ name: "Luleå", strength: () => r.integer(240, 320) }),
+  Map({ name: "Djurgården", strength: () => r.integer(210, 240) }),
+  Map({ name: "Frölunda", strength: () => r.integer(200, 240) }),
+  Map({ name: "Sparta Praha", strength: () => r.integer(180, 270) }),
+  Map({ name: "Budejovice", strength: () => r.integer(160, 230) }),
+  Map({ name: "Dukla", strength: () => r.integer(160, 190) }),
+  Map({ name: "Lada", strength: () => r.integer(140, 290) }),
+  Map({ name: "ZSKA Moskova", strength: () => r.integer(170, 240) }),
+  Map({ name: "Vålerengen", strength: () => r.integer(130, 160) }),
+  Map({ name: "Preussen Berlin", strength: () => r.integer(180, 210) }),
+  Map({ name: "Eisbären", strength: () => r.integer(170, 220) }),
+  Map({ name: "Feldkirch", strength: () => r.integer(155, 205) }),
+  Map({ name: "Rouen", strength: () => r.integer(85, 155) }),
+  Map({ name: "Manchester Storm", strength: () => r.integer(85, 115) }),
+  Map({ name: "Kosice", strength: () => r.integer(175, 195) }),
+  Map({ name: "Davos", strength: () => r.integer(195, 210) }),
+  Map({ name: "Milano Devils", strength: () => r.integer(120, 135) })
 ).map((t, i) => t.set("id", i));
 
 export default teams;

@@ -14,13 +14,10 @@ import table from "../../services/league";
 import awards from "../../data/awards";
 
 export default function* endOfSeasonPhase() {
-  const round = yield select(state => state.game.getIn(["turn", "round"]));
-
-  if (round !== 62) {
-    return;
-  }
-
+  console.log("hellurei_111");
   yield call(awards);
+
+  console.log("hellurei_2222");
 
   yield take("GAME_ADVANCE_REQUEST");
 

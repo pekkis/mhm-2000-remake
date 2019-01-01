@@ -16,7 +16,7 @@ const defaultState = Map({
         microphone: false,
         cheerleaders: false
       }),
-      balance: 1400000,
+      balance: 20000000,
       arena: Map({
         name: "Anonyymi Areena",
         level: 1

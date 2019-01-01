@@ -17,7 +17,8 @@ const Phase = props => {
     case turn.get("phase") === "event":
       return <Events />;
 
-    default:
+    case turn.get("phase") === "action":
+    case turn.get("phase") === "seed":
       return (
         <Switch>
           <Route exact path="/" component={MainMenu} />
@@ -26,6 +27,10 @@ const Phase = props => {
           <Route exact path="/debug" component={DeveloperMenu} />
         </Switch>
       );
+
+    default:
+      console.log("turn", turn.toJS());
+      return "laddare...";
   }
 };
 

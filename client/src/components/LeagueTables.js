@@ -25,17 +25,24 @@ const LeagueTables = props => {
 
   return (
     <div>
+      <h2>Sarjataulukot</h2>
+
       {competitions
         .map(c => {
+          const phase = c.getIn(["phases", 0]);
+          const groups = phase.get("groups");
+
           return (
             <div key={c.get("id")}>
-              <h2>{c.get("name")}</h2>
-              <Table
-                competition={c}
-                players={players}
-                teams={teams}
-                phase={0}
-              />
+              <h3>{c.get("name")}</h3>
+              {groups.map((group, i) => {
+                return (
+                  <div key={i}>
+                    <h4>{group.get("name")}</h4>
+                    <Table division={group} players={players} teams={teams} />
+                  </div>
+                );
+              })}
             </div>
           );
         })

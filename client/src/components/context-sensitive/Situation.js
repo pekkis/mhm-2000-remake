@@ -21,19 +21,31 @@ import { List } from "immutable";
 const Situation = props => {
   const { competitions, teams, player } = props;
 
+  const myCompetitions = competitions
+    .sortBy(c => c.get("weight", 0))
+    .filter(c => {
+      return true;
+      const phase = c.getIn(["phases", c.get("phase")]);
+
+      console.log(c.get("name"), phase.toJS());
+
+      return phase.get("teams").includes(player.get("team"));
+    });
+
   return (
     <div>
-      {competitions
+      {myCompetitions
         .map((competition, key) => {
           const phaseNo = competition.get("phase");
           const phase = competition.getIn(["phases", phaseNo]);
 
           return (
             <div key={competition}>
+              <h3>{competition.get("name")}</h3>
               {phase.get("groups").map((group, i) => {
                 return (
                   <div key={i}>
-                    <h3>{key}</h3>
+                    <h4>{group.get("name")}</h4>
                     {phase.get("type") === "round-robin" && (
                       <div>
                         <Table

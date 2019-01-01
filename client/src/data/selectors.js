@@ -102,6 +102,8 @@ export const teamHasActiveEffects = team => state => {
 
 export const allTeams = state => state.game.get("teams");
 
+export const pekkalandianTeams = state => state.game.get("teams").take(24);
+
 export const playerHasService = (player, service) => state => {
   return state.player.getIn(["players", player, "services", service]);
 };
