@@ -1,6 +1,6 @@
 [build]
-  base = "client/"
-  publish = "client/dist/"
+  base = "/"
+  publish = "dist/"
   command = "yarn run build"
   environment = { }
 
