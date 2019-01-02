@@ -13,6 +13,10 @@ const Container = styled.header`
   display: flex;
   flex-basis: 100%;
 
+  .back {
+    width: 100%;
+  }
+
   .title {
     width: 100%;
     display: flex;
@@ -28,10 +32,18 @@ const Container = styled.header`
 `;
 
 const Header = props => {
-  const { advance, advanceEnabled } = props;
+  const { back, history, advance, advanceEnabled } = props;
+
+  console.log(history);
 
   return (
     <Container>
+      {back && (
+        <div className="back">
+          <Button onClick={() => history.push("/")}>BACK</Button>
+        </div>
+      )}
+
       <div className="title">
         <div>MHM 97</div>
       </div>
@@ -42,6 +54,10 @@ const Header = props => {
       </div>
     </Container>
   );
+};
+
+Header.defaultProps = {
+  back: false
 };
 
 export default Header;

@@ -1,6 +1,8 @@
 import React from "react";
 import playerTypes from "../data/transfer-market";
 import Button from "./form/Button";
+import Header from "./containers/HeaderContainer";
+import HeaderedPage from "./ui/HeaderedPage";
 
 const TransferMarket = props => {
   const { player, teams, buyPlayer, sellPlayer } = props;
@@ -10,7 +12,9 @@ const TransferMarket = props => {
   const team = teams.get(player.get("team"));
 
   return (
-    <div>
+    <HeaderedPage>
+      <Header back />
+
       <h2>Pelaajamarkkinat</h2>
 
       <p>Raha: {balance}</p>
@@ -33,7 +37,7 @@ const TransferMarket = props => {
           </div>
         );
       })}
-    </div>
+    </HeaderedPage>
   );
 };
 

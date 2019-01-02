@@ -81,6 +81,8 @@ export const sortStats = stats => {
 };
 
 const table = group => {
+  console.log("CALCULATING TABLE FOR", group.toJS());
+
   const unsorted = groupStats(group);
   return sortStats(unsorted);
 };

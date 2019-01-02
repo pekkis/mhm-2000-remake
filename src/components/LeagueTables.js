@@ -1,12 +1,7 @@
 import React from "react";
-import TurnIndicator from "./game/TurnIndicator";
-
-import Events from "./events/Events";
-import News from "./news/News";
-import { Link } from "react-router-dom";
-import Button from "./form/Button";
-import Situation from "./context-sensitive/Situation";
 import Table from "./league-table/Table";
+import Header from "./containers/HeaderContainer";
+import HeaderedPage from "./ui/HeaderedPage";
 
 const LeagueTables = props => {
   const {
@@ -24,7 +19,8 @@ const LeagueTables = props => {
   } = props;
 
   return (
-    <div>
+    <HeaderedPage>
+      <Header back />
       <h2>Sarjataulukot</h2>
 
       {competitions
@@ -47,7 +43,7 @@ const LeagueTables = props => {
           );
         })
         .toList()}
-    </div>
+    </HeaderedPage>
   );
 };
 

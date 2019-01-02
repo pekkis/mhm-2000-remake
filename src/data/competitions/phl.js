@@ -44,6 +44,7 @@ export default Map({
         teams,
         groups: List.of(
           Map({
+            type: "round-robin",
             round: 0,
             name: "runkosarja",
             teams,
@@ -86,6 +87,7 @@ export default Map({
         teams,
         groups: List.of(
           Map({
+            type: "playoffs",
             round: 0,
             teams,
             winsToAdvance,
@@ -110,6 +112,7 @@ export default Map({
         teams,
         groups: List.of(
           Map({
+            type: "playoffs",
             round: 0,
             teams,
             matchups,
@@ -140,6 +143,7 @@ export default Map({
         teams,
         groups: List.of(
           Map({
+            type: "playoffs",
             teams,
             round: 0,
             matchups,

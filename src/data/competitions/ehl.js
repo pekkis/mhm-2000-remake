@@ -71,6 +71,7 @@ export default Map({
         .map(groupId => {
           const teamSlice = teams.slice(groupId * 4, groupId * 4 + 4);
           return Map({
+            type: "round-robin",
             round: 0,
             name: `lohko ${groupId + 1}`,
             teams: teamSlice,

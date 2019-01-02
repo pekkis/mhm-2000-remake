@@ -1,4 +1,5 @@
 import competitionData from "../data/competitions";
+import competitionTypes from "../services/competition-type";
 import teamData from "../data/teams";
 
 import {
@@ -7,7 +8,8 @@ import {
   putResolve,
   select,
   takeEvery,
-  take
+  take,
+  all
 } from "redux-saga/effects";
 
 import actionPhase from "./phase/action";
@@ -47,6 +49,8 @@ export function* gameLoop() {
       yield call(eventPhase);
     }
 
+    yield call(calculateStats);
+
     if (phases.includes("seed")) {
       yield call(seedPhase);
     }
@@ -63,6 +67,39 @@ export function* gameLoop() {
 
     yield call(nextTurn);
   } while (true);
+}
+
+export function* calculateStats() {
+  /*
+  const competitions = yield select(state => state.game.get("competitions"));
+
+  const actionsToYield = competitions
+    .map(competition => {
+      return competition
+        .getIn(["phases", competition.get("phase"), "groups"])
+        .map((group, groupIndex) => {
+          console.log("group", group.toJS());
+
+          console.log(competitionTypes, "cts");
+
+          const stats = competitionTypes[group.get("type")].stats(group);
+
+          return putResolve({
+            type: "COMPETITION_UPDATE_STATS",
+            payload: {
+              competition: competition.get("id"),
+              phase: competition.get("phase"),
+              group: groupIndex,
+              stats
+            }
+          });
+        });
+    })
+    .toList()
+    .flatten(true);
+
+  yield all(actionsToYield.toJS());
+  */
 }
 
 function* competitionStart(competitionId) {

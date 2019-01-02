@@ -6,7 +6,7 @@ import Table from "./league-table/Table";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 
-import Games from "./gameday/Games";
+import Results from "./gameday/Results";
 
 const GamedayResults = props => {
   const { turn, players, teams, competitions } = props;
@@ -40,7 +40,7 @@ const GamedayResults = props => {
                     {group.get("name")} [{currentRound}]
                   </h4>
 
-                  <Games
+                  <Results
                     teams={teams}
                     context={group}
                     round={currentRound}

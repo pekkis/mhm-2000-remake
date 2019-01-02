@@ -1,29 +1,13 @@
 import React from "react";
-import TurnIndicator from "./game/TurnIndicator";
-
-import Events from "./events/Events";
-import News from "./news/News";
-import { Link } from "react-router-dom";
-import Button from "./form/Button";
-import Situation from "./context-sensitive/Situation";
+import Header from "./containers/HeaderContainer";
+import HeaderedPage from "./ui/HeaderedPage";
 
 const DeveloperMenu = props => {
-  const {
-    turn,
-    advance,
-    player,
-    players,
-    teams,
-    competitions,
-    resolveEvent,
-    events,
-    saveGame,
-    quitToMainMenu,
-    news
-  } = props;
+  const { teams, competitions } = props;
 
   return (
-    <div>
+    <HeaderedPage>
+      <Header back />
       {competitions
         .map(c => {
           return (
@@ -38,21 +22,24 @@ const DeveloperMenu = props => {
                 </thead>
 
                 <tbody>
-                  {c.get("teams").map(t => {
-                    return (
-                      <tr>
-                        <td>{teams.get(t).get("name")}</td>
-                        <td>{teams.get(t).get("strength")}</td>
-                      </tr>
-                    );
-                  })}
+                  {c
+                    .get("teams")
+                    .sortBy(t => -teams.get(t).get("strength"))
+                    .map(t => {
+                      return (
+                        <tr key={t}>
+                          <td>{teams.get(t).get("name")}</td>
+                          <td>{teams.get(t).get("strength")}</td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
             </div>
           );
         })
         .toList()}
-    </div>
+    </HeaderedPage>
   );
 };
 

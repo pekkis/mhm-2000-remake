@@ -84,6 +84,20 @@ export default function gameReducer(state = defaultState, action) {
         teams => teams.push(payload.team)
       );
 
+    case "COMPETITION_UPDATE_STATS":
+      return state.setIn(
+        [
+          "competitions",
+          payload.competition,
+          "phases",
+          payload.phase,
+          "groups",
+          payload.group,
+          "stats"
+        ],
+        payload.stats
+      );
+
     case "COMPETITION_SET_TEAMS":
       return state.setIn(
         ["competitions", payload.competition, "teams"],
@@ -146,10 +160,11 @@ export default function gameReducer(state = defaultState, action) {
           "phases",
           payload.phase,
           "groups",
-          payload.group,
-          "round"
+          payload.group
         ],
-        r => r + 1
+        group => {
+          return group.update("round", r => r + 1);
+        }
       );
 
     case "GAME_SET_PHASE":

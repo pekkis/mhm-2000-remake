@@ -75,7 +75,7 @@ const calendar = List.of(
   )
   .push(
     Map({
-      phases: defaultPhases,
+      phases: List.of("action", "event", "seed"),
       seed: List.of(
         Map({ competition: "phl", phase: 1 }),
         Map({ competition: "division", phase: 1 })
@@ -93,7 +93,7 @@ const calendar = List.of(
   )
   .push(
     Map({
-      phases: defaultPhases,
+      phases: List.of("action", "event", "seed"),
       seed: List.of(
         Map({ competition: "phl", phase: 2 }),
         Map({ competition: "division", phase: 2 })
@@ -111,7 +111,7 @@ const calendar = List.of(
   )
   .push(
     Map({
-      phases: defaultPhases,
+      phases: List.of("action", "event", "seed"),
       seed: List.of(
         Map({ competition: "phl", phase: 3 }),
         Map({ competition: "division", phase: 3 })

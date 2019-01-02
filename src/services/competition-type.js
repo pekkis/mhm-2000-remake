@@ -1,15 +1,25 @@
 import { matchups, victors } from "../services/playoffs";
+import table from "../services/league";
 
 const competitionTypes = {
   "round-robin": {
     playMatch: () => true,
-    overtime: () => false
+    overtime: () => false,
+    stats: group => {
+      return table(group);
+    }
   },
   tournament: {
     playMatch: () => true,
-    overtime: () => false
+    overtime: () => false,
+    stats: group => {
+      return table(group);
+    }
   },
   playoffs: {
+    stats: group => {
+      return matchups(group);
+    },
     playMatch: (phase, round, matchup) => {
       const situation = matchups(phase);
 
@@ -18,10 +28,6 @@ const competitionTypes = {
       console.log(situation);
 
       const match = situation.get(matchup);
-
-      const victore = victors(phase);
-
-      console.log(victore.toJS(), "veni, vidi, vici");
 
       if (match.home.wins === phase.get("winsToAdvance")) {
         console.log("HOME TEAM HAS ENUFF WINS");

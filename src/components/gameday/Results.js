@@ -4,12 +4,12 @@ import TeamName from "../team/Name";
 import { List } from "immutable";
 import competitionTypes from "../../services/competition-type";
 
-const Games = props => {
+const Results = props => {
   const { className, teams, context, round, players } = props;
 
   const competitionType = competitionTypes[context.get("type")];
   const pairings = context.getIn(["schedule", round], List()).filter((p, i) => {
-    return competitionType.playMatch(context, round, i);
+    return p.get("result");
   });
 
   return (
@@ -52,6 +52,6 @@ const Games = props => {
   );
 };
 
-export default styled(Games)`
+export default styled(Results)`
   max-width: 30em;
 `;
