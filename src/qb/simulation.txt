@@ -1,0 +1,55 @@
+# kriisipalaveri
+
+IF mo < -2 THEN COLOR 11, 0: PRINT "8. Kriisipalaveri": COLOR 4, 0 ELSE PRINT
+F mo < -2 AND mm = "8" AND kr < 42 THEN kriisi
+
+
+SUB kriisi
+CLS
+COLOR 12, 0
+PRINT "Kriisipalaveri auttaa joukkuetta unohtamaan tappioputken, ja se maksaa"
+IF sarja = 1 THEN PRINT "50000 pekkaa!!"
+IF sarja = 2 THEN PRINT "25000 pekkaa!!"
+IF sarja = 1 AND raha < 50000 THEN PRINT "T„t„ summaa sinulla ei ole, joten bye-bye!": INPUT yucca$: GOTO ender
+IF sarja = 2 AND raha < 25000 THEN PRINT "T„t„ summaa sinulla ei ole, joten bye-bye!": INPUT yucca$: GOTO ender
+PRINT : COLOR 14, 0
+INPUT "J„rjest„tk” palaverin ??? (k/e) ", ccc$
+IF ccc$ = "k" THEN GOTO jess
+IF ccc$ = "e" THEN PRINT "OK.": INPUT yucca$: GOTO ender
+jess:
+PRINT : COLOR 6, 0
+PRINT "Psykologi valaa yhdess„ managerin"
+PRINT "kanssa uskoa pelaajien mieliin. Moraali paranee, ja joukkue"
+INPUT "keskittyy tuleviin haasteisiin uudella innolla!!", yucca$
+IF sarja = 1 THEN mo = mo + 4 + moplus: raha = raha - 50000: GOTO ender
+IF sarja = 2 THEN mo = mo + 4 + moplus: raha = raha - 25000: GOTO ender
+ender:
+END SUB
+
+
+
+
+# euro-ottelusta tulee rahaa ?
+IF euro = 1 THEN raha = raha + 100000 + 20000 * hjalli
+
+
+moraaliviittauksia sarjoista 1 ja 2
+
+IF sarja = 1 THEN mal(u) = mal(u) + mo * 2 - krapu - tauti - tauti2 + micci + tre
+IF sarja = 1 AND cheer = 1 THEN mal(u) = mal(u) + 6
+IF sarja = 1 THEN mal(z) = mal(z) - molke + tauti3
+IF sarja = 2 THEN mal(u) = mal(u) + mo - tauti - tauti2 + micci + tre
+IF sarja = 2 AND cheer = 1 THEN mal(u) = mal(u) + 3
+IF mal(u) < 0 THEN mal(u) = 0
+IF sarja = 2 THEN mal(z) = mal(z) - molke + tauti3
+IF mal(z) < 0 THEN mal(z) = 0
+
+
+moraaliviittauksia ehl
+
+veh(eds1) = v(edus1) + talg(edus1)
+veh(eds2) = v(edus2) + talg(edus2)
+veh(eds3) = v(edus3) + talg(edus3)
+IF sarja = 1 AND edus1 = u THEN veh(eds1) = veh(eds1) + tre + mo - tauti - tauti2
+IF sarja = 1 AND edus2 = u THEN veh(eds2) = veh(eds2) + tre + mo - tauti - tauti2
+IF sarja = 1 AND edus3 = u THEN veh(eds3) = veh(eds3) + tre + mo - tauti - tauti2

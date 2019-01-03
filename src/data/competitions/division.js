@@ -26,10 +26,13 @@ export default Map({
   parameters: Map({
     gameday: {
       advantage: Map({
-        home: strength => strength + 5,
-        away: strength => strength - 5
+        home: team => 5,
+        away: team => -5
       }),
-      base: () => 10
+      base: () => 10,
+      moraleEffect: team => {
+        return team.get("morale");
+      }
     }
   }),
 

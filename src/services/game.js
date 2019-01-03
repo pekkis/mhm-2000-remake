@@ -1,6 +1,7 @@
-import { Map } from "immutable";
+import { Map, OrderedMap, List } from "immutable";
 import r from "./random";
 import { compose, pipe } from "ramda";
+import { getEffective } from "../services/effects";
 
 /*
 mla(a) = mal(a) / ducka: mla(b) = mal(b) / ducka
@@ -14,7 +15,10 @@ gl(a) = CINT(mla(a)): gl(b) = CINT(mla(b))
 mal(a) = CINT(v(a) * RND) + talg(a) + fucka
 */
 
-const playOvertime = (homeStrength, awayStrength, result) => {
+const playOvertime = (strengths, result) => {
+  const homeStrength = strengths.get("home");
+  const awayStrength = strengths.get("away");
+
   let victor = null;
   do {
     const home = r.integer(0, homeStrength);
@@ -33,43 +37,54 @@ const playOvertime = (homeStrength, awayStrength, result) => {
 };
 
 export const simulate = game => {
-  // console.log("game to simulate", game.toJS());
+  const raw = Map({
+    home: game.get("home"),
+    away: game.get("away")
+  });
 
-  const homeTeam = game.get("home");
-  const awayTeam = game.get("away");
-
-  // console.log(homeTeam.toJS());
+  const teams = raw.map(getEffective);
 
   const base = game.get("base");
-
   const overtime = game.get("overtime");
 
-  // console.log("base", base);
-
-  const homeStrength = pipe(
-    team => team.get("strength"),
-    game.getIn(["advantage", "home"])
-    // ...homeTeam.get("effects").toArray()
-  )(homeTeam);
-
-  const awayStrength = pipe(
-    team => team.get("strength"),
-    game.getIn(["advantage", "away"])
-    // ...awayTeam.get("effects").toArray()
-  )(awayTeam);
-
-  const goals = pipe(
-    strength => r.integer(0, strength),
-    val => val / base(),
-    val => (val < 0 ? 0 : val),
-    number => parseInt(number.toFixed(0), 10)
+  const effects = List.of(
+    (team, i) => team.get("strength"),
+    (team, i) => game.get("moraleEffect")(team),
+    (team, i) => game.getIn(["advantage", i])(team)
   );
 
-  const result = Map({
-    home: goals(homeStrength),
-    away: goals(awayStrength),
-    ot: false
+  const strengthsX = teams.map((t, i) => {
+    return effects.map(e => e(t, i));
   });
+
+  console.log("strengthS", strengthsX.toJS());
+
+  const strengths = teams.map((t, i) => {
+    return effects.map(e => e(t, i)).reduce((r, s) => r + s, 0);
+  });
+
+  const result = strengths
+    .map((strength, i) => {
+      return pipe(
+        strength => r.integer(0, strength),
+        val => val / base(),
+        val => (val < 0 ? 0 : val),
+        number => parseInt(number.toFixed(0), 10)
+      )(strength);
+    })
+    .set("overtime", false);
+
+  const info = List.of("home", "away").map(i => {
+    return Map({
+      name: raw.getIn([i, "name"]),
+      oStrength: raw.getIn([i, "strength"]),
+      eStrength: teams.getIn([i, "strength"]),
+      cStrength: strengths.get(i),
+      goals: result.get(i)
+    });
+  });
+
+  console.log(info.toJS());
 
   const needsOvertime = overtime(result);
 
@@ -78,7 +93,7 @@ export const simulate = game => {
   }
 
   // console.log("OVERTIME NEEDED, RESULT", result.toJS());
-  const afterOvertime = playOvertime(homeStrength, awayStrength, result);
+  const afterOvertime = playOvertime(strengths, result);
   // console.log("RESULT AFTER OVERTIME", afterOvertime.toJS());
 
   return afterOvertime;
