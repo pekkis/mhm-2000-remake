@@ -1,27 +1,34 @@
-import { Range, Map, Seq, List } from "immutable";
+import { Range, Map, List } from "immutable";
 import { gameFacts } from "./game";
 
 export const victors = phase => {
   const winsToAdvance = phase.get("winsToAdvance");
 
-  const tussihovi = matchups(phase)
-    .map(m => List.of(m.home, m.away))
+  const tussihovi = phase
+    .get("stats")
+    .map(m => List.of(m.get("home"), m.get("away")))
     .flatten(true);
 
-  return tussihovi.filter(m => m.wins === winsToAdvance).sortBy(m => m.index);
+  return tussihovi
+    .filter(m => m.get("wins") === winsToAdvance)
+    .sortBy(m => m.get("index"));
 };
 
 export const eliminated = phase => {
   const winsToAdvance = phase.get("winsToAdvance");
 
-  const tussihovi = matchups(phase)
-    .map(m => List.of(m.home, m.away))
+  const tussihovi = phase
+    .get("stats")
+    .map(m => List.of(m.get("home"), m.get("away")))
     .flatten(true);
 
-  return tussihovi.filter(m => m.losses === winsToAdvance).sortBy(m => m.index);
+  return tussihovi
+    .filter(m => m.get("losses") === winsToAdvance)
+    .sortBy(m => m.get("index"));
 };
 
 export const matchups = phase => {
+  console.log("CALCULATING MATCHUPS FOR ", phase.toJS());
   const teams = phase.get("teams");
 
   return phase.get("matchups").map(matchup => {
@@ -38,18 +45,18 @@ export const matchups = phase => {
 
       // console.log(facts.toJS(), "the facts");
 
-      return {
+      return Map({
         index: matchup.get(index),
         id: teams.get(matchup.get(index)),
         wins: facts.filter(f => f.isWin).count(),
         losses: facts.filter(f => f.isLoss).count()
-      };
+      });
     });
 
-    return {
+    return Map({
       home,
       away
-    };
+    });
   });
 };
 

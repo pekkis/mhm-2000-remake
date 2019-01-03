@@ -1,5 +1,5 @@
 import competitionData from "../data/competitions";
-import competitionTypes from "../services/competition-type";
+
 import teamData from "../data/teams";
 
 import {
@@ -9,7 +9,8 @@ import {
   select,
   takeEvery,
   take,
-  all
+  all,
+  fork
 } from "redux-saga/effects";
 
 import actionPhase from "./phase/action";
@@ -21,10 +22,12 @@ import startOfSeasonPhase from "./phase/start-of-season";
 import calendar from "../data/calendar";
 
 import { afterGameday } from "./player";
+import { stats } from "./stats";
 import { allTeams } from "../data/selectors";
 
 export function* gameLoop() {
   yield takeEvery("GAME_GAMEDAY_COMPLETE", afterGameday);
+  yield fork(stats);
 
   do {
     const turn = yield select(state => state.game.get("turn"));
@@ -49,8 +52,6 @@ export function* gameLoop() {
       yield call(eventPhase);
     }
 
-    yield call(calculateStats);
-
     if (phases.includes("seed")) {
       yield call(seedPhase);
     }
@@ -67,39 +68,6 @@ export function* gameLoop() {
 
     yield call(nextTurn);
   } while (true);
-}
-
-export function* calculateStats() {
-  /*
-  const competitions = yield select(state => state.game.get("competitions"));
-
-  const actionsToYield = competitions
-    .map(competition => {
-      return competition
-        .getIn(["phases", competition.get("phase"), "groups"])
-        .map((group, groupIndex) => {
-          console.log("group", group.toJS());
-
-          console.log(competitionTypes, "cts");
-
-          const stats = competitionTypes[group.get("type")].stats(group);
-
-          return putResolve({
-            type: "COMPETITION_UPDATE_STATS",
-            payload: {
-              competition: competition.get("id"),
-              phase: competition.get("phase"),
-              group: groupIndex,
-              stats
-            }
-          });
-        });
-    })
-    .toList()
-    .flatten(true);
-
-  yield all(actionsToYield.toJS());
-  */
 }
 
 function* competitionStart(competitionId) {
@@ -136,12 +104,14 @@ export function* seasonStart() {
       }
     });
 
-    yield put({
+    const seed = competitionObj.getIn(["seed", 0])(competitions);
+
+    yield putResolve({
       type: "COMPETITION_SEED",
       payload: {
         competition: key,
         phase: 0,
-        seed: competitionObj.getIn(["seed", 0])(competitions)
+        seed
       }
     });
   }

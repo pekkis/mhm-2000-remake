@@ -1,6 +1,5 @@
 import { pipe } from "ramda";
 import r from "../services/random";
-import table from "../services/league";
 import { victors } from "../services/playoffs";
 
 export const playersCompetitions = player => state => {
@@ -15,9 +14,10 @@ export const teamsStrength = team => state =>
   state.game.getIn(["teams", team, "strength"]);
 
 export const teamWasRelegated = team => state => {
-  const phlLoser = table(
-    state.game.getIn(["competitions", "phl", "phases", 0, "groups", 0])
-  ).last().id;
+  const phlLoser = state.game
+    .getIn(["competitions", "phl", "phases", 0, "groups", 0, "stats"])
+    .last()
+    .get("id");
 
   if (phlLoser !== team) {
     return false;
@@ -25,7 +25,9 @@ export const teamWasRelegated = team => state => {
 
   const divisionVictor = victors(
     state.game.getIn(["competitions", "division", "phases", 3, "groups", 0])
-  ).first().id;
+  )
+    .first()
+    .get("id");
 
   if (divisionVictor === team) {
     return false;
@@ -42,7 +44,9 @@ export const teamWasPromoted = team => state => {
 
   const divisionVictor = victors(
     state.game.getIn(["competitions", "division", "phases", 3, "groups", 0])
-  ).first().id;
+  )
+    .first()
+    .get("id");
 
   if (divisionVictor === team) {
     return true;
@@ -71,9 +75,7 @@ export const teamsPositionInRoundRobin = (
     return false;
   }
 
-  console.log("found group with id", group.toJS());
-
-  const index = table(group).findIndex(e => e.id === team);
+  const index = group.get("stats").findIndex(e => e.get("id") === team);
 
   if (index === -1) {
     return false;

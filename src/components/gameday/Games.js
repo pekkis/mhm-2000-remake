@@ -7,9 +7,9 @@ import competitionTypes from "../../services/competition-type";
 const Games = props => {
   const { className, teams, context, round, players } = props;
 
-  const competitionType = competitionTypes[context.get("type")];
+  const playMatch = competitionTypes.getIn([context.get("type"), "playMatch"]);
   const pairings = context.getIn(["schedule", round], List()).filter((p, i) => {
-    return competitionType.playMatch(context, round, i);
+    return playMatch(context, round, i);
   });
 
   return (

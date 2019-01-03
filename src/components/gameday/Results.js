@@ -2,12 +2,10 @@ import React from "react";
 import styled from "styled-components";
 import TeamName from "../team/Name";
 import { List } from "immutable";
-import competitionTypes from "../../services/competition-type";
 
 const Results = props => {
   const { className, teams, context, round, players } = props;
 
-  const competitionType = competitionTypes[context.get("type")];
   const pairings = context.getIn(["schedule", round], List()).filter((p, i) => {
     return p.get("result");
   });

@@ -1,40 +1,36 @@
-import { matchups, victors } from "../services/playoffs";
+import { Map } from "immutable";
+import { matchups } from "../services/playoffs";
 import table from "../services/league";
 
-const competitionTypes = {
-  "round-robin": {
+const competitionTypes = Map({
+  "round-robin": Map({
     playMatch: () => true,
     overtime: () => false,
     stats: group => {
       return table(group);
     }
-  },
-  tournament: {
+  }),
+  tournament: Map({
     playMatch: () => true,
     overtime: () => false,
     stats: group => {
       return table(group);
     }
-  },
-  playoffs: {
+  }),
+  playoffs: Map({
     stats: group => {
       return matchups(group);
     },
     playMatch: (phase, round, matchup) => {
-      const situation = matchups(phase);
-
-      console.log("matchup", matchup);
-
-      console.log(situation);
-
+      const situation = phase.get("stats");
       const match = situation.get(matchup);
 
-      if (match.home.wins === phase.get("winsToAdvance")) {
+      if (match.getIn(["home", "wins"]) === phase.get("winsToAdvance")) {
         console.log("HOME TEAM HAS ENUFF WINS");
         return false;
       }
 
-      if (match.away.wins === phase.get("winsToAdvance")) {
+      if (match.getIn(["away", "wins"]) === phase.get("winsToAdvance")) {
         console.log("AWAY TEAM HAS ENUFF WINS");
         return false;
       }
@@ -44,7 +40,7 @@ const competitionTypes = {
     overtime: result => {
       return result.get("home") === result.get("away");
     }
-  }
-};
+  })
+});
 
 export default competitionTypes;

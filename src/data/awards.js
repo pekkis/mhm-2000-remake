@@ -11,7 +11,6 @@ import {
   teamWasPromoted
 } from "./selectors";
 import { victors, eliminated } from "../services/playoffs";
-import table from "../services/league";
 import { List, Map, Repeat } from "immutable";
 import r from "../services/random";
 
@@ -649,8 +648,6 @@ const yieldAwards = function*(awards, to) {
     const player = yield select(playerWhoControlsTeam(teamId));
     const data = award.data(team);
 
-    console.log("data", data.toJS());
-
     if (player) {
       yield putResolve({
         type: "PLAYER_INCREMENT_BALANCE",
@@ -689,32 +686,23 @@ const award = function*() {
     losers.first(),
     winners.last(),
     losers.last()
-  ).map(r => r.id);
+  ).map(r => r.get("id"));
 
   yield call(yieldAwards, medalAwards, ranking);
 
-  console.log("HELLUREI? 1");
-
-  const tableEntries = table(phl.getIn(["phases", 0, "groups", 0]))
-    .map(t => t.id)
+  const tableEntries = phl
+    .getIn(["phases", 0, "groups", 0, "stats"])
+    .map(t => t.get("id"))
     .take(8);
 
-  console.log("HELLUREI? 2");
-
   yield call(yieldAwards, roundRobinAwards, tableEntries);
-  console.log("HELLUREI? 3");
   const teams = yield select(pekkalandianTeams);
-
-  console.log("HELLUREI? 4");
 
   for (const [, team] of teams.entries()) {
     for (const randomEvent of randomEvents) {
-      console.log(randomEvent.id, team.get("id"));
       yield call(randomEvent, team.get("id"));
     }
   }
-
-  console.log("HELLUREI? 5");
 };
 
 export default award;

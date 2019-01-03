@@ -69,9 +69,10 @@ export default Map({
       });
     },
     competitions => {
-      const teams = table(competitions.getIn(["phl", "phases", 0, "groups", 0]))
+      const teams = competitions
+        .getIn(["phl", "phases", 0, "groups", 0, "stats"])
         .take(8)
-        .map(e => e.id);
+        .map(e => e.get("id"));
 
       const winsToAdvance = 3;
       const matchups = List.of(
@@ -100,7 +101,7 @@ export default Map({
     competitions => {
       const teams = victors(
         competitions.getIn(["phl", "phases", 1, "groups", 0])
-      ).map(t => t.id);
+      ).map(t => t.get("id"));
 
       const matchups = List.of(List.of(0, 3), List.of(1, 2));
 
@@ -126,10 +127,10 @@ export default Map({
       const teams = victors(
         competitions.getIn(["phl", "phases", 2, "groups", 0])
       )
-        .map(t => t.id)
+        .map(t => t.get("id"))
         .concat(
           eliminated(competitions.getIn(["phl", "phases", 2, "groups", 0])).map(
-            t => t.id
+            t => t.get("id")
           )
         );
 

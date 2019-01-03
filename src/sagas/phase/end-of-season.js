@@ -1,23 +1,10 @@
-import {
-  call,
-  fork,
-  all,
-  take,
-  takeEvery,
-  cancel,
-  put,
-  select
-} from "redux-saga/effects";
+import { call, all, take, put, select } from "redux-saga/effects";
 import { seasonStart, promote, relegate } from "../game";
 import { victors } from "../../services/playoffs";
-import table from "../../services/league";
 import awards from "../../data/awards";
 
 export default function* endOfSeasonPhase() {
-  console.log("hellurei_111");
   yield call(awards);
-
-  console.log("hellurei_2222");
 
   yield take("GAME_ADVANCE_REQUEST");
 
@@ -31,10 +18,14 @@ export default function* endOfSeasonPhase() {
 
   const phl = yield select(state => state.game.getIn(["competitions", "phl"]));
 
-  const divisionVictor = victors(
-    division.getIn(["phases", 3, "groups", 0])
-  ).first().id;
-  const phlLoser = table(phl.getIn(["phases", 0, "groups", 0])).last().id;
+  const divisionVictor = victors(division.getIn(["phases", 3, "groups", 0]))
+    .first()
+    .get("id");
+
+  const phlLoser = phl
+    .getIn(["phases", 0, "groups", 0, "stats"])
+    .last()
+    .get("id");
 
   if (divisionVictor !== phlLoser) {
     yield all([promote("division", divisionVictor), relegate("phl", phlLoser)]);

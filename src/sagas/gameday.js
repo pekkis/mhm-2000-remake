@@ -30,14 +30,14 @@ export function* gameday(payload) {
 
   const phase = competition.getIn(["phases", competition.get("phase")]);
 
-  const competitionType = competitionTypes[phase.get("type")];
   const gameParams = competitionData.getIn([
     competition.get("id"),
     "parameters",
     "gameday"
   ]);
 
-  const overtime = competitionType.overtime;
+  const overtime = competitionTypes.getIn([phase.get("type"), "overtime"]);
+  const playMatch = competitionTypes.getIn([phase.get("type"), "playMatch"]);
 
   for (const [groupIndex, group] of phase.get("groups").entries()) {
     const rounds =
@@ -61,9 +61,7 @@ export function* gameday(payload) {
       );
       const pairings = group.getIn(["schedule", round]);
       for (let x = 0; x < pairings.count(); x = x + 1) {
-        const playMatch = competitionType.playMatch(group, round, x);
-
-        if (playMatch) {
+        if (playMatch(group, round, x)) {
           const pairing = pairings.get(x);
 
           const result = yield call(

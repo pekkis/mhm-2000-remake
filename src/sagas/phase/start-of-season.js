@@ -1,6 +1,9 @@
-import { take, putResolve, select } from "redux-saga/effects";
+import { take, putResolve, select, call } from "redux-saga/effects";
+import { seasonStart } from "../game";
 
 export default function* startOfSeasonPhase() {
+  yield call(seasonStart);
+
   yield putResolve({
     type: "GAME_SET_PHASE",
     payload: "select-strategy"

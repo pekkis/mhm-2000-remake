@@ -1,3 +1,5 @@
+import { Map } from "immutable";
+
 const changedPoints = (points, isWin, isDraw, isLoss) => {
   if (isWin) {
     return points + 2;
@@ -25,15 +27,15 @@ const changedStats = (stats, game, team) => {
   const isLoss =
     game.getIn(["result", myKey]) < game.getIn(["result", theirKey]);
 
-  return {
-    gamesPlayed: stats.gamesPlayed + 1,
-    wins: !isWin ? stats.wins : stats.wins + 1,
-    draws: !isDraw ? stats.draws : stats.draws + 1,
-    losses: !isLoss ? stats.losses : stats.losses + 1,
-    points: changedPoints(stats.points, isWin, isDraw, isLoss),
-    goalsFor: stats.goalsFor + game.getIn(["result", myKey]),
-    goalsAgainst: stats.goalsAgainst + game.getIn(["result", theirKey])
-  };
+  return stats.merge({
+    gamesPlayed: stats.get("gamesPlayed") + 1,
+    wins: !isWin ? stats.get("wins") : stats.get("wins") + 1,
+    draws: !isDraw ? stats.get("draws") : stats.get("draws") + 1,
+    losses: !isLoss ? stats.get("losses") : stats.get("losses") + 1,
+    points: changedPoints(stats.get("points"), isWin, isDraw, isLoss),
+    goalsFor: stats.get("goalsFor") + game.getIn(["result", myKey]),
+    goalsAgainst: stats.get("goalsAgainst") + game.getIn(["result", theirKey])
+  });
 };
 
 export const groupStats = group => {
@@ -49,12 +51,9 @@ export const groupStats = group => {
             return stats;
           }
 
-          return {
-            ...stats,
-            ...changedStats(stats, game, index)
-          };
+          return changedStats(stats, game, index);
         },
-        {
+        Map({
           index,
           id,
           gamesPlayed: 0,
@@ -64,7 +63,7 @@ export const groupStats = group => {
           goalsFor: 0,
           goalsAgainst: 0,
           points: 0
-        }
+        })
       );
   });
 
@@ -73,16 +72,15 @@ export const groupStats = group => {
 
 export const sortStats = stats => {
   return stats
-    .sortBy(t => t.id)
-    .sortBy(t => -t.wins)
-    .sortBy(t => -t.goalsFor)
-    .sortBy(t => -(t.goalsFor - t.goalsAgainst))
-    .sortBy(t => -t.points);
+    .sortBy(t => t.get("id"))
+    .sortBy(t => -t.get("wins"))
+    .sortBy(t => -t.get("goalsFor"))
+    .sortBy(t => -(t.get("goalsFor") - t.get("goalsAgainst")))
+    .sortBy(t => -t.get("points"));
 };
 
 const table = group => {
   console.log("CALCULATING TABLE FOR", group.toJS());
-
   const unsorted = groupStats(group);
   return sortStats(unsorted);
 };

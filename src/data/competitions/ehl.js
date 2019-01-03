@@ -1,7 +1,6 @@
 import { Map, List, Range } from "immutable";
 import { select, putResolve } from "redux-saga/effects";
 import rr from "../../services/round-robin";
-import playoffScheduler, { victors } from "../../services/playoffs";
 import tournamentScheduler from "../../services/tournament";
 
 import table, { sortStats } from "../../services/league";
@@ -98,7 +97,9 @@ export default Map({
 
       const qualifiedSecond = sortedSeconds.first();
 
-      const teams = qualifiedVictors.push(qualifiedSecond).map(e => e.id);
+      const teams = qualifiedVictors
+        .push(qualifiedSecond)
+        .map(e => e.get("id"));
 
       console.log("Qualified teams", teams);
 

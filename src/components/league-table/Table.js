@@ -17,11 +17,11 @@ const Table = props => {
 
   const colors = division.get("colors");
 
-  const tbl = table(division).map(entry => {
-    return {
-      ...entry,
-      playerControlled: players.map(p => p.get("team")).includes(entry.id)
-    };
+  const tbl = division.get("stats").map(entry => {
+    return entry.set(
+      "playerControlled",
+      players.map(p => p.get("team")).includes(entry.get("id"))
+    );
   });
   return (
     <div>
@@ -42,22 +42,22 @@ const Table = props => {
         <tbody>
           {tbl.map((t, i) => {
             return (
-              <TableRow key={t.id} dark={colors.get(i) === "d"}>
+              <TableRow key={t.get("id")} dark={colors.get(i) === "d"}>
                 <td>
-                  {t.playerControlled ? (
-                    <strong>{teams.getIn([t.id, "name"])}</strong>
+                  {t.get("playerControlled") ? (
+                    <strong>{teams.getIn([t.get("id"), "name"])}</strong>
                   ) : (
-                    teams.getIn([t.id, "name"])
+                    teams.getIn([t.get("id"), "name"])
                   )}
                 </td>
-                <td>{t.gamesPlayed}</td>
-                <td>{t.wins}</td>
-                <td>{t.draws}</td>
-                <td>{t.losses}</td>
-                <td>{t.goalsFor}</td>
+                <td>{t.get("gamesPlayed")}</td>
+                <td>{t.get("wins")}</td>
+                <td>{t.get("draws")}</td>
+                <td>{t.get("losses")}</td>
+                <td>{t.get("goalsFor")}</td>
                 <td>-</td>
-                <td>{t.goalsAgainst}</td>
-                <td>{t.points}</td>
+                <td>{t.get("goalsAgainst")}</td>
+                <td>{t.get("points")}</td>
               </TableRow>
             );
           })}

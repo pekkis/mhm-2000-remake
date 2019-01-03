@@ -50,7 +50,7 @@ function* gameStart() {
     }
   });
 
-  yield call(seasonStart);
+  // yield call(seasonStart);
 
   yield putResolve({
     type: "GAME_START"

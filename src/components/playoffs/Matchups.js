@@ -1,16 +1,15 @@
 import React from "react";
-import { matchups } from "../../services/playoffs";
 
 const Matchups = props => {
   const { players, teams, group } = props;
 
   console.log(group.toJS(), "group");
 
-  const matches = matchups(group).map(entry => {
-    return {
-      ...entry,
-      playerControlled: players.map(p => p.get("team")).includes(entry.id)
-    };
+  const matches = group.get("stats").map(entry => {
+    return entry.set(
+      "playerController",
+      players.map(p => p.get("team")).includes(entry.get("id"))
+    );
   });
 
   return (
@@ -19,11 +18,11 @@ const Matchups = props => {
         {matches.map((m, i) => {
           return (
             <tr key={i}>
-              <td>{teams.getIn([m.home.id, "name"])}</td>
+              <td>{teams.getIn([m.getIn(["home", "id"]), "name"])}</td>
               <td>-</td>
-              <td>{teams.getIn([m.away.id, "name"])}</td>
+              <td>{teams.getIn([m.getIn(["away", "id"]), "name"])}</td>
               <td>
-                {m.home.wins}-{m.away.wins}
+                {m.getIn(["home", "wins"])}-{m.getIn(["away", "wins"])}
               </td>
             </tr>
           );
