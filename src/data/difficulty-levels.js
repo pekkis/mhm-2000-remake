@@ -1,4 +1,4 @@
-import { List } from "immutable";
+import { List, Map } from "immutable";
 
 const difficultyLevels = List.of(
   Map({

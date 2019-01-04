@@ -35,16 +35,16 @@ const PlayerForm = props => {
                 <LabelDiv>Vaikeustaso</LabelDiv>
                 {difficultyLevels.map(dl => {
                   return (
-                    <div key={dl.value}>
+                    <div key={dl.get("value")}>
                       <label>
                         <Input
                           type="radio"
                           name="difficulty"
-                          value={dl.value}
-                          checked={values.difficulty === dl.value}
+                          value={dl.get("value")}
+                          checked={values.difficulty === dl.get("value")}
                           onChange={handleChange}
                         />{" "}
-                        {dl.name} ({dl.description})
+                        {dl.get("name")} ({dl.get("description")})
                       </label>
                     </div>
                   );
