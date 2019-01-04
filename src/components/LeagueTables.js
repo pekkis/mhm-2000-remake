@@ -7,8 +7,8 @@ const LeagueTables = props => {
   const {
     turn,
     advance,
-    player,
-    players,
+    manager,
+    managers,
     teams,
     competitions,
     resolveEvent,
@@ -35,7 +35,7 @@ const LeagueTables = props => {
                 return (
                   <div key={i}>
                     <h4>{group.get("name")}</h4>
-                    <Table division={group} players={players} teams={teams} />
+                    <Table division={group} managers={managers} teams={teams} />
                   </div>
                 );
               })}

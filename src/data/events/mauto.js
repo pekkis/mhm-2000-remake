@@ -2,11 +2,11 @@ import { Map, List } from "immutable";
 import { put, select, all } from "redux-saga/effects";
 import r from "../../services/random";
 import {
-  playerCompetesIn,
+  managerCompetesIn,
   flag,
   randomTeamFrom,
-  playersTeam,
-  playersDifficulty
+  managersTeam,
+  managersDifficulty
 } from "../selectors";
 
 const eventId = "mauto";
@@ -43,12 +43,12 @@ const texts = data => {
 };
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
+    const { manager } = data;
 
-    /*    const competesInPHL = yield select(playerCompetesIn(player, "phl"));
+    /*    const competesInPHL = yield select(managerCompetesIn(manager, "phl"));
     if (!competesInPHL) {
       return;
     }
@@ -64,7 +64,7 @@ const event = {
       payload: {
         event: Map({
           eventId,
-          player,
+          manager,
           newName: "Mauto HT",
           resolved: false,
           amount: 4000000
@@ -83,20 +83,20 @@ const event = {
   },
 
   resolve: function*(data, value) {
-    const player = data.get("player");
-    const difficulty = yield select(playersDifficulty(player));
+    const manager = data.get("manager");
+    const difficulty = yield select(managersDifficulty(manager));
 
     let team;
     if (value === "n") {
       team = yield select(randomTeamFrom(["phl", "division"], false));
-    } else if (value === "y" && difficulty >= 4) {
+    } else if (value === "y" && difficulty >= 3) {
       team = yield select(randomTeamFrom(["phl", "division"], false));
     } else {
-      team = yield select(playersTeam(player));
+      team = yield select(managersTeam(manager));
     }
 
     const resolved = data.merge({
-      changeOfMind: value === "y" && difficulty >= 4,
+      changeOfMind: value === "y" && difficulty >= 3,
       agree: value === "y" ? true : false,
       team: team.get("id"),
       teamName: team.get("name"),
@@ -143,17 +143,17 @@ const event = {
       });
     } else {
       yield put({
-        type: "PLAYER_INCREMENT_BALANCE",
+        type: "MANAGER_INCREMENT_BALANCE",
         payload: {
-          player: data.get("player"),
+          manager: data.get("manager"),
           amount: data.get("amount")
         }
       });
 
       yield put({
-        type: "PLAYER_RENAME_ARENA",
+        type: "MANAGER_RENAME_ARENA",
         payload: {
-          player: data.get("player"),
+          manager: data.get("manager"),
           name: "Mauto Center"
         }
       });

@@ -171,15 +171,9 @@ export default function gameReducer(state = defaultState, action) {
       return state.setIn(["turn", "phase"], payload);
 
     case "TEAM_INCREMENT_MORALE":
-      return state.updateIn(
-        ["teams", payload.team, "morale"],
-        m => m + payload.amount
-      );
-    case "TEAM_DECREMENT_MORALE":
-      return state.updateIn(
-        ["teams", payload.team, "morale"],
-        m => m - payload.amount
-      );
+      return state.updateIn(["teams", payload.team, "morale"], m => {
+        return Math.min(payload.max, Math.max(payload.min, m + payload.amount));
+      });
 
     case "TEAM_SET_STRATEGY":
       return state.setIn(["teams", payload.team, "strategy"], payload.strategy);
@@ -211,6 +205,12 @@ export default function gameReducer(state = defaultState, action) {
       return state.updateIn(["teams", payload.team, "effects"], effects =>
         effects.push(Map(payload.effect))
       );
+
+    case "TEAM_REMOVE_MANAGER":
+      return state.removeIn(["teams", payload.team, "manager"]);
+
+    case "TEAM_ADD_MANAGER":
+      return state.setIn(["teams", payload.team, "manager"], payload.manager);
 
     case "GAME_DECREMENT_DURATIONS":
       return state.update("teams", teams => {

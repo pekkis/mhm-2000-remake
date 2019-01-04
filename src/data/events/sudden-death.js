@@ -23,17 +23,17 @@ const texts = data => {
 };
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
+    const { manager } = data;
 
     yield put({
       type: "EVENT_ADD",
       payload: {
         event: Map({
           eventId,
-          player,
+          manager,
           amount: 15000000,
           resolved: false
         })

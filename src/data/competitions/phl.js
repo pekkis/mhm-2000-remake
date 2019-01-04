@@ -4,19 +4,19 @@ import table from "../../services/league";
 import playoffScheduler, { victors, eliminated } from "../../services/playoffs";
 
 export default Map({
-  gameBalance: (facts, player) => {
+  gameBalance: (facts, manager) => {
     if (facts.isLoss) {
-      return player.get("extra");
+      return manager.get("extra");
     }
 
     if (facts.isDraw) {
       return (
-        5000 + 3000 * player.getIn(["arena", "level"]) + player.get("extra")
+        5000 + 3000 * manager.getIn(["arena", "level"]) + manager.get("extra")
       );
     }
 
     return (
-      10000 + 3000 * player.getIn(["arena", "level"]) + player.get("extra")
+      10000 + 3000 * manager.getIn(["arena", "level"]) + manager.get("extra")
     );
   },
 

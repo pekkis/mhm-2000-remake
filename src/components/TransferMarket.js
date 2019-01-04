@@ -5,11 +5,11 @@ import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 
 const TransferMarket = props => {
-  const { player, teams, buyPlayer, sellPlayer } = props;
+  const { manager, teams, buyPlayer, sellPlayer } = props;
 
-  const balance = player.get("balance");
+  const balance = manager.get("balance");
 
-  const team = teams.get(player.get("team"));
+  const team = teams.get(manager.get("team"));
 
   return (
     <HeaderedPage>
@@ -26,7 +26,7 @@ const TransferMarket = props => {
           <div key={index}>
             <Button
               onClick={() => {
-                buyPlayer(player.get("id"), index);
+                buyPlayer(manager.get("id"), index);
               }}
               block
               disabled={balance < playerType.buy}

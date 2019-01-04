@@ -7,9 +7,9 @@ const Span = styled.span`
 `;
 
 const Name = props => {
-  const { team, players } = props;
+  const { team, managers } = props;
 
-  const humanControlled = players
+  const humanControlled = managers
     .map(p => p.get("team"))
     .includes(team.get("id"));
 
@@ -17,7 +17,7 @@ const Name = props => {
 };
 
 Name.defaultProps = {
-  players: List()
+  managers: List()
 };
 
 export default Name;

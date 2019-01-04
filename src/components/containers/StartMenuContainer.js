@@ -9,7 +9,7 @@ export default withRouter(
     state => ({
       started: state.meta.get("started"),
       starting: state.meta.get("starting"),
-      player: state.meta.get("player")
+      manager: state.meta.get("manager")
     }),
     { startGame, loadGame, advance }
   )(StartMenu)

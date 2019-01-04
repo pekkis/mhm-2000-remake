@@ -1,17 +1,18 @@
 import { Map, List } from "immutable";
-import { put, select } from "redux-saga/effects";
+import { put, select, call } from "redux-saga/effects";
 import {
-  playersTeamId,
+  managersTeamId,
   teamCompetesIn,
   randomTeamFrom,
   randomManager,
   teamsStrength,
-  playerHasService,
-  playersDifficulty,
-  playersArena
+  managerHasService,
+  managersDifficulty,
+  managersArena
 } from "../selectors";
 import { currency as c, amount as a } from "../../services/format";
 import r, { cinteger } from "../../services/random";
+import { decrementMorale } from "../../sagas/team";
 
 const eventId = "taxEvasion";
 
@@ -20,7 +21,7 @@ const texts = data => {
     `Olet saanut tietää, että __${data.get(
       "teamName"
     )}__:n manageri __${data.get(
-      "managerName"
+      "otherManagerName"
     )}__ on kiertänyt veroja. Julkistatko tiedon, vaikka samalla on riski että omat vilppisi tulevat julkisuuteen? Tieto ajaisi todennäköisesti joukkueen konkurssiin."
     `
   );
@@ -31,7 +32,9 @@ const texts = data => {
 
   if (!data.get("agree")) {
     return t.push(
-      `OK. ${data.get("managerName")} saa siis jatkaa rikollista toimintaansa.`
+      `OK. ${data.get(
+        "otherManagerName"
+      )} saa siis jatkaa rikollista toimintaansa.`
     );
   }
 
@@ -51,7 +54,7 @@ const texts = data => {
   } else {
     t = t.push(
       `Haa haa. ${data.get(
-        "managerName"
+        "otherManagerName"
       )} joutuu kohtaamaan talousrikosmiliisin ypöyksin!`
     );
   }
@@ -72,12 +75,12 @@ const texts = data => {
 };
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
+    const { manager } = data;
 
-    const manager = yield select(randomManager());
+    const otherManager = yield select(randomManager());
     const team = yield select(randomTeamFrom(["phl"], false));
 
     yield put({
@@ -85,11 +88,11 @@ const event = {
       payload: {
         event: Map({
           eventId,
-          player,
+          manager,
           amount: 50000,
           resolved: false,
-          manager: manager.get("id"),
-          managerName: manager.get("name"),
+          otherManager: otherManager.get("id"),
+          otherManagerName: otherManager.get("name"),
           team: team.get("id"),
           teamName: team.get("name")
         })
@@ -109,17 +112,20 @@ const event = {
   resolve: function*(data, value) {
     data = data.set("resolved", true).set("agree", value === "agree");
 
-    const player = data.get("player");
+    const manager = data.get("manager");
 
     data = data
       .set("fine", 1000000)
       .set("fine2", 300000)
       .set("caught", r.bool())
-      .set("hasInsurance", yield select(playerHasService(player, "insurance")));
+      .set(
+        "hasInsurance",
+        yield select(managerHasService(manager, "insurance"))
+      );
 
-    const difficulty = yield select(playersDifficulty(player));
+    const difficulty = yield select(managersDifficulty(manager));
 
-    if (difficulty < 4) {
+    if (difficulty < 3) {
       data = data.set("getPlayer", 5);
     }
 
@@ -137,8 +143,8 @@ const event = {
   },
 
   process: function*(data) {
-    const player = data.get("player");
-    const playersTeam = yield select(playersTeamId(player));
+    const manager = data.get("manager");
+    const managersTeam = yield select(managersTeamId(manager));
 
     if (!data.get("agree")) {
       return;
@@ -156,7 +162,7 @@ const event = {
       yield put({
         type: "TEAM_INCREMENT_STRENGTH",
         payload: {
-          team: playersTeam,
+          team: managersTeam,
           amount: data.get("getPlayer")
         }
       });
@@ -166,36 +172,30 @@ const event = {
       return;
     }
 
-    yield put({
-      type: "TEAM_DECREMENT_MORALE",
-      payload: {
-        team: playersTeam,
-        amount: 6
-      }
-    });
+    yield call(decrementMorale, managersTeam, 6);
 
     yield put({
-      type: "PLAYER_DECREMENT_BALANCE",
+      type: "MANAGER_DECREMENT_BALANCE",
       payload: {
-        player,
+        manager,
         amount: data.get("fine")
       }
     });
 
     if (data.get("hasInsurance")) {
       yield put({
-        type: "PLAYER_DECREMENT_BALANCE",
+        type: "MANAGER_DECREMENT_BALANCE",
         payload: {
-          player,
+          manager,
           amount: data.get("fine2")
         }
       });
 
-      const arena = yield select(playersArena(player));
+      const arena = yield select(managersArena(manager));
       yield put({
-        type: "PLAYER_INCREMENT_INSURANCE_PAY",
+        type: "MANAGER_INCREMENT_INSURANCE_PAY",
         payload: {
-          player,
+          manager,
           amount: 200 * arena.get("level")
         }
       });

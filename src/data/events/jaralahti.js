@@ -1,6 +1,6 @@
 import { Map, List, hasIn } from "immutable";
 import { put, select, all } from "redux-saga/effects";
-import { playersTeamId, teamCompetesIn, playerHasService } from "../selectors";
+import { managersTeamId, teamCompetesIn, managerHasService } from "../selectors";
 import { amount as a } from "../../services/format";
 
 const eventId = "jaralahti";
@@ -28,17 +28,17 @@ const texts = data => {
 };
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
+    const { manager } = data;
 
     yield put({
       type: "EVENT_ADD",
       payload: {
         event: Map({
           eventId,
-          player,
+          manager,
           amount: 75000,
           resolved: false
         })
@@ -59,7 +59,7 @@ const event = {
 
   resolve: function*(data, value) {
     const hasInsurance = yield select(
-      playerHasService(data.get("player"), "insurance")
+      managerHasService(data.get("manager"), "insurance")
     );
 
     data = data
@@ -81,8 +81,8 @@ const event = {
   },
 
   process: function*(data) {
-    const player = data.get("player");
-    const team = yield select(playersTeamId(player));
+    const manager = data.get("manager");
+    const team = yield select(managersTeamId(manager));
 
     const multiplier = yield select(teamCompetesIn(team, "phl")) ? 2 : 1;
     if (!data.get("support")) {
@@ -94,9 +94,9 @@ const event = {
 
       if (data.get("hasInsurance")) {
         yield put({
-          type: "PLAYER_INCREMENT_BALANCE",
+          type: "MANAGER_INCREMENT_BALANCE",
           payload: {
-            player,
+            manager,
             amount: data.get("amount")
           }
         });
@@ -111,9 +111,9 @@ const event = {
           payload: { team, amount: skillGained }
         }),
         put({
-          type: "PLAYER_DECREMENT_BALANCE",
+          type: "MANAGER_DECREMENT_BALANCE",
           payload: {
-            player: player,
+            manager: manager,
             amount: data.get("amount")
           }
         })

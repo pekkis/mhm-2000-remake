@@ -10,8 +10,8 @@ const Gameday = props => {
   const {
     turn,
     advance,
-    player,
-    players,
+    manager,
+    managers,
     teams,
     competitions,
     resolveEvent,
@@ -56,12 +56,12 @@ const Gameday = props => {
                     teams={teams}
                     context={group}
                     round={currentRound}
-                    players={players}
+                    managers={managers}
                   />
 
                   {currentPhase.get("type") === "tournament" && (
                     <div>
-                      <Table division={group} players={players} teams={teams} />
+                      <Table division={group} managers={managers} teams={teams} />
                     </div>
                   )}
 

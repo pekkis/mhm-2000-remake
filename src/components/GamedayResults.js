@@ -9,7 +9,7 @@ import HeaderedPage from "./ui/HeaderedPage";
 import Results from "./gameday/Results";
 
 const GamedayResults = props => {
-  const { turn, players, teams, competitions } = props;
+  const { turn, managers, teams, competitions } = props;
 
   const calendarEntry = calendar.get(turn.get("round"));
 
@@ -44,12 +44,12 @@ const GamedayResults = props => {
                     teams={teams}
                     context={group}
                     round={currentRound}
-                    players={players}
+                    managers={managers}
                   />
 
                   {currentPhase.get("type") === "tournament" && (
                     <div>
-                      <Table division={group} players={players} teams={teams} />
+                      <Table division={group} managers={managers} teams={teams} />
                     </div>
                   )}
 

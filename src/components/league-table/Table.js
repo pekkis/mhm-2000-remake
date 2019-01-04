@@ -11,7 +11,7 @@ const TableRow = styled.tr`
 `;
 
 const Table = props => {
-  const { players, teams, division } = props;
+  const { managers, teams, division } = props;
 
   // const cteams = competition.get("teams").map(tid => teams.get(tid));
 
@@ -19,8 +19,8 @@ const Table = props => {
 
   const tbl = division.get("stats").map(entry => {
     return entry.set(
-      "playerControlled",
-      players.map(p => p.get("team")).includes(entry.get("id"))
+      "managerControlled",
+      managers.map(p => p.get("team")).includes(entry.get("id"))
     );
   });
   return (
@@ -44,7 +44,7 @@ const Table = props => {
             return (
               <TableRow key={t.get("id")} dark={colors.get(i) === "d"}>
                 <td>
-                  {t.get("playerControlled") ? (
+                  {t.get("managerControlled") ? (
                     <strong>{teams.getIn([t.get("id"), "name"])}</strong>
                   ) : (
                     teams.getIn([t.get("id"), "name"])

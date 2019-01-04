@@ -9,7 +9,7 @@ import { List } from "immutable";
               {phase.get("type") === "round-robin" && (
                 <div>
                       <Table
-                        players={List.of(player)}
+                        managers={List.of(manager)}
                         teams={teams}
                         division={division}
                       />
@@ -19,7 +19,7 @@ import { List } from "immutable";
               */
 
 const Situation = props => {
-  const { competitions, teams, player } = props;
+  const { competitions, teams, manager } = props;
 
   const myCompetitions = competitions
     .sortBy(c => c.get("weight", 0))
@@ -29,7 +29,7 @@ const Situation = props => {
 
       console.log(c.get("name"), phase.toJS());
 
-      return phase.get("teams").includes(player.get("team"));
+      return phase.get("teams").includes(manager.get("team"));
     });
 
   return (
@@ -49,7 +49,7 @@ const Situation = props => {
                     {phase.get("type") === "round-robin" && (
                       <div>
                         <Table
-                          players={List.of(player)}
+                          managers={List.of(manager)}
                           teams={teams}
                           division={group}
                         />
@@ -58,7 +58,7 @@ const Situation = props => {
                     {phase.get("type") === "tournament" && (
                       <div>
                         <Table
-                          players={List.of(player)}
+                          managers={List.of(manager)}
                           teams={teams}
                           division={group}
                         />
@@ -67,7 +67,7 @@ const Situation = props => {
 
                     {phase.get("type") === "playoffs" && (
                       <Matchups
-                        players={List.of(player)}
+                        managers={List.of(manager)}
                         teams={teams}
                         group={group}
                       />

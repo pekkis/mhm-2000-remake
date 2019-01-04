@@ -5,10 +5,10 @@ const defaultState = Map({
   loading: false,
   saving: false,
   starting: false,
-  player: Map({
+  manager: Map({
     name: "Gaylord Lohiposki",
     arena: "MasoSports Areena",
-    difficulty: "3"
+    difficulty: "2"
   })
 });
 

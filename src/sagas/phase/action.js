@@ -8,7 +8,7 @@ import {
   put
 } from "redux-saga/effects";
 import { gameSave } from "../meta";
-import { watchTransferMarket } from "../player";
+import { watchTransferMarket } from "../manager";
 
 export default function* actionPhase() {
   yield put({

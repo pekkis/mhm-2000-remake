@@ -6,7 +6,7 @@ import { withRouter } from "react-router";
 export default withRouter(
   connect(
     state => ({
-      player: state.player.getIn(["players", state.player.get("active")]),
+      manager: state.manager.getIn(["managers", state.manager.get("active")]),
       advanceEnabled: state.ui.get("advanceEnabled")
     }),
     { advance }

@@ -1,24 +1,19 @@
-import { List, Map, fromJS, Seq } from "immutable";
-import competitionData from "../data/competitions";
-import gameService from "../services/game";
-
-import { seasonStart, gameLoop } from "./game";
+import { Seq } from "immutable";
+import { hireManager } from "./manager";
+import { gameLoop } from "./game";
+import { managersDifficulty } from "../data/selectors";
+import difficultyLevels from "../data/difficulty-levels";
 
 import {
   all,
   call,
   race,
-  getContext,
-  put,
   putResolve,
-  takeLatest,
-  takeEvery,
   select,
   take,
   fork,
   cancel
 } from "redux-saga/effects";
-import { delay } from "redux-saga";
 
 const save = state => {
   const json = JSON.stringify(
@@ -43,12 +38,26 @@ function* gameStart() {
   const action = yield take("GAME_ADVANCE_REQUEST");
 
   yield putResolve({
-    type: "PLAYER_INITIALIZE",
+    type: "MANAGER_INITIALIZE",
     payload: {
-      player: 0,
+      manager: 0,
       details: action.payload
     }
   });
+
+  const difficulty = yield select(managersDifficulty(0));
+
+  console.log(difficulty, "difficultah");
+
+  yield putResolve({
+    type: "MANAGER_SET_BALANCE",
+    payload: {
+      manager: 0,
+      amount: difficultyLevels.getIn([difficulty, "startBalance"])
+    }
+  });
+
+  yield call(hireManager, 0, 12);
 
   // yield call(seasonStart);
 
@@ -59,7 +68,7 @@ function* gameStart() {
 
 function* mainMenu() {
   do {
-    const { load, start } = yield race({
+    const { load } = yield race({
       load: take("META_GAME_LOAD_REQUEST"),
       start: take("META_GAME_START_REQUEST")
     });
@@ -75,9 +84,6 @@ function* mainMenu() {
     yield take("META_QUIT_TO_MAIN_MENU");
     yield cancel(task);
   } while (true);
-
-  // yield takeEvery("META_GAME_SAVE_REQUEST", gameSave);
-  // yield takeEvery("META_GAME_LOAD_REQUEST", gameLoad);
 }
 
 export function* gameSave(action) {

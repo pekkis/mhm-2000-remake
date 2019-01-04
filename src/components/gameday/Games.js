@@ -5,7 +5,7 @@ import { List } from "immutable";
 import competitionTypes from "../../services/competition-type";
 
 const Games = props => {
-  const { className, teams, context, round, players } = props;
+  const { className, teams, context, round, managers } = props;
 
   const playMatch = competitionTypes.getIn([context.get("type"), "playMatch"]);
   const pairings = context.getIn(["schedule", round], List()).filter((p, i) => {
@@ -21,7 +21,7 @@ const Games = props => {
               <tr key={i}>
                 <td>
                   <TeamName
-                    players={players}
+                    managers={managers}
                     team={teams.get(
                       context.getIn(["teams", pairing.get("home")])
                     )}
@@ -30,7 +30,7 @@ const Games = props => {
                 <td>-</td>
                 <td>
                   <TeamName
-                    players={players}
+                    managers={managers}
                     team={teams.get(
                       context.getIn(["teams", pairing.get("away")])
                     )}

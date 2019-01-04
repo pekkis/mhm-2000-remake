@@ -1,10 +1,10 @@
 import { connect } from "react-redux";
 import SelectStrategy from "../SelectStrategy";
-import { selectStrategy } from "../../ducks/player";
+import { selectStrategy } from "../../ducks/manager";
 
 export default connect(
   state => ({
-    player: state.player.getIn(["players", state.player.get("active")])
+    manager: state.manager.getIn(["managers", state.manager.get("active")])
   }),
   { selectStrategy }
 )(SelectStrategy);

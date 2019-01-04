@@ -3,7 +3,7 @@ import strategies from "../data/strategies";
 import Button from "./form/Button";
 
 const SelectStrategy = props => {
-  const { player, selectStrategy } = props;
+  const { manager, selectStrategy } = props;
 
   return (
     <section>
@@ -25,7 +25,7 @@ const SelectStrategy = props => {
               <Button
                 block
                 onClick={() => {
-                  selectStrategy(player.get("id"), strategy.id);
+                  selectStrategy(manager.get("id"), strategy.id);
                 }}
               >
                 Valitse strategia "{strategy.name}"

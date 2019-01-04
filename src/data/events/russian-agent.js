@@ -1,6 +1,6 @@
 import { Map, List } from "immutable";
 import { put, select } from "redux-saga/effects";
-import { playersTeamId, teamCompetesIn } from "../selectors";
+import { managersTeamId, teamCompetesIn } from "../selectors";
 import { currency as c } from "../../services/format";
 import { cinteger } from "../../services/random";
 
@@ -26,12 +26,12 @@ const texts = data => {
 };
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
+    const { manager } = data;
 
-    const team = yield select(playersTeamId(player));
+    const team = yield select(managersTeamId(manager));
     const playsInPHL = yield select(teamCompetesIn(team, "phl"));
     if (!playsInPHL) {
       return;
@@ -42,7 +42,7 @@ const event = {
       payload: {
         event: Map({
           eventId,
-          player,
+          manager,
           amount: 50000,
           resolved: false
         })
@@ -76,8 +76,8 @@ const event = {
   },
 
   process: function*(data) {
-    const player = data.get("player");
-    const team = yield select(playersTeamId(player));
+    const manager = data.get("manager");
+    const team = yield select(managersTeamId(manager));
 
     if (!data.get("agree")) {
       return;
@@ -90,9 +90,9 @@ const event = {
     });
 
     yield put({
-      type: "PLAYER_DECREMENT_BALANCE",
+      type: "MANAGER_DECREMENT_BALANCE",
       payload: {
-        player,
+        manager,
         amount: data.get("amount")
       }
     });

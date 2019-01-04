@@ -7,13 +7,13 @@ import LabelDiv from "../form/LabelDiv";
 import Field from "../form/Field";
 import difficultyLevels from "../../data/difficulty-levels";
 
-const PlayerForm = props => {
-  const { player, advance } = props;
+const ManagerForm = props => {
+  const { manager, advance } = props;
 
   return (
     <div>
       <Formik
-        initialValues={player.toJS()}
+        initialValues={manager.toJS()}
         onSubmit={values => {
           advance(values);
         }}
@@ -33,22 +33,24 @@ const PlayerForm = props => {
 
               <Field>
                 <LabelDiv>Vaikeustaso</LabelDiv>
-                {difficultyLevels.map(dl => {
-                  return (
-                    <div key={dl.get("value")}>
-                      <label>
-                        <Input
-                          type="radio"
-                          name="difficulty"
-                          value={dl.get("value")}
-                          checked={values.difficulty === dl.get("value")}
-                          onChange={handleChange}
-                        />{" "}
-                        {dl.get("name")} ({dl.get("description")})
-                      </label>
-                    </div>
-                  );
-                })}
+                {difficultyLevels
+                  .map(dl => {
+                    return (
+                      <div key={dl.get("value")}>
+                        <label>
+                          <Input
+                            type="radio"
+                            name="difficulty"
+                            value={dl.get("value")}
+                            checked={values.difficulty === dl.get("value")}
+                            onChange={handleChange}
+                          />{" "}
+                          {dl.get("name")} ({dl.get("description")})
+                        </label>
+                      </div>
+                    );
+                  })
+                  .toList()}
               </Field>
 
               <Field>
@@ -62,4 +64,4 @@ const PlayerForm = props => {
   );
 };
 
-export default PlayerForm;
+export default ManagerForm;

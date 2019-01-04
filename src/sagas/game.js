@@ -21,7 +21,7 @@ import endOfSeasonPhase from "./phase/end-of-season";
 import startOfSeasonPhase from "./phase/start-of-season";
 import calendar from "../data/calendar";
 
-import { afterGameday } from "./player";
+import { afterGameday } from "./manager";
 import { stats } from "./stats";
 import { allTeams } from "../data/selectors";
 

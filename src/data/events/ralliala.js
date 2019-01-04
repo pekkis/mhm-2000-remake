@@ -1,17 +1,17 @@
 import { Map, List } from "immutable";
 import { select, put } from "redux-saga/effects";
-import { playersTeam } from "../selectors";
+import { managersTeam } from "../selectors";
 import { amount as a } from "../../services/format";
 
 const eventId = "cleandrug";
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
+    const { manager } = data;
 
-    const team = yield select(playersTeam(player));
+    const team = yield select(managersTeam(manager));
 
     yield put({
       type: "EVENT_ADD",
@@ -20,7 +20,7 @@ const event = {
           team: team.get("id"),
           teamName: team.get("name"),
           eventId,
-          player,
+          manager,
           resolved: true,
           amount: 70000
         })
@@ -42,9 +42,9 @@ const event = {
 
   process: function*(data) {
     yield put({
-      type: "PLAYER_INCREMENT_BALANCE",
+      type: "MANAGER_INCREMENT_BALANCE",
       payload: {
-        player: data.get("player"),
+        manager: data.get("manager"),
         amount: data.get("amount")
       }
     });

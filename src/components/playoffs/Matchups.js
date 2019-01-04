@@ -1,14 +1,14 @@
 import React from "react";
 
 const Matchups = props => {
-  const { players, teams, group } = props;
+  const { managers, teams, group } = props;
 
   console.log(group.toJS(), "group");
 
   const matches = group.get("stats").map(entry => {
     return entry.set(
-      "playerController",
-      players.map(p => p.get("team")).includes(entry.get("id"))
+      "managerController",
+      managers.map(p => p.get("team")).includes(entry.get("id"))
     );
   });
 

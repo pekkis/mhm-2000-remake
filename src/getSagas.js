@@ -1,6 +1,6 @@
 import gameSagas from "./sagas/game";
 import eventSagas from "./sagas/event";
-import playerSagas from "./sagas/player";
+import managerSagas from "./sagas/manager";
 import metaSagas from "./sagas/meta";
 
 // import { dataMonitor } from "./sagas/data";
@@ -13,7 +13,7 @@ export default function getSagas() {
       metaSagas()
       // gameSagas(),
       // eventSagas(),
-      // playerSagas()
+      // managerSagas()
       // userSagas(),
       // uiSagas(),
       // chatSagas(),

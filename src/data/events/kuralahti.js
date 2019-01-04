@@ -1,9 +1,9 @@
 import { Map, List } from "immutable";
 import { put, select, all } from "redux-saga/effects";
 import {
-  playersTeamId,
+  managersTeamId,
   teamCompetesIn,
-  playerHasService,
+  managerHasService,
   teamHasActiveEffects
 } from "../selectors";
 import { amount as a, currency as c } from "../../services/format";
@@ -36,24 +36,24 @@ const texts = data => {
 };
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
-    const team = yield select(playersTeamId(player));
+    const { manager } = data;
+    const team = yield select(managersTeamId(manager));
     const hasEffects = yield select(teamHasActiveEffects(team));
     if (hasEffects) {
       return;
     }
 
-    const hasInsurance = yield select(playerHasService(player, "insurance"));
+    const hasInsurance = yield select(managerHasService(manager, "insurance"));
 
     yield put({
       type: "EVENT_ADD",
       payload: {
         event: Map({
           eventId,
-          player,
+          manager,
           duration: cinteger(1, 7),
           amount: 5000,
           hasInsurance,
@@ -70,8 +70,8 @@ const event = {
   },
 
   process: function*(data) {
-    const player = data.get("player");
-    const team = yield select(playersTeamId(player));
+    const manager = data.get("manager");
+    const team = yield select(managersTeamId(manager));
     const multiplier = yield select(teamCompetesIn(team, "phl")) ? 2 : 1;
 
     const amount = multiplier * -5;
@@ -90,16 +90,16 @@ const event = {
 
     if (data.get("hasInsurance")) {
       yield put({
-        type: "PLAYER_INCREMENT_BALANCE",
+        type: "MANAGER_INCREMENT_BALANCE",
         payload: {
-          player,
+          manager,
           amount: data.get("amount")
         }
       });
       yield put({
-        type: "PLAYER_INCREMENT_INSURANCE_EXTRA",
+        type: "MANAGER_INCREMENT_INSURANCE_EXTRA",
         payload: {
-          player,
+          manager,
           amount: 60
         }
       });

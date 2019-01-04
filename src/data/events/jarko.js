@@ -1,14 +1,15 @@
 import { Map, List } from "immutable";
-import { put, select } from "redux-saga/effects";
+import { put, select, call } from "redux-saga/effects";
 import {
-  playersTeamId,
+  managersTeamId,
   teamCompetesIn,
-  playerHasService,
+  managerHasService,
   flag,
-  playerHasEnoughMoney,
+  managerHasEnoughMoney,
   randomTeamFrom
 } from "../selectors";
 import { amount as a } from "../../services/format";
+import { incrementMorale } from "../../sagas/team";
 
 const eventId = "jarko";
 
@@ -30,16 +31,16 @@ RETURN
 */
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
+    const { manager } = data;
     const jarkoFlag = yield select(flag("jarko"));
     if (jarkoFlag) {
       return;
     }
 
-    const team = yield select(playersTeamId(player));
+    const team = yield select(managersTeamId(manager));
     const otherTeam = yield select(randomTeamFrom("phl", false));
     const playsInPHL = yield select(teamCompetesIn(team, "phl"));
     if (!playsInPHL) {
@@ -47,14 +48,14 @@ const event = {
     }
     const strength = 15;
     const amount = 200000;
-    const enoughMoney = select(playerHasEnoughMoney(player, amount));
+    const enoughMoney = select(managerHasEnoughMoney(manager, amount));
 
     yield put({
       type: "EVENT_ADD",
       payload: {
         event: Map({
           eventId,
-          player,
+          manager,
           team,
           otherTeam: otherTeam.get("id"),
           otherTeamName: otherTeam.get("name"),
@@ -93,7 +94,7 @@ const event = {
   },
 
   process: function*(data) {
-    const player = data.get("player");
+    const manager = data.get("manager");
     const team = data.get("team");
     const otherTeam = data.get("team");
     const amount = data.get("amount");
@@ -108,17 +109,13 @@ const event = {
           amount: strength
         }
       });
+
+      yield call(incrementMorale, team, amount);
+
       yield put({
-        type: "TEAM_INCREMENT_MORALE",
+        type: "MANAGER_DECREMENT_BALANCE",
         payload: {
-          team,
-          amount: 2
-        }
-      });
-      yield put({
-        type: "PLAYER_DECREMENT_BALANCE",
-        payload: {
-          player,
+          manager,
           amount
         }
       });

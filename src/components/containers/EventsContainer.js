@@ -5,8 +5,8 @@ import { resolveEvent } from "../../ducks/event";
 export default connect(
   state => ({
     turn: state.game.get("turn"),
-    player: state.player.getIn(["players", state.player.get("active")]),
-    players: state.player.get("players"),
+    manager: state.manager.getIn(["managers", state.manager.get("active")]),
+    managers: state.manager.get("managers"),
     teams: state.game.get("teams"),
     events: state.event.get("events"),
     news: state.news.get("news"),

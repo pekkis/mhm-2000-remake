@@ -1,7 +1,7 @@
 import React from "react";
 import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
-import PlayerForm from "./start-menu/PlayerForm";
+import ManagerForm from "./start-menu/ManagerForm";
 import styled from "styled-components";
 
 import title from "../assets/title.png";
@@ -19,7 +19,7 @@ const Centerer = styled.div`
 `;
 
 const StartMenu = props => {
-  const { className, startGame, player, loadGame, starting, advance } = props;
+  const { className, startGame, manager, loadGame, starting, advance } = props;
 
   return (
     <div className={className}>
@@ -88,7 +88,7 @@ const StartMenu = props => {
             </div>
           )}
 
-          {starting && <PlayerForm player={player} advance={advance} />}
+          {starting && <ManagerForm manager={manager} advance={advance} />}
         </Contents>
       </Menu>
     </div>

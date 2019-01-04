@@ -181,7 +181,7 @@ export default function* eventPhase() {
     type: "UI_DISABLE_ADVANCE"
   });
 
-  const player = 0;
+  const manager = 0;
 
   // const key = eventsMap.last();
 
@@ -189,7 +189,7 @@ export default function* eventPhase() {
 
   if (eventId) {
     yield events.get(eventId).create({
-      player
+      manager
     });
   }
 

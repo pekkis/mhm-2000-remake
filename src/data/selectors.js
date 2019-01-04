@@ -2,11 +2,20 @@ import { pipe } from "ramda";
 import r from "../services/random";
 import { victors } from "../services/playoffs";
 
-export const playersCompetitions = player => state => {
+export const teamsManagerId = team => state =>
+  state.game.getIn(["teams", team, "manager"]);
+
+export const teamsManager = team => state =>
+  state.manager.getIn([
+    "managers",
+    state.game.getIn(["teams", team, "manager"])
+  ]);
+
+export const managersCompetitions = manager => state => {
   return state.game.get("competitions").filter(c => {
     return c
       .get("teams")
-      .includes(state.player.getIn(["players", player, "team"]));
+      .includes(state.manager.getIn(["managers", manager, "team"]));
   });
 };
 
@@ -106,20 +115,20 @@ export const allTeams = state => state.game.get("teams");
 
 export const pekkalandianTeams = state => state.game.get("teams").take(24);
 
-export const playerHasService = (player, service) => state => {
-  return state.player.getIn(["players", player, "services", service]);
+export const managerHasService = (manager, service) => state => {
+  return state.manager.getIn(["managers", manager, "services", service]);
 };
 
-export const playerWhoControlsTeam = id => state => {
-  return state.player.get("players").find(p => p.get("team") === id);
+export const managerWhoControlsTeam = id => state => {
+  return state.manager.get("managers").find(p => p.get("team") === id);
 };
 
 export const competition = id => state =>
   state.game.getIn(["competitions", id]);
 
-export const playerCompetesIn = (player, competition) => state => {
+export const managerCompetesIn = (manager, competition) => state => {
   return pipe(
-    playersCompetitions(player),
+    managersCompetitions(manager),
     competitions => competitions.map(c => c.get("id")).includes(competition)
   )(state);
 };
@@ -128,21 +137,24 @@ export const flag = flag => state => {
   return state.game.getIn(["flags", flag]);
 };
 
-export const playersTeam = player => state =>
-  state.game.getIn(["teams", state.player.getIn(["players", player, "team"])]);
+export const managersTeam = manager => state =>
+  state.game.getIn([
+    "teams",
+    state.manager.getIn(["managers", manager, "team"])
+  ]);
 
-export const playersTeamId = player => state => {
-  return playersTeam(player)(state).get("id");
+export const managersTeamId = manager => state => {
+  return managersTeam(manager)(state).get("id");
 };
 
-export const playersDifficulty = player => state =>
-  state.player.getIn(["players", player, "difficulty"]);
+export const managersDifficulty = manager => state =>
+  state.manager.getIn(["managers", manager, "difficulty"]);
 
 export const randomTeamFrom = (
   competitions,
   canBeHumanControlled = false
 ) => state => {
-  const playersTeams = state.player.get("players").map(p => p.get("team"));
+  const managersTeams = state.manager.get("managers").map(p => p.get("team"));
 
   const teams = state.game
     .get("competitions")
@@ -151,7 +163,7 @@ export const randomTeamFrom = (
     .map(c => c.get("teams"))
     .flatten(true)
     .filter(t => {
-      return canBeHumanControlled || !playersTeams.includes(t);
+      return canBeHumanControlled || !managersTeams.includes(t);
     });
 
   const randomized = r.pick(teams.toJS());
@@ -165,11 +177,14 @@ export const randomManager = (exclude = []) => state => {
   return random;
 };
 
-export const playersArena = player => state => {
-  return state.player.getIn(["players", player, "arena"]);
+export const managersArena = manager => state => {
+  return state.manager.getIn(["managers", manager, "arena"]);
 };
 
-export const playerHasEnoughMoney = (player, neededAmount) => state => {
-  const amount = state.player.getIn(["players", player, "balance"]);
+export const managerHasEnoughMoney = (manager, neededAmount) => state => {
+  const amount = state.manager.getIn(["managers", manager, "balance"]);
   return neededAmount <= amount;
 };
+
+export const managerWithId = id => state =>
+  state.manager.getIn(["managers", id]);

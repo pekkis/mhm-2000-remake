@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
 import Situation from "./context-sensitive/Situation";
-import PlayerInfo from "./player/PlayerInfo";
+import ManagerInfo from "./manager/ManagerInfo";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 
@@ -15,8 +15,8 @@ const MainMenu = props => {
   const {
     turn,
     advance,
-    player,
-    players,
+    manager,
+    managers,
     teams,
     competitions,
     resolveEvent,
@@ -30,7 +30,7 @@ const MainMenu = props => {
     <HeaderedPage>
       <Header />
 
-      <PlayerInfo player={player} teams={teams} />
+      <ManagerInfo manager={manager} teams={teams} />
 
       <ButtonRow>
         <Button
@@ -66,14 +66,14 @@ const MainMenu = props => {
 
       <hr />
 
-      <Situation player={player} competitions={competitions} teams={teams} />
+      <Situation manager={manager} competitions={competitions} teams={teams} />
       <hr />
 
-      <News player={player} news={news} />
+      <News manager={manager} news={news} />
 
       <hr />
 
-      <Events player={player} events={events} resolveEvent={resolveEvent} />
+      <Events manager={manager} events={events} resolveEvent={resolveEvent} />
     </HeaderedPage>
   );
 };

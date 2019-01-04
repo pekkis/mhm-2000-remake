@@ -9,11 +9,11 @@ export default function* startOfSeasonPhase() {
     payload: "select-strategy"
   });
 
-  const action = yield take("PLAYER_SELECT_STRATEGY");
+  const action = yield take("MANAGER_SELECT_STRATEGY");
   const { payload } = action;
 
   const team = yield select(state =>
-    state.player.getIn(["players", payload.player, "team"])
+    state.manager.getIn(["managers", payload.manager, "team"])
   );
 
   yield putResolve({

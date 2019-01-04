@@ -1,7 +1,7 @@
 import { select, putResolve, put, call, all, fork } from "redux-saga/effects";
 import {
   competition,
-  playerWhoControlsTeam,
+  managerWhoControlsTeam,
   allTeams,
   pekkalandianTeams,
   teamCompetesIn,
@@ -645,14 +645,14 @@ const yieldAwards = function*(awards, to) {
     const award = awards.get(i);
     const team = teams.get(teamId);
 
-    const player = yield select(playerWhoControlsTeam(teamId));
+    const manager = yield select(managerWhoControlsTeam(teamId));
     const data = award.data(team);
 
-    if (player) {
+    if (manager) {
       yield putResolve({
-        type: "PLAYER_INCREMENT_BALANCE",
+        type: "MANAGER_INCREMENT_BALANCE",
         payload: {
-          player: player.get("id"),
+          manager: manager.get("id"),
           amount: data.get("amount")
         }
       });

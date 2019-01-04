@@ -1,6 +1,6 @@
 import { Map, List } from "immutable";
 import { select, put } from "redux-saga/effects";
-import { playerCompetesIn, playersDifficulty } from "../selectors";
+import { managerCompetesIn, managersDifficulty } from "../selectors";
 import { amount as a } from "../../services/format";
 
 /*
@@ -18,11 +18,11 @@ const getAmount = (competesInPHL, difficulty) => {
 
   console.log("difficulty");
 
-  if ([2, 3].includes(difficulty)) {
+  if ([0, 1].includes(difficulty)) {
     return amount;
   }
 
-  if ([4, 5].includes(difficulty)) {
+  if ([2, 3].includes(difficulty)) {
     return amount + 40000;
   }
 
@@ -40,13 +40,13 @@ const texts = data => {
 const eventId = "moreTaxes";
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
+    const { manager } = data;
 
-    const competesInPHL = yield select(playerCompetesIn(player, "phl"));
-    const difficulty = yield select(playersDifficulty(player));
+    const competesInPHL = yield select(managerCompetesIn(manager, "phl"));
+    const difficulty = yield select(managersDifficulty(manager));
 
     const amount = getAmount(competesInPHL, difficulty);
 
@@ -55,7 +55,7 @@ const event = {
       payload: {
         event: Map({
           eventId,
-          player,
+          manager,
           resolved: true,
           amount
         })
@@ -69,9 +69,9 @@ const event = {
 
   process: function*(data) {
     yield put({
-      type: "PLAYER_DECREMENT_BALANCE",
+      type: "MANAGER_DECREMENT_BALANCE",
       payload: {
-        player: data.get("player"),
+        manager: data.get("manager"),
         amount: data.get("amount")
       }
     });

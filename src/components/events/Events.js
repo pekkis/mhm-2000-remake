@@ -3,19 +3,19 @@ import Markdown from "react-markdown";
 import eventList from "../../data/events";
 
 const Events = props => {
-  const { events, player, resolveEvent } = props;
+  const { events, manager, resolveEvent } = props;
 
-  const playersEvents = events.filter(
-    e => e.get("player") === player.get("id")
+  const managersEvents = events.filter(
+    e => e.get("manager") === manager.get("id")
   );
 
   return (
     <div>
       <h2>Eventit</h2>
 
-      <p>{playersEvents.count()} tapahtumaa...</p>
+      <p>{managersEvents.count()} tapahtumaa...</p>
 
-      {playersEvents
+      {managersEvents
         .map(e => {
           const event = eventList.get(e.get("eventId"));
 

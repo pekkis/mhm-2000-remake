@@ -1,22 +1,22 @@
 import { Map, List } from "immutable";
 import { select, put } from "redux-saga/effects";
-import { playersTeam } from "../selectors";
+import { managersTeam } from "../selectors";
 import { amount as a } from "../../services/format";
 
 const eventId = "cleandrug";
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
+    const { manager } = data;
 
     yield put({
       type: "EVENT_ADD",
       payload: {
         event: Map({
           eventId,
-          player,
+          manager,
           resolved: true
         })
       }

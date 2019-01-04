@@ -2,18 +2,18 @@ import React from "react";
 import { amount } from "../../services/format";
 import { getEffective } from "../../services/effects";
 
-const PlayerInfo = props => {
-  const { player, teams } = props;
+const ManagerInfo = props => {
+  const { manager, teams } = props;
 
-  const team = getEffective(teams.get(player.get("team")));
+  const team = getEffective(teams.get(manager.get("team")));
 
   return (
     <div>
-      <h2>{player.get("name")}</h2>
+      <h2>{manager.get("name")}</h2>
 
       <div>
         <strong>Rahaa: </strong>
-        {amount(player.get("balance"))}
+        {amount(manager.get("balance"))}
       </div>
       <div>
         <strong>Moraali: </strong>
@@ -28,4 +28,4 @@ const PlayerInfo = props => {
   );
 };
 
-export default PlayerInfo;
+export default ManagerInfo;

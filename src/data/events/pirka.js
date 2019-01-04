@@ -4,17 +4,17 @@ import { put, select } from "redux-saga/effects";
 const eventId = "pirka";
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
+    const { manager } = data;
 
     yield put({
       type: "EVENT_ADD",
       payload: {
         event: Map({
           eventId,
-          player,
+          manager,
           resolved: true,
           amount: 80000
         })
@@ -34,9 +34,9 @@ const event = {
 
   process: function*(data) {
     yield put({
-      type: "PLAYER_INCREMENT_BALANCE",
+      type: "MANAGER_INCREMENT_BALANCE",
       payload: {
-        player: data.get("player"),
+        manager: data.get("manager"),
         amount: data.get("amount")
       }
     });

@@ -1,29 +1,34 @@
 import { Map, List } from "immutable";
-import { put, select } from "redux-saga/effects";
-import { playersTeamId, teamCompetesIn, playerHasService } from "../selectors";
+import { put, select, call } from "redux-saga/effects";
+import {
+  managersTeamId,
+  teamCompetesIn,
+  managerHasService
+} from "../selectors";
 import { amount as a } from "../../services/format";
+import { incrementMorale } from "../../sagas/team";
 
 const eventId = "swedenTransfer";
 
 const event = {
-  type: "player",
+  type: "manager",
 
   create: function*(data) {
-    const { player } = data;
-    const team = yield select(playersTeamId(player));
+    const { manager } = data;
+    const team = yield select(managersTeamId(manager));
 
     const playsInPHL = yield select(teamCompetesIn(team, "phl"));
     const moraleBoost = playsInPHL ? -2 : 2;
     const strengthLoss = playsInPHL ? 12 : 7;
 
-    const hasInsurance = yield select(playerHasService(player, "insurance"));
+    const hasInsurance = yield select(managerHasService(manager, "insurance"));
 
     yield put({
       type: "EVENT_ADD",
       payload: {
         event: Map({
           eventId,
-          player,
+          manager,
           team,
           amount: 30000,
           hasInsurance,
@@ -42,7 +47,7 @@ const event = {
   },
 
   process: function*(data) {
-    const player = data.get("player");
+    const manager = data.get("manager");
     const team = data.get("team");
     const amount = data.get("amount");
     const strengthLoss = data.get("strengthLoss");
@@ -56,34 +61,29 @@ const event = {
         amount: strengthLoss
       }
     });
-    yield put({
-      type: "TEAM_INCREMENT_MORALE",
-      payload: {
-        team,
-        amount: moraleBoost
-      }
-    });
+
+    yield call(incrementMorale, team, moraleBoost);
 
     yield put({
-      type: "PLAYER_INCREMENT_BALANCE",
+      type: "MANAGER_INCREMENT_BALANCE",
       payload: {
-        player,
+        manager,
         amount
       }
     });
 
     if (hasInsurance) {
       yield put({
-        type: "PLAYER_INCREMENT_BALANCE",
+        type: "MANAGER_INCREMENT_BALANCE",
         payload: {
-          player,
+          manager,
           amount: amount / 2
         }
       });
       yield put({
-        type: "PLAYER_INCREMENT_INSURANCE_EXTRA",
+        type: "MANAGER_INCREMENT_INSURANCE_EXTRA",
         payload: {
-          player,
+          manager,
           amount: 100
         }
       });
