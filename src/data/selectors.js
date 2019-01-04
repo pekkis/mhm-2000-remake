@@ -11,6 +11,9 @@ export const teamsManager = team => state =>
     state.game.getIn(["teams", team, "manager"])
   ]);
 
+export const managerById = manager => state =>
+  state.manager.getIn(["managers", manager]);
+
 export const managersCompetitions = manager => state => {
   return state.game.get("competitions").filter(c => {
     return c

@@ -12,6 +12,7 @@ const Container = styled.header`
   left: 0;
   display: flex;
   flex-basis: 100%;
+  z-index: 1000;
 
   .back {
     width: 100%;

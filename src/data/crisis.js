@@ -10,7 +10,8 @@ const crisis = (team, competitions) => {
     : CRISIS_COST;
 
   return Map({
-    amount
+    amount,
+    moraleGain: 4
   });
 };
 

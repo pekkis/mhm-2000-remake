@@ -56,6 +56,15 @@ export const sellPlayer = (manager, playerType) => {
   };
 };
 
+export const crisisMeeting = manager => {
+  return {
+    type: "MANAGER_CRISIS_MEETING",
+    payload: {
+      manager
+    }
+  };
+};
+
 export default function managerReducer(state = defaultState, action) {
   const { type, payload } = action;
 

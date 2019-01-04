@@ -1,11 +1,11 @@
 import React from "react";
-import { CRISIS_COST, CRISIS_MORALE_MAX } from "../data/constants";
+import { CRISIS_MORALE_MAX } from "../data/constants";
 import Button from "./form/Button";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 import ManagerInfo from "./manager/ManagerInfo";
 
-import crisis from "../services/crisis";
+import crisis from "../data/crisis";
 import { currency as c } from "../services/format";
 
 const TransferMarket = props => {
@@ -35,6 +35,9 @@ const TransferMarket = props => {
           balance < crisisInfo.get("amount") ||
           team.get("morale") > CRISIS_MORALE_MAX
         }
+        onClick={() => {
+          crisisMeeting(manager.get("id"));
+        }}
       >
         Pidä kriisipalaveri
       </Button>

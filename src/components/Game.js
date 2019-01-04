@@ -11,6 +11,7 @@ import Events from "./containers/EventsContainer";
 import Gameday from "./containers/GamedayContainer";
 import GamedayResults from "./containers/GamedayResultsContainer";
 import CrisisActions from "./containers/CrisisActionsContainer";
+import Notifications from "./notifications/containers/NotificationsContainer";
 
 const Phase = props => {
   const { turn } = props;
@@ -51,6 +52,7 @@ const Game = props => {
   return (
     <div className={className}>
       <Phase {...props} />
+      <Notifications />
     </div>
   );
 };

@@ -1,8 +1,6 @@
 import { connect } from "react-redux";
 import CrisisActions from "../CrisisActions";
-import { advance } from "../../ducks/game";
-import { resolveEvent } from "../../ducks/event";
-import { saveGame, quitToMainMenu } from "../../ducks/meta";
+import { crisisMeeting } from "../../ducks/manager";
 export default connect(
   state => ({
     turn: state.game.get("turn"),
@@ -13,5 +11,5 @@ export default connect(
     events: state.event.get("events"),
     news: state.news.get("news")
   }),
-  { advance, resolveEvent, saveGame, quitToMainMenu }
+  { crisisMeeting }
 )(CrisisActions);
