@@ -32,7 +32,7 @@ const Container = styled.header`
 `;
 
 const Header = props => {
-  const { back, history, advance, advanceEnabled } = props;
+  const { back, history, advance, advanceEnabled, children } = props;
 
   console.log(history);
 
@@ -44,9 +44,7 @@ const Header = props => {
         </div>
       )}
 
-      <div className="title">
-        <div>MHM 97</div>
-      </div>
+      <div className="title">{children}</div>
       <div className="advance">
         <Button disabled={!advanceEnabled} onClick={() => advance()}>
           Eteenpäin

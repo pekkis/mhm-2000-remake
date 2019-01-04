@@ -124,7 +124,8 @@ export default function gameReducer(state = defaultState, action) {
             return t
               .set("effects", List())
               .set("morale", 0)
-              .set("strategy", 2);
+              .set("strategy", 2)
+              .set("readiness", 0);
           })
         )
         .setIn(["flags", "jarko"], false);
@@ -177,6 +178,18 @@ export default function gameReducer(state = defaultState, action) {
 
     case "TEAM_SET_STRATEGY":
       return state.setIn(["teams", payload.team, "strategy"], payload.strategy);
+
+    case "TEAM_SET_READINESS":
+      return state.setIn(
+        ["teams", payload.team, "readiness"],
+        payload.readiness
+      );
+
+    case "TEAM_INCREMENT_READINESS":
+      return state.updateIn(
+        ["teams", payload.team, "readiness"],
+        r => r + payload.amount
+      );
 
     case "TEAM_INCREMENT_STRENGTH":
       return state.updateIn(

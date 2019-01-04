@@ -10,13 +10,12 @@ import Situation from "./context-sensitive/Situation";
 import ManagerInfo from "./manager/ManagerInfo";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
+import { CRISIS_MORALE_MAX } from "../data/constants";
 
 const MainMenu = props => {
   const {
     turn,
-    advance,
     manager,
-    managers,
     teams,
     competitions,
     resolveEvent,
@@ -26,9 +25,13 @@ const MainMenu = props => {
     news
   } = props;
 
+  const team = teams.get(manager.get("team"));
+
   return (
     <HeaderedPage>
-      <Header />
+      <Header>
+        <h2>Päävalikko</h2>
+      </Header>
 
       <ManagerInfo manager={manager} teams={teams} />
 
@@ -52,6 +55,12 @@ const MainMenu = props => {
 
       <nav>
         <ul>
+          {team.get("morale") <= CRISIS_MORALE_MAX && (
+            <li>
+              <Link to="/kriisipalaveri">Kriisipalaveri</Link>
+            </li>
+          )}
+
           <li>
             <Link to="/pelaajamarkkinat">Pelaajamarkkinat</Link>
           </li>

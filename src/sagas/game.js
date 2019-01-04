@@ -8,8 +8,6 @@ import {
   putResolve,
   select,
   takeEvery,
-  take,
-  all,
   fork
 } from "redux-saga/effects";
 
@@ -19,6 +17,7 @@ import gamedayPhase from "./phase/gameday";
 import seedPhase from "./phase/seed";
 import endOfSeasonPhase from "./phase/end-of-season";
 import startOfSeasonPhase from "./phase/start-of-season";
+import calculationsPhase from "./phase/calculations";
 import calendar from "../data/calendar";
 
 import { afterGameday } from "./manager";
@@ -41,11 +40,15 @@ export function* gameLoop() {
     // don't do any calculations for "hidden" turns
     if (phases.includes("action")) {
       yield call(actionPhase);
-      yield putResolve({ type: "GAME_DECREMENT_DURATIONS" });
     }
 
     if (phases.includes("gameday")) {
       yield call(gamedayPhase);
+    }
+
+    // TODO: maybe create calculatores phase
+    if (phases.includes("calculations")) {
+      yield call(calculationsPhase);
     }
 
     if (phases.includes("event")) {

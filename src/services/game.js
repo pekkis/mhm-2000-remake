@@ -50,14 +50,15 @@ export const simulate = game => {
   const effects = List.of(
     (team, i) => team.get("strength"),
     (team, i) => game.get("moraleEffect")(team),
-    (team, i) => game.getIn(["advantage", i])(team)
+    (team, i) => game.getIn(["advantage", i])(team),
+    (team, i) => team.get("readiness")
   );
 
   const strengthsX = teams.map((t, i) => {
     return effects.map(e => e(t, i));
   });
 
-  console.log("strengthS", strengthsX.toJS());
+  console.log("strengthS", strengthsX.toList().toJS());
 
   const strengths = teams.map((t, i) => {
     return effects.map(e => e(t, i)).reduce((r, s) => r + s, 0);

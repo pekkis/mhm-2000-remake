@@ -1,5 +1,5 @@
 import { put, call, select } from "redux-saga/effects";
-import { teamsManagerId, teamsManager } from "../data/selectors";
+import { teamsManager } from "../data/selectors";
 import difficultyLevels from "../data/difficulty-levels";
 
 const getMoraleMinMax = manager => {
@@ -16,7 +16,7 @@ export function* incrementMorale(teamId, amount) {
 
   const { min, max } = getMoraleMinMax(manager);
 
-  yield put({
+  return yield put({
     type: "TEAM_INCREMENT_MORALE",
     payload: {
       team: teamId,
@@ -27,6 +27,20 @@ export function* incrementMorale(teamId, amount) {
   });
 }
 
+export function* incrementReadiness(teamId, amount) {
+  return yield put({
+    type: "TEAM_INCREMENT_READINESS",
+    payload: {
+      team: teamId,
+      amount
+    }
+  });
+}
+
+export function* decrementReadiness(team, amount) {
+  return yield call(incrementMorale, -decrementMorale);
+}
+
 export function* decrementMorale(team, amount) {
-  yield call(incrementMorale, -decrementMorale);
+  return yield call(incrementMorale, -decrementMorale);
 }

@@ -31,22 +31,7 @@ export default Map({
   },
 
   gameBalance: (facts, manager) => {
-    // TODO
-    return 0;
-
-    if (facts.isLoss) {
-      return manager.get("extra");
-    }
-
-    if (facts.isDraw) {
-      return (
-        3000 + 2000 * manager.getIn(["arena", "level"]) + manager.get("extra")
-      );
-    }
-
-    return (
-      10000 + 3000 * manager.getIn(["arena", "level"]) + manager.get("extra")
-    );
+    return 100000 + 20000 * manager.getIn(["arena", "level"]);
   },
 
   parameters: Map({

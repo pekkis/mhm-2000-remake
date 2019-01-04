@@ -1,5 +1,6 @@
-import { take, putResolve, select, call } from "redux-saga/effects";
+import { take, putResolve, select, call, all } from "redux-saga/effects";
 import { seasonStart } from "../game";
+import strategies from "../../data/strategies";
 
 export default function* startOfSeasonPhase() {
   yield call(seasonStart);
@@ -16,11 +17,20 @@ export default function* startOfSeasonPhase() {
     state.manager.getIn(["managers", payload.manager, "team"])
   );
 
-  yield putResolve({
-    type: "TEAM_SET_STRATEGY",
-    payload: {
-      team,
-      strategy: payload.strategy
-    }
-  });
+  yield all([
+    putResolve({
+      type: "TEAM_SET_STRATEGY",
+      payload: {
+        team,
+        strategy: payload.strategy
+      }
+    }),
+    putResolve({
+      type: "TEAM_SET_READINESS",
+      payload: {
+        team,
+        readiness: strategies.getIn([payload.strategy, "initialReadiness"])()
+      }
+    })
+  ]);
 }

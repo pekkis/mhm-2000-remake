@@ -6,6 +6,8 @@ const Button = styled.button`
   padding: 1em 2em;
   font-family: inherit;
   background-color: rgb(200, 200, 200);
+  box-shadow: 0 3px rgba(0, 0, 0, 0.25);
+  outline: none;
 
   &:disabled {
     opacity: 0.5;
@@ -15,6 +17,11 @@ const Button = styled.button`
   &:hover {
     background-color: rgb(180, 180, 180);
     cursor: pointer;
+  }
+
+  &:active {
+    box-shadow: 0 1px rgba(0, 0, 0, 0.25);
+    transform: translateY(2px);
   }
 
   ${props =>

@@ -1,6 +1,14 @@
 import { List, Map, Repeat } from "immutable";
 
-const defaultPhases = List.of("action", "gameday", "event", "seed");
+const defaultPhases = List.of(
+  "action",
+  "gameday",
+  "calculations",
+  "event",
+  "seed"
+);
+
+const ehlPhases = List.of("action", "gameday");
 
 const calendar = List.of(
   Map({
@@ -27,7 +35,7 @@ const calendar = List.of(
           gamedays: List.of("phl", "division")
         }),
         Map({
-          phases: defaultPhases,
+          phases: ehlPhases,
           gamedays: List.of("ehl")
         })
       ),
@@ -60,7 +68,7 @@ const calendar = List.of(
   // EHL final tournament
   .push(
     Map({
-      phases: defaultPhases,
+      phases: ehlPhases,
       gamedays: List.of("ehl")
     })
   )

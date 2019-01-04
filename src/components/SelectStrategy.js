@@ -16,19 +16,19 @@ const SelectStrategy = props => {
 
       {strategies.map(strategy => {
         return (
-          <div key={strategy.id}>
-            <h3>{strategy.name}</h3>
+          <div key={strategy.get("id")}>
+            <h3>{strategy.get("name")}</h3>
 
-            <p>{strategy.description}</p>
+            <p>{strategy.get("description")}</p>
 
             <p>
               <Button
                 block
                 onClick={() => {
-                  selectStrategy(manager.get("id"), strategy.id);
+                  selectStrategy(manager.get("id"), strategy.get("id"));
                 }}
               >
-                Valitse strategia "{strategy.name}"
+                Valitse strategia "{strategy.get("name")}"
               </Button>
             </p>
           </div>

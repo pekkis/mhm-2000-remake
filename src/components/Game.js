@@ -10,6 +10,7 @@ import SelectStrategy from "./containers/SelectStrategyContainer";
 import Events from "./containers/EventsContainer";
 import Gameday from "./containers/GamedayContainer";
 import GamedayResults from "./containers/GamedayResultsContainer";
+import CrisisActions from "./containers/CrisisActionsContainer";
 
 const Phase = props => {
   const { turn } = props;
@@ -34,6 +35,7 @@ const Phase = props => {
           <Route exact path="/" component={MainMenu} />
           <Route exact path="/sarjataulukot" component={LeagueTables} />
           <Route exact path="/pelaajamarkkinat" component={TransferMarket} />
+          <Route exact path="/kriisipalaveri" component={CrisisActions} />
           <Route exact path="/debug" component={DeveloperMenu} />
         </Switch>
       );

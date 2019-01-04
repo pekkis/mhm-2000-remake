@@ -1,2 +1,2 @@
-export const MORALE_MIN = -10;
-export const MORALE_MAX = 10;
+export const CRISIS_MORALE_MAX = -3;
+export const CRISIS_COST = 50000;

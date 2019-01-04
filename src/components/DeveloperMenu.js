@@ -1,6 +1,7 @@
 import React from "react";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
+import { getEffective } from "../services/effects";
 
 const DeveloperMenu = props => {
   const { teams, competitions } = props;
@@ -17,7 +18,10 @@ const DeveloperMenu = props => {
                 <thead>
                   <tr>
                     <th>Joukkue</th>
-                    <th>Voima</th>
+                    <th>O-voima</th>
+                    <th>E-voima</th>
+                    <th>E-moraali</th>
+                    <th>E-valmius</th>
                   </tr>
                 </thead>
 
@@ -26,10 +30,16 @@ const DeveloperMenu = props => {
                     .get("teams")
                     .sortBy(t => -teams.get(t).get("strength"))
                     .map(t => {
+                      const team = teams.get(t);
+                      const e = getEffective(team);
+
                       return (
-                        <tr key={t}>
-                          <td>{teams.get(t).get("name")}</td>
-                          <td>{teams.get(t).get("strength")}</td>
+                        <tr key={team.get("id")}>
+                          <td>{team.get("name")}</td>
+                          <td>{team.get("strength")}</td>
+                          <td>{e.get("strength")}</td>
+                          <td>{e.get("morale")}</td>
+                          <td>{e.get("readiness")}</td>
                         </tr>
                       );
                     })}
