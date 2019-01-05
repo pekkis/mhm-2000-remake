@@ -13,6 +13,7 @@ import GamedayResults from "./containers/GamedayResultsContainer";
 import CrisisActions from "./containers/CrisisActionsContainer";
 import Arena from "./containers/ArenaContainer";
 import Services from "./containers/ServicesContainer";
+import Pranks from "./containers/PranksContainer";
 import Notifications from "./notifications/containers/NotificationsContainer";
 
 const Phase = props => {
@@ -41,6 +42,7 @@ const Phase = props => {
           <Route exact path="/kriisipalaveri" component={CrisisActions} />
           <Route exact path="/erikoistoimenpiteet" component={Services} />
           <Route exact path="/areena" component={Arena} />
+          <Route exact path="/jaynat" component={Pranks} />
           <Route exact path="/debug" component={DeveloperMenu} />
         </Switch>
       );

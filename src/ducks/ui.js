@@ -3,7 +3,12 @@ import { Map } from "immutable";
 const defaultState = Map({
   advanceEnabled: true,
   tabs: Map({
-    transferMarket: 0
+    transferMarket: 0,
+    prankVictim: 0
+  }),
+  prank: Map({
+    type: undefined,
+    victim: undefined
   })
 });
 
@@ -32,6 +37,12 @@ export default function uiReducer(state = defaultState, action) {
 
     case "UI_SELECT_TAB":
       return state.setIn(["tabs", payload.tab], payload.value);
+
+    case "PRANK_SELECT_TYPE":
+      return state.setIn(["prank", "type", payload]);
+
+    case "PRANK_SELECT_VICTIM":
+      return state.setIn(["prank", "type", payload]);
 
     default:
       return state;

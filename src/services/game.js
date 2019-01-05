@@ -1,6 +1,6 @@
-import { Map, OrderedMap, List } from "immutable";
+import { Map, List } from "immutable";
 import r from "./random";
-import { compose, pipe } from "ramda";
+import { pipe } from "ramda";
 import { getEffective } from "../services/effects";
 import services from "../data/services";
 

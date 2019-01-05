@@ -1,13 +1,34 @@
 import { OrderedMap, Map, List, fromJS } from "immutable";
 
 const defaultState = Map({
-  notifications: OrderedMap()
+  pranks: List()
 });
 
-export const dismissNotification = id => {
+export const dismissPrank = id => {
   return {
-    type: "NOTIFICATION_DISMISS",
+    type: "PRANK_DISMISS",
     payload: id
+  };
+};
+
+export const selectPrankType = id => {
+  return {
+    type: "PRANK_SELECT_TYPE",
+    payload: id
+  };
+};
+
+export const selectPrankVictim = id => {
+  return {
+    type: "PRANK_SELECT_VICTIM",
+    payload: id
+  };
+};
+
+export const executePrank = player => {
+  return {
+    type: "PRANK_EXECUTE",
+    payload: player
   };
 };
 
