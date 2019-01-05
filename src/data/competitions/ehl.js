@@ -31,7 +31,8 @@ export default Map({
   },
 
   gameBalance: (facts, manager) => {
-    return 100000 + 20000 * manager.getIn(["arena", "level"]);
+    const arenaLevel = manager.getIn(["arena", "level"]) + 1;
+    return 100000 + 20000 * arenaLevel;
   },
 
   parameters: Map({

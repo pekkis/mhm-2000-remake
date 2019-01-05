@@ -83,6 +83,7 @@ const StartMenu = props => {
               </ul>
               <h3>Erityiskiitokset</h3>
               <ul>
+                <li>Erno Vanhala</li>
                 <li>Sami Ritola</li>
               </ul>
             </div>

@@ -8,19 +8,17 @@ export default Map({
   promoteTo: "phl",
 
   gameBalance: (facts, manager) => {
+    const arenaLevel = manager.getIn(["arena", "level"]) + 1;
+
     if (facts.isLoss) {
       return manager.get("extra");
     }
 
     if (facts.isDraw) {
-      return (
-        3000 + 2000 * manager.getIn(["arena", "level"]) + manager.get("extra")
-      );
+      return 3000 + 2000 * arenaLevel + manager.get("extra");
     }
 
-    return (
-      10000 + 3000 * manager.getIn(["arena", "level"]) + manager.get("extra")
-    );
+    return 10000 + 3000 * arenaLevel + manager.get("extra");
   },
 
   parameters: Map({

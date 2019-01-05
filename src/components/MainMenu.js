@@ -75,6 +75,11 @@ const MainMenu = props => {
           <li>
             <Link to="/sarjataulukot">Sarjataulukot</Link>
           </li>
+
+          <li>
+            <Link to="/areena">Areena</Link>
+          </li>
+
           <li>
             <Link to="/debug">Devausmenukka</Link>
           </li>

@@ -18,7 +18,7 @@ const defaultState = Map({
       balance: 20000000,
       arena: Map({
         name: "Anonyymi Areena",
-        level: 1
+        level: 0
       }),
       extra: 0,
       insuranceExtra: 0
@@ -42,6 +42,15 @@ export const selectStrategy = (manager, strategy) => {
     payload: {
       manager,
       strategy
+    }
+  };
+};
+
+export const improveArena = manager => {
+  return {
+    type: "MANAGER_IMPROVE_ARENA",
+    payload: {
+      manager
     }
   };
 };
@@ -123,6 +132,12 @@ export default function managerReducer(state = defaultState, action) {
       return state.setIn(
         ["managers", payload.manager, "arena", "name"],
         payload.name
+      );
+
+    case "MANAGER_SET_ARENA_LEVEL":
+      return state.setIn(
+        ["managers", payload.manager, "arena", "level"],
+        payload.level
       );
 
     case GAME_ADVANCE:

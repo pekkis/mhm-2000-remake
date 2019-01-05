@@ -8,7 +8,7 @@ import {
   put
 } from "redux-saga/effects";
 import { gameSave } from "../meta";
-import { watchTransferMarket, crisisMeeting } from "../manager";
+import { watchTransferMarket, crisisMeeting, improveArena } from "../manager";
 
 export default function* actionPhase() {
   yield put({
@@ -19,6 +19,7 @@ export default function* actionPhase() {
   const tasks = yield all([
     fork(watchTransferMarket),
     takeEvery("MANAGER_CRISIS_MEETING", crisisMeeting),
+    takeEvery("MANAGER_IMPROVE_ARENA", improveArena),
     takeEvery("META_GAME_SAVE_REQUEST", gameSave)
   ]);
 

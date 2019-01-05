@@ -1,4 +1,4 @@
-import { put, race, take, call } from "redux-saga/effects";
+import { put, race, take, call, spawn } from "redux-saga/effects";
 import delay from "@redux-saga/delay-p";
 import uuid from "uuid";
 
@@ -15,14 +15,8 @@ export function* addNotification(manager, message, type = "info") {
     }
   });
 
-  const { deathByOldAge } = yield race({
-    dismiss: take("NOTIFICATION_DISMISS"),
-    deathByOldAge: delay(10000)
-  });
-
-  if (deathByOldAge) {
-    yield call(dismissNotification, id);
-  }
+  yield delay(10000);
+  yield call(dismissNotification, id);
 }
 
 export function* dismissNotification(id) {

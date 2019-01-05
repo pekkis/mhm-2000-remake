@@ -38,7 +38,7 @@ export function* incrementReadiness(teamId, amount) {
 }
 
 export function* decrementReadiness(team, amount) {
-  return yield call(incrementMorale, -amount);
+  return yield call(incrementReadiness, team, -amount);
 }
 
 export function* incrementStrength(teamId, amount) {
@@ -52,9 +52,10 @@ export function* incrementStrength(teamId, amount) {
 }
 
 export function* decrementStrength(team, amount) {
-  return yield call(incrementStrength, -amount);
+  console.log("bubbidi", team, amount);
+  return yield call(incrementStrength, team, -amount);
 }
 
 export function* decrementMorale(team, amount) {
-  return yield call(incrementMorale, -amount);
+  return yield call(incrementMorale, team, -amount);
 }

@@ -11,6 +11,7 @@ import Events from "./containers/EventsContainer";
 import Gameday from "./containers/GamedayContainer";
 import GamedayResults from "./containers/GamedayResultsContainer";
 import CrisisActions from "./containers/CrisisActionsContainer";
+import Arena from "./containers/ArenaContainer";
 import Notifications from "./notifications/containers/NotificationsContainer";
 
 const Phase = props => {
@@ -37,6 +38,7 @@ const Phase = props => {
           <Route exact path="/sarjataulukot" component={LeagueTables} />
           <Route exact path="/pelaajamarkkinat" component={TransferMarket} />
           <Route exact path="/kriisipalaveri" component={CrisisActions} />
+          <Route exact path="/areena" component={Arena} />
           <Route exact path="/debug" component={DeveloperMenu} />
         </Switch>
       );

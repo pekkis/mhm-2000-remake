@@ -196,7 +196,7 @@ const event = {
         type: "MANAGER_INCREMENT_INSURANCE_PAY",
         payload: {
           manager,
-          amount: 200 * arena.get("level")
+          amount: 200 * (arena.get("level") + 1)
         }
       });
     }

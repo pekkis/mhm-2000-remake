@@ -5,19 +5,16 @@ import playoffScheduler, { victors, eliminated } from "../../services/playoffs";
 
 export default Map({
   gameBalance: (facts, manager) => {
+    const arenaLevel = manager.getIn(["arena", "level"]) + 1;
     if (facts.isLoss) {
       return manager.get("extra");
     }
 
     if (facts.isDraw) {
-      return (
-        5000 + 3000 * manager.getIn(["arena", "level"]) + manager.get("extra")
-      );
+      return 5000 + 3000 * arenaLevel + manager.get("extra");
     }
 
-    return (
-      10000 + 3000 * manager.getIn(["arena", "level"]) + manager.get("extra")
-    );
+    return 10000 + 3000 * arenaLevel + manager.get("extra");
   },
 
   relegateTo: "division",

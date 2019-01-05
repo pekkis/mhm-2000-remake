@@ -20,7 +20,7 @@ const event = {
           eventId,
           manager,
           resolved: true,
-          amount: 10000 + 20000 * arena.get("level")
+          amount: 10000 + 20000 * (arena.get("level") + 1)
         })
       }
     });

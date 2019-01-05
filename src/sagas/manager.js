@@ -13,12 +13,14 @@ import {
   managersTeam,
   managersTeamId,
   managersDifficulty,
-  managerCompetesIn
+  managerCompetesIn,
+  managersArena
 } from "../data/selectors";
 import { incrementMorale } from "./team";
 import { addNotification } from "./notification";
 import crisis from "../data/crisis";
 import difficultyLevels from "../data/difficulty-levels";
+import arenas from "../data/arenas";
 import { incrementStrength, decrementStrength } from "./team";
 
 export function* hireManager(managerId, teamId) {
@@ -92,7 +94,7 @@ export function* buyPlayer(action) {
   const playerType = playerTypes.get(payload.playerType);
   yield call(decrementBalance, manager.get("id"), playerType.get("buy"));
 
-  const skillGain = playerType.skill();
+  const skillGain = playerType.get("skill")();
   yield call(incrementStrength, manager.get("team"), skillGain);
 
   yield call(
@@ -102,34 +104,66 @@ export function* buyPlayer(action) {
   );
 }
 
-export function* sellPlayer(action) {
+export function* improveArena(action) {
   const {
-    payload: { manager, playerType }
+    payload: { manager }
   } = action;
 
-  const competesInPhl = yield select(managerCompetesIn(manager, "phl"));
+  const currentArena = yield select(managersArena(manager));
+  const nextArenaLevel = currentArena.get("level") + 1;
+
+  console.log(currentArena, nextArenaLevel);
+
+  const newArena = arenas.get(nextArenaLevel);
+
+  console.log(newArena.toJS());
+
+  yield decrementBalance(manager, newArena.get("price"));
+  yield put({
+    type: "MANAGER_SET_ARENA_LEVEL",
+    payload: {
+      manager,
+      level: newArena.get("id")
+    }
+  });
+
+  yield call(
+    addNotification,
+    manager,
+    `Työmiehet käyttävät vallankumoukselllisia kvanttityövälineitä, ja rakennusurakka valmistuu alta aikayksikön!`
+  );
+}
+
+export function* sellPlayer(action) {
+  const {
+    payload: { manager: managerId, playerType }
+  } = action;
+
+  console.log(managerId, playerType, "fihdh");
+
+  const competesInPhl = yield select(managerCompetesIn(managerId, "phl"));
 
   const minStrength = competesInPhl ? 130 : 50;
 
-  const team = yield select(managersTeam(manager));
+  const team = yield select(managersTeam(managerId));
 
   if (team.get("strength") <= minStrength) {
     return yield call(
       addNotification,
-      manager,
+      managerId,
       "Johtokunnan mielestä pelaajien myynti ei ole ratkaisu tämänhetkisiin ongelmiimme. Myyntilupa evätty.",
       "error"
     );
   }
 
   const playerDefinition = playerTypes.get(playerType);
-  yield call(incrementBalance, manager.get("id"), playerDefinition.get("sell"));
+  yield call(incrementBalance, managerId, playerDefinition.get("sell"));
 
-  const skillGain = playerType.skill();
-  yield call(decrementStrength, manager.get("team"), skillGain);
+  const skillGain = playerDefinition.get("skill")();
+  yield call(decrementStrength, team.get("id"), skillGain);
 
   yield addNotification(
-    manager,
+    managerId,
     `Myymäsi pelaaja vie ${skillGain} voimaa mukanaan!`
   );
 }
