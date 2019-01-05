@@ -38,11 +38,21 @@ export default function uiReducer(state = defaultState, action) {
     case "UI_SELECT_TAB":
       return state.setIn(["tabs", payload.tab], payload.value);
 
+    case "PRANK_CANCEL":
+    case "PRANK_EXECUTE":
+      return state.set(
+        "prank",
+        Map({
+          type: undefined,
+          victim: undefined
+        })
+      );
+
     case "PRANK_SELECT_TYPE":
-      return state.setIn(["prank", "type", payload]);
+      return state.setIn(["prank", "type"], payload);
 
     case "PRANK_SELECT_VICTIM":
-      return state.setIn(["prank", "type", payload]);
+      return state.setIn(["prank", "victim"], payload);
 
     default:
       return state;

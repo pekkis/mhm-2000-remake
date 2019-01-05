@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const Button = styled.button`
   border: 1px solid rgb(99, 99, 99);
@@ -13,6 +13,16 @@ const Button = styled.button`
     background-color: rgb(180, 180, 180);
     cursor: pointer;
   }
+
+  ${props =>
+    props.secondary &&
+    css`
+      background-color: rgb(255, 255, 255);
+
+      &:hover {
+        background-color: rgb(250, 250, 250);
+      }
+    `}
 
   &:active {
     box-shadow: 0 1px rgba(0, 0, 0, 0.25);

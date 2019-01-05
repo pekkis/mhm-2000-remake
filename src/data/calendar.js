@@ -2,9 +2,11 @@ import { List, Map, Repeat } from "immutable";
 
 const defaultPhases = List.of(
   "action",
+  "prank",
   "gameday",
   "calculations",
   "event",
+  "news",
   "seed"
 );
 

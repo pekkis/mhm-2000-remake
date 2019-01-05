@@ -1,31 +1,24 @@
 import { put, call, spawn } from "redux-saga/effects";
-import delay from "@redux-saga/delay-p";
-import uuid from "uuid";
+import { Map } from "immutable";
 
-export function* autoDismissal(id) {
-  yield delay(7000);
-  yield call(dismissNotification, id);
-}
-
-export function* addNotification(manager, message, type = "info") {
-  const id = uuid();
+export function* executePrank(action) {
+  const {
+    payload: { manager, victim, type }
+  } = action;
 
   yield put({
-    type: "NOTIFICATION_ADD",
-    payload: {
-      id,
+    type: "PRANK_ADD",
+    payload: Map({
       manager,
-      message,
+      victim,
       type
-    }
+    })
   });
 
-  yield spawn(autoDismissal, id);
-}
-
-export function* dismissNotification(id) {
+  /*
   yield put({
     type: "NOTIFICATION_DISMISS",
     payload: id
   });
+  */
 }

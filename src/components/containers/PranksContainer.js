@@ -3,7 +3,8 @@ import Pranks from "../Pranks";
 import {
   executePrank,
   selectPrankType,
-  selectPrankVictim
+  selectPrankVictim,
+  cancelPrank
 } from "../../ducks/prank";
 export default connect(
   state => ({
@@ -13,7 +14,9 @@ export default connect(
     teams: state.game.get("teams"),
     events: state.event.get("events"),
     news: state.news.get("news"),
-    advanceEnabled: state.ui.get("advanceEnabled")
+    advanceEnabled: state.ui.get("advanceEnabled"),
+    prank: state.ui.get("prank"),
+    competitions: state.game.get("competitions")
   }),
-  { executePrank, selectPrankType, selectPrankVictim }
+  { executePrank, selectPrankType, selectPrankVictim, cancelPrank }
 )(Pranks);

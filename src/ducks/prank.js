@@ -4,9 +4,9 @@ const defaultState = Map({
   pranks: List()
 });
 
-export const dismissPrank = id => {
+export const cancelPrank = id => {
   return {
-    type: "PRANK_DISMISS",
+    type: "PRANK_CANCEL",
     payload: id
   };
 };
@@ -25,10 +25,14 @@ export const selectPrankVictim = id => {
   };
 };
 
-export const executePrank = player => {
+export const executePrank = (manager, type, victim) => {
   return {
     type: "PRANK_EXECUTE",
-    payload: player
+    payload: {
+      manager,
+      type,
+      victim
+    }
   };
 };
 
@@ -39,13 +43,14 @@ export default function notificationReducer(state = defaultState, action) {
     case "META_QUIT_TO_MAIN_MENU":
       return defaultState;
 
-    case "NOTIFICATION_ADD":
-      return state.update("notifications", notifications =>
-        notifications.set(payload.id, payload).takeLast(3)
-      );
+    case "META_GAME_LOAD_STATE":
+      return fromJS(payload.prank);
 
-    case "NOTIFICATION_DISMISS":
-      return state.deleteIn(["notifications", payload]);
+    case "PRANK_ADD":
+      return state.update("pranks", pranks => pranks.push(payload));
+
+    case "PRANK_REMOVE":
+      return state.deleteIn(["pranks", payload]);
 
     default:
       return state;

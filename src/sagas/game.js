@@ -13,6 +13,7 @@ import {
 
 import actionPhase from "./phase/action";
 import eventPhase from "./phase/event";
+import prankPhase from "./phase/prank";
 import gamedayPhase from "./phase/gameday";
 import seedPhase from "./phase/seed";
 import endOfSeasonPhase from "./phase/end-of-season";
@@ -40,6 +41,11 @@ export function* gameLoop() {
     // don't do any calculations for "hidden" turns
     if (phases.includes("action")) {
       yield call(actionPhase);
+    }
+
+    // don't do any calculations for "hidden" turns
+    if (phases.includes("prank")) {
+      yield call(prankPhase);
     }
 
     if (phases.includes("gameday")) {
