@@ -2,6 +2,11 @@ import { put, race, take, call, spawn } from "redux-saga/effects";
 import delay from "@redux-saga/delay-p";
 import uuid from "uuid";
 
+export function* autoDismissal(id) {
+  yield delay(7000);
+  yield call(dismissNotification, id);
+}
+
 export function* addNotification(manager, message, type = "info") {
   const id = uuid();
 
@@ -15,8 +20,7 @@ export function* addNotification(manager, message, type = "info") {
     }
   });
 
-  yield delay(10000);
-  yield call(dismissNotification, id);
+  yield spawn(autoDismissal, id);
 }
 
 export function* dismissNotification(id) {

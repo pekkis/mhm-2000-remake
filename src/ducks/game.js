@@ -135,6 +135,9 @@ export default function gameReducer(state = defaultState, action) {
         return turn.update("season", season => season + 1).set("round", -1);
       });
 
+    case "GAME_HISTORY_PUSH":
+      return state.setIn(["ehlParticipants"], payload.ehlParticipants);
+
     case "GAME_RESULT":
       // console.log("pl", payload);
 

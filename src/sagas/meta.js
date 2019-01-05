@@ -1,6 +1,7 @@
 import { Seq } from "immutable";
 import { hireManager } from "./manager";
 import { gameLoop } from "./game";
+import { addNotification } from "./notification";
 import { managersDifficulty } from "../data/selectors";
 import difficultyLevels from "../data/difficulty-levels";
 
@@ -87,8 +88,12 @@ function* mainMenu() {
 }
 
 export function* gameSave(action) {
+  const manager = yield select(state =>
+    state.manager.getIn(["managers", state.manager.get("active")])
+  );
   const state = yield select(state => state);
   yield call(save, state);
+  yield call(addNotification, manager, "Peli tallennettiin.");
 }
 
 function* gameLoad(action) {
