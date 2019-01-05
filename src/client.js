@@ -9,6 +9,8 @@ import createStore from "./store";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
+import "./style.pcss";
+
 library.add(faSpinner);
 
 const initialState = getInitialState();

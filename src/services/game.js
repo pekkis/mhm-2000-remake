@@ -2,6 +2,7 @@ import { Map, OrderedMap, List } from "immutable";
 import r from "./random";
 import { compose, pipe } from "ramda";
 import { getEffective } from "../services/effects";
+import services from "../data/services";
 
 /*
 mla(a) = mal(a) / ducka: mla(b) = mal(b) / ducka
@@ -42,10 +43,18 @@ export const simulate = game => {
     away: game.get("away")
   });
 
+  const managers = Map({
+    home: game.get("homeManager"),
+    away: game.get("awayManager")
+  });
+
   const teams = raw.map(getEffective);
 
   const base = game.get("base");
   const overtime = game.get("overtime");
+
+  const competitionId = game.get("competitionId");
+  const phaseId = game.get("phaseId");
 
   const effects = List.of(
     (team, i) => team.get("strength"),
@@ -54,14 +63,30 @@ export const simulate = game => {
     (team, i) => team.get("readiness")
   );
 
+  const managerEffects = managers.map(manager => {
+    if (!manager) {
+      return List();
+    }
+    return manager
+      .get("services")
+      .filter(s => s)
+      .map((s, k) => {
+        return services.getIn([k, "effect"])(competitionId, phaseId);
+      });
+  });
+
   const strengthsX = teams.map((t, i) => {
     return effects.map(e => e(t, i));
   });
 
   console.log("strengthS", strengthsX.toList().toJS());
+  console.log("MANAGER EFFECTS", managerEffects.toJS());
 
   const strengths = teams.map((t, i) => {
-    return effects.map(e => e(t, i)).reduce((r, s) => r + s, 0);
+    return (
+      effects.map(e => e(t, i)).reduce((r, s) => r + s, 0) +
+      managerEffects.get(i).reduce((r, e) => r + e, 0)
+    );
   });
 
   const result = strengths

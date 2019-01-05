@@ -1,4 +1,4 @@
-import { put, race, take, call, spawn } from "redux-saga/effects";
+import { put, call, spawn } from "redux-saga/effects";
 import delay from "@redux-saga/delay-p";
 import uuid from "uuid";
 

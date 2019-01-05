@@ -14,7 +14,8 @@ import {
   managersTeamId,
   managersDifficulty,
   managerCompetesIn,
-  managersArena
+  managersArena,
+  managerHasService
 } from "../data/selectors";
 import { incrementMorale } from "./team";
 import { addNotification } from "./notification";
@@ -166,6 +167,23 @@ export function* sellPlayer(action) {
     managerId,
     `Myymäsi pelaaja vie ${skillGain} voimaa mukanaan!`
   );
+}
+
+export function* toggleService(action) {
+  const {
+    payload: { manager, service }
+  } = action;
+
+  const currentService = yield select(managerHasService(manager, service));
+
+  yield put({
+    type: "MANAGER_SET_SERVICE",
+    payload: {
+      manager,
+      service,
+      value: !currentService
+    }
+  });
 }
 
 export function* afterGameday(action) {

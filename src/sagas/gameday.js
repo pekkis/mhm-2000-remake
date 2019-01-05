@@ -5,17 +5,36 @@ import competitionTypes from "../services/competition-type";
 
 import { call, put, select, take } from "redux-saga/effects";
 
-function* playGame(group, pairing, gameParams, overtime) {
+function* playGame(
+  group,
+  pairing,
+  gameParams,
+  overtime,
+  competitionId,
+  phaseId
+) {
   const teams = yield select(state => state.game.get("teams"));
 
   const home = teams.get(group.getIn(["teams", pairing.get("home")]));
   const away = teams.get(group.getIn(["teams", pairing.get("away")]));
 
+  const homeManager = yield select(state =>
+    state.manager.getIn(["managers", home.get("manager")])
+  );
+
+  const awayManager = yield select(state =>
+    state.manager.getIn(["managers", away.get("manager")])
+  );
+
   const game = Map({
     ...gameParams,
     overtime,
     home,
-    away
+    away,
+    homeManager,
+    awayManager,
+    phaseId,
+    competitionId
   });
 
   const result = yield call(gameService.simulate, game);
@@ -69,7 +88,9 @@ export function* gameday(payload) {
             group,
             pairing,
             gameParams,
-            overtime
+            overtime,
+            competition.get("id"),
+            phase.get("id")
           );
 
           yield put({

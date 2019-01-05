@@ -22,7 +22,13 @@ const defaultState = Map({
   }),
 
   ehlParticipants: List.of(2, 3, 5),
-  insurancePrice: 1000,
+
+  serviceBasePrices: Map({
+    insurance: 1000,
+    coach: 3200,
+    microphone: 500,
+    cheer: 3000
+  }),
 
   managers,
 

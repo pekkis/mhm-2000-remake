@@ -11,9 +11,10 @@ const defaultState = Map({
       name: "Gaylord Lohiposki",
       difficulty: 2,
       services: Map({
-        insurance: true,
+        coach: true,
+        insurance: false,
         microphone: false,
-        cheerleaders: false
+        cheer: false
       }),
       balance: 20000000,
       arena: Map({
@@ -25,6 +26,16 @@ const defaultState = Map({
     })
   )
 });
+
+export const toggleService = (manager, service) => {
+  return {
+    type: "MANAGER_TOGGLE_SERVICE",
+    payload: {
+      manager,
+      service
+    }
+  };
+};
 
 export const buyPlayer = (manager, playerType) => {
   return {
@@ -83,6 +94,12 @@ export default function managerReducer(state = defaultState, action) {
 
     case "META_GAME_LOAD_STATE":
       return fromJS(payload.manager);
+
+    case "MANAGER_SET_SERVICE":
+      return state.setIn(
+        ["managers", payload.manager, "services", payload.service],
+        payload.value
+      );
 
     case "MANAGER_INCREMENT_BALANCE":
       return state.updateIn(

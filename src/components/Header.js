@@ -35,8 +35,6 @@ const Container = styled.header`
 const Header = props => {
   const { back, history, advance, advanceEnabled, children } = props;
 
-  console.log(history);
-
   return (
     <Container>
       {back && (

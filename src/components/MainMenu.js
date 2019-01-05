@@ -81,6 +81,10 @@ const MainMenu = props => {
           </li>
 
           <li>
+            <Link to="/erikoistoimenpiteet">Erikoistoimenpiteet</Link>
+          </li>
+
+          <li>
             <Link to="/debug">Devausmenukka</Link>
           </li>
         </ul>
