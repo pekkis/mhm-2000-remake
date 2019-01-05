@@ -20,7 +20,7 @@ export default function notificationReducer(state = defaultState, action) {
 
     case "NOTIFICATION_ADD":
       return state.update("notifications", notifications =>
-        notifications.set(payload.id, payload)
+        notifications.set(payload.id, payload).takeLast(3)
       );
 
     case "NOTIFICATION_DISMISS":

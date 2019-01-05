@@ -12,8 +12,8 @@ const Notification = props => {
 };
 
 export default styled(Notification)`
-  background-color: rgb(0, 0, 0);
-  color: rgb(255, 255, 255);
+  background-color: rgb(33, 33, 33);
+  color: rgb(222, 222, 222);
   padding: 1em;
   cursor: pointer;
 `;

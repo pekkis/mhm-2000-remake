@@ -1,16 +1,25 @@
-import { takeEvery, select, put, putResolve, call } from "redux-saga/effects";
+import {
+  takeEvery,
+  select,
+  put,
+  putResolve,
+  call,
+  all
+} from "redux-saga/effects";
 import { gameFacts } from "../services/game";
 import competitionList from "../data/competitions";
 import playerTypes from "../data/transfer-market";
 import {
   managersTeam,
   managersTeamId,
-  managersDifficulty
+  managersDifficulty,
+  managerCompetesIn
 } from "../data/selectors";
 import { incrementMorale } from "./team";
 import { addNotification } from "./notification";
 import crisis from "../data/crisis";
 import difficultyLevels from "../data/difficulty-levels";
+import { incrementStrength, decrementStrength } from "./team";
 
 export function* hireManager(managerId, teamId) {
   const managersCurrentTeam = yield select(state =>
@@ -81,32 +90,48 @@ export function* buyPlayer(action) {
   );
 
   const playerType = playerTypes.get(payload.playerType);
+  yield call(decrementBalance, manager.get("id"), playerType.get("buy"));
 
-  yield put({
-    type: "MANAGER_INCREMENT_BALANCE",
-    payload: {
-      manager: manager.get("id"),
-      amount: -playerType.buy
-    }
-  });
   const skillGain = playerType.skill();
+  yield call(incrementStrength, manager.get("team"), skillGain);
 
-  yield put({
-    type: "TEAM_INCREMENT_STRENGTH",
-    payload: {
-      team: manager.get("team"),
-      amount: skillGain
-    }
-  });
-
-  yield addNotification(
+  yield call(
+    addNotification,
     payload.manager,
     `Ostamasi pelaaja tuo ${skillGain} lisää voimaa joukkueeseen!`
   );
 }
 
 export function* sellPlayer(action) {
-  console.log("SELL PLAYER", action);
+  const {
+    payload: { manager, playerType }
+  } = action;
+
+  const competesInPhl = yield select(managerCompetesIn(manager, "phl"));
+
+  const minStrength = competesInPhl ? 130 : 50;
+
+  const team = yield select(managersTeam(manager));
+
+  if (team.get("strength") <= minStrength) {
+    return yield call(
+      addNotification,
+      manager,
+      "Johtokunnan mielestä pelaajien myynti ei ole ratkaisu tämänhetkisiin ongelmiimme. Myyntilupa evätty.",
+      "error"
+    );
+  }
+
+  const playerDefinition = playerTypes.get(playerType);
+  yield call(incrementBalance, manager.get("id"), playerDefinition.get("sell"));
+
+  const skillGain = playerType.skill();
+  yield call(decrementStrength, manager.get("team"), skillGain);
+
+  yield addNotification(
+    manager,
+    `Myymäsi pelaaja vie ${skillGain} voimaa mukanaan!`
+  );
 }
 
 export function* afterGameday(action) {
@@ -156,13 +181,7 @@ export function* afterGameday(action) {
       yield call(incrementMorale, team, moraleBoost);
     }
 
-    yield put({
-      type: "MANAGER_INCREMENT_BALANCE",
-      payload: {
-        amount,
-        manager: manager.get("id")
-      }
-    });
+    yield call(incrementBalance, manager.get("id"), amount);
   }
 
   // console.log("äkshuun!", action);
@@ -179,5 +198,8 @@ const getMoraleBoost = facts => {
 };
 
 export function* watchTransferMarket() {
-  yield takeEvery("MANAGER_BUY_PLAYER", buyPlayer);
+  yield all([
+    takeEvery("MANAGER_BUY_PLAYER", buyPlayer),
+    takeEvery("MANAGER_SELL_PLAYER", sellPlayer)
+  ]);
 }

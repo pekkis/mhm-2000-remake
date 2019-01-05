@@ -38,9 +38,23 @@ export function* incrementReadiness(teamId, amount) {
 }
 
 export function* decrementReadiness(team, amount) {
-  return yield call(incrementMorale, -decrementMorale);
+  return yield call(incrementMorale, -amount);
+}
+
+export function* incrementStrength(teamId, amount) {
+  return yield put({
+    type: "TEAM_INCREMENT_STRENGTH",
+    payload: {
+      team: teamId,
+      amount
+    }
+  });
+}
+
+export function* decrementStrength(team, amount) {
+  return yield call(incrementStrength, -amount);
 }
 
 export function* decrementMorale(team, amount) {
-  return yield call(incrementMorale, -decrementMorale);
+  return yield call(incrementMorale, -amount);
 }

@@ -10,7 +10,12 @@ import Situation from "./context-sensitive/Situation";
 import ManagerInfo from "./manager/ManagerInfo";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
-import { CRISIS_MORALE_MAX } from "../data/constants";
+import MaxRound from "./ui/containers/MaxRoundContainer";
+import {
+  CRISIS_MORALE_MAX,
+  CRISIS_DEADLINE,
+  TRANSFER_DEADLINE
+} from "../data/constants";
 
 const MainMenu = props => {
   const {
@@ -56,14 +61,17 @@ const MainMenu = props => {
       <nav>
         <ul>
           {team.get("morale") <= CRISIS_MORALE_MAX && (
-            <li>
-              <Link to="/kriisipalaveri">Kriisipalaveri</Link>
-            </li>
+            <MaxRound max={CRISIS_DEADLINE}>
+              <li>
+                <Link to="/kriisipalaveri">Kriisipalaveri</Link>
+              </li>
+            </MaxRound>
           )}
-
-          <li>
-            <Link to="/pelaajamarkkinat">Pelaajamarkkinat</Link>
-          </li>
+          <MaxRound max={TRANSFER_DEADLINE}>
+            <li>
+              <Link to="/pelaajamarkkinat">Pelaajamarkkinat</Link>
+            </li>
+          </MaxRound>
           <li>
             <Link to="/sarjataulukot">Sarjataulukot</Link>
           </li>
