@@ -24,19 +24,13 @@ IF sat = 66 OR sat = 44 THEN GOSUB sat7
 IF sat = 294 OR sat = 58 THEN GOSUB sat8
 IF sat = 14 OR sat = 25 THEN GOSUB sat9
 IF sat = 83 OR sat = 84 THEN GOSUB sat10
-
-
-
-IF sat = 17 OR sat = 156 THEN GOSUB sat14
-
-
-
-
 IF sat = 105 OR sat = 298 THEN GOSUB sat11
 IF sat = 274 OR sat = 218 THEN GOSUB sat12
-
 IF sat = 4 OR sat = 233 THEN GOSUB sat13
-
+IF sat = 17 OR sat = 156 THEN GOSUB sat14
+IF sat = 123 OR sat = 213 THEN GOSUB sat15
+IF sat = 81 OR sat = 293 THEN GOSUB sat16
+IF sat = 47 OR sat = 77 THEN GOSUB sat17
 */
 
 const eventsMap = OrderedMap(
@@ -80,11 +74,6 @@ const eventsMap = OrderedMap(
 );
 
 /*
-
-
-IF sat = 123 OR sat = 213 THEN GOSUB sat15
-IF sat = 81 OR sat = 293 THEN GOSUB sat16
-IF sat = 47 OR sat = 77 THEN GOSUB sat17
 
 
 IF sat = 166 OR sat = 299 THEN GOSUB sat18
