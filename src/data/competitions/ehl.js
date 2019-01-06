@@ -64,7 +64,8 @@ export default Map({
             name: `lohko ${groupId + 1}`,
             teams: teamSlice,
             schedule: rr(teamSlice.count(), times),
-            colors: List.of("d", "l", "l", "l")
+            colors: List.of("d", "l", "l", "l"),
+            penalties: List()
           });
         })
         .toList();
@@ -99,6 +100,7 @@ export default Map({
         groups: List.of(
           Map({
             type: "tournament",
+            penalties: List(),
             colors: List.of("d", "l", "l", "l", "l", "l"),
             teams,
             round: 0,

@@ -194,6 +194,27 @@ export default function gameReducer(state = defaultState, action) {
         payload.readiness
       );
 
+    case "TEAM_INCUR_PENALTY":
+      return state.updateIn(
+        [
+          "competitions",
+          payload.competition,
+          "phases",
+          payload.phase,
+          "groups",
+          payload.group,
+          "penalties"
+        ],
+        penalties => {
+          return penalties.push(
+            Map({
+              team: payload.team,
+              penalty: payload.penalty
+            })
+          );
+        }
+      );
+
     case "TEAM_INCREMENT_READINESS":
       return state.updateIn(
         ["teams", payload.team, "readiness"],

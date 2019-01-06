@@ -17,7 +17,13 @@ import moreTaxes from "./events/more-taxes";
 
 import cleandrug from "./events/cleandrug";
 
+/* non-random events */
+
+import protest from "./events/protest";
+
 const events = Map({
+  protest,
+
   pirka,
   kasino,
   mauto,
@@ -31,7 +37,6 @@ const events = Map({
   swedenTransfer,
   jarko,
   moreTaxes,
-
   cleandrug
 });
 

@@ -14,7 +14,7 @@ import {
   improveArena,
   toggleService
 } from "../manager";
-import { executePrank } from "../prank";
+import { orderPrank } from "../prank";
 
 export default function* actionPhase() {
   yield put({
@@ -28,7 +28,7 @@ export default function* actionPhase() {
     takeEvery("MANAGER_IMPROVE_ARENA", improveArena),
     takeEvery("META_GAME_SAVE_REQUEST", gameSave),
     takeEvery("MANAGER_TOGGLE_SERVICE", toggleService),
-    takeEvery("PRANK_EXECUTE", executePrank)
+    takeEvery("PRANK_ORDER", orderPrank)
   ]);
 
   yield take("GAME_ADVANCE_REQUEST");

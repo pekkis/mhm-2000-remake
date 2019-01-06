@@ -1,4 +1,4 @@
-import { Map } from "immutable";
+import { Map, List } from "immutable";
 
 const changedPoints = (points, isWin, isDraw, isLoss) => {
   if (isWin) {
@@ -40,7 +40,7 @@ const changedStats = (stats, game, team) => {
 
 export const groupStats = group => {
   const stats = group.get("teams").map((id, index) => {
-    return group
+    const stats = group
       .get("schedule")
       .map(round => round.filter(p => p.includes(index)))
       .flatten(true)
@@ -65,6 +65,17 @@ export const groupStats = group => {
           points: 0
         })
       );
+
+    const afterPenalties = group
+      .get("penalties", List())
+      .filter(p => p.get("team") === id)
+      .reduce((s, p) => {
+        return s.update("points", points => points + p.get("penalty"));
+      }, stats);
+
+    console.log(afterPenalties);
+
+    return afterPenalties;
   });
 
   return stats;

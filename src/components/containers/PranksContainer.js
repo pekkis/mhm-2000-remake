@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import Pranks from "../Pranks";
 import {
-  executePrank,
+  orderPrank,
   selectPrankType,
   selectPrankVictim,
   cancelPrank
@@ -18,5 +18,5 @@ export default connect(
     prank: state.ui.get("prank"),
     competitions: state.game.get("competitions")
   }),
-  { executePrank, selectPrankType, selectPrankVictim, cancelPrank }
+  { orderPrank, selectPrankType, selectPrankVictim, cancelPrank }
 )(Pranks);

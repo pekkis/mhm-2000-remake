@@ -17,7 +17,7 @@ const Pranks = props => {
     teams,
     selectPrankType,
     selectPrankVictim,
-    executePrank,
+    orderPrank,
     cancelPrank,
     prank
   } = props;
@@ -56,7 +56,7 @@ const Pranks = props => {
       )}
 
       {prank.get("type") && prank.get("victim") && (
-        <ConfirmPrank manager={manager} prank={prank} execute={executePrank} />
+        <ConfirmPrank manager={manager} prank={prank} execute={orderPrank} />
       )}
     </HeaderedPage>
   );

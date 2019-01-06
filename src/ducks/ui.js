@@ -39,7 +39,7 @@ export default function uiReducer(state = defaultState, action) {
       return state.setIn(["tabs", payload.tab], payload.value);
 
     case "PRANK_CANCEL":
-    case "PRANK_EXECUTE":
+    case "PRANK_ORDER":
       return state.set(
         "prank",
         Map({

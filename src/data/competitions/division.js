@@ -46,6 +46,7 @@ export default Map({
         times,
         groups: List.of(
           Map({
+            penalties: List(),
             type: "round-robin",
             round: 0,
             name: "runkosarja",

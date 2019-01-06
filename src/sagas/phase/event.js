@@ -193,6 +193,20 @@ export default function* eventPhase() {
     });
   }
 
+  const autoresolveEvents = yield select(state =>
+    state.event
+      .get("events")
+      .filterNot(e => e.get("resolved"))
+      .filter(e => e.get("autoResolve"))
+  );
+
+  for (const [eventId, event] of autoresolveEvents) {
+    console.log(event, "event to autoresolve");
+
+    const eventObj = events.get(event.get("eventId"));
+    yield eventObj.resolve(event);
+  }
+
   const resolver = yield takeEvery("EVENT_RESOLVE_REQUEST", resolveEvent);
 
   let unresolved;

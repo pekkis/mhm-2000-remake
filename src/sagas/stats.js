@@ -5,6 +5,7 @@ import competitionTypes from "../services/competition-type";
 export function* stats() {
   yield all([
     takeEvery("GAME_GAMEDAY_COMPLETE", calculateGroupStats),
+    takeEvery("TEAM_INCUR_PENALTY", calculateGroupStats),
     takeEvery("COMPETITION_SEED", calculatePhaseStats)
   ]);
 }

@@ -1,4 +1,4 @@
-import { OrderedMap, Map, List, fromJS } from "immutable";
+import { Map, List, fromJS } from "immutable";
 
 const defaultState = Map({
   pranks: List()
@@ -25,9 +25,9 @@ export const selectPrankVictim = id => {
   };
 };
 
-export const executePrank = (manager, type, victim) => {
+export const orderPrank = (manager, type, victim) => {
   return {
-    type: "PRANK_EXECUTE",
+    type: "PRANK_ORDER",
     payload: {
       manager,
       type,
@@ -49,7 +49,7 @@ export default function notificationReducer(state = defaultState, action) {
     case "PRANK_ADD":
       return state.update("pranks", pranks => pranks.push(payload));
 
-    case "PRANK_REMOVE":
+    case "PRANK_DISMISS":
       return state.deleteIn(["pranks", payload]);
 
     default:
