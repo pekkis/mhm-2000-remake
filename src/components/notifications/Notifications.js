@@ -15,14 +15,15 @@ const Notifications = props => {
             notification={n}
           />
         ))
-        .toList()}
+        .toList()
+        .reverse()}
     </div>
   );
 };
 
 export default styled(Notifications)`
   position: fixed;
-  bottom: 0;
+  top: 0;
   left: 0;
   width: 100%;
 `;
