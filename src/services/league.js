@@ -73,8 +73,6 @@ export const groupStats = group => {
         return s.update("points", points => points + p.get("penalty"));
       }, stats);
 
-    console.log(afterPenalties);
-
     return afterPenalties;
   });
 

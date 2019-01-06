@@ -1,13 +1,12 @@
 import { call } from "redux-saga/effects";
 import { OrderedMap, Map, List } from "immutable";
 import { addNotification } from "../sagas/notification";
+import { addEffect } from "../sagas/team";
 import events from "../data/events";
 
 const pranks = OrderedMap({
   protest: Map({
     name: "Protesti",
-    eventName: "protest",
-    victimless: false,
     price: competitions => {
       return 0;
     },
@@ -18,43 +17,68 @@ const pranks = OrderedMap({
         prank.get("manager"),
         `Faksaat protestin jääkiekkoliiton toimistolle. Pian hakulaitteesi jo piippaakin iloisesti: kirjelmä on vastaanotettu, ja se luvataan käsitellä "pikaisesti"`
       );
-
-      console.log("PROTEST FUCKING TIME1 ", prank);
     },
 
     execute: function*(prank) {
       const protestEvent = events.get("protest");
-
       yield call(protestEvent.create, prank.toJS());
-
-      console.log("PROTEST FUCKING TIME 2");
     }
   }),
   playerHooking: Map({
     name: "Huumausaineiden myynti pelaajille",
-    eventName: "bazookaStrike",
-    victimless: true,
-    price: competitions => {
+    price: competition => {
       return 150000;
     },
-    execute: function*(prank) {}
-  }),
-  bazookaStrike: Map({
-    name: "Sinkoisku joukkueen matkabussiin",
-    eventName: "bazookaStrike",
-    victimless: true,
-    price: competitions => {
-      return 3000000;
+
+    order: function*(prank) {
+      yield call(
+        addNotification,
+        prank.get("manager"),
+        `Pikainen soitto Pösilän miehelle, vanhalle ystävällesi ja Helsingin huumemiliisin päällikölle __Ari Jaarniolle__, ja homma hoituu! Jaarnio lupaa lähettää diilerit matkaan alta aikayksikön!`
+      );
+    },
+
+    execute: function*(prank) {
+      const event = events.get("sellNarcotics");
+      yield call(event.create, prank.toJS());
     }
   }),
   fixedMatch: Map({
     name: "Vastustajan lahjonta",
-    eventName: "fixedMatch",
-    victimless: true,
-    price: competitions => {
-      return false;
+    price: competition => {
+      if (competition === "phl") {
+        return 300000;
+      }
+
+      return 150000;
     },
-    execute: function*(prank) {}
+    order: function*(prank) {
+      yield call(
+        addNotification,
+        prank.get("manager"),
+        `Soitat hämäräperäiselle vedonvälittäjälle, ja kerrot mitä tahdot. Hän lupaa hoitaa "asian" hienovaraisesti.`
+      );
+    },
+    execute: function*(prank) {
+      yield addEffect(prank.get("victim"), ["strength"], -10000, 1);
+    }
+  }),
+  bazookaStrike: Map({
+    name: "Sinkoisku joukkueen matkabussiin",
+    price: competition => {
+      return 3000000;
+    },
+    order: function*(prank) {
+      yield call(
+        addNotification,
+        prank.get("manager"),
+        `Fanikauppanne vieressä onkin sopivasti moottoripyöräjengi MC Habadobon kerhotila. Ne pojat ovat tottuneet astetta rankempiin välienselvittyihin. Käyt toimittamassa tyypeille salkullisen kylmää käteistä, ja saat lupauksen pikaisesta toimituksesta.`
+      );
+    },
+    execute: function*(prank) {
+      const event = events.get("bazookaStrike");
+      yield call(event.create, prank.toJS());
+    }
   })
 });
 

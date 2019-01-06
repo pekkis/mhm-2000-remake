@@ -24,7 +24,8 @@ const difficultyLevels = List.of(
     moraleMin: -6,
     moraleMax: 12,
     moraleBoost: 1,
-    startBalance: 1000000
+    startBalance: 1000000,
+    pranksPerSeason: 5
   }),
   Map({
     value: "1",
@@ -33,7 +34,8 @@ const difficultyLevels = List.of(
     moraleMin: 10,
     moraleMax: 12,
     moraleBoost: 1,
-    startBalance: 500000
+    startBalance: 500000,
+    pranksPerSeason: 4
   }),
   Map({
     value: "2",
@@ -42,7 +44,9 @@ const difficultyLevels = List.of(
     moraleMin: -14,
     moraleMax: 12,
     moraleBoost: 0,
-    startBalance: 0
+    // startBalance: 0,
+    startBalance: 5000000,
+    pranksPerSeason: 3
   }),
   Map({
     value: "3",
@@ -51,7 +55,8 @@ const difficultyLevels = List.of(
     moraleMin: -18,
     moraleMax: 12,
     moraleBoost: -1,
-    startBalance: -250000
+    startBalance: -250000,
+    pranksPerSeason: 2
   }),
   Map({
     value: "4",
@@ -60,7 +65,8 @@ const difficultyLevels = List.of(
     moraleMin: -22,
     moraleMax: 8,
     moraleBoost: -1,
-    startBalance: -600000
+    startBalance: -600000,
+    pranksPerSeason: 1
   })
 );
 

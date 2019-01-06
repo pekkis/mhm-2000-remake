@@ -1,7 +1,6 @@
 import { Map, List } from "immutable";
 import { select, putResolve, put } from "redux-saga/effects";
 import { managersTeam } from "../selectors";
-import { amount as a } from "../../services/format";
 import r from "../../services/random";
 
 const eventId = "protest";
@@ -62,16 +61,16 @@ const event = {
       text = text.push(
         `Argumenttisi todetaan päteviksi. __${data.get(
           "victimTeamName"
-        )}__ tuomitaan menettämään ${data.get(
-          "penalty"
+        )}__ tuomitaan menettämään ${Math.abs(
+          data.get("penalty")
         )} pistettä rangaistuksena väitetystä sääntörikkomuksesta.`
       );
     } else {
       text = text.push(
         `Argumenttisi todetaan hölynpölyksi. __${data.get(
           "perpetratorTeamName"
-        )}__ tuomitaan menettämään ${data.get(
-          "penalty"
+        )}__ tuomitaan menettämään ${Math.abs(
+          data.get("penalty")
         )} pistettä rangaistuksena aiheettomasta syytöksestä.`
       );
     }

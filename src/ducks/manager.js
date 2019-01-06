@@ -10,6 +10,7 @@ const defaultState = Map({
       id: 0,
       name: "Gaylord Lohiposki",
       difficulty: 2,
+      pranksExecuted: 0,
       services: Map({
         coach: true,
         insurance: false,
@@ -95,6 +96,13 @@ export default function managerReducer(state = defaultState, action) {
     case "META_GAME_LOAD_STATE":
       return fromJS(payload.manager);
 
+    case "SEASON_START":
+      return state.update("managers", managers => {
+        return managers.map(manager => {
+          return manager.set("pranksExecuted", 0);
+        });
+      });
+
     case "MANAGER_SET_SERVICE":
       return state.setIn(
         ["managers", payload.manager, "services", payload.service],
@@ -162,6 +170,12 @@ export default function managerReducer(state = defaultState, action) {
 
     case MANAGER_NEXT:
       return state.update("active", a => a + 1);
+
+    case "PRANK_ORDER":
+      return state.updateIn(
+        ["managers", payload.manager, "pranksExecuted"],
+        p => p + 1
+      );
 
     default:
       return state;

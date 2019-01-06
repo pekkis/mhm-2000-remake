@@ -9,6 +9,7 @@ import SelectType from "./pranks/SelectType";
 import ConfirmPrank from "./pranks/ConfirmPrank";
 
 import pranks from "../data/pranks";
+import difficultyLevels from "../data/difficulty-levels";
 
 const Pranks = props => {
   const {
@@ -25,12 +26,14 @@ const Pranks = props => {
   const phl = competitions.get("phl");
   const division = competitions.get("division");
 
+  const difficultyLevel = difficultyLevels.get(manager.get("difficulty"));
+
+  const canDo =
+    difficultyLevel.get("pranksPerSeason") > manager.get("pranksExecuted");
+
   const targetCompetition = phl.get("teams").includes(manager.get("team"))
     ? phl
     : division;
-
-  switch (true) {
-  }
 
   return (
     <HeaderedPage>
@@ -40,8 +43,21 @@ const Pranks = props => {
 
       <ManagerInfo manager={manager} teams={teams} />
 
+      {!canDo && (
+        <p>
+          Olet jo jäynäyttänyt {manager.get("pranksExecuted")} kertaa tällä
+          kaudella. Nähdään ensi vuonna!
+        </p>
+      )}
+
       {!prank.get("type") && (
-        <SelectType selectType={selectPrankType} cancel={cancelPrank} />
+        <SelectType
+          manager={manager}
+          enabled={canDo}
+          competition={targetCompetition.get("name")}
+          selectType={selectPrankType}
+          cancel={cancelPrank}
+        />
       )}
 
       {prank.get("type") && !prank.get("victim") && (
