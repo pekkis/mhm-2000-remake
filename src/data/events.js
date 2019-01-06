@@ -9,14 +9,15 @@ import russianAgent from "./events/russian-agent";
 import taxEvasion from "./events/tax-evasion";
 import suddenDeath from "./events/sudden-death";
 import ralliala from "./events/ralliala";
-
 import concert from "./events/concert";
 import swedenTransfer from "./events/sweden-transfer";
 import jarko from "./events/jarko";
 import moreTaxes from "./events/more-taxes";
-
 import cleandrug from "./events/cleandrug";
 
+import fortuneTeller from "./events/fortune-teller";
+import voodoo from "./events/voodoo";
+import stalking from "./events/stalking";
 /* non-random events */
 
 import protest from "./events/protest";
@@ -41,7 +42,11 @@ const events = Map({
   swedenTransfer,
   jarko,
   moreTaxes,
-  cleandrug
+  cleandrug,
+
+  fortuneTeller,
+  voodoo,
+  stalking
 });
 
 export default events;

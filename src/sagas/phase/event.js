@@ -68,22 +68,25 @@ const eventsMap = OrderedMap(
     [4, "moreTaxes"],
     [233, "moreTaxes"],
     [17, "cleandrug"],
-    [156, "cleandrug"]
+    [156, "cleandrug"],
+    [123, "fortuneTeller"],
+    [213, "fortuneTeller"],
+
+    [81, "voodoo"],
+    [293, "voodoo"],
+    [47, "stalking"],
+    [77, "stalking"]
   )
 );
 
 /*
 
 
-
-
-
-
-
-
 IF sat = 123 OR sat = 213 THEN GOSUB sat15
 IF sat = 81 OR sat = 293 THEN GOSUB sat16
 IF sat = 47 OR sat = 77 THEN GOSUB sat17
+
+
 IF sat = 166 OR sat = 299 THEN GOSUB sat18
 IF sat = 96 OR sat = 69 THEN GOSUB sat19
 IF sat = 100 OR sat = 200 THEN GOSUB sat20
@@ -162,10 +165,6 @@ IF sat = 234 THEN GOSUB sat94
 */
 
 const getEventId = hardcoded => {
-  if (hardcoded) {
-    return hardcoded;
-  }
-
   const eventNumber = r.integer(1, 335);
   const eventId = eventsMap.get(eventNumber);
   return eventId;
@@ -199,8 +198,6 @@ export default function* eventPhase() {
   );
 
   for (const [eventId, event] of autoresolveEvents) {
-    console.log(event, "event to autoresolve");
-
     const eventObj = events.get(event.get("eventId"));
     yield eventObj.resolve(event);
   }

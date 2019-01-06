@@ -11,6 +11,16 @@ export const teamsManager = team => state =>
     state.game.getIn(["teams", team, "manager"])
   ]);
 
+export const managersMainCompetition = manager => state => {
+  const competesInPHL = managerCompetesIn(manager, "phl")(state);
+  return competesInPHL ? "phl" : "division";
+};
+
+export const teamsMainCompetition = team => state => {
+  const competesInPHL = teamCompetesIn(team, "phl")(state);
+  return competesInPHL ? "phl" : "division";
+};
+
 export const managerById = manager => state =>
   state.manager.getIn(["managers", manager]);
 
