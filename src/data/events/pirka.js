@@ -1,6 +1,7 @@
 import { Map, List } from "immutable";
 import { put, call } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
+import { incrementBalance } from "../../sagas/manager";
 
 const eventId = "pirka";
 
@@ -31,13 +32,7 @@ const event = {
   },
 
   process: function*(data) {
-    yield put({
-      type: "MANAGER_INCREMENT_BALANCE",
-      payload: {
-        manager: data.get("manager"),
-        amount: data.get("amount")
-      }
-    });
+    yield call(incrementBalance, data.get("manager"), data.get("amount"));
   }
 };
 

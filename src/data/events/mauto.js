@@ -10,6 +10,10 @@ import {
 } from "../selectors";
 import { addEvent } from "../../sagas/event";
 
+import { incrementBalance } from "../../sagas/manager";
+import { incrementStrength } from "../../sagas/team";
+import { setFlag } from "../../sagas/game";
+
 const eventId = "mauto";
 
 const texts = data => {
@@ -49,11 +53,10 @@ const event = {
   create: function*(data) {
     const { manager } = data;
 
-    /*    const competesInPHL = yield select(managerCompetesIn(manager, "phl"));
+    const competesInPHL = yield select(managerCompetesIn(manager, "phl"));
     if (!competesInPHL) {
       return;
     }
-    */
 
     const hasHappened = yield select(flag("mauto"));
     if (hasHappened) {
@@ -73,10 +76,10 @@ const event = {
     return;
   },
 
-  options: () => {
+  options: data => {
     return Map({
-      y: "Suostun.",
-      n: "En suostu."
+      y: `Suostun. Kauan eläköön ${data.get("newName")} `,
+      n: "En suostu. Pitäköön mautonsa!"
     });
   },
 
@@ -115,13 +118,7 @@ const event = {
   },
 
   process: function*(data) {
-    yield put({
-      type: "GAME_SET_FLAG",
-      payload: {
-        flag: "mauto",
-        value: true
-      }
-    });
+    yield call(setFlag, "mauto", true);
 
     yield put({
       type: "TEAM_RENAME",
@@ -132,21 +129,9 @@ const event = {
     });
 
     if (!data.get("agree") || data.get("changeOfMind")) {
-      yield put({
-        type: "TEAM_INCREMENT_STRENGTH",
-        payload: {
-          team: data.get("team"),
-          amount: 40
-        }
-      });
+      yield call(incrementStrength, data.get("team"), 40);
     } else {
-      yield put({
-        type: "MANAGER_INCREMENT_BALANCE",
-        payload: {
-          manager: data.get("manager"),
-          amount: data.get("amount")
-        }
-      });
+      yield call(incrementBalance, data.get("manager"), data.get("amount"));
 
       yield put({
         type: "MANAGER_RENAME_ARENA",

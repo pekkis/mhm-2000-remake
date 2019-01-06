@@ -50,7 +50,6 @@ Iskun tekijäksi ilmoittautuu PVA. Miliisi ei kommentoi. Joukkue joutuu joka tap
     );
 
     const skillLost = Math.round(0.75 * team.get("strength"));
-
     yield call(decrementStrength, data.get("victim"), skillLost);
   }
 };

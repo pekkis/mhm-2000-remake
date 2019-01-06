@@ -10,6 +10,9 @@ const Events = props => {
   return (
     <HeaderedPage>
       <Header />
+
+      <h2>Tapahtumat</h2>
+
       <ManagerInfo manager={manager} teams={teams} />
       <EventsList
         manager={manager}

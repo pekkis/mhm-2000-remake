@@ -20,7 +20,7 @@ const GamedayResults = props => {
   return (
     <HeaderedPage>
       <Header />
-      <h2>Tulokset!</h2>
+      <h2>Tulokset</h2>
 
       {currentCompetitions.map(competition => {
         const currentPhase = competition.getIn([
@@ -49,7 +49,11 @@ const GamedayResults = props => {
 
                   {currentPhase.get("type") === "tournament" && (
                     <div>
-                      <Table division={group} managers={managers} teams={teams} />
+                      <Table
+                        division={group}
+                        managers={managers}
+                        teams={teams}
+                      />
                     </div>
                   )}
 

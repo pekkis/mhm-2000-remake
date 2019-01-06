@@ -3,14 +3,15 @@ import { put, select, call } from "redux-saga/effects";
 import {
   managersTeamId,
   teamCompetesIn,
-  managerHasService,
   flag,
   managerHasEnoughMoney,
   randomTeamFrom
 } from "../selectors";
 import { amount as a } from "../../services/format";
-import { incrementMorale } from "../../sagas/team";
+import { incrementMorale, incrementStrength } from "../../sagas/team";
 import { addEvent } from "../../sagas/event";
+import { decrementBalance } from "../../sagas/manager";
+import { setFlag } from "../../sagas/game";
 
 const eventId = "jarko";
 
@@ -99,40 +100,14 @@ const event = {
     const agree = data.get("agree");
 
     if (agree) {
-      yield put({
-        type: "TEAM_INCREMENT_STRENGTH",
-        payload: {
-          team,
-          amount: strength
-        }
-      });
-
+      yield call(incrementStrength, team, strength);
       yield call(incrementMorale, team, amount);
-
-      yield put({
-        type: "MANAGER_DECREMENT_BALANCE",
-        payload: {
-          manager,
-          amount
-        }
-      });
+      yield call(decrementBalance, manager, amount);
     } else {
-      yield put({
-        type: "TEAM_INCREMENT_STRENGTH",
-        payload: {
-          team: otherTeam,
-          amount: strength
-        }
-      });
+      yield call(incrementStrength, otherTeam, strength);
     }
 
-    yield put({
-      type: "GAME_SET_FLAG",
-      payload: {
-        flag: "jarko",
-        value: true
-      }
-    });
+    yield call(setFlag, "jarko", true);
   }
 };
 

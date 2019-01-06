@@ -66,7 +66,6 @@ export function* incrementStrength(teamId, amount) {
 }
 
 export function* decrementStrength(team, amount) {
-  console.log("bubbidi", team, amount);
   return yield call(incrementStrength, team, -amount);
 }
 

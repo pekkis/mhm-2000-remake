@@ -7,6 +7,8 @@ import {
 } from "../selectors";
 import { amount as a } from "../../services/format";
 import { addEvent } from "../../sagas/event";
+import { incrementBalance, decrementBalance } from "../../sagas/manager";
+import { decrementStrength, incrementStrength } from "../../sagas/team";
 
 const eventId = "jaralahti";
 
@@ -88,36 +90,16 @@ const event = {
     const multiplier = yield select(teamCompetesIn(team, "phl")) ? 2 : 1;
     if (!data.get("support")) {
       const skillLost = 7 * multiplier;
-      yield put({
-        type: "TEAM_DECREMENT_STRENGTH",
-        payload: { team, amount: skillLost }
-      });
+      yield call(decrementStrength, team, skillLost);
 
       if (data.get("hasInsurance")) {
-        yield put({
-          type: "MANAGER_INCREMENT_BALANCE",
-          payload: {
-            manager,
-            amount: data.get("amount")
-          }
-        });
+        yield call(incrementBalance, manager, data.get("amount"));
       }
-
-      return;
     } else {
       const skillGained = 4 * multiplier;
       yield all([
-        put({
-          type: "TEAM_INCREMENT_STRENGTH",
-          payload: { team, amount: skillGained }
-        }),
-        put({
-          type: "MANAGER_DECREMENT_BALANCE",
-          payload: {
-            manager: manager,
-            amount: data.get("amount")
-          }
-        })
+        call(incrementStrength, team, skillGained),
+        call(decrementBalance, manager, data.get("amount"))
       ]);
     }
   }

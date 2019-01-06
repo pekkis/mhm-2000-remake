@@ -4,6 +4,8 @@ import { managersTeamId, teamCompetesIn } from "../selectors";
 import { currency as c } from "../../services/format";
 import { cinteger } from "../../services/random";
 import { addEvent } from "../../sagas/event";
+import { decrementBalance } from "../../sagas/manager";
+import { incrementStrength } from "../../sagas/team";
 
 const eventId = "russianAgent";
 
@@ -81,18 +83,8 @@ const event = {
     }
 
     const skillGained = cinteger(1, 11);
-    yield put({
-      type: "TEAM_INCREMENT_STRENGTH",
-      payload: { team, amount: skillGained }
-    });
-
-    yield put({
-      type: "MANAGER_DECREMENT_BALANCE",
-      payload: {
-        manager,
-        amount: data.get("amount")
-      }
-    });
+    yield call(incrementStrength, team, skillGained);
+    yield call(decrementBalance, manager, data.get("amount"));
   }
 };
 

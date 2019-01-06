@@ -3,6 +3,7 @@ import { select, put, call } from "redux-saga/effects";
 import { managerCompetesIn, managersDifficulty } from "../selectors";
 import { amount as a } from "../../services/format";
 import { addEvent } from "../../sagas/event";
+import { decrementBalance } from "../../sagas/manager";
 
 /*
 sat13:
@@ -65,13 +66,7 @@ const event = {
   render: texts,
 
   process: function*(data) {
-    yield put({
-      type: "MANAGER_DECREMENT_BALANCE",
-      payload: {
-        manager: data.get("manager"),
-        amount: data.get("amount")
-      }
-    });
+    yield call(decrementBalance, data.get("manager"), data.get("amount"));
   }
 };
 

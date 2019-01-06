@@ -21,9 +21,8 @@ const Services = props => {
 
   return (
     <HeaderedPage>
-      <Header back>
-        <h2>Erikoistoimenpiteet</h2>
-      </Header>
+      <Header back />
+      <h2>Erikoistoimenpiteet</h2>
 
       <ManagerInfo manager={manager} teams={teams} />
 

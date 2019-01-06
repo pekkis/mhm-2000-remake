@@ -1,14 +1,16 @@
 import { Map, List } from "immutable";
-import { put, select, call } from "redux-saga/effects";
+import { select, call } from "redux-saga/effects";
 import {
   managersTeamId,
   teamCompetesIn,
   managerHasService,
   teamHasActiveEffects
 } from "../selectors";
-import { amount as a, currency as c } from "../../services/format";
+import { currency as c } from "../../services/format";
 import { cinteger } from "../../services/random";
 import { addEvent } from "../../sagas/event";
+import { incrementBalance, incrementInsuranceExtra } from "../../sagas/manager";
+import { addEffect } from "../../sagas/team";
 
 const eventId = "kuralahti";
 
@@ -21,20 +23,6 @@ IF sarja = 1 THEN tauti2 = 9
 IF sarja = 2 THEN tauti2 = 5
 yk = c
 */
-
-const texts = data => {
-  let t = List.of(
-    `Lähetät raikulihyökkääjä __Jallu Kuralahden__ huumevieroitukseen ${data.get(
-      "duration"
-    )} pelin ajaksi.`
-  );
-
-  if (data.get("hasInsurance")) {
-    t = t.push(`Vakuutusyhtiö maksaa sinulle ${c(data.get("amount"))}.`);
-  }
-
-  return t;
-};
 
 const event = {
   type: "manager",
@@ -63,7 +51,17 @@ const event = {
   },
 
   render: data => {
-    return texts(data);
+    let t = List.of(
+      `Lähetät raikulihyökkääjä __Jallu Kuralahden__ huumevieroitukseen ${data.get(
+        "duration"
+      )} pelin ajaksi.`
+    );
+
+    if (data.get("hasInsurance")) {
+      t = t.push(`Vakuutusyhtiö maksaa sinulle ${c(data.get("amount"))}.`);
+    }
+
+    return t;
   },
 
   process: function*(data) {
@@ -73,33 +71,11 @@ const event = {
 
     const amount = multiplier * -5;
 
-    yield put({
-      type: "TEAM_ADD_EFFECT",
-      payload: {
-        team,
-        effect: {
-          amount,
-          duration: data.get("duration"),
-          parameter: ["strength"]
-        }
-      }
-    });
+    yield call(addEffect, team, ["strength"], amount, data.get("duration"));
 
     if (data.get("hasInsurance")) {
-      yield put({
-        type: "MANAGER_INCREMENT_BALANCE",
-        payload: {
-          manager,
-          amount: data.get("amount")
-        }
-      });
-      yield put({
-        type: "MANAGER_INCREMENT_INSURANCE_EXTRA",
-        payload: {
-          manager,
-          amount: 60
-        }
-      });
+      yield call(incrementBalance, manager, data.get("amount"));
+      yield call(incrementInsuranceExtra, manager, 60);
     }
   }
 };

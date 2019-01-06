@@ -174,6 +174,16 @@ export function* relegate(competition, team) {
   });
 }
 
+export function* setFlag(flag, value) {
+  yield put({
+    type: "GAME_SET_FLAG",
+    payload: {
+      flag,
+      value
+    }
+  });
+}
+
 function* nextTurn() {
   yield put({ type: "EVENT_CLEAR_EVENTS" });
   yield put({ type: "GAME_NEXT_TURN" });

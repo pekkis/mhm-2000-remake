@@ -42,7 +42,6 @@ const Button = styled.button`
     props.block &&
     `width: 100%;
     display: block;
-    margin: 1em 0;
   `}
 `;
 

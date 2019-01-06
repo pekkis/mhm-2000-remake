@@ -2,6 +2,7 @@ import { Map, List } from "immutable";
 import { put, call } from "redux-saga/effects";
 import r from "../../services/random";
 import { addEvent } from "../../sagas/event";
+import { incrementBalance } from "../../sagas/manager";
 
 const eventId = "kasino";
 
@@ -88,13 +89,7 @@ const event = {
       ? data.get("amount") * 3
       : -data.get("amount");
 
-    yield put({
-      type: "MANAGER_INCREMENT_BALANCE",
-      payload: {
-        manager: data.get("manager"),
-        amount: victory
-      }
-    });
+    yield call(incrementBalance, data.get("manager"), victory);
   }
 };
 

@@ -3,6 +3,7 @@ import { select, put, call } from "redux-saga/effects";
 import { managersTeam } from "../selectors";
 import { amount as a } from "../../services/format";
 import { addEvent } from "../../sagas/event";
+import { incrementBalance } from "../../sagas/manager";
 
 const eventId = "cleandrug";
 
@@ -38,13 +39,7 @@ const event = {
   },
 
   process: function*(data) {
-    yield put({
-      type: "MANAGER_INCREMENT_BALANCE",
-      payload: {
-        manager: data.get("manager"),
-        amount: data.get("amount")
-      }
-    });
+    yield call(incrementBalance, data.get("manager"), data.get("amount"));
   }
 };
 

@@ -8,6 +8,8 @@ import {
 import { amount as a } from "../../services/format";
 import { incrementMorale } from "../../sagas/team";
 import { addEvent } from "../../sagas/event";
+import { incrementBalance, incrementInsuranceExtra } from "../../sagas/manager";
+import { decrementStrength } from "../../sagas/team";
 
 const eventId = "swedenTransfer";
 
@@ -51,39 +53,13 @@ const event = {
     const hasInsurance = data.get("hasInsurance");
     const moraleBoost = data.get("moraleBoost");
 
-    yield put({
-      type: "TEAM_DECREMENT_STRENGTH",
-      payload: {
-        team,
-        amount: strengthLoss
-      }
-    });
-
+    yield call(decrementStrength, team, strengthLoss);
     yield call(incrementMorale, team, moraleBoost);
-
-    yield put({
-      type: "MANAGER_INCREMENT_BALANCE",
-      payload: {
-        manager,
-        amount
-      }
-    });
+    yield call(incrementBalance, manager, amount);
 
     if (hasInsurance) {
-      yield put({
-        type: "MANAGER_INCREMENT_BALANCE",
-        payload: {
-          manager,
-          amount: amount / 2
-        }
-      });
-      yield put({
-        type: "MANAGER_INCREMENT_INSURANCE_EXTRA",
-        payload: {
-          manager,
-          amount: 100
-        }
-      });
+      yield call(incrementBalance, manager, amount / 2);
+      yield call(incrementInsuranceExtra, manager, 100);
     }
   }
 };

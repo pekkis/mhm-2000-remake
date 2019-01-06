@@ -9,6 +9,9 @@ const DeveloperMenu = props => {
   return (
     <HeaderedPage>
       <Header back />
+
+      <h2>Devausinfo</h2>
+
       {competitions
         .map(c => {
           return (

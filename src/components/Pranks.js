@@ -37,9 +37,9 @@ const Pranks = props => {
 
   return (
     <HeaderedPage>
-      <Header back>
-        <h2>Jäynät</h2>
-      </Header>
+      <Header back />
+
+      <h2>Jäynät</h2>
 
       <ManagerInfo manager={manager} teams={teams} />
 

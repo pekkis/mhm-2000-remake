@@ -19,9 +19,8 @@ const TransferMarket = props => {
 
   return (
     <HeaderedPage>
-      <Header back>
-        <h2>Pelaajamarkkinat</h2>
-      </Header>
+      <Header back />
+      <h2>Pelaajamarkkinat</h2>
 
       <MaxRound
         max={TRANSFER_DEADLINE}

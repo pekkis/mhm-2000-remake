@@ -2,18 +2,18 @@ import { Map, List } from "immutable";
 import { put, select, call } from "redux-saga/effects";
 import {
   managersTeamId,
-  teamCompetesIn,
   randomTeamFrom,
   randomManager,
-  teamsStrength,
   managerHasService,
   managersDifficulty,
   managersArena
 } from "../selectors";
 import { currency as c, amount as a } from "../../services/format";
-import r, { cinteger } from "../../services/random";
+import r from "../../services/random";
 import { decrementMorale } from "../../sagas/team";
 import { addEvent } from "../../sagas/event";
+import { decrementBalance, incrementInsuranceExtra } from "../../sagas/manager";
+import { decrementStrength, incrementStrength } from "../../sagas/team";
 
 const eventId = "taxEvasion";
 
@@ -147,22 +147,10 @@ const event = {
       return;
     }
 
-    yield put({
-      type: "TEAM_DECREMENT_STRENGTH",
-      payload: {
-        team: data.get("team"),
-        amount: 65
-      }
-    });
+    yield call(decrementStrength, data.get("team"), 65);
 
     if (data.get("getPlayer")) {
-      yield put({
-        type: "TEAM_INCREMENT_STRENGTH",
-        payload: {
-          team: managersTeam,
-          amount: data.get("getPlayer")
-        }
-      });
+      yield incrementStrength(managersTeam, data.get("getPlayer"));
     }
 
     if (!data.get("caught")) {
@@ -170,32 +158,17 @@ const event = {
     }
 
     yield call(decrementMorale, managersTeam, 6);
-
-    yield put({
-      type: "MANAGER_DECREMENT_BALANCE",
-      payload: {
-        manager,
-        amount: data.get("fine")
-      }
-    });
+    yield call(decrementBalance, manager, data.get("fine"));
 
     if (data.get("hasInsurance")) {
-      yield put({
-        type: "MANAGER_DECREMENT_BALANCE",
-        payload: {
-          manager,
-          amount: data.get("fine2")
-        }
-      });
+      yield call(decrementBalance, manager, data.get("fine2"));
 
       const arena = yield select(managersArena(manager));
-      yield put({
-        type: "MANAGER_INCREMENT_INSURANCE_PAY",
-        payload: {
-          manager,
-          amount: 200 * (arena.get("level") + 1)
-        }
-      });
+      yield call(
+        incrementInsuranceExtra,
+        manager,
+        200 * (arena.get("level") + 1)
+      );
     }
   }
 };

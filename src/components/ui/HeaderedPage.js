@@ -1,5 +1,5 @@
 import styled from "styled-components";
 
 export default styled.section`
-  padding-top: 5em;
+  padding-bottom: 5em;
 `;

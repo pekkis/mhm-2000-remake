@@ -169,6 +169,16 @@ export function* sellPlayer(action) {
   );
 }
 
+export function* incrementInsuranceExtra(manager, amount) {
+  yield put({
+    type: "MANAGER_INCREMENT_INSURANCE_EXTRA",
+    payload: {
+      manager,
+      amount
+    }
+  });
+}
+
 export function* toggleService(action) {
   const {
     payload: { manager, service }
