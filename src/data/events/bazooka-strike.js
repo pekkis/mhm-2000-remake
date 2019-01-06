@@ -1,10 +1,8 @@
-import { select, putResolve, put, call } from "redux-saga/effects";
+import { select, call } from "redux-saga/effects";
 import { Map, List } from "immutable";
-import { teamCompetesIn, randomManager } from "../selectors";
-import r, { cinteger } from "../../services/random";
+import { randomManager } from "../selectors";
 import { decrementStrength } from "../../sagas/team";
-import { decrementBalance } from "../../sagas/manager";
-import { amount as a } from "../../services/format";
+import { addEvent } from "../../sagas/event";
 
 const eventId = "bazookaStrike";
 
@@ -20,21 +18,17 @@ const event = {
       state.game.getIn(["teams", victim])
     );
 
-    yield put({
-      type: "EVENT_ADD",
-      payload: {
-        event: Map({
-          eventId,
-          manager,
-          victim,
-          victimTeamName: victimTeam.get("name"),
-          victimManager: victimManager.get("name"),
-          resolved: true
-        })
-      }
-    });
-
-    return;
+    yield call(
+      addEvent,
+      Map({
+        eventId,
+        manager,
+        victim,
+        victimTeamName: victimTeam.get("name"),
+        victimManager: victimManager.get("name"),
+        resolved: true
+      })
+    );
   },
 
   render: data => {

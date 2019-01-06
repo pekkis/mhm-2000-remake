@@ -1,8 +1,9 @@
 import { Map, List } from "immutable";
-import { put, select } from "redux-saga/effects";
+import { put, select, call } from "redux-saga/effects";
 import { managersTeamId, teamCompetesIn } from "../selectors";
 import { currency as c } from "../../services/format";
 import { cinteger } from "../../services/random";
+import { addEvent } from "../../sagas/event";
 
 const eventId = "russianAgent";
 
@@ -37,19 +38,15 @@ const event = {
       return;
     }
 
-    yield put({
-      type: "EVENT_ADD",
-      payload: {
-        event: Map({
-          eventId,
-          manager,
-          amount: 50000,
-          resolved: false
-        })
-      }
-    });
-
-    return;
+    yield call(
+      addEvent,
+      Map({
+        eventId,
+        manager,
+        amount: 50000,
+        resolved: false
+      })
+    );
   },
 
   options: data => {

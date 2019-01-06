@@ -1,7 +1,8 @@
 import { Map, List } from "immutable";
-import { select, put } from "redux-saga/effects";
+import { select, put, call } from "redux-saga/effects";
 import { managersTeam } from "../selectors";
 import { amount as a } from "../../services/format";
+import { addEvent } from "../../sagas/event";
 
 const eventId = "cleandrug";
 
@@ -13,21 +14,17 @@ const event = {
 
     const team = yield select(managersTeam(manager));
 
-    yield put({
-      type: "EVENT_ADD",
-      payload: {
-        event: Map({
-          team: team.get("id"),
-          teamName: team.get("name"),
-          eventId,
-          manager,
-          resolved: true,
-          amount: 70000
-        })
-      }
-    });
-
-    return;
+    yield call(
+      addEvent,
+      Map({
+        team: team.get("id"),
+        teamName: team.get("name"),
+        eventId,
+        manager,
+        resolved: true,
+        amount: 70000
+      })
+    );
   },
 
   render: data => {

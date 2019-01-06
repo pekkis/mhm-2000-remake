@@ -2,6 +2,7 @@ import { call } from "redux-saga/effects";
 import { OrderedMap, Map, List } from "immutable";
 import { addNotification } from "../sagas/notification";
 import { addEffect } from "../sagas/team";
+import { addEvent } from "../sagas/event";
 import events from "../data/events";
 
 const pranks = OrderedMap({
@@ -34,7 +35,7 @@ const pranks = OrderedMap({
       yield call(
         addNotification,
         prank.get("manager"),
-        `Pikainen soitto Pösilän miehelle, vanhalle ystävällesi ja Helsingin huumemiliisin päällikölle __Ari Jaarniolle__, ja homma hoituu! Jaarnio lupaa lähettää diilerit matkaan alta aikayksikön!`
+        `Pikainen soitto Pösilän miehelle, vanhalle ystävällesi ja Helsingin huumemiliisin päällikölle __Ari Jaarniolle__, ja homma hoituu! Jaarnio lupaa lähettää miehensä matkaan alta aikayksikön!`
       );
     },
 

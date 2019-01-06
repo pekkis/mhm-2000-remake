@@ -45,7 +45,7 @@ export function* addEffect(team, parameter, amount, duration) {
       effect: {
         amount,
         duration,
-        parameter: ["strength"]
+        parameter
       }
     }
   });

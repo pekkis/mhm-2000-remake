@@ -5,6 +5,7 @@ import r, { cinteger } from "../../services/random";
 import { decrementStrength } from "../../sagas/team";
 import { decrementBalance } from "../../sagas/manager";
 import { amount as a } from "../../services/format";
+import { addEvent } from "../../sagas/event";
 
 const eventId = "sellNarcotics";
 
@@ -14,20 +15,16 @@ const event = {
   create: function*(data) {
     const { manager, victim } = data;
 
-    yield put({
-      type: "EVENT_ADD",
-      payload: {
-        event: Map({
-          eventId,
-          manager,
-          victim,
-          resolved: false,
-          autoResolve: true
-        })
-      }
-    });
-
-    return;
+    yield call(
+      addEvent,
+      Map({
+        eventId,
+        manager,
+        victim,
+        resolved: false,
+        autoResolve: true
+      })
+    );
   },
 
   /*

@@ -1,5 +1,5 @@
 import { Map, List } from "immutable";
-import { put, select, all } from "redux-saga/effects";
+import { put, select, call } from "redux-saga/effects";
 import r from "../../services/random";
 import {
   managerCompetesIn,
@@ -8,6 +8,7 @@ import {
   managersTeam,
   managersDifficulty
 } from "../selectors";
+import { addEvent } from "../../sagas/event";
 
 const eventId = "mauto";
 
@@ -59,19 +60,16 @@ const event = {
       return;
     }
 
-    yield put({
-      type: "EVENT_ADD",
-      payload: {
-        event: Map({
-          eventId,
-          manager,
-          newName: "Mauto HT",
-          resolved: false,
-          amount: 4000000
-        })
-      }
-    });
-
+    yield call(
+      addEvent,
+      Map({
+        eventId,
+        manager,
+        newName: "Mauto HT",
+        resolved: false,
+        amount: 4000000
+      })
+    );
     return;
   },
 

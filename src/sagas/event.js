@@ -10,6 +10,13 @@ export function* resolveEvent(action) {
   yield eventObj.resolve(event, value);
 }
 
+export function* addEvent(eventData) {
+  yield put({
+    type: "EVENT_ADD",
+    payload: { event: eventData }
+  });
+}
+
 export function* processEvents() {
   const eventsToProcess = yield select(state =>
     state.event

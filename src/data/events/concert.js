@@ -1,7 +1,8 @@
 import { Map, List } from "immutable";
-import { select, put } from "redux-saga/effects";
+import { select, put, call } from "redux-saga/effects";
 import { managersArena } from "../selectors";
 import { amount as a } from "../../services/format";
+import { addEvent } from "../../sagas/event";
 
 const eventId = "concert";
 
@@ -13,18 +14,15 @@ const event = {
 
     const arena = yield select(managersArena(manager));
 
-    yield put({
-      type: "EVENT_ADD",
-      payload: {
-        event: Map({
-          eventId,
-          manager,
-          resolved: true,
-          amount: 10000 + 20000 * (arena.get("level") + 1)
-        })
-      }
-    });
-
+    yield call(
+      addEvent,
+      Map({
+        eventId,
+        manager,
+        resolved: true,
+        amount: 10000 + 20000 * (arena.get("level") + 1)
+      })
+    );
     return;
   },
 

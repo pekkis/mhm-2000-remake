@@ -1,6 +1,7 @@
 import { Map, List } from "immutable";
-import { put } from "redux-saga/effects";
+import { put, call } from "redux-saga/effects";
 import r from "../../services/random";
+import { addEvent } from "../../sagas/event";
 
 const eventId = "kasino";
 
@@ -36,19 +37,15 @@ const event = {
   create: function*(data) {
     const { manager } = data;
 
-    yield put({
-      type: "EVENT_ADD",
-      payload: {
-        event: Map({
-          eventId,
-          manager,
-          resolved: false,
-          amount: 150000
-        })
-      }
-    });
-
-    return;
+    yield call(
+      addEvent,
+      Map({
+        eventId,
+        manager,
+        resolved: false,
+        amount: 150000
+      })
+    );
   },
 
   options: () => {

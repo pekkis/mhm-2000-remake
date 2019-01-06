@@ -7,6 +7,7 @@ import {
 } from "../selectors";
 import { amount as a } from "../../services/format";
 import { incrementMorale } from "../../sagas/team";
+import { addEvent } from "../../sagas/event";
 
 const eventId = "swedenTransfer";
 
@@ -23,23 +24,19 @@ const event = {
 
     const hasInsurance = yield select(managerHasService(manager, "insurance"));
 
-    yield put({
-      type: "EVENT_ADD",
-      payload: {
-        event: Map({
-          eventId,
-          manager,
-          team,
-          amount: 30000,
-          hasInsurance,
-          moraleBoost,
-          strengthLoss,
-          resolved: true
-        })
-      }
-    });
-
-    return;
+    yield call(
+      addEvent,
+      Map({
+        eventId,
+        manager,
+        team,
+        amount: 30000,
+        hasInsurance,
+        moraleBoost,
+        strengthLoss,
+        resolved: true
+      })
+    );
   },
 
   render: data => {

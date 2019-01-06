@@ -10,6 +10,7 @@ import {
 } from "../selectors";
 import { amount as a } from "../../services/format";
 import { incrementMorale } from "../../sagas/team";
+import { addEvent } from "../../sagas/event";
 
 const eventId = "jarko";
 
@@ -50,25 +51,21 @@ const event = {
     const amount = 200000;
     const enoughMoney = select(managerHasEnoughMoney(manager, amount));
 
-    yield put({
-      type: "EVENT_ADD",
-      payload: {
-        event: Map({
-          eventId,
-          manager,
-          team,
-          otherTeam: otherTeam.get("id"),
-          otherTeamName: otherTeam.get("name"),
-          enoughMoney,
-          amount,
-          strength,
-          resolved: !enoughMoney,
-          agree: !enoughMoney ? false : undefined
-        })
-      }
-    });
-
-    return;
+    yield call(
+      addEvent,
+      Map({
+        eventId,
+        manager,
+        team,
+        otherTeam: otherTeam.get("id"),
+        otherTeamName: otherTeam.get("name"),
+        enoughMoney,
+        amount,
+        strength,
+        resolved: !enoughMoney,
+        agree: !enoughMoney ? false : undefined
+      })
+    );
   },
 
   options: data =>

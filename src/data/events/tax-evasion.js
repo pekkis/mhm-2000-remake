@@ -13,6 +13,7 @@ import {
 import { currency as c, amount as a } from "../../services/format";
 import r, { cinteger } from "../../services/random";
 import { decrementMorale } from "../../sagas/team";
+import { addEvent } from "../../sagas/event";
 
 const eventId = "taxEvasion";
 
@@ -83,23 +84,19 @@ const event = {
     const otherManager = yield select(randomManager());
     const team = yield select(randomTeamFrom(["phl"], false));
 
-    yield put({
-      type: "EVENT_ADD",
-      payload: {
-        event: Map({
-          eventId,
-          manager,
-          amount: 50000,
-          resolved: false,
-          otherManager: otherManager.get("id"),
-          otherManagerName: otherManager.get("name"),
-          team: team.get("id"),
-          teamName: team.get("name")
-        })
-      }
-    });
-
-    return;
+    yield call(
+      addEvent,
+      Map({
+        eventId,
+        manager,
+        amount: 50000,
+        resolved: false,
+        otherManager: otherManager.get("id"),
+        otherManagerName: otherManager.get("name"),
+        team: team.get("id"),
+        teamName: team.get("name")
+      })
+    );
   },
 
   options: data => {

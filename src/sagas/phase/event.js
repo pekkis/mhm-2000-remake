@@ -188,9 +188,7 @@ export default function* eventPhase() {
   const eventId = getEventId();
 
   if (eventId) {
-    yield events.get(eventId).create({
-      manager
-    });
+    yield call(events.get(eventId).create, { manager });
   }
 
   const autoresolveEvents = yield select(state =>
