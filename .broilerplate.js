@@ -21,6 +21,7 @@ const nodeExternalsFeature = require("@dr-kobros/broilerplate/lib/features/nodeE
 const externalCssFeature = require("@dr-kobros/broilerplate/lib/features/externalCssFeature");
 const extractCssFeature = require("@dr-kobros/broilerplate-mini-css-extract");
 const styledComponentsFeature = require("@dr-kobros/broilerplate-styled-components");
+const swFeature = require("@dr-kobros/broilerplate-serviceworker");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -41,6 +42,7 @@ module.exports = target => {
     ),
     defaultFeatures,
     addFeatures(
+      swFeature(),
       postCssFeature(),
       styledComponentsFeature(),
       // babelPolyfillFeature(),

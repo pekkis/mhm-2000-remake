@@ -788,6 +788,14 @@
     postcss-loader "^3.0.0"
     postcss-preset-env "^6.1.2"
 
+"@dr-kobros/broilerplate-serviceworker@^0.22.0":
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/@dr-kobros/broilerplate-serviceworker/-/broilerplate-serviceworker-0.22.0.tgz#7881cb9073308dfd0b5cb702ec9650be1e0c6526"
+  integrity sha512-+A6OfLjpqZXBehYXgWwAsx2QGnQMhtX6JAvmB49E8Xf3NccGCh7JK1HeJGo+tq4kdv/cbpwZ3ZQBTopcZhYBaQ==
+  dependencies:
+    "@dr-kobros/serviceworker-webpack-plugin" "^0.1.1"
+    immutable "4.0.0-rc.12"
+
 "@dr-kobros/broilerplate-styled-components@^0.21.0":
   version "0.21.0"
   resolved "https://registry.yarnpkg.com/@dr-kobros/broilerplate-styled-components/-/broilerplate-styled-components-0.21.0.tgz#14660b13ba5475ffed13a399caf2a469ccdaa635"
@@ -819,6 +827,13 @@
     url-loader "^1.1.2"
     webpack-manifest-plugin "^2.0.4"
     webpack-node-externals "^1.7.2"
+
+"@dr-kobros/serviceworker-webpack-plugin@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@dr-kobros/serviceworker-webpack-plugin/-/serviceworker-webpack-plugin-0.1.1.tgz#26a7f67ee460c7687538ed82dd7447f6f299098a"
+  integrity sha512-dbgUyPVIn0h9SjGpFWCKOGEPCWaTFoUEatWUb4Y79f97RUBqyVvXz5jbfdT0LVhqwLk0ImkKJQRIJxAJwGndoA==
+  dependencies:
+    minimatch "^3.0.3"
 
 "@emotion/is-prop-valid@^0.6.8":
   version "0.6.8"
