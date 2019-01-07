@@ -9,6 +9,8 @@ import createStore from "./store";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
+import runtime from "@dr-kobros/serviceworker-webpack-plugin/lib/runtime";
+
 import "./style.pcss";
 
 library.add(faSpinner);
@@ -25,6 +27,10 @@ function render(Component, rootElement, method = "render") {
 // If we get !undefined state from the server, we hydrate.
 const rootElement = document.getElementById("app");
 render(Root, rootElement, initialState ? "hydrate" : "render");
+
+runtime.register().then(sw => {
+  console.log("sw", "serviis wörker");
+});
 
 // Webpack's hot reloading magic happens here.
 
