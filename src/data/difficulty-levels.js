@@ -45,7 +45,7 @@ const difficultyLevels = List.of(
     moraleMax: 12,
     moraleBoost: 0,
     // startBalance: 0,
-    startBalance: 5000000,
+    startBalance: 0,
     pranksPerSeason: 3
   }),
   Map({

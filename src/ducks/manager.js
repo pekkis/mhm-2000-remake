@@ -17,7 +17,7 @@ const defaultState = Map({
         microphone: false,
         cheer: false
       }),
-      balance: 20000000,
+      balance: 0,
       arena: Map({
         name: "Anonyymi Areena",
         level: 0
@@ -128,13 +128,11 @@ export default function managerReducer(state = defaultState, action) {
       );
 
     case "TEAM_REMOVE_MANAGER":
-      return state.removeIn(
-        [
-          "managers",
-          state.get("managers").findIndex(m => m.get("team") === payload.team)
-        ],
+      return state.removeIn([
+        "managers",
+        state.get("managers").findIndex(m => m.get("team") === payload.team),
         "team"
-      );
+      ]);
 
     case "TEAM_ADD_MANAGER":
       return state.setIn(["managers", payload.manager, "team"], payload.team);
@@ -143,6 +141,12 @@ export default function managerReducer(state = defaultState, action) {
       return state.updateIn(
         ["managers", payload.manager, "insuranceExtra"],
         ie => ie + payload.amount
+      );
+
+    case "MANAGER_SET_INSURANCE_EXTRA":
+      return state.setIn(
+        ["managers", payload.manager, "insuranceExtra"],
+        payload.value
       );
 
     case "MANAGER_INITIALIZE":

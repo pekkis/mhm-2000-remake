@@ -31,6 +31,18 @@ IF sat = 17 OR sat = 156 THEN GOSUB sat14
 IF sat = 123 OR sat = 213 THEN GOSUB sat15
 IF sat = 81 OR sat = 293 THEN GOSUB sat16
 IF sat = 47 OR sat = 77 THEN GOSUB sat17
+IF sat = 166 OR sat = 299 THEN GOSUB sat18
+IF sat = 96 OR sat = 69 THEN GOSUB sat19
+IF sat = 100 OR sat = 200 THEN GOSUB sat20
+IF sat = 301 OR sat = 138 THEN GOSUB sat21
+IF sat = 146 THEN GOSUB sat22
+IF sat = 111 OR sat = 43 THEN GOSUB sat23
+IF sat = 306 OR sat = 307 THEN GOSUB sat24
+IF sat = 303 OR sat = 320 THEN GOSUB sat25
+IF sat = 249 OR sat = 182 THEN GOSUB sat26
+IF sat = 6 OR sat = 65 THEN GOSUB sat27
+IF sat = 172 OR sat = 239 THEN GOSUB sat28
+
 */
 
 const eventsMap = OrderedMap(
@@ -69,24 +81,38 @@ const eventsMap = OrderedMap(
     [81, "voodoo"],
     [293, "voodoo"],
     [47, "stalking"],
-    [77, "stalking"]
+    [77, "stalking"],
+
+    [166, "fanMerchandise"],
+    [299, "fanMerchandise"],
+    [96, "embezzlement"],
+    [69, "embezzlement"],
+    [100, "masotv"],
+    [200, "masotv"],
+
+    [301, "jobofferPHL"],
+    [138, "jobofferPHL"],
+    [146, "undqvist"],
+    [111, "jobofferDivision"],
+    [43, "jobofferDivision"],
+
+    [306, "fever"],
+    [307, "fever"],
+
+    [303, "haanperaMarries"],
+    [320, "haanperaMarries"],
+    [249, "haanperaDivorce"],
+    [182, "haanperaDivorce"],
+    [6, "pempers"],
+    [65, "pempers"],
+    [172, "limpenius"],
+    [239, "limpenius"]
   )
 );
 
 /*
 
 
-IF sat = 166 OR sat = 299 THEN GOSUB sat18
-IF sat = 96 OR sat = 69 THEN GOSUB sat19
-IF sat = 100 OR sat = 200 THEN GOSUB sat20
-IF sat = 301 OR sat = 138 THEN GOSUB sat21
-IF sat = 146 THEN GOSUB sat22
-IF sat = 111 OR sat = 43 THEN GOSUB sat23
-IF sat = 306 OR sat = 307 THEN GOSUB sat24
-IF sat = 303 OR sat = 320 THEN GOSUB sat25
-IF sat = 249 OR sat = 182 THEN GOSUB sat26
-IF sat = 6 OR sat = 65 THEN GOSUB sat27
-IF sat = 172 OR sat = 239 THEN GOSUB sat28
 IF sat = 319 OR sat = 280 THEN GOSUB sat29
 IF sat = 150 OR sat = 240 THEN GOSUB sat30
 IF sat = 30 OR sat = 70 THEN GOSUB sat31

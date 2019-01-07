@@ -185,6 +185,12 @@ export default function gameReducer(state = defaultState, action) {
         return Math.min(payload.max, Math.max(payload.min, m + payload.amount));
       });
 
+    case "TEAM_SET_MORALE":
+      return state.setIn(
+        ["teams", payload.team, "morale"],
+        Math.min(payload.max, Math.max(payload.min, payload.morale))
+      );
+
     case "TEAM_SET_STRATEGY":
       return state.setIn(["teams", payload.team, "strategy"], payload.strategy);
 

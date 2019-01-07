@@ -11,6 +11,9 @@ export const teamsManager = team => state =>
     state.game.getIn(["teams", team, "manager"])
   ]);
 
+export const managerObject = manager => state =>
+  state.manager.getIn(["managers", manager]);
+
 export const managersMainCompetition = manager => state => {
   const competesInPHL = managerCompetesIn(manager, "phl")(state);
   return competesInPHL ? "phl" : "division";
@@ -165,8 +168,11 @@ export const managersDifficulty = manager => state =>
 
 export const randomTeamFrom = (
   competitions,
-  canBeHumanControlled = false
+  canBeHumanControlled = false,
+  excluded = []
 ) => state => {
+  console.log(excluded, "excommunicado");
+
   const managersTeams = state.manager.get("managers").map(p => p.get("team"));
 
   const teams = state.game
@@ -177,7 +183,8 @@ export const randomTeamFrom = (
     .flatten(true)
     .filter(t => {
       return canBeHumanControlled || !managersTeams.includes(t);
-    });
+    })
+    .filterNot(t => excluded.includes(t));
 
   const randomized = r.pick(teams.toJS());
 

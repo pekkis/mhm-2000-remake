@@ -11,6 +11,31 @@ const getMoraleMinMax = manager => {
   };
 };
 
+export function* setStrategy(teamId, strategy) {
+  return yield put({
+    type: "TEAM_SET_STRATEGY",
+    payload: {
+      team: teamId,
+      strategy
+    }
+  });
+}
+
+export function* setMorale(teamId, morale) {
+  const manager = yield select(teamsManager(teamId));
+  const { min, max } = getMoraleMinMax(manager);
+
+  return yield put({
+    type: "TEAM_SET_MORALE",
+    payload: {
+      team: teamId,
+      morale,
+      min,
+      max
+    }
+  });
+}
+
 export function* incrementMorale(teamId, amount) {
   const manager = yield select(teamsManager(teamId));
 
@@ -23,6 +48,16 @@ export function* incrementMorale(teamId, amount) {
       amount,
       min,
       max
+    }
+  });
+}
+
+export function* setReadiness(teamId, readiness) {
+  return yield put({
+    type: "TEAM_SET_READINESS",
+    payload: {
+      team: teamId,
+      readiness
     }
   });
 }

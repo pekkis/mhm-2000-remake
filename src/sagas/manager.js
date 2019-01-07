@@ -29,20 +29,31 @@ export function* hireManager(managerId, teamId) {
     state.manager.getIn(["managers", managerId, "team"])
   );
 
-  if (managersCurrentTeam) {
-    yield putResolve({
+  // if (managersCurrentTeam) {
+  yield all([
+    putResolve({
       type: "TEAM_REMOVE_MANAGER",
       payload: {
         team: managersCurrentTeam
       }
-    });
-  }
+    }),
+    putResolve({
+      type: "TEAM_ADD_MANAGER",
+      payload: {
+        team: teamId,
+        manager: managerId
+      }
+    })
+  ]);
+  // }
+}
 
-  yield putResolve({
-    type: "TEAM_ADD_MANAGER",
+export function* setBalance(managerId, amount) {
+  return yield put({
+    type: "MANAGER_SET_BALANCE",
     payload: {
-      team: teamId,
-      manager: managerId
+      manager: managerId,
+      amount
     }
   });
 }
@@ -105,6 +116,16 @@ export function* buyPlayer(action) {
   );
 }
 
+export function* setArenaLevel(manager, level) {
+  yield put({
+    type: "MANAGER_SET_ARENA_LEVEL",
+    payload: {
+      manager,
+      level: level
+    }
+  });
+}
+
 export function* improveArena(action) {
   const {
     payload: { manager }
@@ -113,20 +134,11 @@ export function* improveArena(action) {
   const currentArena = yield select(managersArena(manager));
   const nextArenaLevel = currentArena.get("level") + 1;
 
-  console.log(currentArena, nextArenaLevel);
-
   const newArena = arenas.get(nextArenaLevel);
 
-  console.log(newArena.toJS());
-
   yield decrementBalance(manager, newArena.get("price"));
-  yield put({
-    type: "MANAGER_SET_ARENA_LEVEL",
-    payload: {
-      manager,
-      level: newArena.get("id")
-    }
-  });
+
+  yield call(setArenaLevel, manager, newArena.get("id"));
 
   yield call(
     addNotification,
@@ -169,12 +181,33 @@ export function* sellPlayer(action) {
   );
 }
 
+export function* setInsuranceExtra(manager, value) {
+  yield put({
+    type: "MANAGER_SET_INSURANCE_EXTRA",
+    payload: {
+      manager,
+      value
+    }
+  });
+}
+
 export function* incrementInsuranceExtra(manager, amount) {
   yield put({
     type: "MANAGER_INCREMENT_INSURANCE_EXTRA",
     payload: {
       manager,
       amount
+    }
+  });
+}
+
+export function* setService(manager, service, value) {
+  yield put({
+    type: "MANAGER_SET_SERVICE",
+    payload: {
+      manager,
+      service,
+      value
     }
   });
 }
@@ -186,14 +219,7 @@ export function* toggleService(action) {
 
   const currentService = yield select(managerHasService(manager, service));
 
-  yield put({
-    type: "MANAGER_SET_SERVICE",
-    payload: {
-      manager,
-      service,
-      value: !currentService
-    }
-  });
+  yield call(setService, manager, service, !currentService);
 }
 
 export function* afterGameday(action) {

@@ -18,6 +18,19 @@ import cleandrug from "./events/cleandrug";
 import fortuneTeller from "./events/fortune-teller";
 import voodoo from "./events/voodoo";
 import stalking from "./events/stalking";
+import fanMerchandise from "./events/fan-merchandise";
+import embezzlement from "./events/embezzlement";
+import masotv from "./events/masotv";
+
+import jobofferPHL from "./events/joboffer-phl";
+import undqvist from "./events/undqvist";
+import jobofferDivision from "./events/joboffer-division";
+import fever from "./events/fever";
+import haanperaMarries from "./events/haanpera-marries";
+import haanperaDivorce from "./events/haanpera-divorce";
+import pempers from "./events/pempers";
+import limpenius from "./events/limpenius";
+
 /* non-random events */
 
 import protest from "./events/protest";
@@ -46,7 +59,18 @@ const events = Map({
 
   fortuneTeller,
   voodoo,
-  stalking
+  stalking,
+  fanMerchandise,
+  embezzlement,
+  masotv,
+  jobofferPHL,
+  undqvist,
+  jobofferDivision,
+  fever,
+  haanperaMarries,
+  haanperaDivorce,
+  pempers,
+  limpenius
 });
 
 export default events;
