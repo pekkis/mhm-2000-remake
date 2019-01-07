@@ -5,6 +5,7 @@ const loaderOverrides = {
 };
 
 const pluginOverrides = {
+  /*
   manifestPlugin: (plugin, env, target, paths) => {
     return {
       ...plugin,
@@ -40,6 +41,7 @@ const pluginOverrides = {
         )
     };
   }
+  */
 };
 
 const overrideLoader = (loader, env, target, paths) => {
