@@ -1,7 +1,7 @@
 import { Map, List } from "immutable";
 import r from "./random";
 import { pipe } from "ramda";
-import { getEffective } from "../services/effects";
+import { getEffective, getEffectiveOpponent } from "../services/effects";
 import services from "../data/services";
 
 /*
@@ -48,7 +48,10 @@ export const simulate = game => {
     away: game.get("awayManager")
   });
 
-  const teams = raw.map(getEffective);
+  const teams = raw.map((obj, key, context) => {
+    const otherKey = key === "home" ? "away" : "home";
+    return getEffectiveOpponent(getEffective(obj), context.get(otherKey));
+  });
 
   const base = game.get("base");
   const overtime = game.get("overtime");

@@ -12,7 +12,7 @@ const defaultState = Map({
       difficulty: 2,
       pranksExecuted: 0,
       services: Map({
-        coach: true,
+        coach: false,
         insurance: false,
         microphone: false,
         cheer: false

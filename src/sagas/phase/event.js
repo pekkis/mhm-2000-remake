@@ -106,7 +106,19 @@ const eventsMap = OrderedMap(
     [6, "pempers"],
     [65, "pempers"],
     [172, "limpenius"],
-    [239, "limpenius"]
+    [239, "limpenius"],
+
+    [319, "hasselgren"],
+    [280, "hasselgren"],
+
+    [150, "arilander"],
+    [240, "arilander"],
+
+    [30, "karijurri"],
+    [70, "karijurri"],
+
+    [90, "metterer"],
+    [190, "metterer"]
   )
 );
 
@@ -117,6 +129,7 @@ IF sat = 319 OR sat = 280 THEN GOSUB sat29
 IF sat = 150 OR sat = 240 THEN GOSUB sat30
 IF sat = 30 OR sat = 70 THEN GOSUB sat31
 IF sat = 90 OR sat = 190 THEN GOSUB sat32
+
 IF sat = 39 THEN GOSUB sat33
 IF sat = 115 THEN GOSUB sat34
 IF sat = 183 THEN GOSUB sat35
@@ -199,7 +212,7 @@ export default function* eventPhase() {
 
   // const key = eventsMap.last();
 
-  const eventId = getEventId();
+  const eventId = "metterer"; // getEventId();
 
   if (eventId) {
     yield call(events.get(eventId).create, { manager });

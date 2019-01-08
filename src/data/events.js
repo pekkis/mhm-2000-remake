@@ -31,6 +31,11 @@ import haanperaDivorce from "./events/haanpera-divorce";
 import pempers from "./events/pempers";
 import limpenius from "./events/limpenius";
 
+import hasselgren from "./events/hasselgren";
+import arilander from "./events/arilander";
+import karijurri from "./events/karijurri";
+import metterer from "./events/metterer";
+
 /* non-random events */
 
 import protest from "./events/protest";
@@ -70,7 +75,11 @@ const events = Map({
   haanperaMarries,
   haanperaDivorce,
   pempers,
-  limpenius
+  limpenius,
+  hasselgren,
+  arilander,
+  karijurri,
+  metterer
 });
 
 export default events;

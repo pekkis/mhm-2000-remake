@@ -86,6 +86,20 @@ export function* addEffect(team, parameter, amount, duration) {
   });
 }
 
+export function* addOpponentEffect(team, parameter, amount, duration) {
+  yield put({
+    type: "TEAM_ADD_OPPONENT_EFFECT",
+    payload: {
+      team,
+      effect: {
+        amount,
+        duration,
+        parameter
+      }
+    }
+  });
+}
+
 export function* decrementReadiness(team, amount) {
   return yield call(incrementReadiness, team, -amount);
 }

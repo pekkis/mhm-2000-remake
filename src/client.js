@@ -13,6 +13,13 @@ import runtime from "@dr-kobros/serviceworker-webpack-plugin/lib/runtime";
 
 import "./style.pcss";
 
+import * as Sentry from "@sentry/browser";
+
+Sentry.init({
+  environment: process.env.NODE_ENV,
+  dsn: "https://38630b0d78f645abb5cae7e82bc1582c@sentry.io/1367033"
+});
+
 library.add(faSpinner);
 
 const initialState = getInitialState();

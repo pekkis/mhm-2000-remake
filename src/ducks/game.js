@@ -129,6 +129,7 @@ export default function gameReducer(state = defaultState, action) {
           teams.map(t => {
             return t
               .set("effects", List())
+              .set("opponentEffects", List())
               .set("morale", 0)
               .set("strategy", 2)
               .set("readiness", 0);
@@ -255,6 +256,12 @@ export default function gameReducer(state = defaultState, action) {
         effects.push(Map(payload.effect))
       );
 
+    case "TEAM_ADD_OPPONENT_EFFECT":
+      return state.updateIn(
+        ["teams", payload.team, "opponentEffects"],
+        opponentEffects => opponentEffects.push(Map(payload.effect))
+      );
+
     case "TEAM_REMOVE_MANAGER":
       return state.removeIn(["teams", payload.team, "manager"]);
 
@@ -264,18 +271,26 @@ export default function gameReducer(state = defaultState, action) {
     case "GAME_DECREMENT_DURATIONS":
       return state.update("teams", teams => {
         return teams.map(team => {
-          return team.update("effects", effects => {
-            return effects.map(e => e.update("duration", d => d - 1));
-          });
+          return team
+            .update("effects", effects => {
+              return effects.map(e => e.update("duration", d => d - 1));
+            })
+            .update("opponentEffects", effects => {
+              return effects.map(e => e.update("duration", d => d - 1));
+            });
         });
       });
 
     case "GAME_CLEAR_EXPIRED":
       return state.update("teams", teams => {
         return teams.map(team => {
-          return team.update("effects", effects => {
-            return effects.filter(e => e.get("duration") > 0);
-          });
+          return team
+            .update("effects", effects => {
+              return effects.filter(e => e.get("duration") > 0);
+            })
+            .update("opponentEffects", effects => {
+              return effects.filter(e => e.get("duration") > 0);
+            });
         });
       });
 
