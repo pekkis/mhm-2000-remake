@@ -212,7 +212,7 @@ export default function* eventPhase() {
 
   // const key = eventsMap.last();
 
-  const eventId = "metterer"; // getEventId();
+  const eventId = getEventId();
 
   if (eventId) {
     yield call(events.get(eventId).create, { manager });
