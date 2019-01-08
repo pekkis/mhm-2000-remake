@@ -18,7 +18,7 @@ const Arena = styled.div`
     `}
 `;
 
-const LeagueTables = props => {
+const Arenas = props => {
   const { manager, teams, improveArena } = props;
 
   const currentLevel = manager.getIn(["arena", "level"]);
@@ -26,7 +26,7 @@ const LeagueTables = props => {
   const nextLevel = arenas.get(currentLevel + 1);
 
   const canDo =
-    manager.get("balance") >= nextLevel.get("price") && currentLevel < 9;
+    currentLevel < 9 && manager.get("balance") >= nextLevel.get("price");
 
   return (
     <HeaderedPage>
@@ -51,19 +51,21 @@ const LeagueTables = props => {
       </ArenaHierarchy>
 
       <ButtonRow>
-        <Button
-          block
-          disabled={!canDo}
-          onClick={() => {
-            improveArena(manager.get("id"));
-          }}
-        >
-          <div>Paranna halliolosuhteitasi</div>
-          <div>{currency(nextLevel.get("price"))}</div>
-        </Button>
+        {nextLevel && (
+          <Button
+            block
+            disabled={!canDo}
+            onClick={() => {
+              improveArena(manager.get("id"));
+            }}
+          >
+            <div>Paranna halliolosuhteitasi</div>
+            <div>{currency(nextLevel.get("price"))}</div>
+          </Button>
+        )}
       </ButtonRow>
     </HeaderedPage>
   );
 };
 
-export default LeagueTables;
+export default Arenas;

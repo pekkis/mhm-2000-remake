@@ -35,6 +35,13 @@ import hasselgren from "./events/hasselgren";
 import arilander from "./events/arilander";
 import karijurri from "./events/karijurri";
 import metterer from "./events/metterer";
+import arenaBurns from "./events/arena-burns";
+import valiveto from "./events/valiveto";
+import bankMistake from "./events/bank-mistake";
+import pekkiini from "./events/pekkiini";
+import enemyProtest from "./events/enemy-protest";
+import urheiluruuttu from "./events/urheiluruuttu";
+import pstudio from "./events/pstudio";
 
 /* non-random events */
 
@@ -79,7 +86,14 @@ const events = Map({
   hasselgren,
   arilander,
   karijurri,
-  metterer
+  metterer,
+  arenaBurns,
+  valiveto,
+  bankMistake,
+  pekkiini,
+  enemyProtest,
+  urheiluruuttu,
+  pstudio
 });
 
 export default events;

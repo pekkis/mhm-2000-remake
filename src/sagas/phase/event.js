@@ -42,6 +42,17 @@ IF sat = 303 OR sat = 320 THEN GOSUB sat25
 IF sat = 249 OR sat = 182 THEN GOSUB sat26
 IF sat = 6 OR sat = 65 THEN GOSUB sat27
 IF sat = 172 OR sat = 239 THEN GOSUB sat28
+IF sat = 319 OR sat = 280 THEN GOSUB sat29
+IF sat = 150 OR sat = 240 THEN GOSUB sat30
+IF sat = 30 OR sat = 70 THEN GOSUB sat31
+IF sat = 90 OR sat = 190 THEN GOSUB sat32
+IF sat = 39 THEN GOSUB sat33
+IF sat = 115 THEN GOSUB sat34
+IF sat = 183 THEN GOSUB sat35
+IF sat = 24 THEN GOSUB sat36
+IF sat = 61 THEN GOSUB sat37
+IF sat = 310 THEN GOSUB sat38
+IF sat = 311 THEN GOSUB sat39
 
 */
 
@@ -118,25 +129,20 @@ const eventsMap = OrderedMap(
     [70, "karijurri"],
 
     [90, "metterer"],
-    [190, "metterer"]
+    [190, "metterer"],
+
+    [39, "arenaBurns"],
+    [115, "valiveto"],
+    [183, "bankMistake"],
+    [24, "pekkiini"],
+    [61, "enemyProtest"],
+    [310, "urheiluruuttu"],
+    [311, "pstudio"]
   )
 );
 
 /*
 
-
-IF sat = 319 OR sat = 280 THEN GOSUB sat29
-IF sat = 150 OR sat = 240 THEN GOSUB sat30
-IF sat = 30 OR sat = 70 THEN GOSUB sat31
-IF sat = 90 OR sat = 190 THEN GOSUB sat32
-
-IF sat = 39 THEN GOSUB sat33
-IF sat = 115 THEN GOSUB sat34
-IF sat = 183 THEN GOSUB sat35
-IF sat = 24 THEN GOSUB sat36
-IF sat = 61 THEN GOSUB sat37
-IF sat = 310 THEN GOSUB sat38
-IF sat = 311 THEN GOSUB sat39
 IF sat = 312 THEN GOSUB sat40
 IF sat = 313 THEN GOSUB sat42
 IF sat = 314 OR sat = 208 THEN GOSUB sat41
@@ -192,7 +198,7 @@ IF sat = 124 THEN GOSUB sat93
 IF sat = 234 THEN GOSUB sat94
 */
 
-const getEventId = hardcoded => {
+const getEventId = () => {
   const eventNumber = r.integer(1, 335);
   const eventId = eventsMap.get(eventNumber);
   return eventId;
@@ -225,7 +231,7 @@ export default function* eventPhase() {
       .filter(e => e.get("autoResolve"))
   );
 
-  for (const [eventId, event] of autoresolveEvents) {
+  for (const [, event] of autoresolveEvents) {
     const eventObj = events.get(event.get("eventId"));
     yield eventObj.resolve(event);
   }

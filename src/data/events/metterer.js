@@ -36,7 +36,7 @@ const event = {
     data = data.merge({
       resolved: true,
       agree: value === "agree",
-      positive: r.boolean()
+      positive: r.bool()
     });
 
     yield call(resolvedEvent, data);

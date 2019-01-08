@@ -5,7 +5,7 @@ const price = level => 100000 + 200000 * level;
 const arenas = List.of(
   Map({
     name: "Ulkohuussi",
-    price: () => 0
+    price: 0
   }),
   Map({
     name: "Navetta",

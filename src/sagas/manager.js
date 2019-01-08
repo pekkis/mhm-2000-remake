@@ -121,7 +121,7 @@ export function* setArenaLevel(manager, level) {
     type: "MANAGER_SET_ARENA_LEVEL",
     payload: {
       manager,
-      level: level
+      level: Math.max(0, Math.min(9, level))
     }
   });
 }
