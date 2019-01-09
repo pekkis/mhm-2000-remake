@@ -42,6 +42,12 @@ import pekkiini from "./events/pekkiini";
 import enemyProtest from "./events/enemy-protest";
 import urheiluruuttu from "./events/urheiluruuttu";
 import pstudio from "./events/pstudio";
+import ekkanen from "./events/ekkanen";
+import makrosoft from "./events/makrosoft";
+import jarasvuo from "./events/jarasvuo";
+import laskisalonen from "./events/laskisalonen";
+import kecklin from "./events/kecklin";
+import pakibetteri from "./events/pakibetteri";
 
 /* non-random events */
 
@@ -93,7 +99,13 @@ const events = Map({
   pekkiini,
   enemyProtest,
   urheiluruuttu,
-  pstudio
+  pstudio,
+  ekkanen,
+  makrosoft,
+  jarasvuo,
+  laskisalonen,
+  kecklin,
+  pakibetteri
 });
 
 export default events;

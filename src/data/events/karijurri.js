@@ -26,7 +26,7 @@ const event = {
   },
 
   render: data => {
-    const t = List.of(
+    let t = List.of(
       `NHL on lakossa ${data.get(
         "duration"
       )} ottelun ajan, ja __Kari Jurri__ saapuu Denveristä, Coloradosta, joukkueeseesi pitämään kuntoaan yllä!`

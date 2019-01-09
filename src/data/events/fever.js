@@ -39,7 +39,7 @@ const event = {
   },
 
   render: data => {
-    const t = List.of(
+    let t = List.of(
       `Omituinen kuumetauti iskee joukkueeseen. Puolet pelaajista makaa petissä seuraavan ottelun ajan!`
     );
 

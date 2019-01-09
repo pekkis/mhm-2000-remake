@@ -137,18 +137,33 @@ const eventsMap = OrderedMap(
     [24, "pekkiini"],
     [61, "enemyProtest"],
     [310, "urheiluruuttu"],
-    [311, "pstudio"]
+    [311, "pstudio"],
+
+    [312, "ekkanen"],
+    [314, "makrosoft"],
+    [208, "makrosoft"],
+
+    [313, "jarasvuo"],
+    [53, "laskisalonen"],
+    [252, "laskisalonen"],
+
+    [74, "kecklin"],
+    [107, "kecklin"],
+
+    [147, "pakibetteri"],
+    [318, "pakibetteri"]
   )
 );
 
 /*
 
 IF sat = 312 THEN GOSUB sat40
-IF sat = 313 THEN GOSUB sat42
 IF sat = 314 OR sat = 208 THEN GOSUB sat41
+IF sat = 313 THEN GOSUB sat42
 IF sat = 53 OR sat = 252 THEN GOSUB sat43
 IF sat = 74 OR sat = 107 THEN GOSUB sat44
 IF sat = 147 OR sat = 318 THEN GOSUB sat45
+
 IF sat = 203 OR sat = 204 THEN GOSUB sat46
 IF sat = 185 OR sat = 245 THEN GOSUB sat47
 IF sat = 135 OR sat = 215 THEN GOSUB sat48

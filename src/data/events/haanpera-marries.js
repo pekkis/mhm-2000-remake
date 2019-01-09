@@ -41,7 +41,7 @@ const event = {
   },
 
   render: data => {
-    const t = List.of(
+    let t = List.of(
       `Pelaaja Aki Haanperän polttarit ovat seuraavana iltana. Koko joukkue on mukana ja kankkunen vaivaa seuraavan ottelun ajan!`
     );
 

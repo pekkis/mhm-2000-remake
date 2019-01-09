@@ -35,7 +35,7 @@ const event = {
   },
 
   render: data => {
-    const t = List.of(
+    let t = List.of(
       `__Sulo Arilander__ ${data.get(
         "randomTeam"
       )}:sta väittää joutuneensa hyväksikäytetyksi juniorivuosinaan pelattuaan valmentamassasi joukkueessa, Jukureissa. Jotkut pelaajista alkavat hieman "vieroksua" sinua, ja päätäsi vaaditaan vadille!

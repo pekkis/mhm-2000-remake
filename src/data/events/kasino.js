@@ -7,7 +7,7 @@ import { incrementBalance } from "../../sagas/manager";
 const eventId = "kasino";
 
 const texts = data => {
-  const t = List.of(
+  let t = List.of(
     `Olet eräänä iltana kasinolla.
 
   Yhtäkkiä ääni päässäsi sanoo: 'Laita ${data.get(

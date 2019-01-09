@@ -39,7 +39,7 @@ const event = {
   },
 
   render: data => {
-    const t = List.of(
+    let t = List.of(
       `Pelaaja Aki Haanperän avioliitto p„„ttyy eroon! Mies on onnellinen kun pääsee eroon nalkuttavasta vaimosta ja parantaa otteitaan!`
     );
 

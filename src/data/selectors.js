@@ -143,10 +143,8 @@ export const competition = id => state =>
   state.game.getIn(["competitions", id]);
 
 export const managerCompetesIn = (manager, competition) => state => {
-  return pipe(
-    managersCompetitions(manager),
-    competitions => competitions.map(c => c.get("id")).includes(competition)
-  )(state);
+  const competitions = managersCompetitions(manager)(state);
+  return competitions.map(c => c.get("id")).includes(competition);
 };
 
 export const flag = flag => state => {
@@ -158,6 +156,9 @@ export const managersTeam = manager => state =>
     "teams",
     state.manager.getIn(["managers", manager, "team"])
   ]);
+
+export const managersBalance = manager => state =>
+  state.manager.getIn(["managers", manager, "balance"]);
 
 export const managersTeamId = manager => state => {
   return managersTeam(manager)(state).get("id");

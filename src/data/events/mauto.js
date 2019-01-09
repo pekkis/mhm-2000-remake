@@ -17,7 +17,7 @@ import { setFlag } from "../../sagas/game";
 const eventId = "mauto";
 
 const texts = data => {
-  const t = List.of(
+  let t = List.of(
     `Monikansallinen autotehdas __Mautomobiles__ haluaa sponsoroida joukkuettasi!
     Jos joukkueen nimeksi vaihdetaan _${data.get(
       "newName"
