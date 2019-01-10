@@ -53,7 +53,17 @@ IF sat = 24 THEN GOSUB sat36
 IF sat = 61 THEN GOSUB sat37
 IF sat = 310 THEN GOSUB sat38
 IF sat = 311 THEN GOSUB sat39
-
+IF sat = 312 THEN GOSUB sat40
+IF sat = 314 OR sat = 208 THEN GOSUB sat41
+IF sat = 313 THEN GOSUB sat42
+IF sat = 53 OR sat = 252 THEN GOSUB sat43
+IF sat = 74 OR sat = 107 THEN GOSUB sat44
+IF sat = 147 OR sat = 318 THEN GOSUB sat45
+IF sat = 203 OR sat = 204 THEN GOSUB sat46
+IF sat = 185 OR sat = 245 THEN GOSUB sat47
+IF sat = 135 OR sat = 215 THEN GOSUB sat48
+IF sat = 45 OR sat = 55 THEN GOSUB sat49
+IF sat = 127 OR sat = 272 THEN GOSUB sat50
 */
 
 const eventsMap = OrderedMap(
@@ -151,24 +161,23 @@ const eventsMap = OrderedMap(
     [107, "kecklin"],
 
     [147, "pakibetteri"],
-    [318, "pakibetteri"]
+    [318, "pakibetteri"],
+
+    [203, "juznetsov"],
+    [204, "juznetsov"],
+
+    [185, "workPermits"],
+    [245, "workPermits"],
+
+    [45, "ogilny"],
+    [55, "ogilny"],
+
+    [127, "abcd"],
+    [272, "abcd"]
   )
 );
 
 /*
-
-IF sat = 312 THEN GOSUB sat40
-IF sat = 314 OR sat = 208 THEN GOSUB sat41
-IF sat = 313 THEN GOSUB sat42
-IF sat = 53 OR sat = 252 THEN GOSUB sat43
-IF sat = 74 OR sat = 107 THEN GOSUB sat44
-IF sat = 147 OR sat = 318 THEN GOSUB sat45
-
-IF sat = 203 OR sat = 204 THEN GOSUB sat46
-IF sat = 185 OR sat = 245 THEN GOSUB sat47
-IF sat = 135 OR sat = 215 THEN GOSUB sat48
-IF sat = 45 OR sat = 55 THEN GOSUB sat49
-IF sat = 127 OR sat = 272 THEN GOSUB sat50
 IF sat = 54 THEN GOSUB sat51
 IF sat = 285 THEN GOSUB sat52
 IF sat = 263 THEN GOSUB sat53

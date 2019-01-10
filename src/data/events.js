@@ -48,6 +48,10 @@ import jarasvuo from "./events/jarasvuo";
 import laskisalonen from "./events/laskisalonen";
 import kecklin from "./events/kecklin";
 import pakibetteri from "./events/pakibetteri";
+import juznetsov from "./events/juznetsov";
+import workPermits from "./events/work-permits";
+import ogilny from "./events/ogilny";
+import abcd from "./events/abcd";
 
 /* non-random events */
 
@@ -105,7 +109,11 @@ const events = Map({
   jarasvuo,
   laskisalonen,
   kecklin,
-  pakibetteri
+  pakibetteri,
+  juznetsov,
+  workPermits,
+  ogilny,
+  abcd
 });
 
 export default events;
