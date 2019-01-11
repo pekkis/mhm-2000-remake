@@ -20,8 +20,9 @@ import endOfSeasonPhase from "./phase/end-of-season";
 import startOfSeasonPhase from "./phase/start-of-season";
 import calculationsPhase from "./phase/calculations";
 import calendar from "../data/calendar";
+import difficultyLevels from "../data/difficulty-levels";
 
-import { afterGameday } from "./manager";
+import { afterGameday, setExtra } from "./manager";
 import { stats } from "./stats";
 import { allTeams } from "../data/selectors";
 
@@ -87,6 +88,14 @@ function* competitionStart(competitionId) {
 }
 
 export function* seasonStart() {
+  const managers = yield select(state => state.manager.get("managers"));
+  for (const manager of managers) {
+    yield setExtra(
+      manager.get("id"),
+      difficultyLevels.getIn([manager.get("difficulty"), "extra"])
+    );
+  }
+
   const teams = yield select(allTeams);
 
   const reStrengths = teams.slice(24).map(t => {

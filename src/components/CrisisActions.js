@@ -8,12 +8,13 @@ import MaxRound from "./ui/containers/MaxRoundContainer";
 
 import crisis from "../data/crisis";
 import { currency as c } from "../services/format";
+import { getEffective } from "../services/effects";
 
 const TransferMarket = props => {
   const { manager, teams, competitions, crisisMeeting } = props;
 
   const balance = manager.get("balance");
-  const team = teams.get(manager.get("team"));
+  const team = getEffective(teams.get(manager.get("team")));
 
   const crisisInfo = crisis(team, competitions);
 

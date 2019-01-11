@@ -64,6 +64,18 @@ IF sat = 185 OR sat = 245 THEN GOSUB sat47
 IF sat = 135 OR sat = 215 THEN GOSUB sat48
 IF sat = 45 OR sat = 55 THEN GOSUB sat49
 IF sat = 127 OR sat = 272 THEN GOSUB sat50
+IF sat = 54 THEN GOSUB sat51
+IF sat = 285 THEN GOSUB sat52
+IF sat = 263 THEN GOSUB sat53
+IF sat = 317 THEN GOSUB sat54
+IF sat = 126 THEN GOSUB sat55
+IF sat = 218 THEN GOSUB sat56
+IF sat = 277 THEN GOSUB sat57
+IF sat = 267 THEN GOSUB sat58
+IF sat = 106 THEN GOSUB sat59
+IF sat = 268 THEN GOSUB sat60
+IF sat = 321 THEN GOSUB sat61
+
 */
 
 const eventsMap = OrderedMap(
@@ -173,22 +185,24 @@ const eventsMap = OrderedMap(
     [55, "ogilny"],
 
     [127, "abcd"],
-    [272, "abcd"]
+    [272, "abcd"],
+
+    [54, "hirmukunto"],
+    [285, "divisionRally"],
+    [263, "phlRally"],
+
+    [317, "otsohalli"],
+    [126, "sopupeli"],
+    [219, "yhteispeli"],
+    [277, "habadobo"],
+    [267, "jatovrel"],
+    [106, "pertinPselit"],
+    [268, "youStalk"],
+    [321, "paajanen"]
   )
 );
 
 /*
-IF sat = 54 THEN GOSUB sat51
-IF sat = 285 THEN GOSUB sat52
-IF sat = 263 THEN GOSUB sat53
-IF sat = 317 THEN GOSUB sat54
-IF sat = 126 THEN GOSUB sat55
-IF sat = 218 THEN GOSUB sat56
-IF sat = 277 THEN GOSUB sat57
-IF sat = 267 THEN GOSUB sat58
-IF sat = 106 THEN GOSUB sat59
-IF sat = 268 THEN GOSUB sat60
-IF sat = 321 THEN GOSUB sat61
 IF sat = 328 THEN GOSUB sat63
 IF sat = 322 THEN GOSUB sat64
 IF sat = 323 THEN GOSUB sat65
@@ -242,7 +256,7 @@ export default function* eventPhase() {
 
   // const key = eventsMap.last();
 
-  const eventId = getEventId();
+  const eventId = eventsMap.last(); // getEventId();
 
   if (eventId) {
     yield call(events.get(eventId).create, { manager });

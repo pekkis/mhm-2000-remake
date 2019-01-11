@@ -151,6 +151,9 @@ export const flag = flag => state => {
   return state.game.getIn(["flags", flag]);
 };
 
+export const managerFlag = (manager, flag) => state =>
+  state.manager.getIn(["managers", manager, "flags", flag]);
+
 export const managersTeam = manager => state =>
   state.game.getIn([
     "teams",
@@ -170,7 +173,8 @@ export const managersDifficulty = manager => state =>
 export const randomTeamFrom = (
   competitions,
   canBeHumanControlled = false,
-  excluded = []
+  excluded = [],
+  f = () => true
 ) => state => {
   console.log(excluded, "excommunicado");
 
@@ -182,14 +186,20 @@ export const randomTeamFrom = (
     .filter(c => competitions.includes(c.get("id")))
     .map(c => c.get("teams"))
     .flatten(true)
+    .map(t => state.game.getIn(["teams", t]))
     .filter(t => {
-      return canBeHumanControlled || !managersTeams.includes(t);
+      console.log("T", t);
+      return canBeHumanControlled || !managersTeams.includes(t.get("id"));
     })
-    .filterNot(t => excluded.includes(t));
+    .filterNot(t => excluded.includes(t.get("id")))
+    .filter(f);
 
-  const randomized = r.pick(teams.toJS());
+  if (teams.count() === 0) {
+    return false;
+  }
 
-  return state.game.getIn(["teams", randomized]);
+  const randomized = r.pick(teams.toArray());
+  return state.game.getIn(["teams", randomized.get("id")]);
 };
 
 export const randomManager = (exclude = []) => state => {

@@ -58,6 +58,16 @@ export function* setBalance(managerId, amount) {
   });
 }
 
+export function* renameArena(managerId, name) {
+  return yield put({
+    type: "MANAGER_RENAME_ARENA",
+    payload: {
+      manager: managerId,
+      name
+    }
+  });
+}
+
 export function* incrementBalance(managerId, amount) {
   return yield put({
     type: "MANAGER_INCREMENT_BALANCE",
@@ -70,6 +80,27 @@ export function* incrementBalance(managerId, amount) {
 
 export function* decrementBalance(managerId, amount) {
   return yield call(incrementBalance, managerId, -amount);
+}
+
+export function* setExtra(manager, extra) {
+  yield put({
+    type: "MANAGER_SET_EXTRA",
+    payload: {
+      manager,
+      extra
+    }
+  });
+}
+
+export function* setFlag(manager, flag, value) {
+  yield put({
+    type: "MANAGER_SET_FLAG",
+    payload: {
+      manager,
+      flag,
+      value
+    }
+  });
 }
 
 export function* crisisMeeting(action) {

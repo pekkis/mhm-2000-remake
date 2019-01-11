@@ -72,7 +72,7 @@ export function* incrementReadiness(teamId, amount) {
   });
 }
 
-export function* addEffect(team, parameter, amount, duration) {
+export function* addEffect(team, parameter, amount, duration, extra) {
   yield put({
     type: "TEAM_ADD_EFFECT",
     payload: {
@@ -80,7 +80,8 @@ export function* addEffect(team, parameter, amount, duration) {
       effect: {
         amount,
         duration,
-        parameter
+        parameter,
+        extra
       }
     }
   });

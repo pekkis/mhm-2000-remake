@@ -1,5 +1,6 @@
 import React from "react";
 import TurnIndicator from "./game/TurnIndicator";
+import { getEffective } from "../services/effects";
 
 import Events from "./events/Events";
 import News from "./news/News";
@@ -30,7 +31,7 @@ const MainMenu = props => {
     news
   } = props;
 
-  const team = teams.get(manager.get("team"));
+  const team = getEffective(teams.get(manager.get("team")));
 
   return (
     <HeaderedPage>

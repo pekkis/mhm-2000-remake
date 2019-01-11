@@ -23,7 +23,8 @@ const defaultState = Map({
         level: 0
       }),
       extra: 0,
-      insuranceExtra: 0
+      insuranceExtra: 0,
+      flags: Map()
     })
   )
 });
@@ -99,9 +100,17 @@ export default function managerReducer(state = defaultState, action) {
     case "SEASON_START":
       return state.update("managers", managers => {
         return managers.map(manager => {
-          return manager.set("pranksExecuted", 0);
+          return manager
+            .set("pranksExecuted", 0)
+            .setIn(["flags", "rally"], false);
         });
       });
+
+    case "MANAGER_SET_FLAG":
+      return state.setIn(
+        ["managers", payload.manager, "flags", payload.flag],
+        payload.value
+      );
 
     case "MANAGER_SET_SERVICE":
       return state.setIn(
@@ -142,6 +151,9 @@ export default function managerReducer(state = defaultState, action) {
         ["managers", payload.manager, "insuranceExtra"],
         ie => ie + payload.amount
       );
+
+    case "MANAGER_SET_EXTRA":
+      return state.setIn(["managers", payload.manager, "extra"], payload.extra);
 
     case "MANAGER_SET_INSURANCE_EXTRA":
       return state.setIn(

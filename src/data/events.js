@@ -52,6 +52,17 @@ import juznetsov from "./events/juznetsov";
 import workPermits from "./events/work-permits";
 import ogilny from "./events/ogilny";
 import abcd from "./events/abcd";
+import hirmukunto from "./events/hirmukunto";
+import divisionRally from "./events/division-rally";
+import phlRally from "./events/phl-rally";
+import otsohalli from "./events/otsohalli";
+import sopupeli from "./events/sopupeli";
+import yhteispeli from "./events/yhteispeli";
+import habadobo from "./events/habadobo";
+import jatovrel from "./events/jatovrel";
+import pertinPselit from "./events/pertin-pselit";
+import youStalk from "./events/you-stalk";
+import paajanen from "./events/paajanen";
 
 /* non-random events */
 
@@ -113,7 +124,18 @@ const events = Map({
   juznetsov,
   workPermits,
   ogilny,
-  abcd
+  abcd,
+  hirmukunto,
+  divisionRally,
+  phlRally,
+  otsohalli,
+  sopupeli,
+  yhteispeli,
+  habadobo,
+  jatovrel,
+  pertinPselit,
+  youStalk,
+  paajanen
 });
 
 export default events;

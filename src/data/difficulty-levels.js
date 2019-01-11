@@ -25,7 +25,15 @@ const difficultyLevels = List.of(
     moraleMax: 12,
     moraleBoost: 1,
     startBalance: 1000000,
-    pranksPerSeason: 5
+    pranksPerSeason: 5,
+    extra: 3000,
+    salary: competition => {
+      return competition === "phl" ? 2600 : 2000;
+    },
+    rallyMorale: 33,
+    rallyExtra: competition => {
+      return competition === "phl" ? 40000 : 10000;
+    }
   }),
   Map({
     value: "1",
@@ -35,8 +43,17 @@ const difficultyLevels = List.of(
     moraleMax: 12,
     moraleBoost: 1,
     startBalance: 500000,
-    pranksPerSeason: 4
+    pranksPerSeason: 4,
+    extra: 0,
+    salary: competition => {
+      return competition === "phl" ? 3000 : 2350;
+    },
+    rallyMorale: 33,
+    rallyExtra: competition => {
+      return competition === "phl" ? 35000 : 10000;
+    }
   }),
+
   Map({
     value: "2",
     name: "Kahvivatsa",
@@ -46,8 +63,17 @@ const difficultyLevels = List.of(
     moraleBoost: 0,
     // startBalance: 0,
     startBalance: 0,
-    pranksPerSeason: 3
+    pranksPerSeason: 3,
+    extra: 0,
+    salary: competition => {
+      return competition === "phl" ? 3200 : 2700;
+    },
+    rallyMorale: 33,
+    rallyExtra: competition => {
+      return competition === "phl" ? 30000 : 10000;
+    }
   }),
+
   Map({
     value: "3",
     name: "Vatsahaava",
@@ -56,7 +82,15 @@ const difficultyLevels = List.of(
     moraleMax: 12,
     moraleBoost: -1,
     startBalance: -250000,
-    pranksPerSeason: 2
+    pranksPerSeason: 2,
+    extra: -3000,
+    salary: competition => {
+      return competition === "phl" ? 3500 : 2900;
+    },
+    rallyMorale: 33,
+    rallyExtra: competition => {
+      return competition === "phl" ? 25000 : 10000;
+    }
   }),
   Map({
     value: "4",
@@ -66,7 +100,15 @@ const difficultyLevels = List.of(
     moraleMax: 8,
     moraleBoost: -1,
     startBalance: -600000,
-    pranksPerSeason: 1
+    pranksPerSeason: 1,
+    extra: -3000,
+    salary: competition => {
+      return competition === "phl" ? 4000 : 3200;
+    },
+    rallyMorale: 15,
+    rallyExtra: competition => {
+      return competition === "phl" ? 20000 : 10000;
+    }
   })
 );
 
