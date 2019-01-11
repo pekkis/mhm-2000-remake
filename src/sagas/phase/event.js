@@ -4,11 +4,6 @@ import r from "../../services/random";
 import { resolveEvent, processEvents } from "../event";
 import { OrderedMap, List } from "immutable";
 
-// TODO:
-/*
-IF kr > 15 AND sarja = 1 AND s(u) < 5 AND s(z) < 5 THEN GOSUB sat68
-*/
-
 // DONE
 /*
 
@@ -75,6 +70,12 @@ IF sat = 267 THEN GOSUB sat58
 IF sat = 106 THEN GOSUB sat59
 IF sat = 268 THEN GOSUB sat60
 IF sat = 321 THEN GOSUB sat61
+IF sat = 328 THEN GOSUB sat63
+IF sat = 322 THEN GOSUB sat64
+IF sat = 323 THEN GOSUB sat65
+IF sat = 324 THEN GOSUB sat66
+IF sat = 325 THEN GOSUB sat67
+
 
 */
 
@@ -198,16 +199,19 @@ const eventsMap = OrderedMap(
     [267, "jatovrel"],
     [106, "pertinPselit"],
     [268, "youStalk"],
-    [321, "paajanen"]
+    [321, "paajanen"],
+
+    [328, "saunailta"],
+    [322, "bestManagerEver"],
+    [323, "worstManagerEver"],
+    [324, "florist"],
+    [325, "moneyTroubles"]
   )
 );
 
 /*
-IF sat = 328 THEN GOSUB sat63
-IF sat = 322 THEN GOSUB sat64
-IF sat = 323 THEN GOSUB sat65
-IF sat = 324 THEN GOSUB sat66
-IF sat = 325 THEN GOSUB sat67
+
+IF kr > 15 AND sarja = 1 AND s(u) < 5 AND s(z) < 5 THEN GOSUB sat68
 IF sat = 326 THEN GOSUB sat69
 IF sat = 327 THEN GOSUB sat70
 IF sat = 279 THEN GOSUB sat71
@@ -256,7 +260,7 @@ export default function* eventPhase() {
 
   // const key = eventsMap.last();
 
-  const eventId = eventsMap.last(); // getEventId();
+  const eventId = getEventId(); // eventsMap.last(); // getEventId();
 
   if (eventId) {
     yield call(events.get(eventId).create, { manager });

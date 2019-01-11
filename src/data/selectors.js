@@ -170,6 +170,38 @@ export const managersTeamId = manager => state => {
 export const managersDifficulty = manager => state =>
   state.manager.getIn(["managers", manager, "difficulty"]);
 
+export const randomRankedTeam = (
+  competitionId,
+  phaseId,
+  range,
+  f = () => true
+) => state => {
+  const managers = state.manager.get("managers").map(m => m.get("id"));
+
+  const ret = state.game
+    .getIn(["competitions", competitionId, "phases", phaseId, "groups"])
+    .flatMap(group => {
+      console.log(group, "g");
+
+      return group
+        .get("stats")
+        .map(s => s.get("id"))
+        .filter((t, i) => range.includes(i))
+        .map(t => state.game.getIn(["teams", t]))
+        .filterNot(t => managers.includes(t.get("manager")))
+        .filter(f);
+    });
+
+  console.log(ret.toJS(), "wut the fuk?");
+
+  if (ret.count() === 0) {
+    return false;
+  }
+
+  const randomized = r.pick(ret.toArray());
+  return state.game.getIn(["teams", randomized.get("id")]);
+};
+
 export const randomTeamFrom = (
   competitions,
   canBeHumanControlled = false,

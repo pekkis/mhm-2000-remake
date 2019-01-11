@@ -16,6 +16,10 @@ const event = {
     const team = yield select(
       randomTeamFrom(["division"], false, [], t => t.get("strength") > 120)
     );
+    if (!team) {
+      return;
+    }
+
     const duration = cinteger(0, 10) + 7;
     const random = yield select(randomManager());
 

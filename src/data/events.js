@@ -63,6 +63,11 @@ import jatovrel from "./events/jatovrel";
 import pertinPselit from "./events/pertin-pselit";
 import youStalk from "./events/you-stalk";
 import paajanen from "./events/paajanen";
+import saunailta from "./events/saunailta";
+import bestManagerEver from "./events/best-manager-ever";
+import worstManagerEver from "./events/worst-manager-ever";
+import florist from "./events/florist";
+import moneyTroubles from "./events/money-troubles";
 
 /* non-random events */
 
@@ -135,7 +140,12 @@ const events = Map({
   jatovrel,
   pertinPselit,
   youStalk,
-  paajanen
+  paajanen,
+  saunailta,
+  bestManagerEver,
+  worstManagerEver,
+  florist,
+  moneyTroubles
 });
 
 export default events;
