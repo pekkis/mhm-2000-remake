@@ -28,6 +28,7 @@ const StartMenu = props => {
           <Centerer>
             <TitleImg src={title} />
             <h1>MHM 97 - maailman paras jääkiekkomanagerisimulaatio</h1>
+            <h2>service worker test 0.0.1</h2>
           </Centerer>
 
           {!starting && (
