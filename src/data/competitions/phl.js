@@ -39,12 +39,12 @@ export default Map({
       const teams = competition.get("teams");
       const times = 2;
       return Map({
-        penalties: List(),
         name: "runkosarja",
         type: "round-robin",
         teams,
         groups: List.of(
           Map({
+            penalties: List(),
             type: "round-robin",
             round: 0,
             name: "runkosarja",

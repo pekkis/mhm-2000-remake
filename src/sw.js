@@ -3,6 +3,8 @@
 
 const { assets } = global.serviceWorkerOption;
 
+console.log(assets, "assetore");
+
 const CACHE_NAME = new Date().toISOString();
 
 const assetsToCache = [...assets, "./"].map(path => {
