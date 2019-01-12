@@ -78,12 +78,13 @@ export const simulate = game => {
       });
   });
 
+  /*
   const strengthsX = teams.map((t, i) => {
     return effects.map(e => e(t, i));
   });
-
   console.log("strengthS", strengthsX.toList().toJS());
   console.log("MANAGER EFFECTS", managerEffects.toJS());
+  */
 
   const strengths = teams.map((t, i) => {
     return (
@@ -113,7 +114,7 @@ export const simulate = game => {
     });
   });
 
-  console.log(info.toJS());
+  // console.log(info.toJS());
 
   const needsOvertime = overtime(result);
 

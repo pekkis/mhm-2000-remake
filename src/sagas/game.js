@@ -25,8 +25,66 @@ import difficultyLevels from "../data/difficulty-levels";
 import { afterGameday, setExtra } from "./manager";
 import { stats } from "./stats";
 import { allTeams } from "../data/selectors";
+import events from "../data/events";
+
+export function* beforeGame(action) {
+  const {
+    payload: { competition, phase, group, round, pairing }
+  } = action;
+
+  if (competition === "phl" && phase === 0 && group === 0 && round >= 5) {
+    const g = yield select(state =>
+      state.game.getIn([
+        "competitions",
+        competition,
+        "phases",
+        phase,
+        "groups",
+        group
+      ])
+    );
+
+    const teams = yield select(state => state.game.get("teams"));
+
+    const p = g.getIn(["schedule", round, pairing]);
+
+    const t = p.map(p => g.getIn(["teams", p])).map(tid => teams.get(tid));
+
+    const humansInGame = t
+      .filter(t => t.get("manager") !== undefined)
+      .map(t => t.get("manager"))
+      .toList();
+
+    if (humansInGame.count() === 0) {
+      return;
+    }
+
+    const interestingTeams = g
+      .get("stats")
+      .take(5)
+      .map(s => s.get("id"));
+
+    const gameIsInteresting = t.every(t =>
+      interestingTeams.includes(t.get("id"))
+    );
+    if (!gameIsInteresting) {
+      return;
+    }
+
+    const event = events.get("topGame");
+
+    for (const manager of humansInGame) {
+      yield call(event.create, {
+        manager
+      });
+    }
+  }
+
+  return;
+}
 
 export function* gameLoop() {
+  yield takeEvery("GAME_GAME_BEGIN", beforeGame);
   yield takeEvery("GAME_GAMEDAY_COMPLETE", afterGameday);
   yield fork(stats);
 
@@ -189,6 +247,20 @@ export function* setFlag(flag, value) {
     payload: {
       flag,
       value
+    }
+  });
+}
+
+export function* incrementServiceBasePrice(service, amount) {
+  const currentAmount = yield select(state =>
+    state.game.getIn(["serviceBasePrices", service])
+  );
+
+  yield put({
+    type: "GAME_SET_SERVICE_BASE_PRICE",
+    payload: {
+      service,
+      amount: currentAmount + amount
     }
   });
 }

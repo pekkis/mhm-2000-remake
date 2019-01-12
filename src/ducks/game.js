@@ -145,7 +145,7 @@ export default function gameReducer(state = defaultState, action) {
     case "GAME_HISTORY_PUSH":
       return state.setIn(["ehlParticipants"], payload.ehlParticipants);
 
-    case "GAME_RESULT":
+    case "GAME_GAME_RESULT":
       // console.log("pl", payload);
 
       return state.updateIn(
@@ -302,6 +302,12 @@ export default function gameReducer(state = defaultState, action) {
 
     case "GAME_SET_FLAG":
       return state.setIn(["flags", payload.flag], payload.value);
+
+    case "GAME_SET_SERVICE_BASE_PRICE":
+      return state.setIn(
+        ["serviceBasePrices", payload.service],
+        payload.amount
+      );
 
     default:
       return state;

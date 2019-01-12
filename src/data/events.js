@@ -68,9 +68,19 @@ import bestManagerEver from "./events/best-manager-ever";
 import worstManagerEver from "./events/worst-manager-ever";
 import florist from "./events/florist";
 import moneyTroubles from "./events/money-troubles";
+import pauligkahvi from "./events/pauligkahvi";
+import randomDude from "./events/random-dude";
+import onecky from "./events/onecky";
+import mcHabadobo from "./events/mc-habadobo";
+import ultimateCruelty from "./events/ultimate-cruelty";
+import etelalaAscends from "./events/etelala-ascends";
+import etelalaDescends from "./events/etelala-descends";
+import etelalaBonusFrenzy from "./events/etelala-bonusfrenzy";
+import etelalaGlitch from "./events/etelala-glitch";
 
 /* non-random events */
 
+import topGame from "./events/top-game";
 import protest from "./events/protest";
 import bazookaStrike from "./events/bazooka-strike";
 import sellNarcotics from "./events/sell-narcotics";
@@ -79,6 +89,7 @@ const events = Map({
   protest,
   sellNarcotics,
   bazookaStrike,
+  topGame,
 
   pirka,
   kasino,
@@ -94,7 +105,6 @@ const events = Map({
   jarko,
   moreTaxes,
   cleandrug,
-
   fortuneTeller,
   voodoo,
   stalking,
@@ -145,7 +155,16 @@ const events = Map({
   bestManagerEver,
   worstManagerEver,
   florist,
-  moneyTroubles
+  moneyTroubles,
+  pauligkahvi,
+  randomDude,
+  onecky,
+  mcHabadobo,
+  ultimateCruelty,
+  etelalaAscends,
+  etelalaDescends,
+  etelalaBonusFrenzy,
+  etelalaGlitch
 });
 
 export default events;

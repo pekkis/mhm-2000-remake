@@ -1,6 +1,5 @@
 import { Map, List } from "immutable";
 import rr from "../../services/round-robin";
-import table from "../../services/league";
 import playoffScheduler, { victors, eliminated } from "../../services/playoffs";
 
 export default Map({

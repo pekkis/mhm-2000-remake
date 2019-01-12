@@ -83,6 +83,17 @@ export function* gameday(payload) {
         if (playMatch(group, round, x)) {
           const pairing = pairings.get(x);
 
+          yield put({
+            type: "GAME_GAME_BEGIN",
+            payload: {
+              competition: competition.get("id"),
+              phase: competition.get("phase"),
+              group: groupIndex,
+              round,
+              pairing: x
+            }
+          });
+
           const result = yield call(
             playGame,
             group,
@@ -94,7 +105,7 @@ export function* gameday(payload) {
           );
 
           yield put({
-            type: "GAME_RESULT",
+            type: "GAME_GAME_RESULT",
             payload: {
               competition: competition.get("id"),
               phase: competition.get("phase"),

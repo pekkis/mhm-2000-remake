@@ -22,7 +22,7 @@ const save = state => {
       .map(subtree => subtree.toJS())
       .toJS()
   );
-  console.log("JSON blob", json);
+  // console.log("JSON blob", json);
   window.localStorage.setItem("mhm97", json);
 };
 
@@ -48,7 +48,7 @@ function* gameStart() {
 
   const difficulty = yield select(managersDifficulty(0));
 
-  console.log(difficulty, "difficultah");
+  // console.log(difficulty, "difficultah");
 
   yield putResolve({
     type: "MANAGER_SET_BALANCE",
@@ -58,7 +58,7 @@ function* gameStart() {
     }
   });
 
-  yield call(hireManager, 0, 12);
+  yield call(hireManager, 0, 2);
 
   // yield call(seasonStart);
 

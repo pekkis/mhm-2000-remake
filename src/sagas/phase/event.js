@@ -75,7 +75,10 @@ IF sat = 322 THEN GOSUB sat64
 IF sat = 323 THEN GOSUB sat65
 IF sat = 324 THEN GOSUB sat66
 IF sat = 325 THEN GOSUB sat67
-
+IF sat = 326 THEN GOSUB sat69
+IF sat = 327 THEN GOSUB sat70
+IF sat = 279 THEN GOSUB sat71
+IF sat = 334 OR sat = 335 THEN GOSUB sat72
 
 */
 
@@ -205,22 +208,31 @@ const eventsMap = OrderedMap(
     [322, "bestManagerEver"],
     [323, "worstManagerEver"],
     [324, "florist"],
-    [325, "moneyTroubles"]
+    [325, "moneyTroubles"],
+    [326, "pauligkahvi"],
+    [327, "randomDude"],
+    [279, "onecky"],
+    [334, "mcHabadobo"],
+    [335, "mcHabadobo"],
+    [331, "ultimateCruelty"],
+    [206, "ultimateCruelty"],
+    [332, "etelalaAscends"],
+    [102, "etelalaAscends"],
+    [333, "etelalaDescends"],
+    [175, "etelalaDescends"],
+    [209, "etelalaBonusFrenzy"],
+    [177, "etelalaGlitch"]
   )
 );
 
 /*
 
-IF kr > 15 AND sarja = 1 AND s(u) < 5 AND s(z) < 5 THEN GOSUB sat68
-IF sat = 326 THEN GOSUB sat69
-IF sat = 327 THEN GOSUB sat70
-IF sat = 279 THEN GOSUB sat71
-IF sat = 334 OR sat = 335 THEN GOSUB sat72
 IF sat = 331 OR sat = 206 THEN GOSUB sat73
 IF sat = 332 OR sat = 102 THEN GOSUB sat74
 IF sat = 333 OR sat = 175 THEN GOSUB sat75
 IF sat = 209 THEN GOSUB sat76
 IF sat = 177 THEN GOSUB sat77
+
 IF sat = 224 THEN GOSUB sat78
 IF sat = 136 THEN GOSUB sat79
 IF sat = 305 THEN GOSUB sat80
@@ -260,7 +272,7 @@ export default function* eventPhase() {
 
   // const key = eventsMap.last();
 
-  const eventId = getEventId(); // eventsMap.last(); // getEventId();
+  const eventId = eventsMap.last(); // getEventId();
 
   if (eventId) {
     yield call(events.get(eventId).create, { manager });
