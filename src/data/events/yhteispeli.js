@@ -2,7 +2,7 @@ import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { addEffect } from "../../sagas/team";
-import { randomTeamFrom, randomManager, teamsStrength } from "../selectors";
+import { randomTeamFrom, randomManager } from "../selectors";
 import { cinteger } from "../../services/random";
 
 const eventId = "yhteispeli";

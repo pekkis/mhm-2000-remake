@@ -78,6 +78,24 @@ import etelalaDescends from "./events/etelala-descends";
 import etelalaBonusFrenzy from "./events/etelala-bonusfrenzy";
 import etelalaGlitch from "./events/etelala-glitch";
 
+import attitudeCanada from "./events/attitude-canada";
+import attitudeUSA from "./events/attitude-usa";
+import scoreboard from "./events/scoreboard";
+import ramirez from "./events/ramirez";
+import boxing from "./events/boxing";
+import psychoAttack from "./events/psycho-attack";
+import psychoMail from "./events/psycho-mail";
+import psychoRelease from "./events/psycho-release";
+import grossman from "./events/grossman";
+import bloodbath from "./events/bloodbath";
+import book from "./events/book";
+import allgoSuccess from "./events/allgo-success";
+import simonovSuccess from "./events/simonov-success";
+import strategyFailure from "./events/strategy-failure";
+import strategySuccess from "./events/strategy-success";
+import foreignLegion from "./events/foreign-legion";
+import incredibleFeeling from "./events/incredible-feeling";
+
 /* non-random events */
 
 import topGame from "./events/top-game";
@@ -164,7 +182,24 @@ const events = Map({
   etelalaAscends,
   etelalaDescends,
   etelalaBonusFrenzy,
-  etelalaGlitch
+  etelalaGlitch,
+  attitudeCanada,
+  attitudeUSA,
+  scoreboard,
+  ramirez,
+  boxing,
+  psychoAttack,
+  psychoMail,
+  psychoRelease,
+  grossman,
+  bloodbath,
+  book,
+  allgoSuccess,
+  simonovSuccess,
+  strategyFailure,
+  strategySuccess,
+  foreignLegion,
+  incredibleFeeling
 });
 
 export default events;

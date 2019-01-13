@@ -1,5 +1,5 @@
 import { Seq } from "immutable";
-import { hireManager } from "./manager";
+import { hireManager, incrementBalance } from "./manager";
 import { gameLoop } from "./game";
 import { addNotification } from "./notification";
 import { managersDifficulty } from "../data/selectors";
@@ -58,7 +58,9 @@ function* gameStart() {
     }
   });
 
-  yield call(hireManager, 0, 12);
+  yield call(hireManager, 0, 1);
+
+  yield call(incrementBalance, 0, 100000000);
 
   // yield call(seasonStart);
 

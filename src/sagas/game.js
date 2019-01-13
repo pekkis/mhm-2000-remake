@@ -22,9 +22,14 @@ import calculationsPhase from "./phase/calculations";
 import calendar from "../data/calendar";
 import difficultyLevels from "../data/difficulty-levels";
 
-import { afterGameday, setExtra } from "./manager";
+import { afterGameday, setExtra, decrementBalance } from "./manager";
 import { stats } from "./stats";
-import { allTeams } from "../data/selectors";
+import {
+  allTeams,
+  managersTeam,
+  managersDifficulty,
+  managersMainCompetition
+} from "../data/selectors";
 import events from "../data/events";
 
 export function* beforeGame(action) {
@@ -146,33 +151,27 @@ function* competitionStart(competitionId) {
 }
 
 export function* seasonStart() {
-  const managers = yield select(state => state.manager.get("managers"));
-  for (const manager of managers) {
-    yield setExtra(
-      manager.get("id"),
-      difficultyLevels.getIn([manager.get("difficulty"), "extra"])
-    );
-  }
+  const turn = yield select(state => state.game.get("turn"));
+  const season = turn.get("season");
 
   const teams = yield select(allTeams);
 
+  // Re-strength European teams.
   const reStrengths = teams.slice(24).map(t => {
     return {
       id: t.get("id"),
       strength: teamData.get(t.get("id")).get("strength")()
     };
   });
-
   yield put({
     type: "TEAM_SET_STRENGTHS",
     payload: reStrengths.toJS()
   });
 
+  // Start all competitions.
   for (const [key, competitionObj] of competitionData) {
     yield competitionStart(key);
-
     const competitions = yield select(state => state.game.get("competitions"));
-
     yield put({
       type: "COMPETITION_START",
       payload: {
@@ -181,7 +180,6 @@ export function* seasonStart() {
     });
 
     const seed = competitionObj.getIn(["seed", 0])(competitions);
-
     yield putResolve({
       type: "COMPETITION_SEED",
       payload: {
@@ -190,6 +188,28 @@ export function* seasonStart() {
         seed
       }
     });
+  }
+
+  const managers = yield select(state => state.manager.get("managers"));
+  for (const manager of managers) {
+    // Skip the first season for salary payments.
+    if (season > 1997) {
+      const managerId = manager.get("id");
+      const team = yield select(managersTeam(managerId));
+      const difficulty = yield select(managersDifficulty(managerId));
+      const mainCompetition = yield select(managersMainCompetition(managerId));
+      const salaryPerStrength = difficultyLevels.getIn([difficulty, "salary"])(
+        mainCompetition
+      );
+      const totalSalary = salaryPerStrength * team.get("strength");
+      yield call(decrementBalance, managerId, totalSalary);
+    }
+
+    // Reset extra each season.
+    yield setExtra(
+      manager.get("id"),
+      difficultyLevels.getIn([manager.get("difficulty"), "extra"])
+    );
   }
 
   yield put({

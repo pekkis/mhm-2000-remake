@@ -235,7 +235,13 @@ export const randomTeamFrom = (
 };
 
 export const randomManager = (exclude = []) => state => {
-  const managers = state.game.get("managers");
+  // Psycho event filter out.
+  const psycho = flag("psycho")(state);
+  const managers = state.game
+    .get("managers")
+    .filterNot(m => m.get("id") === psycho)
+    .filterNot(m => exclude.includes(m.get("id")));
+
   const random = r.pick(managers.toArray());
   return random;
 };
