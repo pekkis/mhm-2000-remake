@@ -23,12 +23,22 @@ const ManagerForm = props => {
             <form onSubmit={handleSubmit}>
               <Field>
                 <Label>Managerin nimi</Label>
-                <Input id="name" value={values.name} onChange={handleChange} />
+                <Input
+                  block
+                  id="name"
+                  value={values.name}
+                  onChange={handleChange}
+                />
               </Field>
 
               <Field>
                 <Label>Areenan nimi</Label>
-                <Input id="name" value={values.arena} onChange={handleChange} />
+                <Input
+                  block
+                  id="name"
+                  value={values.arena}
+                  onChange={handleChange}
+                />
               </Field>
 
               <Field>
@@ -54,7 +64,9 @@ const ManagerForm = props => {
               </Field>
 
               <Field>
-                <Button type="submit">Eteenpäin</Button>
+                <Button block type="submit">
+                  Eteenpäin
+                </Button>
               </Field>
             </form>
           );

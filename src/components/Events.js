@@ -1,24 +1,26 @@
 import React from "react";
 import EventsList from "./events/Events";
-import ManagerInfo from "./manager/ManagerInfo";
+import ManagerInfo from "./containers/ManagerInfoContainer";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
+import Box from "./styled-system/Box";
 
 const Events = props => {
-  const { manager, teams, resolveEvent, events } = props;
+  const { manager, resolveEvent, events } = props;
 
   return (
     <HeaderedPage>
       <Header />
+      <ManagerInfo />
 
-      <h2>Tapahtumat</h2>
-
-      <ManagerInfo manager={manager} teams={teams} />
-      <EventsList
-        manager={manager}
-        events={events}
-        resolveEvent={resolveEvent}
-      />
+      <Box p={1}>
+        <h2>Tapahtumat</h2>
+        <EventsList
+          manager={manager}
+          events={events}
+          resolveEvent={resolveEvent}
+        />
+      </Box>
     </HeaderedPage>
   );
 };

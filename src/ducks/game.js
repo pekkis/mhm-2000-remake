@@ -41,7 +41,7 @@ const defaultState = Map({
       phases: List()
     }),
     phl: Map({
-      weight: 1000,
+      weight: 500,
       id: "phl",
       phase: 0,
       name: "PHL",

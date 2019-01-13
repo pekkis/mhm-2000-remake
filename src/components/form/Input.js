@@ -14,7 +14,6 @@ const Input = styled.input`
     props.block &&
     `width: 100%;
     display: block;
-    margin: 1em 0;
   `}
 `;
 

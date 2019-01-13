@@ -15,6 +15,7 @@ import Arena from "./containers/ArenaContainer";
 import Services from "./containers/ServicesContainer";
 import Pranks from "./containers/PranksContainer";
 import Notifications from "./notifications/containers/NotificationsContainer";
+import ModalMenu from "./ModalMenu";
 
 const Phase = props => {
   const { turn } = props;
@@ -54,9 +55,10 @@ const Phase = props => {
 };
 
 const Game = props => {
-  const { className } = props;
+  const { className, menu } = props;
   return (
     <div className={className}>
+      {menu && <ModalMenu />}
       <Phase {...props} />
       <Notifications />
     </div>

@@ -1,17 +1,27 @@
 import React from "react";
 import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
+import Box from "./styled-system/Box";
 import ManagerForm from "./start-menu/ManagerForm";
 import styled from "styled-components";
-
 import title from "../assets/title.png";
 
 const Menu = styled.div``;
 
-const Contents = styled.div``;
+const Contents = styled.div`
+  h1 {
+    margin: 0;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1em;
+  }
+`;
 
 const TitleImg = styled.img`
   width: 500px;
+  display: block;
 `;
 
 const Centerer = styled.div`
@@ -27,12 +37,15 @@ const StartMenu = props => {
         <Contents>
           <Centerer>
             <TitleImg src={title} />
-            <h1>MHM 97 - maailman paras jääkiekkomanagerisimulaatio</h1>
-            <h2>service worker test 0.0.1</h2>
+            <Box px={1} py={0}>
+              <h1>MHM 97</h1>
+              <h2>maailman paras jääkiekkomanagerisimulaatio</h2>
+              <h2>service worker test 0.0.1</h2>
+            </Box>
           </Centerer>
 
           {!starting && (
-            <div>
+            <Box p={1}>
               <Centerer>
                 <ButtonRow>
                   <Button
@@ -87,10 +100,14 @@ const StartMenu = props => {
                 <li>Erno Vanhala</li>
                 <li>Sami Ritola</li>
               </ul>
-            </div>
+            </Box>
           )}
 
-          {starting && <ManagerForm manager={manager} advance={advance} />}
+          {starting && (
+            <Box p={1}>
+              <ManagerForm manager={manager} advance={advance} />
+            </Box>
+          )}
         </Contents>
       </Menu>
     </div>

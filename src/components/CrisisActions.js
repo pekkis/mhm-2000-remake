@@ -3,8 +3,9 @@ import { CRISIS_MORALE_MAX, CRISIS_DEADLINE } from "../data/constants";
 import Button from "./form/Button";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
-import ManagerInfo from "./manager/ManagerInfo";
+import ManagerInfo from "./containers/ManagerInfoContainer";
 import MaxRound from "./ui/containers/MaxRoundContainer";
+import Box from "./styled-system/Box";
 
 import crisis from "../data/crisis";
 import { currency as c } from "../services/format";
@@ -22,37 +23,39 @@ const TransferMarket = props => {
     <HeaderedPage>
       <Header back />
 
-      <h2>Kriisipalaveri</h2>
+      <ManagerInfo />
 
-      <MaxRound
-        max={CRISIS_DEADLINE}
-        fallback={
-          <p>
-            Tässä vaiheessa kautta on auttamatta liian myöhäistä
-            kriisipalaveroida!
-          </p>
-        }
-      >
-        <ManagerInfo manager={manager} teams={teams} />
+      <Box p={1}>
+        <h2>Kriisipalaveri</h2>
 
-        <p>
-          Kriisipalaveri auttaa joukkuetta unohtamaan tappioputken ja
-          keskittymään tulevaan. Se maksaa {c(crisisInfo.get("amount"))}.
-        </p>
-
-        <Button
-          block
-          disabled={
-            balance < crisisInfo.get("amount") ||
-            team.get("morale") > CRISIS_MORALE_MAX
+        <MaxRound
+          max={CRISIS_DEADLINE}
+          fallback={
+            <p>
+              Tässä vaiheessa kautta on auttamatta liian myöhäistä
+              kriisipalaveroida!
+            </p>
           }
-          onClick={() => {
-            crisisMeeting(manager.get("id"));
-          }}
         >
-          Pidä kriisipalaveri
-        </Button>
-      </MaxRound>
+          <p>
+            Kriisipalaveri auttaa joukkuetta unohtamaan tappioputken ja
+            keskittymään tulevaan. Se maksaa {c(crisisInfo.get("amount"))}.
+          </p>
+
+          <Button
+            block
+            disabled={
+              balance < crisisInfo.get("amount") ||
+              team.get("morale") > CRISIS_MORALE_MAX
+            }
+            onClick={() => {
+              crisisMeeting(manager.get("id"));
+            }}
+          >
+            Pidä kriisipalaveri
+          </Button>
+        </MaxRound>
+      </Box>
     </HeaderedPage>
   );
 };

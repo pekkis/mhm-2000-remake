@@ -1,9 +1,9 @@
 import { connect } from "react-redux";
-import MainMenu from "../MainMenu";
+import ActionMenu from "../ActionMenu";
 import { advance } from "../../ducks/game";
 import { resolveEvent } from "../../ducks/event";
+import { closeMenu } from "../../ducks/ui";
 import { saveGame, quitToMainMenu } from "../../ducks/meta";
-import { interestingCompetitions } from "../../data/selectors";
 export default connect(
   state => ({
     turn: state.game.get("turn"),
@@ -12,10 +12,7 @@ export default connect(
     teams: state.game.get("teams"),
     competitions: state.game.get("competitions"),
     events: state.event.get("events"),
-    news: state.news.get("news"),
-    interestingCompetitions: interestingCompetitions(
-      state.manager.get("active")
-    )(state)
+    news: state.news.get("news")
   }),
-  { advance, resolveEvent, saveGame, quitToMainMenu }
-)(MainMenu);
+  { advance, resolveEvent, saveGame, quitToMainMenu, closeMenu }
+)(ActionMenu);

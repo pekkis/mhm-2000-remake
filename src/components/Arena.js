@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
-import ManagerInfo from "./manager/ManagerInfo";
+import ManagerInfo from "./containers/ManagerInfoContainer";
 import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
 import arenas from "../data/arenas";
@@ -34,7 +34,7 @@ const Arenas = props => {
         <h2>Areena</h2>
       </Header>
 
-      <ManagerInfo manager={manager} teams={teams} />
+      <ManagerInfo />
 
       <ArenaHierarchy>
         <h2>Areenasi sijoitus areenahierarkiassa:</h2>

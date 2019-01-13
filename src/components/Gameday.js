@@ -5,21 +5,10 @@ import Table from "./league-table/Table";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 import Games from "./gameday/Games";
+import Box from "./styled-system/Box";
 
 const Gameday = props => {
-  const {
-    turn,
-    advance,
-    manager,
-    managers,
-    teams,
-    competitions,
-    resolveEvent,
-    events,
-    saveGame,
-    quitToMainMenu,
-    news
-  } = props;
+  const { turn, managers, teams, competitions } = props;
 
   const calendarEntry = calendar.get(turn.get("round"));
 
@@ -32,50 +21,53 @@ const Gameday = props => {
   return (
     <HeaderedPage>
       <Header />
-      <h2>Pelipäivä</h2>
 
-      {currentCompetitions.map(competition => {
-        const currentPhase = competition.getIn([
-          "phases",
-          competition.get("phase")
-        ]);
+      <Box p={1}>
+        <h2>Pelipäivä</h2>
 
-        return (
-          <div key={competition.get("name")}>
-            <h3>{competition.get("name")}</h3>
-            {currentPhase.get("groups").map((group, groupIndex) => {
-              const currentRound = group.get("round");
+        {currentCompetitions.map(competition => {
+          const currentPhase = competition.getIn([
+            "phases",
+            competition.get("phase")
+          ]);
 
-              return (
-                <div key={groupIndex}>
-                  <h4>
-                    {group.get("name")} [{currentRound}]
-                  </h4>
+          return (
+            <div key={competition.get("name")}>
+              <h3>{competition.get("name")}</h3>
+              {currentPhase.get("groups").map((group, groupIndex) => {
+                const currentRound = group.get("round");
 
-                  <Games
-                    teams={teams}
-                    context={group}
-                    round={currentRound}
-                    managers={managers}
-                  />
+                return (
+                  <div key={groupIndex}>
+                    <h4>
+                      {group.get("name")} [{currentRound}]
+                    </h4>
 
-                  {currentPhase.get("type") === "tournament" && (
-                    <div>
-                      <Table
-                        division={group}
-                        managers={managers}
-                        teams={teams}
-                      />
-                    </div>
-                  )}
+                    <Games
+                      teams={teams}
+                      context={group}
+                      round={currentRound}
+                      managers={managers}
+                    />
 
-                  <div />
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
+                    {currentPhase.get("type") === "tournament" && (
+                      <div>
+                        <Table
+                          division={group}
+                          managers={managers}
+                          teams={teams}
+                        />
+                      </div>
+                    )}
+
+                    <div />
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </Box>
     </HeaderedPage>
   );
 };

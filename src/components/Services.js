@@ -1,14 +1,11 @@
 import React from "react";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
-import ManagerInfo from "./manager/ManagerInfo";
-import ButtonRow from "./form/ButtonRow";
-import Button from "./form/Button";
-import arenas from "../data/arenas";
-import styled, { css } from "styled-components";
-import { currency } from "../services/format";
+import ManagerInfo from "./containers/ManagerInfoContainer";
+import styled from "styled-components";
 import Toggle from "react-toggle";
 import Markdown from "react-markdown";
+import Box from "./styled-system/Box";
 
 import services from "../data/services";
 
@@ -22,39 +19,41 @@ const Services = props => {
   return (
     <HeaderedPage>
       <Header back />
-      <h2>Erikoistoimenpiteet</h2>
+      <ManagerInfo />
 
-      <ManagerInfo manager={manager} teams={teams} />
+      <Box p={1}>
+        <h2>Erikoistoimenpiteet</h2>
 
-      <ServicesList>
-        {services
-          .map((service, key) => {
-            const basePrice = basePrices.get(key);
-            return (
-              <div key={key}>
-                <div>
-                  <Toggle
-                    id={key}
-                    checked={manager.getIn(["services", key])}
-                    onChange={() => {
-                      toggleService(manager.get("id"), key);
-                    }}
+        <ServicesList>
+          {services
+            .map((service, key) => {
+              const basePrice = basePrices.get(key);
+              return (
+                <div key={key}>
+                  <div>
+                    <Toggle
+                      id={key}
+                      checked={manager.getIn(["services", key])}
+                      onChange={() => {
+                        toggleService(manager.get("id"), key);
+                      }}
+                    />
+                    <label htmlFor={key}>
+                      <strong>{service.get("name")}</strong>
+                    </label>
+                  </div>
+
+                  <Markdown
+                    source={service.get("description")(
+                      service.get("price")(basePrice, manager)
+                    )}
                   />
-                  <label htmlFor={key}>
-                    <strong>{service.get("name")}</strong>
-                  </label>
                 </div>
-
-                <Markdown
-                  source={service.get("description")(
-                    service.get("price")(basePrice, manager)
-                  )}
-                />
-              </div>
-            );
-          })
-          .toList()}
-      </ServicesList>
+              );
+            })
+            .toList()}
+        </ServicesList>
+      </Box>
     </HeaderedPage>
   );
 };

@@ -1,6 +1,7 @@
 import { Map } from "immutable";
 
 const defaultState = Map({
+  menu: false,
   advanceEnabled: true,
   tabs: Map({
     transferMarket: 0,
@@ -22,6 +23,18 @@ export const selectTab = (tab, value) => {
   };
 };
 
+export const toggleMenu = () => {
+  return {
+    type: "UI_MENU_TOGGLE"
+  };
+};
+
+export const closeMenu = () => {
+  return {
+    type: "UI_MENU_CLOSE"
+  };
+};
+
 export default function uiReducer(state = defaultState, action) {
   const { type, payload } = action;
 
@@ -34,6 +47,12 @@ export default function uiReducer(state = defaultState, action) {
 
     case "UI_ENABLE_ADVANCE":
       return state.set("advanceEnabled", true);
+
+    case "UI_MENU_TOGGLE":
+      return state.update("menu", menu => !menu);
+
+    case "UI_MENU_CLOSE":
+      return state.set("menu", false);
 
     case "UI_SELECT_TAB":
       return state.setIn(["tabs", payload.tab], payload.value);

@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import Button from "./form/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { toggleMenu } from "../ducks/ui";
 
 const Container = styled.header`
   background-color: rgb(133, 133, 133);
@@ -14,8 +16,8 @@ const Container = styled.header`
   flex-basis: 100%;
   z-index: 1000;
 
-  .back {
-    flex-grow: 2;
+  .secondary {
+    flex-shrink: 10;
     padding: 0 0.5em;
   }
 
@@ -28,29 +30,50 @@ const Container = styled.header`
 `;
 
 const Header = props => {
-  const { back, history, advance, advanceEnabled } = props;
+  const {
+    back,
+    menu,
+    history,
+    advanceEnabled,
+    advance,
+    toggleMenu,
+    forward
+  } = props;
 
   return (
     <Container>
       {back && (
-        <div className="back">
+        <div className="advance">
           <Button block onClick={() => history.push("/")}>
-            Takaisin
+            Päävalikkoon
           </Button>
         </div>
       )}
 
-      <div className="advance">
-        <Button block disabled={!advanceEnabled} onClick={() => advance()}>
-          Eteenpäin
-        </Button>
-      </div>
+      {!back && (
+        <>
+          {menu && (
+            <div className="secondary">
+              <Button terse onClick={() => toggleMenu()}>
+                <FontAwesomeIcon icon={["fa", "bars"]} />
+              </Button>
+            </div>
+          )}
+          <div className="advance">
+            <Button block disabled={!advanceEnabled} onClick={() => advance()}>
+              {forward}
+            </Button>
+          </div>
+        </>
+      )}
     </Container>
   );
 };
 
 Header.defaultProps = {
-  back: false
+  back: false,
+  menu: false,
+  forward: "Eteenpäin!"
 };
 
 export default Header;

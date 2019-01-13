@@ -1,12 +1,13 @@
 import React from "react";
 import strategies from "../data/strategies";
 import Button from "./form/Button";
+import Box from "./styled-system/Box";
 
 const SelectStrategy = props => {
   const { manager, selectStrategy } = props;
 
   return (
-    <section>
+    <Box p={1}>
       <h2>Valitse harjoittelustrategia</h2>
 
       <p>
@@ -34,7 +35,7 @@ const SelectStrategy = props => {
           </div>
         );
       })}
-    </section>
+    </Box>
   );
 };
 

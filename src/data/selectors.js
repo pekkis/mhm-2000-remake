@@ -234,6 +234,17 @@ export const randomTeamFrom = (
   return state.game.getIn(["teams", randomized.get("id")]);
 };
 
+export const interestingCompetitions = manager => state => {
+  const team = managersTeam(manager)(state);
+
+  return state.game
+    .get("competitions")
+    .filter(competition => {
+      return competition.get("teams").includes(team.get("id"));
+    })
+    .map(c => c.get("id"));
+};
+
 export const randomManager = (exclude = []) => state => {
   // Psycho event filter out.
   const psycho = flag("psycho")(state);

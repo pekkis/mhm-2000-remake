@@ -85,6 +85,7 @@ const calendar = List.of(
   )
   .push(
     Map({
+      title: "Playoff-pläjäys",
       phases: List.of("action", "event", "seed"),
       seed: List.of(
         Map({ competition: "phl", phase: 1 }),
@@ -103,6 +104,7 @@ const calendar = List.of(
   )
   .push(
     Map({
+      title: "Semifinaali-pläjäys",
       phases: List.of("action", "event", "seed"),
       seed: List.of(
         Map({ competition: "phl", phase: 2 }),
@@ -121,6 +123,7 @@ const calendar = List.of(
   )
   .push(
     Map({
+      title: "Finaali-pläjäys",
       phases: List.of("action", "event", "seed"),
       seed: List.of(
         Map({ competition: "phl", phase: 3 }),

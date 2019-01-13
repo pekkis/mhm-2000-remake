@@ -39,10 +39,17 @@ const Button = styled.button`
   }
 
   ${props =>
+    props.terse &&
+    css`
+      padding: 1em;
+    `}
+
+  ${props =>
     props.block &&
-    `width: 100%;
-    display: block;
-  `}
+    css`
+      width: 100%;
+      display: block;
+    `}
 `;
 
 export default Button;

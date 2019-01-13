@@ -58,9 +58,9 @@ function* gameStart() {
     }
   });
 
-  yield call(hireManager, 0, 1);
+  yield call(hireManager, 0, 12);
 
-  yield call(incrementBalance, 0, 100000000);
+  // yield call(incrementBalance, 0, 100000000);
 
   // yield call(seasonStart);
 

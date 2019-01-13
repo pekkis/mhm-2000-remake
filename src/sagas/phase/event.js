@@ -161,10 +161,13 @@ export default function* eventPhase() {
 
   const manager = 0;
 
-  const eventId = getEventId();
+  const round = yield select(state => state.game.getIn(["turn", "round"]));
 
-  if (eventId) {
-    yield call(events.get(eventId).create, { manager });
+  if (round < 54) {
+    const eventId = getEventId();
+    if (eventId) {
+      yield call(events.get(eventId).create, { manager });
+    }
   }
 
   const autoresolveEvents = yield select(state =>

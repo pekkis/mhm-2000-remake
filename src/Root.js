@@ -6,9 +6,23 @@ import typography from "./services/typography";
 import { GoogleFont, TypographyStyle } from "react-typography";
 import { createGlobalStyle } from "styled-components";
 
+import { ThemeProvider } from "styled-components";
+import theme from "./themes/white";
+
 const GlobalStyle = createGlobalStyle`
+
+  html {
+    background-color: ${props => props.theme.colors.white};
+    color: ${props => props.theme.colors.black}
+  }
+
   body {
-    padding: 1em;
+    padding: 0;
+  }
+
+  form {
+    margin: 0;
+    padding: 0;
   }
 
   p {
@@ -23,10 +37,14 @@ const Root = props => {
     <>
       <TypographyStyle typography={typography} />
       <GoogleFont typography={typography} />
-      <GlobalStyle />
       <Provider store={store}>
         <BrowserRouter>
-          <App />
+          <ThemeProvider theme={theme}>
+            <>
+              <GlobalStyle />
+              <App />
+            </>
+          </ThemeProvider>
         </BrowserRouter>
       </Provider>
     </>

@@ -1,14 +1,13 @@
 import React from "react";
-import ManagerInfo from "./manager/ManagerInfo";
+import ManagerInfo from "./containers/ManagerInfoContainer";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
-import Button from "./form/Button";
 
 import SelectVictim from "./pranks/SelectVictim";
 import SelectType from "./pranks/SelectType";
 import ConfirmPrank from "./pranks/ConfirmPrank";
+import Box from "./styled-system/Box";
 
-import pranks from "../data/pranks";
 import difficultyLevels from "../data/difficulty-levels";
 
 const Pranks = props => {
@@ -39,41 +38,43 @@ const Pranks = props => {
     <HeaderedPage>
       <Header back />
 
-      <h2>Jäynät</h2>
+      <ManagerInfo />
 
-      <ManagerInfo manager={manager} teams={teams} />
+      <Box p={1}>
+        <h2>Jäynät</h2>
 
-      {!canDo && (
-        <p>
-          Olet jo jäynäyttänyt {manager.get("pranksExecuted")} kertaa tällä
-          kaudella. Nähdään ensi vuonna!
-        </p>
-      )}
+        {!canDo && (
+          <p>
+            Olet jo jäynäyttänyt {manager.get("pranksExecuted")} kertaa tällä
+            kaudella. Nähdään ensi vuonna!
+          </p>
+        )}
 
-      {!prank.get("type") && (
-        <SelectType
-          manager={manager}
-          enabled={canDo}
-          competition={targetCompetition.get("name")}
-          selectType={selectPrankType}
-          cancel={cancelPrank}
-        />
-      )}
+        {!prank.get("type") && (
+          <SelectType
+            manager={manager}
+            enabled={canDo}
+            competition={targetCompetition.get("name")}
+            selectType={selectPrankType}
+            cancel={cancelPrank}
+          />
+        )}
 
-      {prank.get("type") && !prank.get("victim") && (
-        <SelectVictim
-          manager={manager}
-          prank={prank}
-          competition={targetCompetition}
-          teams={teams}
-          selectVictim={selectPrankVictim}
-          cancel={cancelPrank}
-        />
-      )}
+        {prank.get("type") && !prank.get("victim") && (
+          <SelectVictim
+            manager={manager}
+            prank={prank}
+            competition={targetCompetition}
+            teams={teams}
+            selectVictim={selectPrankVictim}
+            cancel={cancelPrank}
+          />
+        )}
 
-      {prank.get("type") && prank.get("victim") && (
-        <ConfirmPrank manager={manager} prank={prank} execute={orderPrank} />
-      )}
+        {prank.get("type") && prank.get("victim") && (
+          <ConfirmPrank manager={manager} prank={prank} execute={orderPrank} />
+        )}
+      </Box>
     </HeaderedPage>
   );
 };

@@ -1,14 +1,16 @@
 import React from "react";
-import { amount } from "../../services/format";
-import { getEffective } from "../../services/effects";
+import { amount } from "../services/format";
+import { getEffective } from "../services/effects";
+import Box from "./styled-system/Box";
+import TurnIndicator from "./game/TurnIndicator";
 
 const ManagerInfo = props => {
-  const { manager, teams } = props;
+  const { manager, teams, turn } = props;
 
   const team = getEffective(teams.get(manager.get("team")));
 
   return (
-    <div>
+    <Box p={1} bg="bar">
       <h2>{manager.get("name")}</h2>
 
       <div>
@@ -24,7 +26,12 @@ const ManagerInfo = props => {
         <strong>Voima: </strong>
         {team.get("strength")}
       </div>
-    </div>
+
+      <div>
+        <strong>Vuoro: </strong>
+        <TurnIndicator turn={turn} />
+      </div>
+    </Box>
   );
 };
 
