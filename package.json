@@ -79,6 +79,7 @@
     "redux-thunk": "^2.3.0",
     "roundrobin": "^1.0.3",
     "styled-components": "^4.1.2",
+    "styled-system": "^3.2.0",
     "transit-immutable-js": "^0.7.0",
     "transit-js": "^0.8.861",
     "typography": "^0.16.18",

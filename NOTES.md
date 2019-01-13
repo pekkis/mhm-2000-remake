@@ -1,104 +1,38 @@
-# Muistiinpanoja
+# Implementoimattomia juttuja:
 
-## alkujaaritus
+## yleistä
 
-* React
-  * komponenttipohjaisuus
-  * DOM on implementaatiodetalji
-  * yksinkertainen
-  * JSX - lähestymistapa vs Angular (HTML vs JS)
+- mm-kisat
+- mestariveikkaus
+- veikkaus
 
-* Jarno
-* Webpack (päivitin koloseen)
-* Babel
+## eventit
 
-## verryttelyä
+- eventtejä ei pitäisi tulla playoffien aikana.
+- effueventtejä ei joukkueille joilla jo effu ennestään?
 
-* rakenne
-  * juuressa konffiripuli
-  * src:ssä kaikki lähdekoodi
-  * tähdennä että kyseessä mun näkemys siitä miten asiat voi tehdä fiksusti.
-* yarn
+## EHL
 
-## kood kood
+- tre = tre - 1 joka runkosarjapelin jälkeen.
+- johtokunnan onnittelut
+- rahapalkinnot lopputurnauksen jälkeen
 
-* client.js
-* export, import, var, const, let
-* rendataan Root (moi)
-  * root on olemassa vain bootstrappaystä varten. Appi appiin.
+`PRINT : COLOR 15 IF edus1 = u THEN x = eds1 IF edus2 = u THEN x = eds2 IF edus3 = u THEN x = eds3 IF seh(x) = 1 THEN PRINT "Hurraa!! Voitimme!": raha = raha + 2000000: lemesm = leh(x) IF seh(x) = 2 THEN PRINT "Hiphei!! Sijoituimme toiseksi!": raha = raha + 1600000 IF seh(x) = 3 THEN PRINT "Sijoituimme kolmanneksi!": raha = raha + 1400000 IF seh(x) = 4 THEN PRINT "Sijoituimme nelj„nneksi...": raha = raha + 1200000 IF seh(x) = 5 THEN PRINT "Sijoituimme viidenneksi...voi tukka!": raha = raha + 1000000 IF seh(x) = 6 THEN PRINT "™RRR! J„imme jumboiksi!": raha = raha + 800000 PRINT tre = tre - 2 COLOR 8, 0: INPUT "Return...", yucca\$`
 
-## mega app mvp
+## Turnaukset
 
-* tehdään appissa personeita fakerilla
-* yksinkertainen tilaton komponentti (Person)
-* komponenttien kompositointi (PersonList)
-  * listat ja key!!!
-* komponenttien tyylitys (css-modulit ja postcss)
-* filtteröinti (miehet ja naiset esim) ja komponenttien uusiokäyttö
-* tilallinen komponentti (App) ja lifecycle-metodit
-* datan haku palvelimelta (axios)
-* tyypin poisto, callbackkien kuletus
-* tyyppien lisäys (lomakkeiden "vaikeus")
-* knappi
-* knappi! (primary & secondary)
-* immutable.js ja paremmat tietorakenteet
-* pure
-* perf tools
-* form!
+- christmas cup
+- gagga cup
+- gogo-cola cup
+- väsymys -2
+- rahapalkinnot
 
-## refaktoroidaan mega apps
+## pläjäytykset
 
-* tila asuu reduxissa, yhdessä ainoassa paikassa.
-* selitä flow: äksönit dispätsätään, reducerit kuuntelee, muokkaa tilaa.
-* ducks: säästä aikaa ja energiaa
-* devtoolssit chrome storesta
-* typerät ja fiksut komponentit
-  * fiksuissa ei hötskää
-  * tyhmissä ei tilaa
-  * HOC
+- playoff-pläjäytys
+  - IF chcup = 1 THEN tre = tre - 4
+  - IF xcup = 1 THEN tre = tre - 4
 
-## alasivut mega appsiin
+## muistutukset
 
-* react router
-  * index
-  * gender?
-  * single person
-* containerit pageille
-* oma HOC? JOO!
-* recompose
-* modaali-protaali
-* error boundary
-
-## koodinhuolto, debuggaus ja performanssi
-
-* linttaus
-* testaus
-* selitä että usein ei tartte tehdä mitään.
-* mankelointi, source mapit ja debuggaus
-
-## flow (optionaalinen)
-
-* lussuta tyypityksestä
-* typescript
-* jos kiinnostusta löytyy, käy läpi
-
-## serverirendaus (optionaalinen)
-
-* case: diktaattoripörssi
-  * aloitustila mukaan json-blobina
-  * react osaa napata tilanteen lennosta
-  * hydrate
-
-## graphql (optionaalinen)
-
-* demonstroi d-pörssillä
-
-## vanhojen softien refaktorointi
-
-* pala kerrallaan mahdollista
-
-## best practices
-
-* redux containerien rohkea käyttö
-* säilytä yksi tila, derivoi subsetit, optimoi jos tarttee
-* reselect
+- viimeinen hetki ostaa pelaajia
