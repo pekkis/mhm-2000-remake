@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 const Button = styled.button`
   border: 1px solid rgb(99, 99, 99);
   border-radius: 5px;
-  padding: 1em 2em;
+  padding: 1em 1.5em;
   font-family: inherit;
   background-color: rgb(200, 200, 200);
   box-shadow: 0 3px rgba(0, 0, 0, 0.25);

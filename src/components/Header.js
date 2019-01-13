@@ -54,7 +54,7 @@ const Header = props => {
         <>
           {menu && (
             <div className="secondary">
-              <Button terse onClick={() => toggleMenu()}>
+              <Button secondary onClick={() => toggleMenu()}>
                 <FontAwesomeIcon icon={["fa", "bars"]} />
               </Button>
             </div>

@@ -1,10 +1,8 @@
-import { take, putResolve, select, call, all } from "redux-saga/effects";
+import { take, putResolve, select, call, all, race } from "redux-saga/effects";
 import { seasonStart } from "../game";
 import strategies from "../../data/strategies";
 
-export default function* startOfSeasonPhase() {
-  yield call(seasonStart);
-
+function* selectStrategy() {
   yield putResolve({
     type: "GAME_SET_PHASE",
     payload: "select-strategy"
@@ -33,4 +31,24 @@ export default function* startOfSeasonPhase() {
       }
     })
   ]);
+}
+
+function* championshipBetting() {
+  yield putResolve({
+    type: "GAME_SET_PHASE",
+    payload: "championship-betting"
+  });
+
+  const { bet, advance } = yield race({
+    bet: take("MANAGER_BET_CHAMPION_REQUEST"),
+    advance: take("GAME_ADVANCE_REQUEST")
+  });
+
+  console.log(bet, advance, "bibbidi");
+}
+
+export default function* startOfSeasonPhase() {
+  yield call(seasonStart);
+  yield call(selectStrategy);
+  yield call(championshipBetting);
 }

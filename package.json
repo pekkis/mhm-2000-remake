@@ -52,6 +52,7 @@
     "prop-types": "^15.6.2",
     "ramda": "^0.26.1",
     "random-js": "^1.0.8",
+    "rc-slider": "^8.6.4",
     "react": "^16.7",
     "react-dom": "^16.7",
     "react-error-boundary": "^1.2.3",

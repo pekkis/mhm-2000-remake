@@ -25,7 +25,7 @@ const MainMenu = props => {
     <HeaderedPage>
       <Header menu forward={<Forward />} />
 
-      <ManagerInfo />
+      <ManagerInfo details />
 
       <Box p={1}>
         <Situation

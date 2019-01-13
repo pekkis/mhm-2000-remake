@@ -39,6 +39,18 @@ export const toggleService = (manager, service) => {
   };
 };
 
+export const betChampion = (manager, team, amount, odds) => {
+  return {
+    type: "MANAGER_BET_CHAMPION_REQUEST",
+    payload: {
+      manager,
+      team,
+      amount,
+      odds
+    }
+  };
+};
+
 export const buyPlayer = (manager, playerType) => {
   return {
     type: "MANAGER_BUY_PLAYER",

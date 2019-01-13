@@ -5,7 +5,7 @@ import Box from "./styled-system/Box";
 import TurnIndicator from "./game/TurnIndicator";
 
 const ManagerInfo = props => {
-  const { manager, teams, turn } = props;
+  const { manager, teams, turn, details } = props;
 
   const team = getEffective(teams.get(manager.get("team")));
 
@@ -13,26 +13,34 @@ const ManagerInfo = props => {
     <Box p={1} bg="bar">
       <h2>{manager.get("name")}</h2>
 
-      <div>
-        <strong>Rahaa: </strong>
-        {amount(manager.get("balance"))}
-      </div>
-      <div>
-        <strong>Moraali: </strong>
-        {team.get("morale")}
-      </div>
+      {details && (
+        <>
+          <div>
+            <strong>Rahaa: </strong>
+            {amount(manager.get("balance"))}
+          </div>
+          <div>
+            <strong>Moraali: </strong>
+            {team.get("morale")}
+          </div>
 
-      <div>
-        <strong>Voima: </strong>
-        {team.get("strength")}
-      </div>
+          <div>
+            <strong>Voima: </strong>
+            {team.get("strength")}
+          </div>
 
-      <div>
-        <strong>Vuoro: </strong>
-        <TurnIndicator turn={turn} />
-      </div>
+          <div>
+            <strong>Vuoro: </strong>
+            <TurnIndicator turn={turn} />
+          </div>
+        </>
+      )}
     </Box>
   );
+};
+
+ManagerInfo.defaultProps = {
+  details: false
 };
 
 export default ManagerInfo;

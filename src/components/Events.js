@@ -11,7 +11,7 @@ const Events = props => {
   return (
     <HeaderedPage>
       <Header />
-      <ManagerInfo />
+      <ManagerInfo details />
 
       <Box p={1}>
         <h2>Tapahtumat</h2>

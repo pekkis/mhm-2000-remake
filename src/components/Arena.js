@@ -34,7 +34,7 @@ const Arenas = props => {
         <h2>Areena</h2>
       </Header>
 
-      <ManagerInfo />
+      <ManagerInfo details />
 
       <ArenaHierarchy>
         <h2>Areenasi sijoitus areenahierarkiassa:</h2>

@@ -15,7 +15,8 @@ import Arena from "./containers/ArenaContainer";
 import Services from "./containers/ServicesContainer";
 import Pranks from "./containers/PranksContainer";
 import Notifications from "./notifications/containers/NotificationsContainer";
-import ModalMenu from "./ModalMenu";
+import ModalMenu from "./containers/ModalMenuContainer";
+import ChampionshipBetting from "./containers/ChampionshipBettingContainer";
 
 const Phase = props => {
   const { turn } = props;
@@ -23,6 +24,9 @@ const Phase = props => {
   switch (true) {
     case turn.get("phase") === "select-strategy":
       return <SelectStrategy />;
+
+    case turn.get("phase") === "championship-betting":
+      return <ChampionshipBetting />;
 
     case turn.get("phase") === "event":
       return <Events />;

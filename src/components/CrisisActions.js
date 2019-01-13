@@ -23,7 +23,7 @@ const TransferMarket = props => {
     <HeaderedPage>
       <Header back />
 
-      <ManagerInfo />
+      <ManagerInfo details />
 
       <Box p={1}>
         <h2>Kriisipalaveri</h2>

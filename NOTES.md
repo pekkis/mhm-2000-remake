@@ -2,9 +2,14 @@
 
 ## yleistä
 
+- valitulla joukkueella aloittaminen (joukkueenvalinta)
 - mm-kisat
 - mestariveikkaus
 - veikkaus
+
+## ei toteuteta
+
+- vihat
 
 ## eventit
 

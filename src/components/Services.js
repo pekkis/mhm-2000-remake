@@ -14,12 +14,12 @@ const ServicesList = styled.div`
 `;
 
 const Services = props => {
-  const { manager, teams, toggleService, basePrices } = props;
+  const { manager, toggleService, basePrices } = props;
 
   return (
     <HeaderedPage>
       <Header back />
-      <ManagerInfo />
+      <ManagerInfo details />
 
       <Box p={1}>
         <h2>Erikoistoimenpiteet</h2>
