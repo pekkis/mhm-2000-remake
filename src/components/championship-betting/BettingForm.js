@@ -35,7 +35,7 @@ const BettingForm = props => {
             {teamsAndOdds
               .map(team => {
                 return (
-                  <div>
+                  <div key={team.get("id")}>
                     <label>
                       <input
                         name="team"

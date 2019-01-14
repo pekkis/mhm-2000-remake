@@ -1,13 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import MaxRound from "./ui/containers/MaxRoundContainer";
+import Calendar from "./ui/containers/CalendarContainer";
 import { getEffective } from "../services/effects";
 
-import {
-  CRISIS_MORALE_MAX,
-  CRISIS_DEADLINE,
-  TRANSFER_DEADLINE
-} from "../data/constants";
+import { CRISIS_MORALE_MAX } from "../data/constants";
 
 import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
@@ -27,21 +23,21 @@ const ActionMenu = props => {
           </li>
 
           {team.get("morale") <= CRISIS_MORALE_MAX && (
-            <MaxRound max={CRISIS_DEADLINE}>
+            <Calendar when={c => c.get("crisisMeeting")}>
               <li>
                 <Link onClick={() => closeMenu()} to="/kriisipalaveri">
                   Kriisipalaveri
                 </Link>
               </li>
-            </MaxRound>
+            </Calendar>
           )}
-          <MaxRound max={TRANSFER_DEADLINE}>
+          <Calendar when={c => c.get("transferMarket")}>
             <li>
               <Link onClick={() => closeMenu()} to="/pelaajamarkkinat">
                 Pelaajamarkkinat
               </Link>
             </li>
-          </MaxRound>
+          </Calendar>
           <li>
             <Link onClick={() => closeMenu()} to="/sarjataulukot">
               Sarjataulukot

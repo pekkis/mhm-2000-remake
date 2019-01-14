@@ -7,10 +7,6 @@ const News = props => {
 
   return (
     <div>
-      <h2>Uutiset</h2>
-
-      <p>{news.count()} uutista...</p>
-
       {news.map((n, i) => {
         return (
           <div key={i}>

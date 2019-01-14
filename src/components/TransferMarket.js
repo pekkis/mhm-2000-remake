@@ -3,9 +3,8 @@ import playerTypes from "../data/transfer-market";
 import Button from "./form/Button";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
-import MaxRound from "./ui/containers/MaxRoundContainer";
+import Calendar from "./ui/containers/CalendarContainer";
 import { currency } from "../services/format";
-import { TRANSFER_DEADLINE } from "../data/constants";
 import ManagerInfo from "./containers/ManagerInfoContainer";
 import Box from "./styled-system/Box";
 import Tabs from "./ui/Tabs";
@@ -16,8 +15,6 @@ const TransferMarket = props => {
 
   const balance = manager.get("balance");
 
-  const team = teams.get(manager.get("team"));
-
   return (
     <HeaderedPage>
       <Header back />
@@ -27,8 +24,8 @@ const TransferMarket = props => {
       <Box p={1}>
         <h2>Pelaajamarkkinat</h2>
 
-        <MaxRound
-          max={TRANSFER_DEADLINE}
+        <Calendar
+          when={c => c.get("transferMarket")}
           fallback={
             <p>
               Valitettavasti siirtoaika on umpeutunut. Tervetuloa takaisin ensi
@@ -86,7 +83,7 @@ const TransferMarket = props => {
               </div>
             </Tab>
           </Tabs>
-        </MaxRound>
+        </Calendar>
       </Box>
     </HeaderedPage>
   );

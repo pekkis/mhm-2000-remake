@@ -17,9 +17,17 @@ import Pranks from "./containers/PranksContainer";
 import Notifications from "./notifications/containers/NotificationsContainer";
 import ModalMenu from "./containers/ModalMenuContainer";
 import ChampionshipBetting from "./containers/ChampionshipBettingContainer";
+import EndOfSeason from "./containers/EndOfSeasonContainer";
+import WorldChampionships from "./containers/WorldChampionshipsContainer";
+
+import calendar from "../data/calendar";
 
 const Phase = props => {
   const { turn } = props;
+
+  const calendarEntry = calendar.get(turn.get("round"));
+
+  console.log("CALENDAR ENTRY", calendarEntry.toJS());
 
   switch (true) {
     case turn.get("phase") === "select-strategy":
@@ -34,11 +42,16 @@ const Phase = props => {
     case turn.get("phase") === "gameday":
       return <Gameday />;
 
+    case turn.get("phase") === "world-championships":
+      return <WorldChampionships />;
+
+    case turn.get("phase") === "end-of-season":
+      return <EndOfSeason />;
+
     case turn.get("phase") === "results":
       return <GamedayResults />;
 
     case turn.get("phase") === "action":
-    case turn.get("phase") === "seed":
       return (
         <Switch>
           <Route exact path="/" component={MainMenu} />

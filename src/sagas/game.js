@@ -289,3 +289,10 @@ function* nextTurn() {
   yield put({ type: "EVENT_CLEAR_EVENTS" });
   yield put({ type: "GAME_NEXT_TURN" });
 }
+
+export function* setPhase(phase) {
+  yield put({
+    type: "GAME_SET_PHASE",
+    payload: phase
+  });
+}

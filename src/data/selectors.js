@@ -240,7 +240,13 @@ export const interestingCompetitions = manager => state => {
   return state.game
     .get("competitions")
     .filter(competition => {
-      return competition.get("teams").includes(team.get("id"));
+      return competition.get("phases").some(phase => {
+        return phase
+          .get("groups")
+          .some(group => group.get("teams").includes(team.get("id")));
+      });
+
+      // return competition.get("teams").includes(team.get("id"));
     })
     .map(c => c.get("id"));
 };

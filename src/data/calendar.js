@@ -1,5 +1,9 @@
 import { List, Map, Repeat } from "immutable";
 
+export const CRISIS_DEADLINE = 51;
+export const TRANSFER_DEADLINE = 29;
+export const EVENT_DEADLINE = 52;
+
 const defaultPhases = List.of(
   "action",
   "prank",
@@ -142,10 +146,20 @@ const calendar = List.of(
   )
   .push(
     Map({
-      phases: List.of("endOfSeason")
+      title: "Maailmanmestaruuskisat",
+      phases: List.of("action", "endOfSeason")
     })
   );
 
+const decoratedCalendar = calendar.map((entry, index) => {
+  return entry.merge({
+    round: index,
+    transferMarket: index <= TRANSFER_DEADLINE,
+    crisisMeeting: index <= CRISIS_DEADLINE,
+    createRandomEvent: index <= EVENT_DEADLINE
+  });
+});
+
 // console.log(calendar.toJS());
 
-export default calendar;
+export default decoratedCalendar;

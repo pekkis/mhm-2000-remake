@@ -3,6 +3,7 @@ import events from "../../data/events";
 import { cinteger } from "../../services/random";
 import { resolveEvent, processEvents } from "../event";
 import { OrderedMap, List } from "immutable";
+import calendar from "../../data/calendar";
 
 const eventsMap = OrderedMap(
   List.of(
@@ -163,7 +164,9 @@ export default function* eventPhase() {
 
   const round = yield select(state => state.game.getIn(["turn", "round"]));
 
-  if (round < 54) {
+  const calendarEntry = calendar.get(round);
+
+  if (calendarEntry.get("createRandomEvent")) {
     const eventId = getEventId();
     if (eventId) {
       yield call(events.get(eventId).create, { manager });

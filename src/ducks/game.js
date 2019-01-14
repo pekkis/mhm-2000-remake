@@ -58,7 +58,9 @@ const defaultState = Map({
     })
   }),
 
-  teams: teams.map(t => t.update("strength", s => s()))
+  teams: teams.map(t => t.update("strength", s => s())),
+
+  worldChampionshipResults: undefined
 });
 
 export const advance = payload => {
@@ -308,6 +310,9 @@ export default function gameReducer(state = defaultState, action) {
         ["serviceBasePrices", payload.service],
         payload.amount
       );
+
+    case "GAME_WORLD_CHAMPIONSHIP_RESULTS":
+      return state.set("worldChampionshipResults", payload);
 
     default:
       return state;

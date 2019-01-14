@@ -7,6 +7,7 @@ import Button from "./form/Button";
 import arenas from "../data/arenas";
 import styled, { css } from "styled-components";
 import { currency } from "../services/format";
+import Box from "./styled-system/Box";
 
 const ArenaHierarchy = styled.div``;
 
@@ -30,40 +31,42 @@ const Arenas = props => {
 
   return (
     <HeaderedPage>
-      <Header back>
-        <h2>Areena</h2>
-      </Header>
+      <Header back />
 
       <ManagerInfo details />
 
-      <ArenaHierarchy>
-        <h2>Areenasi sijoitus areenahierarkiassa:</h2>
+      <Box p={1}>
+        <h2>Areena</h2>
 
-        {arenas
-          .map((arena, level) => {
-            return (
-              <Arena current={level === currentLevel} key={arena.get("id")}>
-                {arena.get("name")}
-              </Arena>
-            );
-          })
-          .reverse()}
-      </ArenaHierarchy>
+        <ArenaHierarchy>
+          <h3>Areenasi sijoitus areenahierarkiassa:</h3>
 
-      <ButtonRow>
-        {nextLevel && (
-          <Button
-            block
-            disabled={!canDo}
-            onClick={() => {
-              improveArena(manager.get("id"));
-            }}
-          >
-            <div>Paranna halliolosuhteitasi</div>
-            <div>{currency(nextLevel.get("price"))}</div>
-          </Button>
-        )}
-      </ButtonRow>
+          {arenas
+            .map((arena, level) => {
+              return (
+                <Arena current={level === currentLevel} key={arena.get("id")}>
+                  {arena.get("name")}
+                </Arena>
+              );
+            })
+            .reverse()}
+        </ArenaHierarchy>
+
+        <ButtonRow>
+          {nextLevel && (
+            <Button
+              block
+              disabled={!canDo}
+              onClick={() => {
+                improveArena(manager.get("id"));
+              }}
+            >
+              <div>Paranna halliolosuhteitasi</div>
+              <div>{currency(nextLevel.get("price"))}</div>
+            </Button>
+          )}
+        </ButtonRow>
+      </Box>
     </HeaderedPage>
   );
 };

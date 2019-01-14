@@ -1,10 +1,10 @@
 import React from "react";
-import { CRISIS_MORALE_MAX, CRISIS_DEADLINE } from "../data/constants";
+import { CRISIS_MORALE_MAX } from "../data/constants";
 import Button from "./form/Button";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 import ManagerInfo from "./containers/ManagerInfoContainer";
-import MaxRound from "./ui/containers/MaxRoundContainer";
+import Calendar from "./ui/containers/CalendarContainer";
 import Box from "./styled-system/Box";
 
 import crisis from "../data/crisis";
@@ -28,8 +28,8 @@ const TransferMarket = props => {
       <Box p={1}>
         <h2>Kriisipalaveri</h2>
 
-        <MaxRound
-          max={CRISIS_DEADLINE}
+        <Calendar
+          when={c => c.get("crisisMeeting")}
           fallback={
             <p>
               Tässä vaiheessa kautta on auttamatta liian myöhäistä
@@ -54,7 +54,7 @@ const TransferMarket = props => {
           >
             Pidä kriisipalaveri
           </Button>
-        </MaxRound>
+        </Calendar>
       </Box>
     </HeaderedPage>
   );
