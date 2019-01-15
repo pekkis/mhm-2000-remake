@@ -20,7 +20,7 @@ const Contents = styled.div`
 `;
 
 const TitleImg = styled.img`
-  width: 500px;
+  max-width: 100%;
   display: block;
 `;
 

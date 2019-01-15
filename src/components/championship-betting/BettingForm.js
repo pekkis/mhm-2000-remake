@@ -17,14 +17,12 @@ const BettingForm = props => {
         amount: 10000
       }}
       onSubmit={values => {
-        betChampion({
-          manager: manager.get("id"),
-          amount: parseInt(values.amount, 10),
-          team: parseInt(values.team, 10),
-          odds: teamsAndOdds.getIn([parseInt(values.team, 10), "odds"])
-        });
-
-        console.log("values", values);
+        betChampion(
+          manager.get("id"),
+          parseInt(values.team, 10),
+          parseInt(values.amount, 10),
+          teamsAndOdds.getIn([parseInt(values.team, 10), "odds"])
+        );
       }}
     >
       {({ values, setFieldValue, handleChange, handleSubmit }) => {

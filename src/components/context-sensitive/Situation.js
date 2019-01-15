@@ -3,6 +3,7 @@ import Table from "../league-table/Table";
 import Matchups from "../playoffs/Matchups";
 import { List } from "immutable";
 import Games from "../gameday/Games";
+import Streaks from "../containers/StreaksContainer";
 
 const Situation = props => {
   const { competitions, interesting, teams, manager } = props;
@@ -18,6 +19,8 @@ const Situation = props => {
           return (
             <div key={competition}>
               <h3>{competition.get("name")}</h3>
+
+              <Streaks competition={key} team={manager.get("team")} />
 
               {phase
                 .get("groups")

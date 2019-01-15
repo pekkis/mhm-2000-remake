@@ -4,6 +4,8 @@ import gameService from "../services/game";
 import competitionTypes from "../services/competition-type";
 
 import { call, put, select, take } from "redux-saga/effects";
+import { stagger } from "popmotion";
+import { groupEnd } from "./game";
 
 function* playGame(
   group,
@@ -39,7 +41,19 @@ function* playGame(
 
   const result = yield call(gameService.simulate, game);
 
-  return result;
+  return [
+    result,
+    Map({
+      home: Map({
+        manager: homeManager && homeManager.get("id"),
+        team: home.get("id")
+      }),
+      away: Map({
+        manager: awayManager && awayManager.get("id"),
+        team: away.get("id")
+      })
+    })
+  ];
 }
 
 export function* gameday(payload) {
@@ -94,7 +108,7 @@ export function* gameday(payload) {
             }
           });
 
-          const result = yield call(
+          const [result, meta] = yield call(
             playGame,
             group,
             pairing,
@@ -112,7 +126,8 @@ export function* gameday(payload) {
               group: groupIndex,
               round,
               result: result,
-              pairing: x
+              pairing: x,
+              meta
             }
           });
         }
@@ -144,6 +159,29 @@ export function* gameday(payload) {
           yield take("GAME_ADVANCE_REQUEST");
         }
       }
+    }
+
+    console.log({
+      competition,
+      payload,
+      groupIndex,
+      phase: competition.get("phase")
+    });
+
+    const theGroup = yield select(state =>
+      state.game.getIn([
+        "competitions",
+        payload,
+        "phases",
+        competition.get("phase"),
+        "groups",
+        groupIndex
+      ])
+    );
+
+    const isItOver = theGroup.get("schedule").count() === theGroup.get("round");
+    if (isItOver) {
+      yield call(groupEnd, payload, competition.get("phase"), groupIndex);
     }
   } // console.log("reslut", result.toJS());
   // }

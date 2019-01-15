@@ -133,24 +133,24 @@ export default {
   simulate
 };
 
-export const gameFacts = (game, team) => {
-  const isHome = team === game.get("home");
+export const resultFacts = (result, key) => {
+  const theirKey = key === "home" ? "away" : "home";
 
-  const myKey = isHome ? "home" : "away";
-  const theirKey = isHome ? "away" : "home";
+  const isWin = result.get(key) > result.get(theirKey);
 
-  const isWin =
-    game.getIn(["result", myKey]) > game.getIn(["result", theirKey]);
+  const isDraw = result.get(key) === result.get(theirKey);
 
-  const isDraw =
-    game.getIn(["result", myKey]) === game.getIn(["result", theirKey]);
-
-  const isLoss =
-    game.getIn(["result", myKey]) < game.getIn(["result", theirKey]);
+  const isLoss = result.get(key) < result.get(theirKey);
 
   return {
     isWin,
     isDraw,
     isLoss
   };
+};
+
+export const gameFacts = (game, team) => {
+  const isHome = team === game.get("home");
+  const myKey = isHome ? "home" : "away";
+  return resultFacts(game.get("result"), myKey);
 };

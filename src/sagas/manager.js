@@ -286,6 +286,10 @@ export function* afterGameday(action) {
       continue;
     }
 
+    if (!game.get("result")) {
+      return;
+    }
+
     const facts = gameFacts(game, managersIndex);
 
     const amount = competitionList.getIn([payload.competition, "gameBalance"])(

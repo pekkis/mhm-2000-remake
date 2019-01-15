@@ -1,5 +1,8 @@
 import { Map } from "immutable";
 
+export const META_QUIT_TO_MAIN_MENU = "META_QUIT_TO_MAIN_MENU";
+export const META_GAME_LOAD_STATE = "META_GAME_LOAD_STATE";
+
 const defaultState = Map({
   started: false,
   loading: false,
@@ -14,7 +17,7 @@ const defaultState = Map({
 
 export const quitToMainMenu = () => {
   return {
-    type: "META_QUIT_TO_MAIN_MENU"
+    type: META_QUIT_TO_MAIN_MENU
   };
 };
 
@@ -40,7 +43,7 @@ export default function eventReducer(state = defaultState, action) {
   const { type, payload } = action;
 
   switch (type) {
-    case "META_QUIT_TO_MAIN_MENU":
+    case META_QUIT_TO_MAIN_MENU:
       return defaultState;
 
     case "SEASON_START_REQUEST":

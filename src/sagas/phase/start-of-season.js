@@ -1,6 +1,8 @@
 import { take, putResolve, select, call, all, race } from "redux-saga/effects";
 import { seasonStart } from "../game";
 import strategies from "../../data/strategies";
+import { BETTING_BET_CHAMPION_REQUEST } from "../../ducks/betting";
+import { betChampion } from "../betting";
 
 function* selectStrategy() {
   yield putResolve({
@@ -39,12 +41,22 @@ function* championshipBetting() {
     payload: "championship-betting"
   });
 
-  const { bet, advance } = yield race({
-    bet: take("MANAGER_BET_CHAMPION_REQUEST"),
+  const { bet } = yield race({
+    bet: take(BETTING_BET_CHAMPION_REQUEST),
     advance: take("GAME_ADVANCE_REQUEST")
   });
 
-  console.log(bet, advance, "bibbidi");
+  if (bet) {
+    console.log("BET", bet);
+
+    yield call(
+      betChampion,
+      bet.payload.manager,
+      bet.payload.team,
+      bet.payload.amount,
+      bet.payload.odds
+    );
+  }
 }
 
 export default function* startOfSeasonPhase() {

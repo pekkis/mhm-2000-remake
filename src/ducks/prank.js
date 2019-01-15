@@ -36,7 +36,7 @@ export const orderPrank = (manager, type, victim) => {
   };
 };
 
-export default function notificationReducer(state = defaultState, action) {
+export default function prankReducer(state = defaultState, action) {
   const { type, payload } = action;
 
   switch (type) {

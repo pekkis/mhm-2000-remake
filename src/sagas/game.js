@@ -150,6 +150,17 @@ function* competitionStart(competitionId) {
   }
 }
 
+export function* groupEnd(competition, phase, group) {
+  yield put({
+    type: "GAME_GROUP_END",
+    payload: {
+      competition,
+      phase,
+      group
+    }
+  });
+}
+
 export function* seasonStart() {
   const turn = yield select(state => state.game.get("turn"));
   const season = turn.get("season");

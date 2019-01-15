@@ -6,3 +6,5 @@ export { default as news } from "./news";
 export { default as ui } from "./ui";
 export { default as notification } from "./notification";
 export { default as prank } from "./prank";
+export { default as betting } from "./betting";
+export { default as stats } from "./stats";
