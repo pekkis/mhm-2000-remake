@@ -12,7 +12,9 @@ import {
 } from "redux-saga/effects";
 
 import actionPhase from "./phase/action";
+import eventCreationPhase from "./phase/event-creation";
 import eventPhase from "./phase/event";
+import newsPhase from "./phase/news";
 import prankPhase from "./phase/prank";
 import gamedayPhase from "./phase/gameday";
 import seedPhase from "./phase/seed";
@@ -31,6 +33,8 @@ import {
   managersMainCompetition
 } from "../data/selectors";
 import events from "../data/events";
+
+export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 
 export function* beforeGame(action) {
   const {
@@ -90,7 +94,6 @@ export function* beforeGame(action) {
 
 export function* gameLoop() {
   yield takeEvery("GAME_GAME_BEGIN", beforeGame);
-  yield takeEvery("GAME_GAMEDAY_COMPLETE", afterGameday);
   yield fork(stats);
 
   do {
@@ -121,8 +124,16 @@ export function* gameLoop() {
       yield call(calculationsPhase);
     }
 
+    if (phases.includes("eventCreation")) {
+      yield call(eventCreationPhase);
+    }
+
     if (phases.includes("event")) {
       yield call(eventPhase);
+    }
+
+    if (phases.includes("news")) {
+      yield call(newsPhase);
     }
 
     if (phases.includes("seed")) {
@@ -151,6 +162,12 @@ function* competitionStart(competitionId) {
 }
 
 export function* groupEnd(competition, phase, group) {
+  const groupEnder = competitionData.getIn([competition, "groupEnd"]);
+
+  if (groupEnder) {
+    yield call(groupEnder, phase, group);
+  }
+
   yield put({
     type: "GAME_GROUP_END",
     payload: {

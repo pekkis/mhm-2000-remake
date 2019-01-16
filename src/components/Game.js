@@ -8,6 +8,7 @@ import LeagueTables from "./containers/LeagueTablesContainer";
 import DeveloperMenu from "./containers/DeveloperMenuContainer";
 import SelectStrategy from "./containers/SelectStrategyContainer";
 import Events from "./containers/EventsContainer";
+import News from "./containers/NewsContainer";
 import Gameday from "./containers/GamedayContainer";
 import GamedayResults from "./containers/GamedayResultsContainer";
 import CrisisActions from "./containers/CrisisActionsContainer";
@@ -38,6 +39,9 @@ const Phase = props => {
 
     case turn.get("phase") === "event":
       return <Events />;
+
+    case turn.get("phase") === "news":
+      return <News />;
 
     case turn.get("phase") === "gameday":
       return <Gameday />;

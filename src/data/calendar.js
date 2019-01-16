@@ -9,12 +9,13 @@ const defaultPhases = List.of(
   "prank",
   "gameday",
   "calculations",
+  "eventCreation",
   "event",
   "news",
   "seed"
 );
 
-const ehlPhases = List.of("action", "gameday");
+const ehlPhases = List.of("action", "gameday", "event", "news");
 
 const calendar = List.of(
   Map({

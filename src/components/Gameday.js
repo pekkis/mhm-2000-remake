@@ -12,8 +12,6 @@ const Gameday = props => {
 
   const calendarEntry = calendar.get(turn.get("round"));
 
-  console.log("calendar entry", calendarEntry.toJS());
-
   const currentCompetitions = calendarEntry
     .get("gamedays", List())
     .map(c => competitions.get(c));

@@ -1,13 +1,13 @@
 import { Map, List } from "immutable";
 import rr from "../../services/round-robin";
 import playoffScheduler, { victors } from "../../services/playoffs";
-import table from "../../services/league";
+import { defaultMoraleBoost } from "../../services/morale";
 
 export default Map({
   relegateTo: false,
   promoteTo: "phl",
 
-  gameBalance: (facts, manager) => {
+  gameBalance: (phase, facts, manager) => {
     const arenaLevel = manager.getIn(["arena", "level"]) + 1;
 
     if (facts.isLoss) {
@@ -19,6 +19,10 @@ export default Map({
     }
 
     return 10000 + 3000 * arenaLevel + manager.get("extra");
+  },
+
+  moraleBoost: (phase, facts, manager) => {
+    return defaultMoraleBoost(facts);
   },
 
   parameters: Map({

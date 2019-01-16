@@ -3,9 +3,10 @@ import competitionData from "../data/competitions";
 import gameService from "../services/game";
 import competitionTypes from "../services/competition-type";
 
-import { call, put, select, take } from "redux-saga/effects";
-import { stagger } from "popmotion";
+import { call, put, putResolve, select, take } from "redux-saga/effects";
 import { groupEnd } from "./game";
+import { calculateGroupStats } from "./stats";
+import { afterGameday } from "./manager";
 
 function* playGame(
   group,
@@ -54,6 +55,21 @@ function* playGame(
       })
     })
   ];
+}
+
+function* completeGameday(competition, phase, group, round) {
+  yield call(calculateGroupStats, competition, phase, group);
+  yield call(afterGameday, competition, phase, group, round);
+
+  yield putResolve({
+    type: "GAME_GAMEDAY_COMPLETE",
+    payload: {
+      competition,
+      phase,
+      group,
+      round
+    }
+  });
 }
 
 export function* gameday(payload) {
@@ -132,15 +148,13 @@ export function* gameday(payload) {
           });
         }
       }
-      yield put({
-        type: "GAME_GAMEDAY_COMPLETE",
-        payload: {
-          competition: competition.get("id"),
-          phase: competition.get("phase"),
-          group: groupIndex,
-          round
-        }
-      });
+
+      yield completeGameday(
+        competition.get("id"),
+        competition.get("phase"),
+        groupIndex,
+        round
+      );
 
       if (phase.get("type") === "tournament") {
         if (roundNumber < rounds) {

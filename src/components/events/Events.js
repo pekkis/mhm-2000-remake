@@ -11,8 +11,6 @@ const Events = props => {
 
   return (
     <div>
-      <h2>Eventit</h2>
-
       <p>{managersEvents.count()} tapahtumaa...</p>
 
       {managersEvents

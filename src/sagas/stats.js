@@ -14,7 +14,6 @@ import { STATS_UPDATE_TEAM_STREAK_FROM_FACTS } from "../ducks/stats";
 
 export function* stats() {
   yield all([
-    takeEvery("GAME_GAMEDAY_COMPLETE", calculateGroupStats),
     takeEvery("TEAM_INCUR_PENALTY", calculateGroupStats),
     takeEvery("COMPETITION_SEED", calculatePhaseStats),
     takeEvery("GAME_GAME_RESULT", gameResult)
@@ -70,9 +69,8 @@ function* groupStats(competitionId, phaseId, groupId) {
   });
 }
 
-export function* calculateGroupStats(action) {
-  const { payload } = action;
-  yield call(groupStats, payload.competition, payload.phase, payload.group);
+export function* calculateGroupStats(competition, phase, group) {
+  yield call(groupStats, competition, phase, group);
 }
 
 function* gameResult(action) {
@@ -99,6 +97,4 @@ function* gameResult(action) {
     );
 
   yield all(streaksToUpdate.toJS());
-
-  console.log("streaksToUpdate", streaksToUpdate.toJS());
 }

@@ -5,7 +5,7 @@ import { Map } from "immutable";
 const Streaks = props => {
   const { teams, competitions, competition, team, streaks } = props;
 
-  const teamStreaks = streaks.getIn([team, competition], Map());
+  const teamStreaks = streaks.getIn([team.toString(), competition], Map());
 
   return (
     <div>
@@ -13,7 +13,7 @@ const Streaks = props => {
         .filter(s => s > 1)
         .map((s, index) => {
           return (
-            <div>
+            <div key={index}>
               {s} {index}
             </div>
           );

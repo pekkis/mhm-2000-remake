@@ -1,10 +1,64 @@
 import { Map, List, Range } from "immutable";
-import { select, putResolve } from "redux-saga/effects";
+import { select, putResolve, call } from "redux-saga/effects";
 import rr from "../../services/round-robin";
 import tournamentScheduler from "../../services/tournament";
 
 import table, { sortStats } from "../../services/league";
 import r from "../../services/random";
+import { defaultMoraleBoost } from "../../services/morale";
+
+import { addAnnouncement } from "../../sagas/news";
+
+/*
+IF edus1 = u THEN x = eds1
+IF edus2 = u THEN x = eds2
+IF edus3 = u THEN x = eds3
+IF seh(x) = 1 THEN PRINT "Hurraa!! Voitimme!": raha = raha + 2000000: lemesm = leh(x)
+IF seh(x) = 2 THEN PRINT "Hiphei!! Sijoituimme toiseksi!": raha = raha + 1600000
+IF seh(x) = 3 THEN PRINT "Sijoituimme kolmanneksi!": raha = raha + 1400000
+IF seh(x) = 4 THEN PRINT "Sijoituimme nelj„nneksi...": raha = raha + 1200000
+IF seh(x) = 5 THEN PRINT "Sijoituimme viidenneksi...voi tukka!": raha = raha + 1000000
+IF seh(x) = 6 THEN PRINT "™RRR! J„imme jumboiksi!": raha = raha + 800000
+PRINT
+tre = tre - 2
+COLOR 8, 0: INPUT "Return...", yucca$
+perfon2:
+
+FOR y = 1 TO 6
+IF seh(elt(y)) = 1 THEN lemes = leh(elt(y))
+FOR yy = 1 TO 6
+IF elt(y) = eds1 AND edus1 <> u AND seh(elt(y)) = yy THEN v(edus1) = v(edus1) + (32 - seh(elt(y)) * 2)
+IF elt(y) = eds2 AND edus2 <> u AND seh(elt(y)) = yy THEN v(edus2) = v(edus2) + (32 - seh(elt(y)) * 2)
+IF elt(y) = eds3 AND edus3 <> u AND seh(elt(y)) = yy THEN v(edus3) = v(edus3) + (32 - seh(elt(y)) * 2)
+*/
+
+function* ehlAwards() {
+  const finalTournament = yield select(state =>
+    state.game.getIn(["competitions", "ehl", "phases", 1, "groups", 0])
+  );
+
+  const managers = yield select(state => state.manager.get("managers"));
+  const teams = yield select(state => state.game.get("teams"));
+
+  for (const [index, stat] of finalTournament.get("stats").entries()) {
+    console.log("stat", stat.toJS());
+    const team = teams.get(stat.get("id"));
+    if (team.get("domestic", true)) {
+      console.log("team", index, team.toJS());
+
+      if (team.get("manager")) {
+        const manager = managers.get(team.get("manager"));
+        console.log("manager", manager.toJS());
+      }
+    }
+
+    // const manager = managers.find(m => stat.get("id") === m.get("team"));
+    // if (manager) {
+    //   console.log("manager", index, manager.toJS());
+  }
+
+  yield call(addAnnouncement, 0, `Ripulikakka __haisee__.`);
+}
 
 export default Map({
   relegateTo: false,
@@ -30,9 +84,23 @@ export default Map({
     });
   },
 
-  gameBalance: (facts, manager) => {
+  groupEnd: function*(phase, group) {
+    if (phase === 1) {
+      yield call(ehlAwards);
+    }
+  },
+
+  gameBalance: (phase, facts, manager) => {
     const arenaLevel = manager.getIn(["arena", "level"]) + 1;
     return 100000 + 20000 * arenaLevel;
+  },
+
+  moraleBoost: (phase, facts, manager) => {
+    if (phase > 0) {
+      return 0;
+    }
+
+    return defaultMoraleBoost(facts);
   },
 
   parameters: Map({

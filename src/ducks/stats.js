@@ -30,9 +30,8 @@ export default function statsReducer(state = defaultState, action) {
       return fromJS(payload.stats);
 
     case STATS_UPDATE_TEAM_STREAK_FROM_FACTS:
-      console.log("HELLO HULLO REI");
       return state.updateIn(
-        ["streaks", "team", payload.team, payload.competition],
+        ["streaks", "team", payload.team.toString(), payload.competition],
         emptyStreak,
         streak => {
           return streak.merge({

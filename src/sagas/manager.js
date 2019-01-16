@@ -253,19 +253,17 @@ export function* toggleService(action) {
   yield call(setService, manager, service, !currentService);
 }
 
-export function* afterGameday(action) {
-  const { payload } = action;
-
+export function* afterGameday(competition, phase, groupId, round) {
   const managers = yield select(state => state.manager.get("managers"));
 
   const group = yield select(state =>
     state.game.getIn([
       "competitions",
-      payload.competition,
+      competition,
       "phases",
-      payload.phase,
+      phase,
       "groups",
-      payload.group
+      groupId
     ])
   );
 
@@ -278,7 +276,7 @@ export function* afterGameday(action) {
       continue;
     }
 
-    const game = group.getIn(["schedule", payload.round]).find(pairing => {
+    const game = group.getIn(["schedule", round]).find(pairing => {
       return pairing.includes(managersIndex);
     });
 
@@ -292,33 +290,36 @@ export function* afterGameday(action) {
 
     const facts = gameFacts(game, managersIndex);
 
-    const amount = competitionList.getIn([payload.competition, "gameBalance"])(
+    const amount = competitionList.getIn([competition, "gameBalance"])(
+      phase,
       facts,
       manager
     );
 
-    const moraleBoost = getMoraleBoost(facts);
+    const moraleBoost = competitionList.getIn(
+      [competition, "moraleBoost"],
+      () => {
+        console.log("MORALE BOOST MISSING", competition, phase);
+        return 0;
+      }
+    )(phase, facts, manager);
+
+    console.log("MORALE BOOST", competition, phase, moraleBoost);
+
+    // const moraleBoost = getMoraleBoost(facts);
+
     if (moraleBoost) {
       const team = yield select(managersTeamId(manager.get("id")));
-
       yield call(incrementMorale, team, moraleBoost);
     }
 
-    yield call(incrementBalance, manager.get("id"), amount);
+    if (amount) {
+      yield call(incrementBalance, manager.get("id"), amount);
+    }
   }
 
   // console.log("äkshuun!", action);
 }
-
-const getMoraleBoost = facts => {
-  if (facts.isWin) {
-    return 1;
-  } else if (facts.isLoss) {
-    return -1;
-  }
-
-  return 0;
-};
 
 export function* watchTransferMarket() {
   yield all([
