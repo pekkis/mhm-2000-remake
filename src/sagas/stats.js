@@ -10,7 +10,7 @@ import competitionTypes from "../services/competition-type";
 import { resultFacts } from "../services/game";
 import { List } from "immutable";
 
-import { STATS_UPDATE_TEAM_STREAK_FROM_FACTS } from "../ducks/stats";
+import { STATS_UPDATE_FROM_FACTS } from "../ducks/stats";
 
 export function* stats() {
   yield all([
@@ -75,23 +75,26 @@ export function* calculateGroupStats(competition, phase, group) {
 
 function* gameResult(action) {
   const {
-    payload: { competition, meta, result }
+    payload: { competition, phase, meta, result }
   } = action;
 
   const streaksToUpdate = List.of("home", "away")
     .map(which => {
       const team = meta.getIn([which, "team"]);
+      const manager = meta.getIn([which, "manager"]);
       const facts = resultFacts(result, which);
 
       return {
         team,
         competition,
+        phase,
+        manager,
         facts
       };
     })
     .map(payload =>
       put({
-        type: STATS_UPDATE_TEAM_STREAK_FROM_FACTS,
+        type: STATS_UPDATE_FROM_FACTS,
         payload
       })
     );

@@ -17,12 +17,53 @@ import {
   managersArena,
   managerHasService
 } from "../data/selectors";
-import { incrementMorale } from "./team";
+import { incrementMorale, incrementReadiness } from "./team";
 import { addNotification } from "./notification";
 import crisis from "../data/crisis";
 import difficultyLevels from "../data/difficulty-levels";
 import arenas from "../data/arenas";
 import { incrementStrength, decrementStrength } from "./team";
+import uuid from "uuid";
+import { Map } from "immutable";
+
+export function* addManager(details) {
+  const manager = Map({
+    id: uuid(),
+    name: details.name,
+    difficulty: parseInt(details.difficulty, 10),
+    pranksExecuted: 0,
+    services: Map({
+      coach: false,
+      insurance: false,
+      microphone: false,
+      cheer: false
+    }),
+    balance: difficultyLevels.getIn([details.difficulty, "startBalance"]),
+    arena: Map({
+      name: details.arena,
+      level: 0
+    }),
+    extra: 0,
+    insuranceExtra: 0,
+    flags: Map()
+  });
+
+  yield putResolve({
+    type: "MANAGER_ADD",
+    payload: {
+      manager
+    }
+  });
+
+  yield call(hireManager, manager.get("id"), 12);
+}
+
+export function* setActiveManager(managerId) {
+  yield putResolve({
+    type: "MANAGER_SET_ACTIVE",
+    payload: managerId
+  });
+}
 
 export function* hireManager(managerId, teamId) {
   const managersCurrentTeam = yield select(state =>
@@ -267,7 +308,7 @@ export function* afterGameday(competition, phase, groupId, round) {
     ])
   );
 
-  for (const manager of managers) {
+  for (const [, manager] of managers) {
     const managersIndex = group
       .get("teams")
       .findIndex(t => t === manager.get("team"));
@@ -289,6 +330,7 @@ export function* afterGameday(competition, phase, groupId, round) {
     }
 
     const facts = gameFacts(game, managersIndex);
+    const team = yield select(managersTeamId(manager.get("id")));
 
     const amount = competitionList.getIn([competition, "gameBalance"])(
       phase,
@@ -306,10 +348,22 @@ export function* afterGameday(competition, phase, groupId, round) {
 
     console.log("MORALE BOOST", competition, phase, moraleBoost);
 
+    const readinessBoost = competitionList.getIn(
+      [competition, "readinessBoost"],
+      () => {
+        console.log("READINESS BOOST MISSING", competition, phase);
+        return 0;
+      }
+    )(phase, facts, manager);
+
+    console.log("READINESS BOOST", competition, phase, readinessBoost);
+    if (readinessBoost) {
+      yield call(incrementReadiness, team, readinessBoost);
+    }
+
     // const moraleBoost = getMoraleBoost(facts);
 
     if (moraleBoost) {
-      const team = yield select(managersTeamId(manager.get("id")));
       yield call(incrementMorale, team, moraleBoost);
     }
 

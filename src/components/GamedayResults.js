@@ -31,15 +31,15 @@ const GamedayResults = props => {
 
           return (
             <div key={competition.get("name")}>
-              <h3>{competition.get("name")}</h3>
               {currentPhase.get("groups").map((group, groupIndex) => {
                 const currentRound = group.get("round") - 1;
 
                 return (
                   <div key={groupIndex}>
-                    <h4>
-                      {group.get("name")} [{currentRound}]
-                    </h4>
+                    <h3>
+                      {competition.get("name")}, {group.get("name")} [
+                      {currentRound}]
+                    </h3>
 
                     <Results
                       teams={teams}

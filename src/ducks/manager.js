@@ -4,29 +4,8 @@ import { GAME_ADVANCE } from "./game";
 export const MANAGER_NEXT = "MANAGER_NEXT";
 
 const defaultState = Map({
-  active: 0,
-  managers: List.of(
-    Map({
-      id: 0,
-      name: "Gaylord Lohiposki",
-      difficulty: 2,
-      pranksExecuted: 0,
-      services: Map({
-        coach: false,
-        insurance: false,
-        microphone: false,
-        cheer: false
-      }),
-      balance: 0,
-      arena: Map({
-        name: "Anonyymi Areena",
-        level: 0
-      }),
-      extra: 0,
-      insuranceExtra: 0,
-      flags: Map()
-    })
-  )
+  active: undefined,
+  managers: Map()
 });
 
 export const toggleService = (manager, service) => {
@@ -139,7 +118,7 @@ export default function managerReducer(state = defaultState, action) {
     case "TEAM_REMOVE_MANAGER":
       return state.removeIn([
         "managers",
-        state.get("managers").findIndex(m => m.get("team") === payload.team),
+        state.get("managers").findKey(m => m.get("team") === payload.team),
         "team"
       ]);
 
@@ -161,13 +140,11 @@ export default function managerReducer(state = defaultState, action) {
         payload.value
       );
 
-    case "MANAGER_INITIALIZE":
-      return state.updateIn(["managers", payload.manager], p => {
-        return p
-          .set("name", payload.details.name)
-          .set("difficulty", parseInt(payload.details.difficulty, 10))
-          .setIn(["arena", "name"], payload.details.arena);
-      });
+    case "MANAGER_ADD":
+      return state.setIn(
+        ["managers", payload.manager.get("id")],
+        payload.manager
+      );
 
     case "MANAGER_RENAME_ARENA":
       return state.setIn(
@@ -181,11 +158,8 @@ export default function managerReducer(state = defaultState, action) {
         payload.level
       );
 
-    case GAME_ADVANCE:
-      return state.set("active", 0);
-
-    case MANAGER_NEXT:
-      return state.update("active", a => a + 1);
+    case "MANAGER_SET_ACTIVE":
+      return state.set("active", payload);
 
     case "PRANK_ORDER":
       return state.updateIn(

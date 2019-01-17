@@ -24,7 +24,7 @@ import calculationsPhase from "./phase/calculations";
 import calendar from "../data/calendar";
 import difficultyLevels from "../data/difficulty-levels";
 
-import { afterGameday, setExtra, decrementBalance } from "./manager";
+import { setExtra, decrementBalance } from "./manager";
 import { stats } from "./stats";
 import {
   allTeams,
@@ -219,9 +219,11 @@ export function* seasonStart() {
   }
 
   const managers = yield select(state => state.manager.get("managers"));
-  for (const manager of managers) {
+  for (const [, manager] of managers) {
+    console.log("MANAGER", manager);
+
     // Skip the first season for salary payments.
-    if (season > 1997) {
+    if (season > 0) {
       const managerId = manager.get("id");
       const team = yield select(managersTeam(managerId));
       const difficulty = yield select(managersDifficulty(managerId));

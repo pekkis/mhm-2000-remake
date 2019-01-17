@@ -2,6 +2,7 @@ import { Map, List } from "immutable";
 import rr from "../../services/round-robin";
 import playoffScheduler, { victors } from "../../services/playoffs";
 import { defaultMoraleBoost } from "../../services/morale";
+import r from "../../services/random";
 
 export default Map({
   relegateTo: false,
@@ -25,6 +26,10 @@ export default Map({
     return defaultMoraleBoost(facts);
   },
 
+  readinessBoost: (phase, facts, manager) => {
+    return 0;
+  },
+
   parameters: Map({
     gameday: {
       advantage: Map({
@@ -41,10 +46,10 @@ export default Map({
   seed: List.of(
     competitions => {
       const competition = competitions.get("division");
-      const teams = competition.get("teams");
+      const teams = competition.get("teams").sortBy(() => r.real(1, 1000));
       const times = 2;
       return Map({
-        teams,
+        teams: teams,
         name: "runkosarja",
         type: "round-robin",
         times,

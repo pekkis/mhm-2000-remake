@@ -3,8 +3,12 @@ import { seasonStart } from "../game";
 import strategies from "../../data/strategies";
 import { BETTING_BET_CHAMPION_REQUEST } from "../../ducks/betting";
 import { betChampion } from "../betting";
+import { setActiveManager } from "../manager";
 
 function* selectStrategy() {
+  const managers = yield select(state => state.manager.get("managers"));
+  yield call(setActiveManager, managers.first().get("id"));
+
   yield putResolve({
     type: "GAME_SET_PHASE",
     payload: "select-strategy"

@@ -87,10 +87,10 @@ const TableElm = props => {
           <th>V</th>
           <th>TP</th>
           <th>H</th>
+          <th>P</th>
           <th>TM</th>
           <th>-</th>
           <th>PM</th>
-          <th>P</th>
         </tr>
       </thead>
       <tbody>
@@ -108,10 +108,10 @@ const TableElm = props => {
               <td>{t.get("wins")}</td>
               <td>{t.get("draws")}</td>
               <td>{t.get("losses")}</td>
+              <td>{t.get("points")}</td>
               <td>{t.get("goalsFor")}</td>
               <td>-</td>
               <td>{t.get("goalsAgainst")}</td>
-              <td>{t.get("points")}</td>
             </TableRow>
           );
         })}

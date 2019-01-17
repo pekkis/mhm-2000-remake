@@ -5,18 +5,23 @@ import {
   take,
   takeEvery,
   cancel,
-  put
+  put,
+  select
 } from "redux-saga/effects";
 import { gameSave } from "../meta";
 import {
   watchTransferMarket,
   crisisMeeting,
   improveArena,
-  toggleService
+  toggleService,
+  setActiveManager
 } from "../manager";
 import { orderPrank } from "../prank";
 
 export default function* actionPhase() {
+  const managers = yield select(state => state.manager.get("managers"));
+  yield call(setActiveManager, managers.first().get("id"));
+
   yield put({
     type: "GAME_SET_PHASE",
     payload: "action"

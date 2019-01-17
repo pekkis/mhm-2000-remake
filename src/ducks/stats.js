@@ -1,8 +1,7 @@
 import { Map, List, fromJS } from "immutable";
 import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
 
-export const STATS_UPDATE_TEAM_STREAK_FROM_FACTS =
-  "STATS_UPDATE_TEAM_STREAK_FROM_FACTS";
+export const STATS_UPDATE_FROM_FACTS = "STATS_UPDATE_FROM_FACTS";
 
 const emptyStreak = Map({
   win: 0,
@@ -12,7 +11,19 @@ const emptyStreak = Map({
   noWin: 0
 });
 
+const emptySeasonStats = Map({
+  europeanChampion: undefined,
+  presidentsTrophy: undefined,
+  medalists: undefined,
+  worldChampionships: undefined,
+  promoted: undefined,
+  relegated: false,
+  managers: Map()
+});
+
 const defaultState = Map({
+  seasons: List(),
+  managers: Map(),
   streaks: Map({
     team: Map(),
     manager: Map()
@@ -29,26 +40,51 @@ export default function statsReducer(state = defaultState, action) {
     case META_GAME_LOAD_STATE:
       return fromJS(payload.stats);
 
-    case STATS_UPDATE_TEAM_STREAK_FROM_FACTS:
-      return state.updateIn(
-        ["streaks", "team", payload.team.toString(), payload.competition],
-        emptyStreak,
-        streak => {
-          return streak.merge({
-            win: payload.facts.isWin ? streak.get("win") + 1 : 0,
-            draw: payload.facts.isDraw ? streak.get("draw") + 1 : 0,
-            loss: payload.facts.isLoss ? streak.get("loss") + 1 : 0,
-            noLoss:
-              payload.facts.isWin || payload.facts.isDraw
-                ? streak.get("noLoss") + 1
-                : 0,
-            noWin:
-              payload.facts.isLoss || payload.facts.isDraw
-                ? streak.get("noWin") + 1
-                : 0
-          });
-        }
-      );
+    case STATS_UPDATE_FROM_FACTS:
+      console.log("UPDATE YOUR FUCKING STATS", payload);
+      return state
+        .updateIn(
+          ["streaks", "team", payload.team.toString(), payload.competition],
+          emptyStreak,
+          streak => {
+            return streak.merge({
+              win: payload.facts.isWin ? streak.get("win") + 1 : 0,
+              draw: payload.facts.isDraw ? streak.get("draw") + 1 : 0,
+              loss: payload.facts.isLoss ? streak.get("loss") + 1 : 0,
+              noLoss:
+                payload.facts.isWin || payload.facts.isDraw
+                  ? streak.get("noLoss") + 1
+                  : 0,
+              noWin:
+                payload.facts.isLoss || payload.facts.isDraw
+                  ? streak.get("noWin") + 1
+                  : 0
+            });
+          }
+        )
+        .update("managers", managerStats => {
+          if (!payload.manager) {
+            return managerStats;
+          }
+
+          return managerStats.updateIn(
+            [payload.manager, "games", payload.competition, payload.phase],
+            Map({
+              win: 0,
+              draw: 0,
+              loss: 0
+            }),
+            stats => {
+              if (payload.facts.isWin) {
+                return stats.update("win", stat => stat + 1);
+              } else if (payload.facts.isLoss) {
+                return stats.update("loss", stat => stat + 1);
+              } else {
+                return stats.update("draw", stat => stat + 1);
+              }
+            }
+          );
+        });
 
     default:
       return state;

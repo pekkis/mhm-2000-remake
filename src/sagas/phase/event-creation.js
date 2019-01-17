@@ -153,15 +153,17 @@ const getEventId = () => {
 export default function* eventCreationPhase() {
   yield call(setPhase, "event-creation");
 
-  const manager = 0;
+  const managers = yield select(state => state.manager.get("managers"));
   const round = yield select(state => state.game.getIn(["turn", "round"]));
 
   const calendarEntry = calendar.get(round);
 
   if (calendarEntry.get("createRandomEvent")) {
-    const eventId = getEventId();
-    if (eventId) {
-      yield call(events.get(eventId).create, { manager });
+    for (const [, manager] of managers) {
+      const eventId = getEventId();
+      if (eventId) {
+        yield call(events.get(eventId).create, { manager: manager.get("id") });
+      }
     }
   }
 }

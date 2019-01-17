@@ -20,6 +20,7 @@ import ModalMenu from "./containers/ModalMenuContainer";
 import ChampionshipBetting from "./containers/ChampionshipBettingContainer";
 import EndOfSeason from "./containers/EndOfSeasonContainer";
 import WorldChampionships from "./containers/WorldChampionshipsContainer";
+import Stats from "./containers/StatsContainer";
 
 import calendar from "../data/calendar";
 
@@ -65,6 +66,7 @@ const Phase = props => {
           <Route exact path="/erikoistoimenpiteet" component={Services} />
           <Route exact path="/areena" component={Arena} />
           <Route exact path="/jaynat" component={Pranks} />
+          <Route exact path="/tilastot" component={Stats} />
           <Route exact path="/debug" component={DeveloperMenu} />
         </Switch>
       );

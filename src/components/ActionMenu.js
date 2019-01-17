@@ -5,7 +5,6 @@ import { getEffective } from "../services/effects";
 
 import { CRISIS_MORALE_MAX } from "../data/constants";
 
-import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
 
 const ActionMenu = props => {
@@ -59,6 +58,12 @@ const ActionMenu = props => {
           <li>
             <Link onClick={() => closeMenu()} to="/jaynat">
               Jäynät
+            </Link>
+          </li>
+
+          <li>
+            <Link onClick={() => closeMenu()} to="/tilastot">
+              Tilastot
             </Link>
           </li>
 

@@ -1,9 +1,7 @@
 import { Seq } from "immutable";
-import { hireManager, incrementBalance } from "./manager";
+import { addManager } from "./manager";
 import { gameLoop } from "./game";
 import { addNotification } from "./notification";
-import { managersDifficulty } from "../data/selectors";
-import difficultyLevels from "../data/difficulty-levels";
 
 import {
   all,
@@ -38,31 +36,7 @@ const load = () => {
 function* gameStart() {
   const action = yield take("GAME_ADVANCE_REQUEST");
 
-  yield putResolve({
-    type: "MANAGER_INITIALIZE",
-    payload: {
-      manager: 0,
-      details: action.payload
-    }
-  });
-
-  const difficulty = yield select(managersDifficulty(0));
-
-  // console.log(difficulty, "difficultah");
-
-  yield putResolve({
-    type: "MANAGER_SET_BALANCE",
-    payload: {
-      manager: 0,
-      amount: difficultyLevels.getIn([difficulty, "startBalance"])
-    }
-  });
-
-  yield call(hireManager, 0, 12);
-
-  // yield call(incrementBalance, 0, 100000000);
-
-  // yield call(seasonStart);
+  yield call(addManager, action.payload);
 
   yield putResolve({
     type: "GAME_START"

@@ -10,7 +10,7 @@ export const GAME_ADVANCE = "GAME_ADVANCE";
 
 const defaultState = Map({
   turn: Map({
-    season: 1997,
+    season: 0,
     round: 0,
     phase: undefined
   }),
