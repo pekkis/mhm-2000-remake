@@ -9,7 +9,11 @@ export default withRouter(
     state => ({
       started: state.meta.get("started"),
       starting: state.meta.get("starting"),
-      manager: state.meta.get("manager")
+      manager: state.meta.get("manager"),
+      teams: state.game.get("teams"),
+      competitions: state.game
+        .get("competitions")
+        .filter((c, k) => ["phl", "division"].includes(k))
     }),
     { startGame, loadGame, advance }
   )(StartMenu)

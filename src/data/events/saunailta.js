@@ -1,7 +1,7 @@
 import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
-import { addEffect } from "../../sagas/team";
+import { addEffect, decrementMorale } from "../../sagas/team";
 import { managersTeam, managersMainCompetition } from "../selectors";
 import { cinteger } from "../../services/random";
 
@@ -60,6 +60,7 @@ Mies saa luonnollisesti potkut, ja uutta joukkueenohtajaa etsitään. Moraali la
     const duration = data.get("duration");
     const effect = data.get("effect");
 
+    yield call(decrementMorale, team.get("id"), 5);
     yield call(addEffect, team.get("id"), ["strength"], effect, duration);
   }
 };

@@ -1,6 +1,7 @@
-import { put, call, select } from "redux-saga/effects";
+import { put, call, select, putResolve } from "redux-saga/effects";
 import { teamsManager } from "../data/selectors";
 import difficultyLevels from "../data/difficulty-levels";
+import { calculateGroupStats } from "./stats";
 
 const getMoraleMinMax = manager => {
   const difficulty = manager ? manager.get("difficulty") : 2;
@@ -10,6 +11,20 @@ const getMoraleMinMax = manager => {
     max: difficultyLevels.getIn([difficulty, "moraleMax"])
   };
 };
+
+export function* incurPenalty(competition, phase, group, team, penalty) {
+  yield putResolve({
+    type: "TEAM_INCUR_PENALTY",
+    payload: {
+      competition,
+      phase,
+      group,
+      team,
+      penalty
+    }
+  });
+  yield call(calculateGroupStats, competition, phase, group);
+}
 
 export function* setStrategy(teamId, strategy) {
   return yield put({

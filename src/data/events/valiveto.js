@@ -1,17 +1,9 @@
 import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
-import {
-  incrementBalance,
-  incrementInsuranceExtra,
-  setArenaLevel
-} from "../../sagas/manager";
+import { setArenaLevel } from "../../sagas/manager";
 import { amount as a } from "../../services/format";
-import {
-  managerHasService,
-  managersDifficulty,
-  managersArena
-} from "../selectors";
+import { managersDifficulty, managersArena } from "../selectors";
 import arenas from "../../data/arenas";
 
 /*

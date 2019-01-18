@@ -10,11 +10,10 @@ import competitionTypes from "../services/competition-type";
 import { resultFacts } from "../services/game";
 import { List } from "immutable";
 
-import { STATS_UPDATE_FROM_FACTS } from "../ducks/stats";
+import { STATS_UPDATE_FROM_FACTS, STATS_SET_SEASON_STAT } from "../ducks/stats";
 
 export function* stats() {
   yield all([
-    takeEvery("TEAM_INCUR_PENALTY", calculateGroupStats),
     takeEvery("COMPETITION_SEED", calculatePhaseStats),
     takeEvery("GAME_GAME_RESULT", gameResult)
   ]);
@@ -85,9 +84,9 @@ function* gameResult(action) {
       const facts = resultFacts(result, which);
 
       return {
-        team,
+        team: team.toString(),
         competition,
-        phase,
+        phase: phase.toString(),
         manager,
         facts
       };
@@ -100,4 +99,14 @@ function* gameResult(action) {
     );
 
   yield all(streaksToUpdate.toJS());
+}
+
+export function* setSeasonStat(path, value) {
+  yield put({
+    type: STATS_SET_SEASON_STAT,
+    payload: {
+      path,
+      value
+    }
+  });
 }

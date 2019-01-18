@@ -3,11 +3,14 @@ import React from "react";
 import News from "./news/News";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
+import Season from "./data/Season";
+import Announcements from "./events/Announcements";
+import { List } from "immutable";
 
 import Box from "./styled-system/Box";
 
 const EndOfSeason = props => {
-  const { manager, news, turn } = props;
+  const { manager, news, turn, announcements } = props;
 
   return (
     <HeaderedPage>
@@ -15,8 +18,15 @@ const EndOfSeason = props => {
 
       <Box p={1}>
         <h2>
-          Kausi {turn.get("season")}-{turn.get("season") + 1}
+          Kausi <Season long index={turn.get("season")} />
         </h2>
+
+        <Announcements
+          announcements={announcements.get(
+            manager.get("id").toString(),
+            List()
+          )}
+        />
 
         <News manager={manager} news={news} />
       </Box>

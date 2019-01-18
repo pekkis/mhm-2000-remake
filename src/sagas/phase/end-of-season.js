@@ -6,6 +6,8 @@ import { List, Map } from "immutable";
 import { cinteger } from "../../services/random";
 
 import countries from "../../data/countries";
+import { setSeasonStat } from "../stats";
+import { processChampionBets } from "../betting";
 
 const getLuck = () => {
   const isLucky = cinteger(1, 10);
@@ -24,8 +26,6 @@ const getLuck = () => {
 function* worldChampionships() {
   yield call(setPhase, "world-championships");
   const turn = yield select(state => state.game.get("turn"));
-  const season = turn.get("season");
-
   let strengths = List();
   for (const [index, country] of countries.entries()) {
     const strength = yield call(country.get("strength"));
@@ -52,6 +52,12 @@ function* worldChampionships() {
     payload: entries
   });
 
+  yield call(
+    setSeasonStat,
+    ["worldChampionships"],
+    entries.map(e => e.get("id"))
+  );
+
   yield take("GAME_ADVANCE_REQUEST");
 }
 
@@ -62,13 +68,7 @@ export default function* endOfSeasonPhase() {
 
   yield call(awards);
 
-  yield take("GAME_ADVANCE_REQUEST");
-
   yield call(setPhase, "end-of-season");
-
-  yield put({
-    type: "SEASON_END"
-  });
 
   const division = yield select(state =>
     state.game.getIn(["competitions", "division"])
@@ -79,6 +79,12 @@ export default function* endOfSeasonPhase() {
   const divisionVictor = victors(division.getIn(["phases", 3, "groups", 0]))
     .first()
     .get("id");
+
+  const presidentsTrophy = phl
+    .getIn(["phases", 0, "groups", 0, "stats"])
+    .first()
+    .get("id");
+  yield call(setSeasonStat, ["presidentsTrophy"], presidentsTrophy);
 
   const phlLoser = phl
     .getIn(["phases", 0, "groups", 0, "stats"])
@@ -95,18 +101,21 @@ export default function* endOfSeasonPhase() {
     phlVictors.last()
   ).map(e => e.get("id"));
 
-  console.log("MEDALISTS", medalists.toJS());
-
-  yield put({
-    type: "GAME_HISTORY_PUSH",
-    payload: {
-      ehlParticipants: medalists
-    }
-  });
+  yield call(setSeasonStat, ["medalists"], medalists);
 
   if (divisionVictor !== phlLoser) {
     yield all([promote("division", divisionVictor), relegate("phl", phlLoser)]);
+    yield call(setSeasonStat, ["relegated"], phlLoser);
+    yield call(setSeasonStat, ["promoted"], divisionVictor);
   }
+
+  yield call(processChampionBets);
+
+  yield take("GAME_ADVANCE_REQUEST");
+
+  yield put({
+    type: "SEASON_END"
+  });
 
   yield call(seasonStart);
 }

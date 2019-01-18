@@ -9,6 +9,7 @@ import { addAnnouncement } from "../../sagas/news";
 import { amount as a } from "../../services/format";
 import { incrementStrength, incrementReadiness } from "../../sagas/team";
 import { incrementBalance } from "../../sagas/manager";
+import { setSeasonStat } from "../../sagas/stats";
 
 const awards = List.of(
   Map({
@@ -82,6 +83,11 @@ function* ehlAwards() {
   for (const [ranking, stat] of finalTournament.get("stats").entries()) {
     console.log("stat", stat.toJS());
     const team = teams.get(stat.get("id"));
+
+    if (ranking === 0) {
+      yield call(setSeasonStat, ["ehlChampion"], team.get("id"));
+    }
+
     if (team.get("domestic", true)) {
       yield call(incrementReadiness, team.get("id"), -2);
 
@@ -125,7 +131,17 @@ export default Map({
   promoteTo: false,
 
   start: function*() {
-    const ehlTeams = yield select(state => state.game.get("ehlParticipants"));
+    // const ehlTeams = yield select(state => state.game.get("ehlParticipants"));
+
+    const turn = yield select(state => state.game.get("turn"));
+    const season = turn.get("season");
+
+    const ehlTeams = yield select(state =>
+      state.stats.getIn(["seasons", season - 1, "medalists"], List.of(2, 3, 5))
+    );
+
+    console.log(ehlTeams, "lussi?");
+
     const foreignTeams = yield select(state =>
       state.game
         .get("teams")

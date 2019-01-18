@@ -1,5 +1,7 @@
 import { Map } from "immutable";
 
+import { SEASON_START } from "./game";
+
 export const META_QUIT_TO_MAIN_MENU = "META_QUIT_TO_MAIN_MENU";
 export const META_GAME_LOAD_STATE = "META_GAME_LOAD_STATE";
 
@@ -11,7 +13,8 @@ const defaultState = Map({
   manager: Map({
     name: "Gaylord Lohiposki",
     arena: "MasoSports Areena",
-    difficulty: "2"
+    difficulty: "2",
+    team: 12
   })
 });
 
@@ -49,7 +52,7 @@ export default function eventReducer(state = defaultState, action) {
     case "SEASON_START_REQUEST":
       return state.set("loading", true);
 
-    case "SEASON_START":
+    case SEASON_START:
     case "META_GAME_LOADED":
       return state.set("started", true).set("loading", false);
 

@@ -15,7 +15,8 @@ import {
   managersDifficulty,
   managerCompetesIn,
   managersArena,
-  managerHasService
+  managerHasService,
+  teamsMainCompetition
 } from "../data/selectors";
 import { incrementMorale, incrementReadiness } from "./team";
 import { addNotification } from "./notification";
@@ -27,6 +28,9 @@ import uuid from "uuid";
 import { Map } from "immutable";
 
 export function* addManager(details) {
+  const teamId = parseInt(details.team, 10);
+  const mainCompetition = yield select(teamsMainCompetition(teamId));
+
   const manager = Map({
     id: uuid(),
     name: details.name,
@@ -41,7 +45,7 @@ export function* addManager(details) {
     balance: difficultyLevels.getIn([details.difficulty, "startBalance"]),
     arena: Map({
       name: details.arena,
-      level: 0
+      level: mainCompetition === "phl" ? 3 : 0
     }),
     extra: 0,
     insuranceExtra: 0,
@@ -55,7 +59,7 @@ export function* addManager(details) {
     }
   });
 
-  yield call(hireManager, manager.get("id"), 12);
+  yield call(hireManager, manager.get("id"), teamId);
 }
 
 export function* setActiveManager(managerId) {
@@ -110,6 +114,13 @@ export function* renameArena(managerId, name) {
 }
 
 export function* incrementBalance(managerId, amount) {
+  const manager = yield select(state =>
+    state.manager.getIn(["managers", managerId])
+  );
+  if (!manager) {
+    throw new Error("INVALID MANAGER", managerId, amount);
+  }
+
   return yield put({
     type: "MANAGER_INCREMENT_BALANCE",
     payload: {

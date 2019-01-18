@@ -15,7 +15,8 @@ export default connect(
     news: state.news.get("news"),
     interestingCompetitions: interestingCompetitions(
       state.manager.get("active")
-    )(state)
+    )(state),
+    announcements: state.news.get("announcements")
   }),
   { advance, resolveEvent, saveGame, quitToMainMenu }
 )(EndOfSeason);

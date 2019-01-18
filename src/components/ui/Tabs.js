@@ -7,6 +7,7 @@ const TabsList = styled.ul`
   padding: 1em;
   display: flex;
   flex-basis: 100%;
+  flex-wrap: wrap;
   align-items: center;
   align-content: stretch;
 

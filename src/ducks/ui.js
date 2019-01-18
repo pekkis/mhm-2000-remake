@@ -5,7 +5,9 @@ const defaultState = Map({
   advanceEnabled: true,
   tabs: Map({
     transferMarket: 0,
-    prankVictim: 0
+    prankVictim: 0,
+    stats: 0,
+    teamStats: 0
   }),
   prank: Map({
     type: undefined,

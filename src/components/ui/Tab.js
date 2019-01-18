@@ -22,7 +22,7 @@ export default styled(Tab)`
   list-style-position: inside;
   list-style-type: none;
   margin: 0 0;
-  padding: 1em 3em;
+  padding: 0.5em 1em;
 
   ${props =>
     props.isSelected &&

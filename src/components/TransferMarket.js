@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import playerTypes from "../data/transfer-market";
 import Button from "./form/Button";
 import Header from "./containers/HeaderContainer";
@@ -11,9 +11,10 @@ import Tabs from "./ui/Tabs";
 import Tab from "./ui/Tab";
 
 const TransferMarket = props => {
-  const { manager, teams, buyPlayer, sellPlayer, tab, selectTab } = props;
+  const { manager, buyPlayer, sellPlayer } = props;
 
   const balance = manager.get("balance");
+  const [tab, setTab] = useState(0);
 
   return (
     <HeaderedPage>
@@ -33,12 +34,7 @@ const TransferMarket = props => {
             </p>
           }
         >
-          <Tabs
-            selected={tab}
-            onSelect={selected => {
-              selectTab("transferMarket", selected);
-            }}
-          >
+          <Tabs selected={tab} onSelect={setTab}>
             <Tab title="Osta pelaajia">
               <div>
                 {playerTypes.map((playerType, index) => {

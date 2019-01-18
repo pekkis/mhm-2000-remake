@@ -1,8 +1,7 @@
 import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
-import { incrementMorale } from "../../sagas/team";
-import { randomManager, managersTeamId, flag } from "../selectors";
+import { randomManager, flag, totalGamesPlayed } from "../selectors";
 import { setFlag } from "../../sagas/game";
 
 /*
@@ -29,7 +28,10 @@ const event = {
   create: function*(data) {
     const { manager } = data;
 
-    // TODO: STATISTICS CLAUSE IF UNDER 100 LIIGA GAMES THEN RETURN.
+    const phlGamesPlayed = yield select(totalGamesPlayed(manager, "phl", 0));
+    if (phlGamesPlayed < 100) {
+      return;
+    }
 
     const psycho = yield select(flag("psycho"));
     if (psycho) {

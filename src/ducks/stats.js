@@ -1,7 +1,9 @@
 import { Map, List, fromJS } from "immutable";
 import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
+import { SEASON_START, SEASON_END } from "./game";
 
 export const STATS_UPDATE_FROM_FACTS = "STATS_UPDATE_FROM_FACTS";
+export const STATS_SET_SEASON_STAT = "STATS_SET_SEASON_STAT";
 
 const emptyStreak = Map({
   win: 0,
@@ -12,16 +14,17 @@ const emptyStreak = Map({
 });
 
 const emptySeasonStats = Map({
-  europeanChampion: undefined,
+  ehlChampion: undefined,
   presidentsTrophy: undefined,
   medalists: undefined,
   worldChampionships: undefined,
   promoted: undefined,
-  relegated: false,
+  relegated: undefined,
   managers: Map()
 });
 
 const defaultState = Map({
+  currentSeason: undefined,
   seasons: List(),
   managers: Map(),
   streaks: Map({
@@ -40,11 +43,22 @@ export default function statsReducer(state = defaultState, action) {
     case META_GAME_LOAD_STATE:
       return fromJS(payload.stats);
 
+    case SEASON_START:
+      return state.set("currentSeason", emptySeasonStats);
+
+    case SEASON_END:
+      return state.update("seasons", seasons =>
+        seasons.push(state.get("currentSeason"))
+      );
+
+    case STATS_SET_SEASON_STAT:
+      return state.setIn(["currentSeason", ...payload.path], payload.value);
+
     case STATS_UPDATE_FROM_FACTS:
       console.log("UPDATE YOUR FUCKING STATS", payload);
       return state
         .updateIn(
-          ["streaks", "team", payload.team.toString(), payload.competition],
+          ["streaks", "team", payload.team, payload.competition],
           emptyStreak,
           streak => {
             return streak.merge({

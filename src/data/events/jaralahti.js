@@ -55,7 +55,7 @@ const event = {
     return Map({
       support: `Lahjoitan miliisien virkistysrahastoon ${a(
         data.get("amount")
-      )}.`,
+      )} pekkaa.`,
       nothing: "Lyön luurin korvaan ja sanoudun irti koko hommasta!"
     });
   },

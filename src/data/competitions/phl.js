@@ -149,7 +149,7 @@ export default Map({
       const winsToAdvance = 4;
 
       return Map({
-        name: "semifinals",
+        name: "finals",
         type: "playoffs",
         teams,
         groups: List.of(

@@ -64,7 +64,7 @@ const BettingForm = props => {
               <strong>{a(values.amount)}</strong> pekkaa
             </div>
 
-            <Button block type="submit">
+            <Button disabled={values.team === ""} block type="submit">
               Veikkaa mestaria
             </Button>
           </form>

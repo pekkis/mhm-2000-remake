@@ -3,8 +3,11 @@ import { Map, List, fromJS } from "immutable";
 import teams from "../data/teams";
 import managers from "../data/managers";
 
+import countryList from "../data/countries";
+
 export const GAME_START = "GAME_START";
 export const SEASON_START = "SEASON_START";
+export const SEASON_END = "SEASON_END";
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 export const GAME_ADVANCE = "GAME_ADVANCE";
 
@@ -21,8 +24,6 @@ const defaultState = Map({
     canada: false
   }),
 
-  ehlParticipants: List.of(2, 3, 5),
-
   serviceBasePrices: Map({
     insurance: 1000,
     coach: 3200,
@@ -31,6 +32,8 @@ const defaultState = Map({
   }),
 
   managers,
+
+  countries: countryList.map(country => Map({ name: country.get("name") })),
 
   competitions: Map({
     ehl: Map({
@@ -139,13 +142,10 @@ export default function gameReducer(state = defaultState, action) {
         )
         .setIn(["flags", "jarko"], false);
 
-    case "SEASON_END":
+    case SEASON_END:
       return state.update("turn", turn => {
         return turn.update("season", season => season + 1).set("round", -1);
       });
-
-    case "GAME_HISTORY_PUSH":
-      return state.setIn(["ehlParticipants"], payload.ehlParticipants);
 
     case "GAME_GAME_RESULT":
       // console.log("pl", payload);
@@ -204,8 +204,6 @@ export default function gameReducer(state = defaultState, action) {
       );
 
     case "TEAM_INCUR_PENALTY":
-      console.log("PENALTY PAYLOAD", payload);
-
       return state.updateIn(
         [
           "competitions",

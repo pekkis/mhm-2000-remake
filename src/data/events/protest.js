@@ -1,8 +1,9 @@
 import { Map, List } from "immutable";
-import { select, putResolve, put, call } from "redux-saga/effects";
+import { select, putResolve, call } from "redux-saga/effects";
 import { managersTeam } from "../selectors";
 import r from "../../services/random";
 import { addEvent } from "../../sagas/event";
+import { incurPenalty } from "../../sagas/team";
 
 const eventId = "protest";
 
@@ -93,16 +94,14 @@ const event = {
       .getIn(["phases", 0, "groups"])
       .findIndex(g => g.get("teams").includes(penalizedTeam));
 
-    yield putResolve({
-      type: "TEAM_INCUR_PENALTY",
-      payload: {
-        competition: competition.get("id"),
-        phase: 0,
-        group: groupId,
-        penalty,
-        team: penalizedTeam
-      }
-    });
+    yield call(
+      incurPenalty,
+      competition.get("id"),
+      0,
+      groupId,
+      penalizedTeam,
+      penalty
+    );
   }
 };
 

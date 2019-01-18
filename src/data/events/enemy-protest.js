@@ -8,6 +8,7 @@ import {
   randomTeamFrom
 } from "../selectors";
 import { addEvent } from "../../sagas/event";
+import { incurPenalty } from "../../sagas/team";
 
 const eventId = "enemyProtest";
 
@@ -78,26 +79,8 @@ Protesti menee läpi, ja teiltä vähennetään ${Math.abs(
       .findIndex(g => g.get("teams").includes(team));
 
     yield all([
-      put({
-        type: "TEAM_INCUR_PENALTY",
-        payload: {
-          competition: competition.get("id"),
-          phase: 0,
-          group: groupId,
-          penalty,
-          team: team
-        }
-      }),
-      put({
-        type: "TEAM_INCUR_PENALTY",
-        payload: {
-          competition: competition.get("id"),
-          phase: 0,
-          group: groupId,
-          penalty: reward,
-          team: otherTeam
-        }
-      })
+      call(incurPenalty, competition.get("id"), 0, groupId, team, penalty),
+      call(incurPenalty, competition.get("id"), 0, groupId, otherTeam, reward)
     ]);
   }
 };

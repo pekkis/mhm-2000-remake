@@ -29,7 +29,16 @@ const Centerer = styled.div`
 `;
 
 const StartMenu = props => {
-  const { className, startGame, manager, loadGame, starting, advance } = props;
+  const {
+    teams,
+    competitions,
+    className,
+    startGame,
+    manager,
+    loadGame,
+    starting,
+    advance
+  } = props;
 
   return (
     <div className={className}>
@@ -105,7 +114,12 @@ const StartMenu = props => {
 
           {starting && (
             <Box p={1}>
-              <ManagerForm manager={manager} advance={advance} />
+              <ManagerForm
+                teams={teams}
+                competitions={competitions}
+                manager={manager}
+                advance={advance}
+              />
             </Box>
           )}
         </Contents>

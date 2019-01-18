@@ -69,7 +69,7 @@ export function* gameSave(action) {
   );
   const state = yield select(state => state);
   yield call(save, state);
-  yield call(addNotification, manager, "Peli tallennettiin.");
+  yield call(addNotification, manager.get("id"), "Peli tallennettiin.");
 }
 
 function* gameLoad(action) {

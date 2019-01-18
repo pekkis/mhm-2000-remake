@@ -1,6 +1,23 @@
 import { pipe } from "ramda";
 import r from "../services/random";
 import { victors } from "../services/playoffs";
+import { List } from "immutable";
+
+export const totalGamesPlayed = (manager, competition, phase) => state => {
+  const stats = state.stats.getIn([
+    "managers",
+    manager,
+    "games",
+    competition,
+    phase
+  ]);
+
+  if (!stats) {
+    return 0;
+  }
+
+  const phlGamesPlayed = stats.reduce((r, s) => r + s, 0);
+};
 
 export const teamsManagerId = team => state =>
   state.game.getIn(["teams", team, "manager"]);
@@ -20,6 +37,8 @@ export const managersMainCompetition = manager => state => {
 };
 
 export const teamsMainCompetition = team => state => {
+  console.log("team", team);
+
   const competesInPHL = teamCompetesIn(team, "phl")(state);
   return competesInPHL ? "phl" : "division";
 };
@@ -118,7 +137,7 @@ export const teamCompetesIn = (team, competition) => state => {
 
 export const teamsCompetitions = team => state => {
   return state.game.get("competitions").filter(c => {
-    return c.get("teams").includes(team);
+    return c.get("teams", List()).includes(team);
   });
 };
 

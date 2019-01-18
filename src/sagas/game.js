@@ -1,4 +1,5 @@
 import competitionData from "../data/competitions";
+import { SEASON_START } from "../ducks/game";
 
 import teamData from "../data/teams";
 
@@ -247,7 +248,7 @@ export function* seasonStart() {
   });
 
   yield put({
-    type: "SEASON_START"
+    type: SEASON_START
   });
 }
 
@@ -316,6 +317,7 @@ export function* incrementServiceBasePrice(service, amount) {
 }
 
 function* nextTurn() {
+  yield put({ type: "NEWS_ANNOUNCEMENTS_CLEAR" });
   yield put({ type: "EVENT_CLEAR_EVENTS" });
   yield put({ type: "GAME_NEXT_TURN" });
 }

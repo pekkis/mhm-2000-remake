@@ -2,7 +2,7 @@ import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { incrementMorale } from "../../sagas/team";
-import { randomManager, managersTeamId, managerById } from "../selectors";
+import { managersTeamId, managerById, totalGamesPlayed } from "../selectors";
 import { cinteger } from "../../services/random";
 
 /*
@@ -31,9 +31,13 @@ const event = {
   type: "manager",
 
   create: function*(data) {
-    // TODO: MUST HAVE PLAYED 400 MATCHES!
-
     const { manager } = data;
+
+    const phlGamesPlayed = yield select(totalGamesPlayed(manager, "phl", 0));
+    console.log("SEPPO KUNINGAS", phlGamesPlayed);
+    if (phlGamesPlayed < 400) {
+      return;
+    }
 
     const m = yield select(managerById(manager));
 
