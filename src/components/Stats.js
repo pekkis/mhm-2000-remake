@@ -14,7 +14,7 @@ import TeamStats from "./stats/TeamStats";
 const Stats = props => {
   const { manager, stats, teams, competitions, countries } = props;
 
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(1);
 
   return (
     <HeaderedPage>
@@ -41,6 +41,7 @@ const Stats = props => {
               manager={manager}
               competitions={competitions}
               stats={stats}
+              teams={teams}
             />
           </Tab>
         </Tabs>

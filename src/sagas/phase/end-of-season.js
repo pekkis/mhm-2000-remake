@@ -6,7 +6,7 @@ import { List, Map } from "immutable";
 import { cinteger } from "../../services/random";
 
 import countries from "../../data/countries";
-import { setSeasonStat } from "../stats";
+import { setSeasonStat, createSeasonStories } from "../stats";
 import { processChampionBets } from "../betting";
 
 const getLuck = () => {
@@ -110,6 +110,8 @@ export default function* endOfSeasonPhase() {
   }
 
   yield call(processChampionBets);
+
+  yield call(createSeasonStories);
 
   yield take("GAME_ADVANCE_REQUEST");
 

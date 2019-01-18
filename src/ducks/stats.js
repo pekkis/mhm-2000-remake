@@ -26,7 +26,7 @@ const emptySeasonStats = Map({
 const defaultState = Map({
   currentSeason: undefined,
   seasons: List(),
-  managers: Map(),
+  stories: Map(),
   streaks: Map({
     team: Map(),
     manager: Map()

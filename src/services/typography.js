@@ -4,6 +4,7 @@ const typography = new Typography({
   includeNormalize: true,
   baseFontSize: "16px",
   baseLineHeight: 1.45,
+  scaleRatio: 1.5,
   headerFontFamily: ["Maven Pro", "sans-serif"],
   bodyFontFamily: ["Maven Pro", "sans-serif"],
   googleFonts: [
