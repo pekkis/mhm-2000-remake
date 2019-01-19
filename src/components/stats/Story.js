@@ -2,7 +2,7 @@ import React from "react";
 import Season from "../data/Season";
 
 const Story = props => {
-  const { season, story, teams } = props;
+  const { season, story, teams, competitions } = props;
 
   const t = story.get("mainCompetitionStat");
   return (
@@ -15,6 +15,7 @@ const Story = props => {
         <thead>
           <tr>
             <th>Joukkue</th>
+            <th>Sarja</th>
             <th>O</th>
             <th>V</th>
             <th>TP</th>

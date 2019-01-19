@@ -2,6 +2,7 @@ import { Seq } from "immutable";
 import { addManager } from "./manager";
 import { gameLoop } from "./game";
 import { addNotification } from "./notification";
+import transit from "transit-immutable-js";
 
 import {
   all,
@@ -15,18 +16,26 @@ import {
 } from "redux-saga/effects";
 
 const save = state => {
+  const json = transit.toJSON(state);
+
+  console.log("JSON TO SAVE", json);
+
+  /*
   const json = JSON.stringify(
     Seq(state)
       .map(subtree => subtree.toJS())
       .toJS()
   );
+  */
   // console.log("JSON blob", json);
   window.localStorage.setItem("mhm97", json);
 };
 
 const load = () => {
   const json = window.localStorage.getItem("mhm97");
-  const state = JSON.parse(json);
+  const state = transit.fromJSON(json);
+
+  console.log("GAME UNSERIALIZED", state);
 
   return state;
 

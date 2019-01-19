@@ -6,7 +6,7 @@ export function* addAnnouncement(manager, announcement) {
   yield put({
     type: NEWS_ANNOUNCEMENT_ADD,
     payload: {
-      manager,
+      manager: manager.toString(),
       announcement
     }
   });

@@ -5,6 +5,8 @@ import managers from "../data/managers";
 
 import countryList from "../data/countries";
 
+import competitionList from "../data/competitions";
+
 export const GAME_START = "GAME_START";
 export const SEASON_START = "SEASON_START";
 export const SEASON_END = "SEASON_END";
@@ -35,31 +37,7 @@ const defaultState = Map({
 
   countries: countryList.map(country => Map({ name: country.get("name") })),
 
-  competitions: Map({
-    ehl: Map({
-      weight: 2000,
-      id: "ehl",
-      phase: 0,
-      name: "EHL",
-      phases: List()
-    }),
-    phl: Map({
-      weight: 500,
-      id: "phl",
-      phase: 0,
-      name: "PHL",
-      teams: List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
-      phases: List()
-    }),
-    division: Map({
-      weight: 1000,
-      id: "division",
-      phase: 0,
-      name: "Divisioona",
-      teams: List.of(12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23),
-      phases: List()
-    })
-  }),
+  competitions: competitionList.map(c => c.get("data")),
 
   teams: teams.map(t => t.update("strength", s => s())),
 

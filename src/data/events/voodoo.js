@@ -76,7 +76,7 @@ const event = {
 
     if (data.get("agree")) {
       yield call(incrementMorale, team, 10000);
-      yield call(decrementBalance, team, data.get("amount"));
+      yield call(decrementBalance, manager, data.get("amount"));
     } else {
       yield call(decrementMorale, team, 1);
     }

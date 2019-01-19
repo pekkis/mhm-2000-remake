@@ -74,6 +74,8 @@
     "roundrobin": "^1.0.3",
     "styled-components": "^4.1.2",
     "styled-system": "^3.2.0",
+    "transit-immutable-js": "git+https://github.com/pekkis/transit-immutable-js.git",
+    "transit-js": "^0.8.861",
     "typography": "^0.16.18",
     "uuid": "^3.3.2"
   },

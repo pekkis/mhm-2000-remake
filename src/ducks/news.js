@@ -20,7 +20,7 @@ export default function newsReducer(state = defaultState, action) {
 
     case NEWS_ANNOUNCEMENT_ADD:
       return state.updateIn(
-        ["announcements", payload.manager.toString()],
+        ["announcements", payload.manager],
         List(),
         announcements => announcements.push(payload.announcement)
       );

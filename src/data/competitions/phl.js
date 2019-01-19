@@ -5,6 +5,15 @@ import { defaultMoraleBoost } from "../../services/morale";
 import r from "../../services/random";
 
 export default Map({
+  data: Map({
+    weight: 500,
+    id: "phl",
+    phase: 0,
+    name: "PHL",
+    teams: List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
+    phases: List()
+  }),
+
   gameBalance: (phase, facts, manager) => {
     const arenaLevel = manager.getIn(["arena", "level"]) + 1;
     if (facts.isLoss) {
