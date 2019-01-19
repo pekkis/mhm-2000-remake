@@ -1,4 +1,4 @@
-import { Map, fromJS } from "immutable";
+import { Map } from "immutable";
 import { SEASON_START } from "./game";
 
 export const MANAGER_NEXT = "MANAGER_NEXT";
@@ -74,7 +74,7 @@ export default function managerReducer(state = defaultState, action) {
       return defaultState;
 
     case "META_GAME_LOAD_STATE":
-      return fromJS(payload.manager);
+      return payload.manager;
 
     case SEASON_START:
       return state.update("managers", managers => {

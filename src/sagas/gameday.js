@@ -79,24 +79,35 @@ export function* gameday(payload) {
 
   const phase = competition.getIn(["phases", competition.get("phase")]);
 
-  const gameParams = competitionData.getIn([
-    competition.get("id"),
-    "parameters",
-    "gameday"
-  ]);
-
   const overtime = competitionTypes.getIn([phase.get("type"), "overtime"]);
   const playMatch = competitionTypes.getIn([phase.get("type"), "playMatch"]);
 
-  for (const [groupIndex, group] of phase.get("groups").entries()) {
-    const rounds =
-      phase.get("type") === "tournament" ? group.get("schedule").count() : 1;
+  // Play one round if not a tournament, otherwise loop all rounds.
+  // TODO: Will not work for multiple sizes of tournaments (groups) as this.
+  const rounds =
+    phase.get("type") === "tournament"
+      ? phase
+          .getIn(["groups", 0])
+          .get("schedule")
+          .count()
+      : 1;
 
-    for (
-      let roundNumber = 1;
-      roundNumber <= rounds;
-      roundNumber = roundNumber + 1
-    ) {
+  for (
+    let roundNumber = 1;
+    roundNumber <= rounds;
+    roundNumber = roundNumber + 1
+  ) {
+    for (const [groupIndex, group] of phase.get("groups").entries()) {
+      console.log(competitionData.toJS(), "cd");
+
+      const gameParams = competitionData.getIn([
+        competition.get("id"),
+        "parameters",
+        "gameday"
+      ])(competition.get("phase"), groupIndex);
+
+      console.log(gameParams, "gameParams");
+
       const round = yield select(state =>
         state.game.getIn([
           "competitions",
@@ -148,33 +159,34 @@ export function* gameday(payload) {
           });
         }
       }
-
       yield completeGameday(
         competition.get("id"),
         competition.get("phase"),
         groupIndex,
         round
       );
-
-      if (phase.get("type") === "tournament") {
-        if (roundNumber < rounds) {
-          yield put({
-            type: "GAME_SET_PHASE",
-            payload: "results"
-          });
-
-          yield take("GAME_ADVANCE_REQUEST");
-
-          yield put({
-            type: "GAME_SET_PHASE",
-            payload: "gameday"
-          });
-
-          yield take("GAME_ADVANCE_REQUEST");
-        }
-      }
     }
 
+    if (phase.get("type") === "tournament") {
+      if (roundNumber < rounds) {
+        yield put({
+          type: "GAME_SET_PHASE",
+          payload: "results"
+        });
+
+        yield take("GAME_ADVANCE_REQUEST");
+
+        yield put({
+          type: "GAME_SET_PHASE",
+          payload: "gameday"
+        });
+
+        yield take("GAME_ADVANCE_REQUEST");
+      }
+    }
+  }
+
+  for (const [groupIndex] of phase.get("groups").entries()) {
     console.log({
       competition,
       payload,
@@ -197,6 +209,5 @@ export function* gameday(payload) {
     if (isItOver) {
       yield call(groupEnd, payload, competition.get("phase"), groupIndex);
     }
-  } // console.log("reslut", result.toJS());
-  // }
+  }
 }

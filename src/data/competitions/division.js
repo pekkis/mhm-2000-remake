@@ -6,9 +6,10 @@ import r from "../../services/random";
 
 export default Map({
   data: Map({
+    abbr: "div",
     weight: 1000,
     id: "division",
-    phase: 0,
+    phase: -1,
     name: "Divisioona",
     teams: List.of(12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23),
     phases: List()
@@ -40,7 +41,7 @@ export default Map({
   },
 
   parameters: Map({
-    gameday: {
+    gameday: phase => ({
       advantage: Map({
         home: team => 5,
         away: team => -5
@@ -49,7 +50,7 @@ export default Map({
       moraleEffect: team => {
         return team.get("morale");
       }
-    }
+    })
   }),
 
   seed: List.of(

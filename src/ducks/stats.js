@@ -1,4 +1,4 @@
-import { Map, List, fromJS } from "immutable";
+import { Map, List } from "immutable";
 import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
 import { SEASON_START, SEASON_END } from "./game";
 
@@ -42,7 +42,7 @@ export default function statsReducer(state = defaultState, action) {
       return defaultState;
 
     case META_GAME_LOAD_STATE:
-      return fromJS(payload.stats);
+      return payload.stats;
 
     case SEASON_START:
       return state.set("currentSeason", emptySeasonStats);

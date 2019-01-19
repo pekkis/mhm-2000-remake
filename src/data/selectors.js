@@ -3,6 +3,9 @@ import r from "../services/random";
 import { victors } from "../services/playoffs";
 import { List } from "immutable";
 
+export const foreignTeams = state =>
+  state.game.get("teams").filter(t => !t.get("domestic"));
+
 export const totalGamesPlayed = (manager, competition, phase) => state => {
   const stats = state.stats.getIn([
     "managers",
@@ -16,7 +19,7 @@ export const totalGamesPlayed = (manager, competition, phase) => state => {
     return 0;
   }
 
-  const phlGamesPlayed = stats.reduce((r, s) => r + s, 0);
+  // const phlGamesPlayed = stats.reduce((r, s) => r + s, 0);
 };
 
 export const teamsManagerId = team => state =>

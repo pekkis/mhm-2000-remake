@@ -1,8 +1,8 @@
 import { List, Map, Repeat } from "immutable";
 
-export const CRISIS_DEADLINE = 51;
-export const TRANSFER_DEADLINE = 29;
-export const EVENT_DEADLINE = 52;
+export const CRISIS_DEADLINE = 52;
+export const TRANSFER_DEADLINE = 30;
+export const EVENT_DEADLINE = 53;
 
 const defaultPhases = List.of(
   "action",
@@ -19,37 +19,171 @@ const ehlPhases = List.of("action", "gameday", "event", "news");
 
 const calendar = List.of(
   Map({
-    phases: List.of("startOfSeason")
+    phases: List.of("startOfSeason", "seed"),
+    seed: List.of(
+      Map({
+        competition: "phl",
+        phase: 0
+      }),
+      Map({
+        competition: "division",
+        phase: 0
+      }),
+      Map({
+        competition: "ehl",
+        phase: 0
+      }),
+      Map({
+        competition: "tournaments",
+        phase: 0
+      })
+    )
   })
 )
   .concat(
-    Repeat(
-      List.of(
-        Map({
-          phases: defaultPhases,
-          gamedays: List.of("phl", "division")
-        }),
-        Map({
-          phases: defaultPhases,
-          gamedays: List.of("phl", "division")
-        }),
-        Map({
-          phases: defaultPhases,
-          gamedays: List.of("phl", "division")
-        }),
-        Map({
-          phases: defaultPhases,
-          gamedays: List.of("phl", "division")
-        }),
-        Map({
-          phases: ehlPhases,
-          gamedays: List.of("ehl")
-        })
-      ),
-      6
+    List.of(
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: ehlPhases,
+        gamedays: List.of("ehl")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: ehlPhases,
+        gamedays: List.of("ehl")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        gamedays: List.of("phl", "division"),
+        phases: defaultPhases.push("invitations-create")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division"),
+        invitations: true
+      }),
+      Map({
+        phases: ehlPhases,
+        invitations: true,
+        gamedays: List.of("ehl")
+      }),
+      Map({
+        phases: defaultPhases.push("invitations-process"),
+        gamedays: List.of("phl", "division"),
+        seed: List.of(
+          Map({
+            competition: "tournaments",
+            phase: 0
+          })
+        ),
+        invitations: true
+      }),
+      Map({
+        phases: defaultPhases,
+        invitations: true,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: ehlPhases,
+        gamedays: List.of("ehl")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: ehlPhases,
+        gamedays: List.of("ehl")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+
+      // Christmas break (22 games played)
+
+      Map({
+        title: "Joulutauko",
+        phases: defaultPhases,
+        gamedays: List.of("tournaments")
+      }),
+
+      // Christmas break over
+
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: ehlPhases,
+        gamedays: List.of("ehl")
+      })
     )
-      .toList()
-      .flatten(true)
   )
   // seed EHL finals
   .push(

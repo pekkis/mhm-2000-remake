@@ -1,4 +1,4 @@
-import { OrderedMap, Map, List, fromJS } from "immutable";
+import { OrderedMap, Map } from "immutable";
 
 const defaultState = Map({
   notifications: OrderedMap()

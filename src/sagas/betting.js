@@ -22,7 +22,6 @@ export function* processChampionBets() {
         `Voitit __${a(amount)}__ pekkaa mestariveikkauksessa. Hyvin veikattu!`
       );
     }
-    console.log(bet.toJS(), "bet");
   }
 }
 

@@ -1,4 +1,4 @@
-import { Map, List, fromJS } from "immutable";
+import { Set, Map, List } from "immutable";
 
 import teams from "../data/teams";
 import managers from "../data/managers";
@@ -59,7 +59,7 @@ export default function gameReducer(state = defaultState, action) {
       return defaultState;
 
     case "META_GAME_LOAD_STATE":
-      return fromJS(payload.game);
+      return payload.game;
 
     case "COMPETITION_REMOVE_TEAM":
       return state.updateIn(
@@ -104,7 +104,26 @@ export default function gameReducer(state = defaultState, action) {
           ["competitions", payload.competition, "phases", payload.phase],
           payload.seed
         )
-        .setIn(["competitions", payload.competition, "phase"], payload.phase);
+        .setIn(["competitions", payload.competition, "phase"], payload.phase)
+        .updateIn(
+          ["competitions", payload.competition, "phases", payload.phase],
+          phase => {
+            return phase.set(
+              "teams",
+              phase
+                .get("groups")
+                .reduce((re, p) => re.union(p.get("teams")), Set())
+            );
+          }
+        )
+        .updateIn(["competitions", payload.competition], competition => {
+          return competition.set(
+            "teams",
+            competition
+              .get("phases")
+              .reduce((re, p) => re.union(p.get("teams")), Set())
+          );
+        });
 
     case SEASON_START:
       return state

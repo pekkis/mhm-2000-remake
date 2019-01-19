@@ -1,4 +1,4 @@
-import { Map, List, fromJS } from "immutable";
+import { Map, List } from "immutable";
 import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
 import { SEASON_START } from "./game";
 
@@ -31,13 +31,13 @@ export default function bettingReducer(state = defaultState, action) {
       return defaultState;
 
     case META_GAME_LOAD_STATE:
-      return fromJS(payload.betting);
+      return payload.betting;
 
     case SEASON_START:
       return state.set("championshipBets", List());
 
     case BETTING_BET_CHAMPION:
-      return state.update("championshipBets", bets => bets.push(payload));
+      return state.update("championshipBets", bets => bets.push(Map(payload)));
 
     default:
       return state;

@@ -1,4 +1,4 @@
-import { Map, fromJS } from "immutable";
+import { Map } from "immutable";
 import uuid from "uuid";
 
 const defaultState = Map({
@@ -23,7 +23,7 @@ export default function eventReducer(state = defaultState, action) {
       return defaultState;
 
     case "META_GAME_LOAD_STATE":
-      return fromJS(payload.event);
+      return payload.event;
 
     case "EVENT_ADD":
       const id = uuid();

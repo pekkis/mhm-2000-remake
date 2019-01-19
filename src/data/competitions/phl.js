@@ -8,7 +8,8 @@ export default Map({
   data: Map({
     weight: 500,
     id: "phl",
-    phase: 0,
+    abbr: "phl",
+    phase: -1,
     name: "PHL",
     teams: List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
     phases: List()
@@ -39,7 +40,7 @@ export default Map({
   promoteTo: false,
 
   parameters: Map({
-    gameday: {
+    gameday: phase => ({
       advantage: Map({
         home: team => 10,
         away: team => -10
@@ -48,7 +49,7 @@ export default Map({
       moraleEffect: team => {
         return team.get("morale") * 2;
       }
-    }
+    })
   }),
 
   seed: List.of(

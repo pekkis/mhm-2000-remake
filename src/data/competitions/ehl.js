@@ -130,7 +130,7 @@ export default Map({
   data: Map({
     weight: 2000,
     id: "ehl",
-    phase: 0,
+    phase: -1,
     name: "EHL",
     abbr: "ehl",
     phases: List()
@@ -155,6 +155,7 @@ export default Map({
       state.game
         .get("teams")
         .slice(24)
+        .take(17)
         .map(t => t.get("id"))
     );
 
@@ -200,16 +201,16 @@ export default Map({
   },
 
   parameters: Map({
-    gameday: {
+    gameday: phase => ({
       advantage: Map({
-        home: team => 10,
-        away: team => -10
+        home: team => (phase === 0 ? 10 : 0),
+        away: team => (phase === 0 ? -10 : 0)
       }),
       base: () => 20,
       moraleEffect: team => {
         return team.get("morale") * 2;
       }
-    }
+    })
   }),
 
   seed: List.of(

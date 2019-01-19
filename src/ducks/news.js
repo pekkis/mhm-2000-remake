@@ -1,4 +1,4 @@
-import { Map, List, fromJS } from "immutable";
+import { Map, List } from "immutable";
 
 const defaultState = Map({
   news: List(),
@@ -16,7 +16,6 @@ export default function newsReducer(state = defaultState, action) {
       return defaultState;
 
     case "META_GAME_LOAD_STATE":
-      return fromJS(payload.news);
 
     case NEWS_ANNOUNCEMENT_ADD:
       return state.updateIn(

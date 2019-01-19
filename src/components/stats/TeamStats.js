@@ -20,18 +20,21 @@ const TeamStats = props => {
             </tr>
           </thead>
           <tbody>
-            {stats.get("seasons").map((season, seasonIndex) => {
-              return (
-                <tr key={season}>
-                  <td>
-                    <Season index={seasonIndex} />
-                  </td>
-                  {season.get("medalists").map((m, k) => (
-                    <td key={k}>{teams.getIn([m, "name"])}</td>
-                  ))}
-                </tr>
-              );
-            })}
+            {stats
+              .get("seasons")
+              .map((season, seasonIndex) => {
+                return (
+                  <tr key={season}>
+                    <td>
+                      <Season index={seasonIndex} />
+                    </td>
+                    {season.get("medalists").map((m, k) => (
+                      <td key={k}>{teams.getIn([m, "name"])}</td>
+                    ))}
+                  </tr>
+                );
+              })
+              .reverse()}
           </tbody>
         </table>
       </Tab>
@@ -44,18 +47,21 @@ const TeamStats = props => {
             </tr>
           </thead>
           <tbody>
-            {stats.get("seasons").map((season, seasonIndex) => {
-              return (
-                <tr key={season}>
-                  <td>
-                    <Season index={seasonIndex} />
-                  </td>
-                  <td>
-                    {teams.getIn([season.get("presidentsTrophy"), "name"])}
-                  </td>
-                </tr>
-              );
-            })}
+            {stats
+              .get("seasons")
+              .map((season, seasonIndex) => {
+                return (
+                  <tr key={season}>
+                    <td>
+                      <Season index={seasonIndex} />
+                    </td>
+                    <td>
+                      {teams.getIn([season.get("presidentsTrophy"), "name"])}
+                    </td>
+                  </tr>
+                );
+              })
+              .reverse()}
           </tbody>
         </table>
       </Tab>
@@ -69,17 +75,24 @@ const TeamStats = props => {
             </tr>
           </thead>
           <tbody>
-            {stats.get("seasons").map((season, seasonIndex) => {
-              return (
-                <tr key={season}>
-                  <td>
-                    <Season index={seasonIndex} />
-                  </td>
-                  <td>{teams.getIn([season.get("promoted"), "name"], "-")}</td>
-                  <td>{teams.getIn([season.get("relegated"), "name"], "-")}</td>
-                </tr>
-              );
-            })}
+            {stats
+              .get("seasons")
+              .map((season, seasonIndex) => {
+                return (
+                  <tr key={season}>
+                    <td>
+                      <Season index={seasonIndex} />
+                    </td>
+                    <td>
+                      {teams.getIn([season.get("promoted"), "name"], "-")}
+                    </td>
+                    <td>
+                      {teams.getIn([season.get("relegated"), "name"], "-")}
+                    </td>
+                  </tr>
+                );
+              })
+              .reverse()}
           </tbody>
         </table>
       </Tab>
@@ -92,16 +105,19 @@ const TeamStats = props => {
             </tr>
           </thead>
           <tbody>
-            {stats.get("seasons").map((season, seasonIndex) => {
-              return (
-                <tr key={season}>
-                  <td>
-                    <Season index={seasonIndex} />
-                  </td>
-                  <td>{teams.getIn([season.get("ehlChampion"), "name"])}</td>
-                </tr>
-              );
-            })}
+            {stats
+              .get("seasons")
+              .map((season, seasonIndex) => {
+                return (
+                  <tr key={season}>
+                    <td>
+                      <Season index={seasonIndex} />
+                    </td>
+                    <td>{teams.getIn([season.get("ehlChampion"), "name"])}</td>
+                  </tr>
+                );
+              })
+              .reverse()}
           </tbody>
         </table>
       </Tab>
@@ -116,21 +132,24 @@ const TeamStats = props => {
             </tr>
           </thead>
           <tbody>
-            {stats.get("seasons").map((season, seasonIndex) => {
-              return (
-                <tr key={season}>
-                  <td>
-                    <Season index={seasonIndex} />
-                  </td>
-                  {season
-                    .get("worldChampionships")
-                    .take(3)
-                    .map((m, k) => (
-                      <td key={k}>{countries.getIn([m, "name"])}</td>
-                    ))}
-                </tr>
-              );
-            })}
+            {stats
+              .get("seasons")
+              .map((season, seasonIndex) => {
+                return (
+                  <tr key={season}>
+                    <td>
+                      <Season index={seasonIndex} />
+                    </td>
+                    {season
+                      .get("worldChampionships")
+                      .take(3)
+                      .map((m, k) => (
+                        <td key={k}>{countries.getIn([m, "name"])}</td>
+                      ))}
+                  </tr>
+                );
+              })
+              .reverse()}
           </tbody>
         </table>
       </Tab>

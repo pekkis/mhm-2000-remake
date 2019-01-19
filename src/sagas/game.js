@@ -18,6 +18,8 @@ import eventPhase from "./phase/event";
 import newsPhase from "./phase/news";
 import prankPhase from "./phase/prank";
 import gamedayPhase from "./phase/gameday";
+import invitationsCreatePhase from "./phase/invitations-create";
+import invitationsProcessPhase from "./phase/invitations-process";
 import seedPhase from "./phase/seed";
 import endOfSeasonPhase from "./phase/end-of-season";
 import startOfSeasonPhase from "./phase/start-of-season";
@@ -137,12 +139,20 @@ export function* gameLoop() {
       yield call(newsPhase);
     }
 
-    if (phases.includes("seed")) {
-      yield call(seedPhase);
+    if (phases.includes("invitations-create")) {
+      yield call(invitationsCreatePhase);
+    }
+
+    if (phases.includes("invitations-process")) {
+      yield call(invitationsProcessPhase);
     }
 
     if (phases.includes("startOfSeason")) {
       yield call(startOfSeasonPhase);
+    }
+
+    if (phases.includes("seed")) {
+      yield call(seedPhase);
     }
 
     if (phases.includes("endOfSeason")) {
@@ -160,6 +170,12 @@ function* competitionStart(competitionId) {
   if (competitionStarter) {
     yield call(competitionStarter);
   }
+  yield put({
+    type: "COMPETITION_START",
+    payload: {
+      competition: competitionId
+    }
+  });
 }
 
 export function* groupEnd(competition, phase, group) {
@@ -200,14 +216,9 @@ export function* seasonStart() {
   // Start all competitions.
   for (const [key, competitionObj] of competitionData) {
     yield competitionStart(key);
-    const competitions = yield select(state => state.game.get("competitions"));
-    yield put({
-      type: "COMPETITION_START",
-      payload: {
-        competition: key
-      }
-    });
+    // const competitions = yield select(state => state.game.get("competitions"));
 
+    /*
     const seed = competitionObj.getIn(["seed", 0])(competitions);
     yield putResolve({
       type: "COMPETITION_SEED",
@@ -217,6 +228,7 @@ export function* seasonStart() {
         seed
       }
     });
+    */
   }
 
   const managers = yield select(state => state.manager.get("managers"));
@@ -326,5 +338,23 @@ export function* setPhase(phase) {
   yield put({
     type: "GAME_SET_PHASE",
     payload: phase
+  });
+}
+
+export function* seedCompetition(competitionId, phase) {
+  const competitions = yield select(state => state.game.get("competitions"));
+  const competitionObj = competitionData.getIn([competitionId]);
+
+  const seeder = competitionObj.getIn(["seed", phase]);
+
+  const seed = yield call(seeder, competitions);
+
+  yield putResolve({
+    type: "COMPETITION_SEED",
+    payload: {
+      competition: competitionId,
+      phase,
+      seed
+    }
   });
 }

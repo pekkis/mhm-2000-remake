@@ -87,6 +87,26 @@ const teams = List.of(
     name: "Milano Devils",
     strength: () => r.integer(120, 135),
     domestic: false
+  }),
+  Map({
+    name: "Olimpija Ljubljana",
+    strength: () => r.integer(90, 120),
+    domestic: false
+  }),
+  Map({
+    name: "Medveščak Zagreb",
+    strength: () => r.integer(100, 130),
+    domestic: false
+  }),
+  Map({
+    name: "HC Bolzano",
+    strength: () => r.integer(80, 140),
+    domestic: false
+  }),
+  Map({
+    name: "HC Barcelona",
+    strength: () => r.integer(50, 100),
+    domestic: false
   })
 ).map((t, i) => t.set("id", i));
 

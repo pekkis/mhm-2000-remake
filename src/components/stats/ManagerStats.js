@@ -20,16 +20,19 @@ const TeamStats = props => {
     <div>
       <Tabs selected={tab} onSelect={setTab}>
         <Tab title="Kausi kaudelta">
-          {managersStories.map((story, seasonIndex) => {
-            return (
-              <Story
-                key={seasonIndex}
-                season={seasonIndex}
-                story={story}
-                teams={teams}
-              />
-            );
-          })}
+          {managersStories
+            .map((story, seasonIndex) => {
+              return (
+                <Story
+                  key={seasonIndex}
+                  season={seasonIndex}
+                  story={story}
+                  teams={teams}
+                  competitions={competitions}
+                />
+              );
+            })
+            .reverse()}
         </Tab>
         <Tab title="Ura numeroina">
           <div>

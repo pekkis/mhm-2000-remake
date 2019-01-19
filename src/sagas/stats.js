@@ -15,6 +15,7 @@ import { managersMainCompetition } from "../data/selectors";
 
 export function* stats() {
   yield all([
+    // TODO: TAKE THIS OUT OF HERE
     takeEvery("COMPETITION_SEED", calculatePhaseStats),
     takeEvery("GAME_GAME_RESULT", gameResult)
   ]);
