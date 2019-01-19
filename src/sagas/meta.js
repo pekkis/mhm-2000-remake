@@ -17,29 +17,13 @@ import {
 
 const save = state => {
   const json = transit.toJSON(state);
-
-  console.log("JSON TO SAVE", json);
-
-  /*
-  const json = JSON.stringify(
-    Seq(state)
-      .map(subtree => subtree.toJS())
-      .toJS()
-  );
-  */
-  // console.log("JSON blob", json);
   window.localStorage.setItem("mhm97", json);
 };
 
 const load = () => {
   const json = window.localStorage.getItem("mhm97");
   const state = transit.fromJSON(json);
-
-  console.log("GAME UNSERIALIZED", state);
-
   return state;
-
-  // return fromJS(state);
 };
 
 function* gameStart() {
