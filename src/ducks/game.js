@@ -104,26 +104,7 @@ export default function gameReducer(state = defaultState, action) {
           ["competitions", payload.competition, "phases", payload.phase],
           payload.seed
         )
-        .setIn(["competitions", payload.competition, "phase"], payload.phase)
-        .updateIn(
-          ["competitions", payload.competition, "phases", payload.phase],
-          phase => {
-            return phase.set(
-              "teams",
-              phase
-                .get("groups")
-                .reduce((re, p) => re.union(p.get("teams")), Set())
-            );
-          }
-        )
-        .updateIn(["competitions", payload.competition], competition => {
-          return competition.set(
-            "teams",
-            competition
-              .get("phases")
-              .reduce((re, p) => re.union(p.get("teams")), Set())
-          );
-        });
+        .setIn(["competitions", payload.competition, "phase"], payload.phase);
 
     case SEASON_START:
       return state
@@ -137,7 +118,10 @@ export default function gameReducer(state = defaultState, action) {
               .set("readiness", 0);
           })
         )
-        .setIn(["flags", "jarko"], false);
+        .setIn(["flags", "jarko"], false)
+        .update("competitions", competitions => {
+          return competitions.map(competition => competition.set("phase", -1));
+        });
 
     case SEASON_END:
       return state.update("turn", turn => {

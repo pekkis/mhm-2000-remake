@@ -2,16 +2,29 @@ import { putResolve } from "redux-saga/effects";
 import tournamentList from "../data/tournaments";
 import { call, select, put } from "redux-saga/effects";
 
-import {
-  INVITATION_ADD,
-  INVITATION_ANSWER,
-  INVITATION_CLEAR
-} from "../ducks/invitation";
+import { INVITATION_ADD, INVITATION_ACCEPT } from "../ducks/invitation";
+import { addNotification } from "./notification";
+import { managersTeamId } from "../data/selectors";
+import { addTeamToCompetition } from "./game";
 
-export function* acceptInvitation(managerId, tournament) {
+export function* acceptInvitation(managerId, id) {
+  console.log("HELLUREI?");
+  console.log(managerId, id);
+
+  const team = yield select(managersTeamId(managerId));
+
   yield putResolve({
-    type: ""
+    type: INVITATION_ACCEPT,
+    payload: { manager: managerId, id }
   });
+
+  yield call(addTeamToCompetition, "tournaments", team);
+
+  yield call(
+    addNotification,
+    managerId,
+    "Hyväksyit turnauskutsun. Sihteerisi vastasi kaikkiin muihin potentiaalisiin turnauskutsuihin kieltävästi."
+  );
 }
 
 export function* createInvitations() {

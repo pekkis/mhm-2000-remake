@@ -4,6 +4,7 @@ import { SEASON_START } from "../ducks/game";
 import teamData from "../data/teams";
 
 import {
+  all,
   call,
   put,
   putResolve,
@@ -266,42 +267,19 @@ export function* seasonStart() {
 
 export function* promote(competition, team) {
   const promoteTo = competitionData.getIn([competition, "promoteTo"]);
-
-  yield put({
-    type: "COMPETITION_REMOVE_TEAM",
-    payload: {
-      competition,
-      team
-    }
-  });
-
-  yield put({
-    type: "COMPETITION_ADD_TEAM",
-    payload: {
-      competition: promoteTo,
-      team
-    }
-  });
+  yield all([
+    call(removeTeamFromCompetition, competition, team),
+    call(addTeamToCompetition, promoteTo, team)
+  ]);
 }
 
 export function* relegate(competition, team) {
   const relegateTo = competitionData.getIn([competition, "relegateTo"]);
 
-  yield put({
-    type: "COMPETITION_REMOVE_TEAM",
-    payload: {
-      competition,
-      team
-    }
-  });
-
-  yield put({
-    type: "COMPETITION_ADD_TEAM",
-    payload: {
-      competition: relegateTo,
-      team
-    }
-  });
+  yield all([
+    call(removeTeamFromCompetition, competition, team),
+    call(addTeamToCompetition, relegateTo, team)
+  ]);
 }
 
 export function* setFlag(flag, value) {
@@ -355,6 +333,36 @@ export function* seedCompetition(competitionId, phase) {
       competition: competitionId,
       phase,
       seed
+    }
+  });
+}
+
+export function* removeTeamFromCompetition(competition, team) {
+  yield putResolve({
+    type: "COMPETITION_REMOVE_TEAM",
+    payload: {
+      competition,
+      team
+    }
+  });
+}
+
+export function* addTeamToCompetition(competition, team) {
+  yield putResolve({
+    type: "COMPETITION_ADD_TEAM",
+    payload: {
+      competition,
+      team
+    }
+  });
+}
+
+export function* setCompetitionTeams(competition, teams) {
+  yield putResolve({
+    type: "COMPETITION_SET_TEAMS",
+    payload: {
+      competition,
+      teams
     }
   });
 }

@@ -10,6 +10,7 @@ import { amount as a } from "../../services/format";
 import { incrementStrength, incrementReadiness } from "../../sagas/team";
 import { incrementBalance } from "../../sagas/manager";
 import { setSeasonStat } from "../../sagas/stats";
+import { setCompetitionTeams } from "../../sagas/game";
 
 const awards = List.of(
   Map({
@@ -161,13 +162,7 @@ export default Map({
 
     const teams = ehlTeams.concat(foreignTeams).sortBy(() => r.real(1, 10000));
 
-    yield putResolve({
-      type: "COMPETITION_SET_TEAMS",
-      payload: {
-        competition: "ehl",
-        teams
-      }
-    });
+    yield call(setCompetitionTeams, "ehl", teams);
   },
 
   groupEnd: function*(phase, group) {

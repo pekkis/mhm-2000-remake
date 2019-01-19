@@ -32,10 +32,6 @@ const calendar = List.of(
       Map({
         competition: "ehl",
         phase: 0
-      }),
-      Map({
-        competition: "tournaments",
-        phase: 0
       })
     )
   })

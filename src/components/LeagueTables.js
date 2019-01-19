@@ -14,6 +14,7 @@ const LeagueTables = props => {
         <h2>Sarjataulukot</h2>
 
         {competitions
+          .filter(c => c.get("phase") >= 0)
           .map(c => {
             const phase = c.getIn(["phases", 0]);
             const groups = phase.get("groups");

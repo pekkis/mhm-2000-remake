@@ -17,6 +17,9 @@ import {
   setActiveManager
 } from "../manager";
 import { orderPrank } from "../prank";
+import { acceptInvitation } from "../invitation";
+
+import { INVITATION_ACCEPT_REQUEST } from "../../ducks/invitation";
 
 export default function* actionPhase() {
   const managers = yield select(state => state.manager.get("managers"));
@@ -36,7 +39,10 @@ export default function* actionPhase() {
     takeEvery("MANAGER_IMPROVE_ARENA", improveArena),
     takeEvery("META_GAME_SAVE_REQUEST", gameSave),
     takeEvery("MANAGER_TOGGLE_SERVICE", toggleService),
-    takeEvery("PRANK_ORDER", orderPrank)
+    takeEvery("PRANK_ORDER", orderPrank),
+    takeEvery(INVITATION_ACCEPT_REQUEST, function*(action) {
+      yield call(acceptInvitation, action.payload.manager, action.payload.id);
+    })
   ]);
 
   yield take("GAME_ADVANCE_REQUEST");

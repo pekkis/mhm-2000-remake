@@ -3,6 +3,7 @@ import { call, select } from "redux-saga/effects";
 import { addEvent, resolvedEvent } from "../../sagas/event";
 import { managersArena } from "../selectors";
 import { incrementBalance, renameArena } from "../../sagas/manager";
+import { amount as a } from "../../services/format";
 
 /*
 IF halli$ = "Mauto Areena" THEN RETURN
@@ -59,8 +60,8 @@ const event = {
 
   render: data => {
     let t = List.of(
-      `Suuri olutpanimo on halukas sponsoroimaan joukkuettasi! Se maksaa ${data.get(
-        "amount"
+      `Suuri olutpanimo on halukas sponsoroimaan joukkuettasi! Se maksaa ${a(
+        data.get("amount")
       )} pekkaa, jos hallin nimi muutetaan __Otso-Halliksi__. Otatko tarjouksen vastaan?"`
     );
 

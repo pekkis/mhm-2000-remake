@@ -104,7 +104,6 @@ export default function* endOfSeasonPhase() {
   yield call(setSeasonStat, ["medalists"], medalists);
 
   if (divisionVictor !== phlLoser) {
-    yield all([promote("division", divisionVictor), relegate("phl", phlLoser)]);
     yield call(setSeasonStat, ["relegated"], phlLoser);
     yield call(setSeasonStat, ["promoted"], divisionVictor);
   }
@@ -118,6 +117,10 @@ export default function* endOfSeasonPhase() {
   yield put({
     type: "SEASON_END"
   });
+
+  if (divisionVictor !== phlLoser) {
+    yield all([promote("division", divisionVictor), relegate("phl", phlLoser)]);
+  }
 
   yield call(seasonStart);
 }

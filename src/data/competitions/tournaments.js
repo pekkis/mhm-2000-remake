@@ -1,18 +1,11 @@
-import { Map, List, Range } from "immutable";
-import { select, putResolve, call, all } from "redux-saga/effects";
-import rr from "../../services/round-robin";
+import { Map, List } from "immutable";
+import { select, call } from "redux-saga/effects";
 import tournamentScheduler from "../../services/tournament";
-import table, { sortStats } from "../../services/league";
 import r from "../../services/random";
-import { defaultMoraleBoost } from "../../services/morale";
-import { addAnnouncement } from "../../sagas/news";
-import { amount as a } from "../../services/format";
-import { incrementStrength, incrementReadiness } from "../../sagas/team";
-import { incrementBalance } from "../../sagas/manager";
-import { setSeasonStat } from "../../sagas/stats";
 import { foreignTeams } from "../selectors";
 
 import tournamentList from "../tournaments";
+import { setCompetitionTeams } from "../../sagas/game";
 
 export default Map({
   data: Map({
@@ -21,7 +14,8 @@ export default Map({
     phase: -1,
     name: "Joulutauon turnaukset",
     abbr: "tournaments",
-    phases: List()
+    phases: List(),
+    teams: List()
   }),
 
   relegateTo: false,
@@ -63,12 +57,17 @@ export default Map({
   seed: List.of(function*(competitions) {
     const teams = yield select(foreignTeams);
 
-    const invited = yield select(state =>
-      state.invitation
-        .get("invitations")
-        .filter(i => i.get("participate"))
-        .groupBy(i => i.get("tournament"))
+    const managers = yield select(state => state.manager.get("managers"));
+
+    const invitations = yield select(state =>
+      state.invitation.get("invitations").filter(i => i.get("participate"))
     );
+
+    const invited = invitations
+      .map(i => {
+        return i.set("team", managers.getIn([i.get("manager"), "team"]));
+      })
+      .groupBy(i => i.get("tournament"));
 
     console.log("INVITED", invited.toJS());
 
@@ -77,14 +76,6 @@ export default Map({
       groups: List(),
       invited
     });
-
-    /*
-    return Map({
-      name: "jouluturnaukset",
-      type: "tournament",
-      teams: "???",
-    });
-    */
 
     const ret = tournamentList.reduce((re, tournament, tournamentIndex) => {
       console.log("RE", re.toJS());
@@ -126,28 +117,15 @@ export default Map({
 
     console.log("groups", groups.toJS());
 
-    // const ehlGroups = competitions.getIn(["ehl", "phases", 0, "groups"]);
-    // const ehlTables = ehlGroups.map(table);
+    const teamz = groups.reduce((re, g) => re.concat(g.get("teams")), List());
 
-    // const qualifiedVictors = ehlTables.map(table => table.first());
+    yield call(setCompetitionTeams, "tournaments", teamz);
 
-    // const sortedSeconds = sortStats(ehlTables.flatMap(table => table.rest()));
-
-    // const qualifiedSecond = sortedSeconds.first();
-
-    // const teams = qualifiedVictors.push(qualifiedSecond).map(e => e.get("id"));
-
-    // console.log("Qualified teams", teams);
-
-    const lusso = Map({
+    return Map({
       name: "jouluturnaukset",
       type: "tournament",
-      teams: groups.reduce((re, g) => re.concat(g.get("teams")), List()),
+      teams: teamz,
       groups
     });
-
-    console.log("lusso", lusso.toJS());
-
-    return lusso;
   })
 });
