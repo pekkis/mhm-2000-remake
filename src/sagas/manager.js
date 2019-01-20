@@ -343,34 +343,39 @@ export function* afterGameday(competition, phase, groupId, round) {
       return;
     }
 
-    // Microphone guy can be caught.
-    if (["phl", "division"].includes(competition) && phase === 0) {
-      const caught = r.bool(0.06);
-      if (caught) {
-        const amount = 50000;
-        const pointDeduction = -4;
-        yield all([
-          call(
-            addAnnouncement,
-            managerId,
-            `"Salainen" mikrofonisi vastustajan vaihtoaitiossa on paljastunut. Teidät tuomitaan __${a(
-              amount
-            )}__ pekan sakkoihin ja __${pointDeduction}__ pisteen menetykseen.`
-          ),
-          call(decrementBalance, managerId, amount),
-          call(
-            incurPenalty,
-            competition,
-            0,
-            0,
-            manager.get("team"),
-            pointDeduction
-          )
-        ]);
-      }
-      /*
+    const hasMicrophone = yield select(
+      managerHasService(managerId, "microphone")
+    );
+
+    if (hasMicrophone) {
+      if (["phl", "division"].includes(competition) && phase === 0) {
+        const caught = r.bool(0.06);
+        if (caught) {
+          const amount = 50000;
+          const pointDeduction = -4;
+          yield all([
+            call(
+              addAnnouncement,
+              managerId,
+              `"Salainen" mikrofonisi vastustajan vaihtoaitiossa on paljastunut. Teidät tuomitaan __${a(
+                amount
+              )}__ pekan sakkoihin ja __${pointDeduction}__ pisteen menetykseen.`
+            ),
+            call(decrementBalance, managerId, amount),
+            call(
+              incurPenalty,
+              competition,
+              0,
+              0,
+              manager.get("team"),
+              pointDeduction
+            )
+          ]);
+        }
+        /*
       - IF mikki = 1 AND sarja = 1 AND 100 \* RND < 6 THEN PRINT "Arh! Mikrofoni l”ytyy, ja saatte 50000 sakkoa ja 4 pisteen v„hennyksen!": p(u) = p(u) - 4: raha = raha - 50000
       */
+      }
     }
 
     const facts = gameFacts(game, managersIndex);
