@@ -12,6 +12,7 @@ export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 export const GAME_ADVANCE = "GAME_ADVANCE";
 export const GAME_DECREMENT_DURATIONS = "GAME_DECREMENT_DURATIONS";
 export const GAME_CLEAR_EXPIRED = "GAME_CLEAR_EXPIRED";
+export const GAME_NEXT_TURN = "GAME_NEXT_TURN";
 
 export const SEASON_START = "SEASON_START";
 export const SEASON_END = "SEASON_END";
@@ -283,7 +284,7 @@ export default function gameReducer(state = defaultState, action) {
         });
       });
 
-    case "GAME_NEXT_TURN":
+    case GAME_NEXT_TURN:
       return state.updateIn(["turn", "round"], r => r + 1);
 
     case "GAME_SET_FLAG":

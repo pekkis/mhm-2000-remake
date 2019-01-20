@@ -1,12 +1,15 @@
 import { Map, List } from "immutable";
 import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
-import { SEASON_START } from "./game";
+import { SEASON_START, GAME_NEXT_TURN } from "./game";
 
+export const BETTING_BET = "BETTING_BET";
+export const BETTING_BET_REQUEST = "BETTING_BET_REQUEST";
 export const BETTING_BET_CHAMPION = "BETTING_BET_CHAMPION";
 export const BETTING_BET_CHAMPION_REQUEST = "BETTING_BET_CHAMPION_REQUEST";
 
 const defaultState = Map({
-  championshipBets: List()
+  championshipBets: List(),
+  bets: List()
 });
 
 export const betChampion = (manager, team, amount, odds) => {
@@ -19,6 +22,17 @@ export const betChampion = (manager, team, amount, odds) => {
       team,
       amount,
       odds
+    }
+  };
+};
+
+export const bet = (manager, coupon, amount) => {
+  return {
+    type: BETTING_BET_REQUEST,
+    payload: {
+      manager,
+      coupon,
+      amount
     }
   };
 };
@@ -38,6 +52,12 @@ export default function bettingReducer(state = defaultState, action) {
 
     case BETTING_BET_CHAMPION:
       return state.update("championshipBets", bets => bets.push(Map(payload)));
+
+    case BETTING_BET:
+      return state.update("bets", bets => bets.push(Map(payload)));
+
+    case GAME_NEXT_TURN:
+      return state.set("bets", List());
 
     default:
       return state;

@@ -7,6 +7,7 @@ import { call, put, putResolve, select, take } from "redux-saga/effects";
 import { groupEnd } from "./game";
 import { calculateGroupStats } from "./stats";
 import { afterGameday } from "./manager";
+import { bettingResults } from "./betting";
 
 function* playGame(
   group,
@@ -60,6 +61,10 @@ function* playGame(
 function* completeGameday(competition, phase, group, round) {
   yield call(calculateGroupStats, competition, phase, group);
   yield call(afterGameday, competition, phase, group, round);
+
+  if (competition === "phl" && phase === 0 && group === 0) {
+    yield call(bettingResults, round);
+  }
 
   yield putResolve({
     type: "GAME_GAMEDAY_COMPLETE",

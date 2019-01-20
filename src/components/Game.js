@@ -18,6 +18,7 @@ import Pranks from "./containers/PranksContainer";
 import Notifications from "./notifications/containers/NotificationsContainer";
 import ModalMenu from "./containers/ModalMenuContainer";
 import ChampionshipBetting from "./containers/ChampionshipBettingContainer";
+import Betting from "./containers/BettingContainer";
 import EndOfSeason from "./containers/EndOfSeasonContainer";
 import WorldChampionships from "./containers/WorldChampionshipsContainer";
 import Stats from "./containers/StatsContainer";
@@ -69,6 +70,7 @@ const Phase = props => {
           <Route exact path="/jaynat" component={Pranks} />
           <Route exact path="/tilastot" component={Stats} />
           <Route exact path="/kutsut" component={Invitations} />
+          <Route exact path="/veikkaus" component={Betting} />
           <Route exact path="/debug" component={DeveloperMenu} />
         </Switch>
       );

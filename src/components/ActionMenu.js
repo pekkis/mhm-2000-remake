@@ -67,6 +67,21 @@ const ActionMenu = props => {
             </Link>
           </li>
 
+          <Calendar
+            when={(e, c, s) => {
+              return (
+                e.get("gamedays").includes("phl") &&
+                s.game.getIn(["competitions", "phl", "phase"]) === 0
+              );
+            }}
+          >
+            <li>
+              <Link onClick={() => closeMenu()} to="/veikkaus">
+                Veikkaus
+              </Link>
+            </li>
+          </Calendar>
+
           <li>
             <Link onClick={() => closeMenu()} to="/debug">
               Devausmenukka

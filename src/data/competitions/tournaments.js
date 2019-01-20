@@ -48,7 +48,7 @@ export default Map({
       const team = teams.get(stat.get("id"));
 
       if (team.get("domestic", true)) {
-        yield call(incrementReadiness, team.get("id"), -1);
+        yield call(incrementReadiness, team.get("id"), -2);
 
         if (team.get("manager") !== undefined) {
           const award = tournamentList.getIn([group, "award"]);
