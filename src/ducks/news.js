@@ -1,5 +1,7 @@
 import { Map, List } from "immutable";
 
+import { GAME_NEXT_TURN } from "./game";
+
 const defaultState = Map({
   news: List(),
   announcements: Map()
@@ -7,6 +9,7 @@ const defaultState = Map({
 
 export const NEWS_ANNOUNCEMENT_ADD = "NEWS_ANNOUNCEMENT_ADD";
 export const NEWS_ANNOUNCEMENTS_CLEAR = "NEWS_ANNOUNCEMENTS_CLEAR";
+export const NEWS_ADD = "NEWS_ADD";
 
 export default function newsReducer(state = defaultState, action) {
   const { type, payload } = action;
@@ -16,6 +19,7 @@ export default function newsReducer(state = defaultState, action) {
       return defaultState;
 
     case "META_GAME_LOAD_STATE":
+      return state;
 
     case NEWS_ANNOUNCEMENT_ADD:
       return state.updateIn(
@@ -27,10 +31,10 @@ export default function newsReducer(state = defaultState, action) {
     case NEWS_ANNOUNCEMENTS_CLEAR:
       return state.set("announcements", Map());
 
-    case "NEWS_ADD":
+    case NEWS_ADD:
       return state.update("news", news => news.push(payload));
 
-    case "NEWS_CLEAR":
+    case GAME_NEXT_TURN:
       return state.set("news", List());
 
     default:

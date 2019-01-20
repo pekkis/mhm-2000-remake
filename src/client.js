@@ -7,7 +7,11 @@ import { getInitialState } from "./config/state";
 import createStore from "./store";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSpinner, faBars } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSpinner,
+  faBars,
+  faExclamationCircle
+} from "@fortawesome/free-solid-svg-icons";
 
 import runtime from "@dr-kobros/serviceworker-webpack-plugin/lib/runtime";
 
@@ -20,7 +24,7 @@ Sentry.init({
   dsn: "https://38630b0d78f645abb5cae7e82bc1582c@sentry.io/1367033"
 });
 
-library.add(faSpinner, faBars);
+library.add(faSpinner, faBars, faExclamationCircle);
 
 const initialState = getInitialState();
 

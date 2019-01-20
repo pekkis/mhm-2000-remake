@@ -38,7 +38,7 @@ const event = {
 
   render: data => {
     let t = List.of(
-      `Pankkinne on tehnyt virheen. Tilill„nne on __${a(
+      `Pankkinne on tehnyt virheen. Tilillänne on __${a(
         data.get("amount")
       )}__ pekkaa liikaa. Kukaan ei huomaa mitään...`
     );

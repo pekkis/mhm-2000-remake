@@ -2,10 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Calendar from "./ui/containers/CalendarContainer";
 import { getEffective } from "../services/effects";
-
 import { CRISIS_MORALE_MAX } from "../data/constants";
-
 import Button from "./form/Button";
+import { List } from "immutable";
 
 const ActionMenu = props => {
   const { manager, teams, closeMenu, saveGame, quitToMainMenu, turn } = props;
@@ -55,11 +54,13 @@ const ActionMenu = props => {
             </Link>
           </li>
 
-          <li>
-            <Link onClick={() => closeMenu()} to="/jaynat">
-              Jäynät
-            </Link>
-          </li>
+          <Calendar when={c => c.get("pranks")}>
+            <li>
+              <Link onClick={() => closeMenu()} to="/jaynat">
+                Jäynät
+              </Link>
+            </li>
+          </Calendar>
 
           <li>
             <Link onClick={() => closeMenu()} to="/tilastot">
@@ -70,7 +71,7 @@ const ActionMenu = props => {
           <Calendar
             when={(e, c, s) => {
               return (
-                e.get("gamedays").includes("phl") &&
+                e.get("gamedays", List()).includes("phl") &&
                 s.game.getIn(["competitions", "phl", "phase"]) === 0
               );
             }}

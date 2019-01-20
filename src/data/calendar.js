@@ -3,6 +3,7 @@ import { List, Map, Repeat } from "immutable";
 export const CRISIS_DEADLINE = 52;
 export const TRANSFER_DEADLINE = 30;
 export const EVENT_DEADLINE = 53;
+export const PRANKS_DEADLINE = 53;
 
 const defaultPhases = List.of(
   "action",
@@ -255,7 +256,7 @@ const calendar = List.of(
   .push(
     Map({
       title: "Finaali-pläjäys",
-      phases: List.of("action", "event", "seed"),
+      phases: List.of("action", "event", "seed", "gala"),
       seed: List.of(
         Map({ competition: "phl", phase: 3 }),
         Map({ competition: "division", phase: 3 })
@@ -283,7 +284,8 @@ const decoratedCalendar = calendar.map((entry, index) => {
     round: index,
     transferMarket: index <= TRANSFER_DEADLINE,
     crisisMeeting: index <= CRISIS_DEADLINE,
-    createRandomEvent: index <= EVENT_DEADLINE
+    createRandomEvent: index <= EVENT_DEADLINE,
+    pranks: index <= PRANKS_DEADLINE
   });
 });
 

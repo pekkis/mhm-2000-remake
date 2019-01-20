@@ -24,9 +24,13 @@ const services = OrderedMap({
     description: price =>
       `Salainen mikrofoni vastustajan aitiossa, suoraan valmentajan edessä, antaa yllättävän edun! Vakoilujärjestelmän ylläpito maksaa __${a(
         price
-      )}__ pekkaa / ottelu, ja on tietenkin olemassa kiinnijäämisen riski. Silloin tuloksena on mittava sakko ja 4 pisteen rangaistus!`,
+      )}__ pekkaa / ottelu, ja on tietenkin olemassa kiinnijäämisen riski. Silloin tuloksena on sakko ja 4 pisteen rangaistus!`,
     price: basePrice => basePrice,
     effect: (competition, phase) => {
+      if (!["phl", "division"].includes(competition)) {
+        return 0;
+      }
+
       if (phase > 0) {
         return 0;
       }

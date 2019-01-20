@@ -10,8 +10,6 @@ import { List } from "immutable";
 const News = props => {
   const { manager, resolveEvent, events, announcements } = props;
 
-  console.log(manager, "manager");
-
   return (
     <HeaderedPage>
       <Header />

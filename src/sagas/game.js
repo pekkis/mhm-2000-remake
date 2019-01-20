@@ -24,17 +24,21 @@ import invitationsProcessPhase from "./phase/invitations-process";
 import seedPhase from "./phase/seed";
 import endOfSeasonPhase from "./phase/end-of-season";
 import startOfSeasonPhase from "./phase/start-of-season";
+import galaPhase from "./phase/gala";
+
 import calculationsPhase from "./phase/calculations";
 import calendar from "../data/calendar";
 import difficultyLevels from "../data/difficulty-levels";
 
-import { setExtra, decrementBalance } from "./manager";
+import { setExtra, decrementBalance, incrementInsuranceExtra } from "./manager";
 import { stats } from "./stats";
 import {
   allTeams,
   managersTeam,
   managersDifficulty,
-  managersMainCompetition
+  managersMainCompetition,
+  managerHasService,
+  managersArena
 } from "../data/selectors";
 import events from "../data/events";
 
@@ -156,6 +160,10 @@ export function* gameLoop() {
       yield call(seedPhase);
     }
 
+    if (phases.includes("gala")) {
+      yield call(galaPhase);
+    }
+
     if (phases.includes("endOfSeason")) {
       yield call(endOfSeasonPhase);
     }
@@ -247,6 +255,19 @@ export function* seasonStart() {
       );
       const totalSalary = salaryPerStrength * team.get("strength");
       yield call(decrementBalance, managerId, totalSalary);
+
+      const hasInsurance = yield select(
+        managerHasService(managerId, "insurance")
+      );
+
+      if (hasInsurance) {
+        const arena = yield select(managersArena(managerId));
+        yield call(
+          incrementInsuranceExtra,
+          managerId,
+          -50 * arena.get("level")
+        );
+      }
     }
 
     // Reset extra each season.
@@ -255,10 +276,6 @@ export function* seasonStart() {
       difficultyLevels.getIn([manager.get("difficulty"), "extra"])
     );
   }
-
-  yield put({
-    type: "NEWS_CLEAR"
-  });
 
   yield put({
     type: SEASON_START

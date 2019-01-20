@@ -18,7 +18,7 @@ import {
   managerHasService,
   teamsMainCompetition
 } from "../data/selectors";
-import { incrementMorale, incrementReadiness } from "./team";
+import { incrementMorale, incrementReadiness, incurPenalty } from "./team";
 import { addNotification } from "./notification";
 import crisis from "../data/crisis";
 import difficultyLevels from "../data/difficulty-levels";
@@ -26,6 +26,9 @@ import arenas from "../data/arenas";
 import { incrementStrength, decrementStrength } from "./team";
 import uuid from "uuid";
 import { Map } from "immutable";
+import r from "../services/random";
+import { addAnnouncement } from "./news";
+import { amount as a } from "../services/format";
 
 export function* addManager(details) {
   const teamId = parseInt(details.team, 10);
@@ -319,7 +322,7 @@ export function* afterGameday(competition, phase, groupId, round) {
     ])
   );
 
-  for (const [, manager] of managers) {
+  for (const [managerId, manager] of managers) {
     const managersIndex = group
       .get("teams")
       .findIndex(t => t === manager.get("team"));
@@ -340,6 +343,36 @@ export function* afterGameday(competition, phase, groupId, round) {
       return;
     }
 
+    // Microphone guy can be caught.
+    if (["phl", "division"].includes(competition) && phase === 0) {
+      const caught = r.bool(0.06);
+      if (caught) {
+        const amount = 50000;
+        const pointDeduction = -4;
+        yield all([
+          call(
+            addAnnouncement,
+            managerId,
+            `"Salainen" mikrofonisi vastustajan vaihtoaitiossa on paljastunut. Teidät tuomitaan __${a(
+              amount
+            )}__ pekan sakkoihin ja __${pointDeduction}__ pisteen menetykseen.`
+          ),
+          call(decrementBalance, managerId, amount),
+          call(
+            incurPenalty,
+            competition,
+            0,
+            0,
+            manager.get("team"),
+            pointDeduction
+          )
+        ]);
+      }
+      /*
+      - IF mikki = 1 AND sarja = 1 AND 100 \* RND < 6 THEN PRINT "Arh! Mikrofoni l”ytyy, ja saatte 50000 sakkoa ja 4 pisteen v„hennyksen!": p(u) = p(u) - 4: raha = raha - 50000
+      */
+    }
+
     const facts = gameFacts(game, managersIndex);
     const team = yield select(managersTeamId(manager.get("id")));
 
@@ -357,7 +390,7 @@ export function* afterGameday(competition, phase, groupId, round) {
       }
     )(phase, facts, manager);
 
-    console.log("MORALE BOOST", competition, phase, moraleBoost);
+    // console.log("MORALE BOOST", competition, phase, moraleBoost);
 
     const readinessBoost = competitionList.getIn(
       [competition, "readinessBoost"],
@@ -367,7 +400,7 @@ export function* afterGameday(competition, phase, groupId, round) {
       }
     )(phase, facts, manager);
 
-    console.log("READINESS BOOST", competition, phase, readinessBoost);
+    // console.log("READINESS BOOST", competition, phase, readinessBoost);
     if (readinessBoost) {
       yield call(incrementReadiness, team, readinessBoost);
     }

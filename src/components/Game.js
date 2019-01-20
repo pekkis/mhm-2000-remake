@@ -23,6 +23,7 @@ import EndOfSeason from "./containers/EndOfSeasonContainer";
 import WorldChampionships from "./containers/WorldChampionshipsContainer";
 import Stats from "./containers/StatsContainer";
 import Invitations from "./containers/InvitationsContainer";
+import Gala from "./containers/GalaContainer";
 
 import calendar from "../data/calendar";
 
@@ -42,6 +43,9 @@ const Phase = props => {
 
     case turn.get("phase") === "event":
       return <Events />;
+
+    case turn.get("phase") === "gala":
+      return <Gala />;
 
     case turn.get("phase") === "news":
       return <News />;

@@ -7,6 +7,7 @@ import SelectVictim from "./pranks/SelectVictim";
 import SelectType from "./pranks/SelectType";
 import ConfirmPrank from "./pranks/ConfirmPrank";
 import Box from "./styled-system/Box";
+import Calendar from "./ui/containers/CalendarContainer";
 
 import difficultyLevels from "../data/difficulty-levels";
 
@@ -41,39 +42,48 @@ const Pranks = props => {
       <ManagerInfo details />
 
       <Box p={1}>
-        <h2>Jäynät</h2>
+        <Calendar
+          when={c => c.get("pranks")}
+          fallback={<p>Jäynät on tältä kaudelta jäynäytetty.</p>}
+        >
+          <h2>Jäynät</h2>
 
-        {!canDo && (
-          <p>
-            Olet jo jäynäyttänyt {manager.get("pranksExecuted")} kertaa tällä
-            kaudella. Nähdään ensi vuonna!
-          </p>
-        )}
+          {!canDo && (
+            <p>
+              Olet jo jäynäyttänyt {manager.get("pranksExecuted")} kertaa tällä
+              kaudella. Nähdään ensi vuonna!
+            </p>
+          )}
 
-        {!prank.get("type") && (
-          <SelectType
-            manager={manager}
-            enabled={canDo}
-            competition={targetCompetition.get("name")}
-            selectType={selectPrankType}
-            cancel={cancelPrank}
-          />
-        )}
+          {!prank.get("type") && (
+            <SelectType
+              manager={manager}
+              enabled={canDo}
+              competition={targetCompetition.get("name")}
+              selectType={selectPrankType}
+              cancel={cancelPrank}
+            />
+          )}
 
-        {prank.get("type") && !prank.get("victim") && (
-          <SelectVictim
-            manager={manager}
-            prank={prank}
-            competition={targetCompetition}
-            teams={teams}
-            selectVictim={selectPrankVictim}
-            cancel={cancelPrank}
-          />
-        )}
+          {prank.get("type") && !prank.get("victim") && (
+            <SelectVictim
+              manager={manager}
+              prank={prank}
+              competition={targetCompetition}
+              teams={teams}
+              selectVictim={selectPrankVictim}
+              cancel={cancelPrank}
+            />
+          )}
 
-        {prank.get("type") && prank.get("victim") && (
-          <ConfirmPrank manager={manager} prank={prank} execute={orderPrank} />
-        )}
+          {prank.get("type") && prank.get("victim") && (
+            <ConfirmPrank
+              manager={manager}
+              prank={prank}
+              execute={orderPrank}
+            />
+          )}
+        </Calendar>
       </Box>
     </HeaderedPage>
   );

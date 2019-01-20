@@ -14,8 +14,6 @@ const BettingForm = props => {
 
   const pairings = group.getIn(["schedule", round]);
 
-  console.log("pairings", pairings.toJS());
-
   return (
     <Formik
       initialValues={{

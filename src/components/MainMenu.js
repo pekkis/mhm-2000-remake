@@ -1,7 +1,6 @@
 import React from "react";
 
 import Events from "./events/Events";
-import News from "./news/News";
 import Situation from "./context-sensitive/Situation";
 import ManagerInfo from "./containers/ManagerInfoContainer";
 import Header from "./containers/HeaderContainer";
@@ -18,7 +17,6 @@ const MainMenu = props => {
     competitions,
     resolveEvent,
     events,
-    news,
     interestingCompetitions
   } = props;
 
@@ -37,10 +35,6 @@ const MainMenu = props => {
           interesting={interestingCompetitions}
           teams={teams}
         />
-        <hr />
-
-        <News manager={manager} news={news} />
-
         <hr />
 
         <Events manager={manager} events={events} resolveEvent={resolveEvent} />
