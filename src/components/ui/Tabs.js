@@ -29,10 +29,6 @@ const Tabs = props => {
 
   const childrenArray = React.Children.toArray(children);
 
-  console.log(props);
-
-  console.log(childrenArray[selected]);
-
   return (
     <div className={className}>
       <TabsList>

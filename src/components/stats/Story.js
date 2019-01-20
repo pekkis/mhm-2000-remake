@@ -5,8 +5,6 @@ import Achievements from "./Achievements";
 const Story = props => {
   const { season, story, teams, competitions } = props;
 
-  console.log("story", story.toJS());
-
   const t = story.get("mainCompetitionStat");
   return (
     <div>
