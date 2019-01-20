@@ -92,33 +92,29 @@ const calendar = List.of(
       }),
       Map({
         phases: defaultPhases,
-        gamedays: List.of("phl", "division"),
-        invitations: true
+        gamedays: List.of("phl", "division")
       }),
       Map({
         phases: ehlPhases,
-        invitations: true,
         gamedays: List.of("ehl")
       }),
       Map({
-        phases: defaultPhases.push("invitations-process"),
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
+        gamedays: List.of("phl", "division")
+      }),
+      Map({
+        phases: defaultPhases,
         gamedays: List.of("phl", "division"),
         seed: List.of(
           Map({
             competition: "tournaments",
             phase: 0
           })
-        ),
-        invitations: true
-      }),
-      Map({
-        phases: defaultPhases,
-        invitations: true,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
+        )
       }),
       Map({
         phases: defaultPhases,

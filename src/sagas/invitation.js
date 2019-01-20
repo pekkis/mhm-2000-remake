@@ -8,9 +8,6 @@ import { managersTeamId } from "../data/selectors";
 import { addTeamToCompetition } from "./game";
 
 export function* acceptInvitation(managerId, id) {
-  console.log("HELLUREI?");
-  console.log(managerId, id);
-
   const team = yield select(managersTeamId(managerId));
 
   yield putResolve({
@@ -38,7 +35,8 @@ export function* createInvitations() {
           type: INVITATION_ADD,
           payload: {
             manager: managerId,
-            tournament: tournamentId
+            tournament: tournamentId,
+            duration: 3
           }
         });
       }

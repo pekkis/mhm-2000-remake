@@ -1,11 +1,15 @@
 import { Map, List } from "immutable";
-import { select, call } from "redux-saga/effects";
+import { select, call, all } from "redux-saga/effects";
 import tournamentScheduler from "../../services/tournament";
 import r from "../../services/random";
 import { foreignTeams } from "../selectors";
 
 import tournamentList from "../tournaments";
 import { setCompetitionTeams } from "../../sagas/game";
+import { incrementReadiness } from "../../sagas/team";
+import { addAnnouncement } from "../../sagas/news";
+import { incrementBalance } from "../../sagas/manager";
+import { amount as a } from "../../services/format";
 
 export default Map({
   data: Map({
@@ -21,12 +25,51 @@ export default Map({
   relegateTo: false,
   promoteTo: false,
 
+  start: function*() {
+    yield call(setCompetitionTeams, "tournaments", List());
+  },
+
   groupEnd: function*(phase, group) {
-    /*
-    if (phase === 1) {
-      yield call(ehlAwards);
+    const tournament = yield select(state =>
+      state.game.getIn([
+        "competitions",
+        "tournaments",
+        "phases",
+        phase,
+        "groups",
+        group
+      ])
+    );
+
+    const managers = yield select(state => state.manager.get("managers"));
+    const teams = yield select(state => state.game.get("teams"));
+
+    for (const [, stat] of tournament.get("stats").entries()) {
+      const team = teams.get(stat.get("id"));
+
+      if (team.get("domestic", true)) {
+        yield call(incrementReadiness, team.get("id"), -1);
+
+        if (team.get("manager") !== undefined) {
+          const award = tournamentList.getIn([group, "award"]);
+          const manager = managers.get(team.get("manager"));
+          console.log("manager", manager.toJS());
+
+          yield all([
+            call(
+              addAnnouncement,
+              manager.get("id"),
+              `Tilillenne on siirretty __${a(
+                award
+              )}__ pekkaa rahaa. Viiteviesti: joulutauon turnaus, osallistumismaksu, _${tournament.get(
+                "name"
+              )}_.`
+            ),
+            call(incrementBalance, manager.get("id"), award)
+          ]);
+        }
+      }
     }
-    */
   },
 
   gameBalance: (phase, facts, manager) => {

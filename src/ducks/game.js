@@ -8,10 +8,13 @@ import countryList from "../data/countries";
 import competitionList from "../data/competitions";
 
 export const GAME_START = "GAME_START";
-export const SEASON_START = "SEASON_START";
-export const SEASON_END = "SEASON_END";
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 export const GAME_ADVANCE = "GAME_ADVANCE";
+export const GAME_DECREMENT_DURATIONS = "GAME_DECREMENT_DURATIONS";
+export const GAME_CLEAR_EXPIRED = "GAME_CLEAR_EXPIRED";
+
+export const SEASON_START = "SEASON_START";
+export const SEASON_END = "SEASON_END";
 
 const defaultState = Map({
   turn: Map({
@@ -120,7 +123,9 @@ export default function gameReducer(state = defaultState, action) {
         )
         .setIn(["flags", "jarko"], false)
         .update("competitions", competitions => {
-          return competitions.map(competition => competition.set("phase", -1));
+          return competitions.map(competition =>
+            competition.set("phase", -1).set("phases", List())
+          );
         });
 
     case SEASON_END:
@@ -252,7 +257,7 @@ export default function gameReducer(state = defaultState, action) {
     case "TEAM_ADD_MANAGER":
       return state.setIn(["teams", payload.team, "manager"], payload.manager);
 
-    case "GAME_DECREMENT_DURATIONS":
+    case GAME_DECREMENT_DURATIONS:
       return state.update("teams", teams => {
         return teams.map(team => {
           return team
@@ -265,7 +270,7 @@ export default function gameReducer(state = defaultState, action) {
         });
       });
 
-    case "GAME_CLEAR_EXPIRED":
+    case GAME_CLEAR_EXPIRED:
       return state.update("teams", teams => {
         return teams.map(team => {
           return team

@@ -770,18 +770,18 @@
   resolved "https://registry.yarnpkg.com/@csstools/sass-import-resolve/-/sass-import-resolve-1.0.0.tgz#32c3cdb2f7af3cd8f0dca357b592e7271f3831b5"
   integrity sha512-pH4KCsbtBLLe7eqUrw8brcuFO8IZlN36JjdKlOublibVdAIPHCzEnpBWOVUXK5sCf+DpBi8ZtuWtjF0srybdeA==
 
-"@dr-kobros/broilerplate-mini-css-extract@^0.21.0":
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/@dr-kobros/broilerplate-mini-css-extract/-/broilerplate-mini-css-extract-0.21.0.tgz#697ed2accf5bbf34657d4241451713d48703e844"
-  integrity sha512-FiGMwduWXfjTlU2Q6PXeW8pJ/5+bIl1E2u0LExRrcRUog2a+zJllF1JSXtDZo74bOi8ECAxJWrgHfCom5I6qwg==
+"@dr-kobros/broilerplate-mini-css-extract@^0.22.0":
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/@dr-kobros/broilerplate-mini-css-extract/-/broilerplate-mini-css-extract-0.22.0.tgz#2a72fe45fd4a868e3fdf523cf85148d81fdde562"
+  integrity sha512-0kab8yqg6idLwlQo5McF3BS3MsPhjuaG/6Rc1sGKyNXlGytwBouddDlc4eioik/xzSZ4w5lZX4ypaw7yBBH91w==
   dependencies:
     immutable "4.0.0-rc.12"
     mini-css-extract-plugin "^0.4.4"
 
-"@dr-kobros/broilerplate-postcss@^0.21.0":
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/@dr-kobros/broilerplate-postcss/-/broilerplate-postcss-0.21.0.tgz#4063548023b1f72176dfd2107b6e8530be874f4e"
-  integrity sha512-ybM0BlPzK0meyjYx+RYpHlHdCH07kStTkccPlGJNvVrRQ6pBcybtEqffzBjG4AMhHk2MXaRNRwOVg7I3/4KFtg==
+"@dr-kobros/broilerplate-postcss@^0.22.0":
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/@dr-kobros/broilerplate-postcss/-/broilerplate-postcss-0.22.0.tgz#6e3e8fcb41ecc0a9744caca2b93161ac03a73890"
+  integrity sha512-RZOC2oZMM+6oJBZOGSMACfgEYbn1p5Dpe2/Qt5TUbUEapueRBlc+94rJgL75mhD5be+pdD/RW156mehPgdqAxA==
   dependencies:
     autoprefixer "^9.0.2"
     immutable "4.0.0-rc.12"
@@ -796,17 +796,17 @@
     "@dr-kobros/serviceworker-webpack-plugin" "^0.1.1"
     immutable "4.0.0-rc.12"
 
-"@dr-kobros/broilerplate-styled-components@^0.21.0":
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/@dr-kobros/broilerplate-styled-components/-/broilerplate-styled-components-0.21.0.tgz#14660b13ba5475ffed13a399caf2a469ccdaa635"
-  integrity sha512-B9GTAmt4Hsk9jtzITunl6IqXjuLP0uGsAgyE9tQwsw/ZF1zkzvEi97cxBi7UGUZojguue1g3GqxLqezZjKFskg==
+"@dr-kobros/broilerplate-styled-components@^0.22.0":
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/@dr-kobros/broilerplate-styled-components/-/broilerplate-styled-components-0.22.0.tgz#08cce5daf33ec8e1811fbe0a700738feae8819df"
+  integrity sha512-7SKsOWnhpATMHJehhnTZtGyKCJxIpZ/M1C68kIS3nMMFBS+Of2rtJERZrACTdybBhwxx9m0xcG35K03/tWkdiw==
   dependencies:
     immutable "4.0.0-rc.12"
 
-"@dr-kobros/broilerplate@^0.21.0":
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/@dr-kobros/broilerplate/-/broilerplate-0.21.0.tgz#b0c66d33a0b4a2346672c305fe199d54fac3cc0d"
-  integrity sha512-EJFfNVJPCGPpXMb5797mcmGvccS7wUpOVYlBo4nd+Lp7P0WlHRzjz6FRatFmO/p0p/QUn7SWtAluwTr+CNHnoQ==
+"@dr-kobros/broilerplate@^0.22.0":
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/@dr-kobros/broilerplate/-/broilerplate-0.22.0.tgz#c8b55bcdb227787f1541252bac3c83fcc29f6cf6"
+  integrity sha512-fl67c4JMkr8AfY3g7y3XSfl3mim2wQMVSAweGN+0ldMCE3syD+wk0oIObMltjxQEkvMU70yFEFzGBy3sl3dFew==
   dependencies:
     case-sensitive-paths-webpack-plugin "^2.1.1"
     clean-webpack-plugin "^1.0.0"

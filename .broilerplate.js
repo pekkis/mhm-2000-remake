@@ -9,6 +9,7 @@ const {
   defaultBaseConfig,
   mergeOptions,
   addFeatures,
+  removeFeature,
   compile,
   override,
   run,
@@ -42,7 +43,18 @@ module.exports = target => {
       })
     ),
     defaultFeatures,
+    removeFeature("environmentVariablesFeature"),
     addFeatures(
+      [
+        "environmentVariablesFeature",
+        Map({
+          filter: (v, k) => {
+            const whitelisted = ["NODE_ENV", "COMMIT_REF"];
+
+            return whitelisted.includes(k) || k.startsWith("REACT_APP_");
+          }
+        })
+      ],
       swFeature(),
       manifestFeature(
         Map({

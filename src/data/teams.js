@@ -34,7 +34,7 @@ const teams = List.of(
     domestic: false
   }),
   Map({
-    name: "Frölunda",
+    name: "Västra Frölunda",
     strength: () => r.integer(200, 240),
     domestic: false
   }),
@@ -106,6 +106,26 @@ const teams = List.of(
   Map({
     name: "HC Barcelona",
     strength: () => r.integer(50, 100),
+    domestic: false
+  }),
+  Map({
+    name: "Lugano",
+    strength: () => r.integer(175, 250),
+    domestic: false
+  }),
+  Map({
+    name: "Ambri-Piotta",
+    strength: () => r.integer(150, 220),
+    domestic: false
+  }),
+  Map({
+    name: "AIK Tukholma",
+    strength: () => r.integer(230, 275),
+    domestic: false
+  }),
+  Map({
+    name: "Petra Vsetín",
+    strength: () => r.integer(190, 280),
     domestic: false
   })
 ).map((t, i) => t.set("id", i));

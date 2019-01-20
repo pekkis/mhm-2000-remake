@@ -1,6 +1,12 @@
 import { Map, List } from "immutable";
 import uuid from "uuid";
 
+import {
+  SEASON_START,
+  GAME_DECREMENT_DURATIONS,
+  GAME_CLEAR_EXPIRED
+} from "./game";
+
 const defaultState = Map({
   invitations: List()
 });
@@ -53,8 +59,25 @@ export default function invitationReducer(state = defaultState, action) {
             return i.get("manager") !== payload.manager || i.get("participate");
           });
       });
-    case INVITATION_CLEAR:
+    case SEASON_START:
       return state.set("invitations", List());
+
+    case GAME_DECREMENT_DURATIONS:
+      return state.update("invitations", invitations => {
+        return invitations.map(i => {
+          if (i.get("participate")) {
+            return i;
+          }
+          return i.update("duration", d => d - 1);
+        });
+      });
+
+    case GAME_CLEAR_EXPIRED:
+      return state.update("invitations", invitations => {
+        return invitations.filter(
+          i => i.get("participate") || i.get("duration") > 0
+        );
+      });
 
     default:
       return state;

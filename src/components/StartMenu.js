@@ -49,7 +49,7 @@ const StartMenu = props => {
             <Box px={1} py={0}>
               <h1>MHM 97</h1>
               <h2>maailman paras jääkiekkomanagerisimulaatio</h2>
-              <h2>service worker test 0.0.1</h2>
+              <h2>build: {process.env.COMMIT_REF || "dev"}</h2>
             </Box>
           </Centerer>
 

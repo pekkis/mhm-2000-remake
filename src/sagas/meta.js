@@ -1,4 +1,3 @@
-import { Seq } from "immutable";
 import { addManager } from "./manager";
 import { gameLoop } from "./game";
 import { addNotification } from "./notification";

@@ -45,7 +45,7 @@ const tournamentList = List.of(
     description: amount =>
       `__GoGo Cola-Cup__ on ei-kovin-perinteikäs, miedosti tunnettu ja arvostettu joulunajan kutsuturnaus Kööpenhaminassa, Tanskassa, ja joukkuettasi on pyydetty mukaan. Osallistuminen kartuttaisi kassaa __${a(
         amount
-      )}__ pekalla."`,
+      )}__ pekalla.`,
     isInvited: invitationCreator("phl", 9),
     filter: t => Range(150, 225).includes(t.get("strength"))
   }),
