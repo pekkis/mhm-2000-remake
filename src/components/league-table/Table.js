@@ -76,10 +76,8 @@ const TableWrapper = styled.div`
 const TableElm = props => {
   const { teams, colors, tbl, isClone } = props;
 
-  const className = !isClone ? "main-table" : "main-table clone";
-
   return (
-    <table border="0" className={className}>
+    <table border="0" className={isClone ? "clone" : undefined}>
       <thead>
         <tr>
           <th className="name fixed-side">Joukkue</th>

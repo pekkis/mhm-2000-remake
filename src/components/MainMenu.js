@@ -35,7 +35,6 @@ const MainMenu = props => {
           interesting={interestingCompetitions}
           teams={teams}
         />
-        <hr />
 
         <Events manager={manager} events={events} resolveEvent={resolveEvent} />
       </Box>

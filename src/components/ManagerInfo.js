@@ -4,6 +4,37 @@ import { getEffective } from "../services/effects";
 import Box from "./styled-system/Box";
 import TurnIndicator from "./game/TurnIndicator";
 
+import styled from "styled-components";
+
+const ManagerName = styled.h2`
+  margin: 0;
+`;
+
+const Details = styled.div`
+  margin-top: 1em;
+  display: flex;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  align-items: stretch;
+`;
+
+const Detail = styled.div`
+  flex-shrink: 0;
+  width: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  display: flex;
+`;
+
+const Title = styled.div`
+  background-color: rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  padding-right: 0.5em;
+`;
+
+const Value = styled.div`
+  background-color: rgba(0, 0, 0, 0.1);
+`;
+
 const ManagerInfo = props => {
   const { manager, teams, turn, details } = props;
 
@@ -11,29 +42,32 @@ const ManagerInfo = props => {
 
   return (
     <Box p={1} bg="bar">
-      <h2>{manager.get("name")}</h2>
+      <ManagerName>{manager.get("name")}</ManagerName>
 
       {details && (
-        <>
-          <div>
-            <strong>Rahaa: </strong>
-            {amount(manager.get("balance"))}
-          </div>
-          <div>
-            <strong>Moraali: </strong>
-            {team.get("morale")}
-          </div>
+        <Details>
+          <Detail>
+            <Title>Voima</Title>
+            <Value>{team.get("strength")}</Value>
+          </Detail>
 
-          <div>
-            <strong>Voima: </strong>
-            {team.get("strength")}
-          </div>
+          <Detail>
+            <Title>Moraali</Title>
+            <Value>{team.get("morale")}</Value>
+          </Detail>
 
-          <div>
-            <strong>Vuoro: </strong>
-            <TurnIndicator turn={turn} />
-          </div>
-        </>
+          <Detail>
+            <Title>Raha</Title>
+            <Value>{amount(manager.get("balance"))}</Value>
+          </Detail>
+
+          <Detail>
+            <Title>Vuoro</Title>
+            <Value>
+              <TurnIndicator turn={turn} />
+            </Value>
+          </Detail>
+        </Details>
       )}
     </Box>
   );

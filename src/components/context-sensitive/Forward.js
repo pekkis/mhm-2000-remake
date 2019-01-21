@@ -11,22 +11,22 @@ const Forward = props => {
 
   if (gamedays.count() > 0) {
     return (
-      <span>
+      <div>
         Pelipäivä (
         {gamedays
           .map(gd => competitions.get(gd))
-          .map(c => c.get("name"))
+          .map(c => c.get("abbr"))
           .join(", ")}
         )
-      </span>
+      </div>
     );
   }
 
   if (calendarEntry.get("title")) {
-    return <span>{calendarEntry.get("title")}</span>;
+    return <div>{calendarEntry.get("title")}</div>;
   }
 
-  return <span>Eteenpäin!</span>;
+  return <div>Eteenpäin!</div>;
 };
 
 export default Forward;

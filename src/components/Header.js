@@ -60,7 +60,12 @@ const Header = props => {
             </div>
           )}
           <div className="advance">
-            <Button block disabled={!advanceEnabled} onClick={() => advance()}>
+            <Button
+              terse
+              block
+              disabled={!advanceEnabled}
+              onClick={() => advance()}
+            >
               {forward}
             </Button>
           </div>
