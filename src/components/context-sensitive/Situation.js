@@ -1,5 +1,6 @@
 import React from "react";
 import Table from "../league-table/Table";
+import ResponsiveTable from "../responsive-table/ResponsiveTable";
 import Matchups from "../playoffs/Matchups";
 import { List } from "immutable";
 import Games from "../gameday/Games";
@@ -47,21 +48,25 @@ const Situation = props => {
                         {phase.get("type") === "round-robin" && (
                           <div>
                             <h4>Sarjataulukko</h4>
-                            <Table
-                              managers={List.of(manager)}
-                              teams={teams}
-                              division={group}
-                            />
+                            <ResponsiveTable>
+                              <Table
+                                managers={List.of(manager)}
+                                teams={teams}
+                                division={group}
+                              />
+                            </ResponsiveTable>
                           </div>
                         )}
                         {phase.get("type") === "tournament" && (
                           <div>
                             <h4>Tilanne</h4>
-                            <Table
-                              managers={List.of(manager)}
-                              teams={teams}
-                              division={group}
-                            />
+                            <ResponsiveTable>
+                              <Table
+                                managers={List.of(manager)}
+                                teams={teams}
+                                division={group}
+                              />
+                            </ResponsiveTable>
                           </div>
                         )}
 

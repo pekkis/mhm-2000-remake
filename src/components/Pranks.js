@@ -81,6 +81,8 @@ const Pranks = props => {
               manager={manager}
               prank={prank}
               execute={orderPrank}
+              teams={teams}
+              cancel={cancelPrank}
             />
           )}
         </Calendar>

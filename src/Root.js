@@ -36,7 +36,7 @@ const Root = props => {
   return (
     <>
       <TypographyStyle typography={typography} />
-      <GoogleFont typography={typography} />
+      {/*<GoogleFont typography={typography} />*/}
       <Provider store={store}>
         <BrowserRouter>
           <ThemeProvider theme={theme}>

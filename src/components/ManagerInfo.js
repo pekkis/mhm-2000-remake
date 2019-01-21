@@ -21,19 +21,15 @@ const Details = styled.div`
 const Detail = styled.div`
   flex-shrink: 0;
   width: 50%;
-  background-color: rgba(0, 0, 0, 0.1);
   display: flex;
 `;
 
 const Title = styled.div`
-  background-color: rgba(0, 0, 0, 0.1);
   font-weight: bold;
   padding-right: 0.5em;
 `;
 
-const Value = styled.div`
-  background-color: rgba(0, 0, 0, 0.1);
-`;
+const Value = styled.div``;
 
 const ManagerInfo = props => {
   const { manager, teams, turn, details } = props;

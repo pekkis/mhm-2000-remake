@@ -1,25 +1,39 @@
 import React from "react";
-import Inspector from "react-inspector";
 import { Map } from "immutable";
+import Box from "./styled-system/Box";
+
+const humanReadables = Map([
+  ["loss", "tappiota"],
+  ["noWin", "voitotonta ottelua"],
+  ["noLoss", "tappiotonta ottelua"],
+  ["win", "voittoa"]
+]);
 
 const Streaks = props => {
-  const { teams, competitions, competition, team, streaks } = props;
+  const { competition, team, streaks } = props;
 
-  const teamStreaks = streaks.getIn([team.toString(), competition], Map());
+  const teamStreaks = streaks
+    .getIn([team.toString(), competition], Map())
+    .filter(s => s > 1);
+
+  if (teamStreaks.count() === 0) {
+    return null;
+  }
 
   return (
-    <div>
+    <Box my={1}>
+      <h4>Putket</h4>
       {teamStreaks
         .filter(s => s > 1)
         .map((s, index) => {
           return (
             <div key={index}>
-              {s} {index}
+              <strong>{s}</strong> {humanReadables.get(index)} putkeen.
             </div>
           );
         })
         .toList()}
-    </div>
+    </Box>
   );
 };
 

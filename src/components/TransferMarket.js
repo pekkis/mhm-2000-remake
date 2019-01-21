@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import playerTypes from "../data/transfer-market";
 import Button from "./form/Button";
+import ButtonContainer from "./ui/ButtonContainer";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 import Calendar from "./ui/containers/CalendarContainer";
@@ -36,47 +37,45 @@ const TransferMarket = props => {
         >
           <Tabs selected={tab} onSelect={setTab}>
             <Tab title="Osta pelaajia">
-              <div>
+              <ButtonContainer>
                 {playerTypes.map((playerType, index) => {
                   return (
-                    <div key={index}>
-                      <Button
-                        onClick={() => {
-                          buyPlayer(manager.get("id"), index);
-                        }}
-                        block
-                        disabled={balance < playerType.get("buy")}
-                      >
-                        <div>{playerType.get("description")}</div>
-                        <div>
-                          <strong>{currency(playerType.get("buy"))}</strong>
-                        </div>
-                      </Button>
-                    </div>
+                    <Button
+                      key={index}
+                      onClick={() => {
+                        buyPlayer(manager.get("id"), index);
+                      }}
+                      block
+                      disabled={balance < playerType.get("buy")}
+                    >
+                      <div>{playerType.get("description")}</div>
+                      <div>
+                        <strong>{currency(playerType.get("buy"))}</strong>
+                      </div>
+                    </Button>
                   );
                 })}
-              </div>
+              </ButtonContainer>
             </Tab>
             <Tab title="Myy pelaajia">
-              <div>
+              <ButtonContainer>
                 {playerTypes.map((playerType, index) => {
                   return (
-                    <div key={index}>
-                      <Button
-                        onClick={() => {
-                          sellPlayer(manager.get("id"), index);
-                        }}
-                        block
-                      >
-                        <div>{playerType.get("description")}</div>
-                        <div>
-                          <strong>{currency(playerType.get("sell"))}</strong>
-                        </div>
-                      </Button>
-                    </div>
+                    <Button
+                      key={index}
+                      onClick={() => {
+                        sellPlayer(manager.get("id"), index);
+                      }}
+                      block
+                    >
+                      <div>{playerType.get("description")}</div>
+                      <div>
+                        <strong>{currency(playerType.get("sell"))}</strong>
+                      </div>
+                    </Button>
                   );
                 })}
-              </div>
+              </ButtonContainer>
             </Tab>
           </Tabs>
         </Calendar>
