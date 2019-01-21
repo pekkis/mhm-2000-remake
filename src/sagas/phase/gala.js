@@ -8,7 +8,7 @@ export default function* galaPhase() {
   yield call(setPhase, "gala");
 
   const teams = yield select(state => state.game.get("teams"));
-  const managers = yield select(state => state.manager.get("manager"));
+  const managers = yield select(state => state.manager.get("managers"));
 
   const phlRegularSeason = yield select(state =>
     state.game.getIn(["competitions", "phl", "phases", 0, "groups", 0])
