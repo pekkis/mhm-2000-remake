@@ -37,7 +37,7 @@ const ManagerForm = props => {
                 <Label>Areenan nimi</Label>
                 <Input
                   block
-                  id="name"
+                  id="arena"
                   value={values.arena}
                   onChange={handleChange}
                 />
