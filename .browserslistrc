@@ -1,7 +1,5 @@
-last 1 version
+>0.5%
+not dead
 not ie <= 11
 not op_mini all
 not android <= 600
-not edge < 100
-not opera < 1000000
-

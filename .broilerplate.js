@@ -25,6 +25,9 @@ const extractCssFeature = require("@dr-kobros/broilerplate-mini-css-extract");
 const styledComponentsFeature = require("@dr-kobros/broilerplate-styled-components");
 const swFeature = require("@dr-kobros/broilerplate-serviceworker");
 
+const emotion = require("./src/config/emotion");
+const upgrader = require("./src/config/corejs-upgrade");
+
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -93,7 +96,9 @@ module.exports = target => {
       extractCssFeature(),
       nodeExternalsFeature({
         whitelist: []
-      })
+      }),
+      emotion(),
+      upgrader()
     ),
     build => {
       if (env === "production") {
@@ -101,7 +106,7 @@ module.exports = target => {
       }
       return build.setIn(["base", "devtool"], "cheap-module-eval-source-map");
     },
-    ensureFiles(false),
+    // ensureFiles(false),
     compile(env, target),
     override(path.join(__dirname, "./src/config/overrides")),
     run,

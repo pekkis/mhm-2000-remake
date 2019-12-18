@@ -1,7 +1,6 @@
-import Random from "random-js";
-import { Range, List } from "immutable";
+import { Random, browserCrypto } from "random-js";
 
-const random = new Random(Random.engines.mt19937().autoSeed());
+const random = new Random(browserCrypto);
 
 export default random;
 
