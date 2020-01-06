@@ -8,6 +8,10 @@ export const EVENT_DEADLINE = 53;
 export const PRANKS_DEADLINE = 53;
 
 export type MHMTurnPhase =
+  | "invitationsProcess"
+  | "invitationsCreate"
+  | "gala"
+  | "endOfSeason"
   | "startOfSeason"
   | "action"
   | "prank"
@@ -128,7 +132,7 @@ const cal = pipe(
 
 console.log(cal);
 
-export default cal;
+export default cal as MHMTurnDefinition[];
 
 /*
 const calendar = List.of(
@@ -202,7 +206,7 @@ const calendar = List.of(
       }),
       Map({
         gamedays: List.of("phl", "division"),
-        phases: defaultPhases.push("invitations-create")
+        phases: defaultPhases.push("invitationsCreate")
       }),
       Map({
         phases: defaultPhases,

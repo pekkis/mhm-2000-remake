@@ -41,6 +41,7 @@ import {
   managersArena
 } from "../data/selectors";
 import events from "../data/events";
+import { nth } from "ramda";
 
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 
@@ -107,9 +108,12 @@ export function* gameLoop() {
   do {
     const turn = yield select(state => state.game.get("turn"));
 
-    const roundData = calendar.get(turn.get("round"));
+    const roundData = nth(turn.get("round"), calendar);
+    if (!roundData) {
+      throw new Error("Invalid turn data");
+    }
 
-    const phases = roundData.get("phases");
+    const phases = roundData.phases;
 
     // console.log(roundData.toJS(), "round data");
 
@@ -144,11 +148,11 @@ export function* gameLoop() {
       yield call(newsPhase);
     }
 
-    if (phases.includes("invitations-create")) {
+    if (phases.includes("invitationsCreate")) {
       yield call(invitationsCreatePhase);
     }
 
-    if (phases.includes("invitations-process")) {
+    if (phases.includes("invitationsProcess")) {
       yield call(invitationsProcessPhase);
     }
 
