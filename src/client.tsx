@@ -31,16 +31,20 @@ const initialState = getInitialState();
 const store = createStore(initialState);
 
 // Just a small DRY abstraction here.
-function render(Component, rootElement, method = "render") {
-  ReactDOM[method](<Component store={store} />, rootElement);
+function render(Component: typeof Root, rootElement: HTMLElement) {
+  ReactDOM.render(<Component store={store} />, rootElement);
 }
 
 // If we get !undefined state from the server, we hydrate.
 const rootElement = document.getElementById("app");
-render(Root, rootElement, initialState ? "hydrate" : "render");
+if (!rootElement) {
+  throw new Error("Oh noes, no root element be found!");
+}
 
-runtime.register().then(sw => {
-  console.log("sw", "serviis wörker");
+render(Root, rootElement);
+
+runtime.register().then((sw: ServiceWorker) => {
+  console.log(sw, "serviis wörker");
 });
 
 // Webpack's hot reloading magic happens here.
@@ -48,6 +52,6 @@ runtime.register().then(sw => {
 if (module.hot) {
   module.hot.accept("./Root", () => {
     const HotReloadedRoot = require("./Root").default;
-    render(HotReloadedRoot, rootElement, "render");
+    render(HotReloadedRoot, rootElement);
   });
 }

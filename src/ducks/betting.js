@@ -13,8 +13,6 @@ const defaultState = Map({
 });
 
 export const betChampion = (manager, team, amount, odds) => {
-  console.log("KVAAK BET", manager, team, amount, odds);
-
   return {
     type: BETTING_BET_CHAMPION_REQUEST,
     payload: {

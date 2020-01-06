@@ -103,7 +103,7 @@ import protest from "./events/protest";
 import bazookaStrike from "./events/bazooka-strike";
 import sellNarcotics from "./events/sell-narcotics";
 
-const events = Map({
+const events = Map<string, any>({
   protest,
   sellNarcotics,
   bazookaStrike,

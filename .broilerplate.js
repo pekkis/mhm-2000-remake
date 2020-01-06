@@ -3,7 +3,6 @@ const util = require("util");
 const {
   pipe,
   empty,
-  ensureFiles,
   defaultFeatures,
   defaultPaths,
   defaultBaseConfig,
@@ -12,6 +11,7 @@ const {
   removeFeature,
   compile,
   override,
+  setEntry,
   run,
   toJS
 } = require("@dr-kobros/broilerplate");
@@ -45,6 +45,7 @@ module.exports = target => {
         debug: env === "development" ? true : false
       })
     ),
+    setEntry("client", "./client.tsx"),
     defaultFeatures,
     removeFeature("environmentVariablesFeature"),
     addFeatures(

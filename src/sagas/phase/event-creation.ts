@@ -5,7 +5,7 @@ import { OrderedMap, List } from "immutable";
 import calendar from "../../data/calendar";
 import { setPhase } from "../game";
 
-const eventsMap = OrderedMap(
+const eventsMap = OrderedMap<number, string>(
   List.of(
     [1, "jaralahti"],
     [2, "jaralahti"],
@@ -144,8 +144,15 @@ const eventsMap = OrderedMap(
   )
 );
 
-const getEventId = () => {
-  const eventNumber = cinteger(1, 335);
+const getEventId = (predefined?: string): string | undefined => {
+  const eventNumber = predefined
+    ? eventsMap.findKey(v => v === predefined)
+    : cinteger(1, 335);
+
+  if (!eventNumber) {
+    return;
+  }
+
   const eventId = eventsMap.get(eventNumber);
   return eventId;
 };
@@ -160,10 +167,14 @@ export default function* eventCreationPhase() {
 
   if (calendarEntry.get("createRandomEvent")) {
     for (const [, manager] of managers) {
-      const eventId = getEventId();
-      if (eventId) {
-        yield call(events.get(eventId).create, { manager: manager.get("id") });
+      const eventId = getEventId("attitudeUSA");
+
+      const eventObj = events.get(eventId);
+      if (!eventObj) {
+        return;
       }
+
+      yield call(events.get(eventId).create, { manager: manager.get("id") });
     }
   }
 }

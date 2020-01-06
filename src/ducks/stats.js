@@ -56,7 +56,6 @@ export default function statsReducer(state = defaultState, action) {
       return state.setIn(["currentSeason", ...payload.path], payload.value);
 
     case STATS_UPDATE_FROM_FACTS:
-      console.log("UPDATE YOUR FUCKING STATS", payload);
       return state
         .updateIn(
           ["streaks", "team", payload.team, payload.competition],

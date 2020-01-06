@@ -32,8 +32,6 @@ const Phase = props => {
 
   const calendarEntry = calendar.get(turn.get("round"));
 
-  console.log("CALENDAR ENTRY", calendarEntry.toJS());
-
   switch (true) {
     case turn.get("phase") === "select-strategy":
       return <SelectStrategy />;

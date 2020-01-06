@@ -1,7 +1,7 @@
 import { List, Map } from "immutable";
 import r from "../services/random";
 
-const teams = List.of(
+const teams: List<any> = List.of(
   Map({ name: "KalPa", strength: () => 95, domestic: true }),
   Map({ name: "Jokerit", strength: () => 221, domestic: true }),
   Map({ name: "TPS", strength: () => 250, domestic: true }),

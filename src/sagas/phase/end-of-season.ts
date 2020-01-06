@@ -1,4 +1,4 @@
-import { call, all, take, put, select } from "redux-saga/effects";
+import { call, all, take, put, select, putResolve } from "redux-saga/effects";
 import { seasonStart, promote, relegate, setPhase } from "../game";
 import { victors, eliminated } from "../../services/playoffs";
 import awards from "../../data/awards";
@@ -8,6 +8,8 @@ import { cinteger } from "../../services/random";
 import countries from "../../data/countries";
 import { setSeasonStat, createSeasonStories } from "../stats";
 import { processChampionBets } from "../betting";
+import { competition, allTeams } from "../../data/selectors";
+import { csetStrength, setStrength } from "../../ducks/country";
 
 const getLuck = () => {
   const isLucky = cinteger(1, 10);
@@ -23,26 +25,40 @@ const getLuck = () => {
   return 0;
 };
 
+function* definePekkalandiaStrength() {
+  const phl = yield select(competition("phl"));
+  const teams = yield select(allTeams);
+
+  const avg = phl
+    .get("teams")
+    .map(t => teams.getIn([t, "strength"]))
+    .reduce((r, s) => r + s, 0);
+
+  const strength = Math.round(avg / phl.get("teams").count());
+
+  console.log("strength", strength);
+
+  yield putResolve(setStrength("FI", strength));
+}
+
 function* worldChampionships() {
   yield call(setPhase, "world-championships");
-  const turn = yield select(state => state.game.get("turn"));
-  let strengths = List();
-  for (const [index, country] of countries.entries()) {
-    const strength = yield call(country.get("strength"));
-    strengths = strengths.set(index, strength);
-  }
+  yield call(definePekkalandiaStrength);
 
-  const entries = strengths
-    .map((s, i) => {
+  const countries = yield select(state => state.country.get("countries"));
+
+  const entries = countries
+    .map(c => {
       return Map({
-        id: i,
-        name: countries.getIn([i, "name"]),
-        strength: strengths.get(i),
+        id: c.get("iso"),
+        name: c.get("name"),
+        strength: c.get("strength"),
         luck: getLuck(),
         random: cinteger(0, 20) - cinteger(0, 10)
       });
     })
     .sortBy(e => e.get("strength") + e.get("luck") + e.get("random"))
+    .toList()
     .reverse();
 
   console.log(entries.toJS(), "entries");

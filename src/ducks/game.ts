@@ -1,11 +1,11 @@
-import { Set, Map, List } from "immutable";
+import { Map, List } from "immutable";
 
 import teams from "../data/teams";
 import managers from "../data/managers";
 
-import countryList from "../data/countries";
-
 import competitionList from "../data/competitions";
+import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
+import { Reducer } from "redux";
 
 export const GAME_START = "GAME_START";
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
@@ -17,7 +17,7 @@ export const GAME_NEXT_TURN = "GAME_NEXT_TURN";
 export const SEASON_START = "SEASON_START";
 export const SEASON_END = "SEASON_END";
 
-const defaultState = Map({
+const defaultState: Map<string, any> = Map({
   turn: Map({
     season: 0,
     round: 0,
@@ -39,8 +39,6 @@ const defaultState = Map({
 
   managers,
 
-  countries: countryList.map(country => Map({ name: country.get("name") })),
-
   competitions: competitionList.map(c => c.get("data")),
 
   teams: teams.map(t => t.update("strength", s => s())),
@@ -55,14 +53,17 @@ export const advance = payload => {
   };
 };
 
-export default function gameReducer(state = defaultState, action) {
+const gameReducer: Reducer<typeof defaultState> = (
+  state = defaultState,
+  action
+) => {
   const { type, payload } = action;
 
   switch (type) {
-    case "META_QUIT_TO_MAIN_MENU":
+    case META_QUIT_TO_MAIN_MENU:
       return defaultState;
 
-    case "META_GAME_LOAD_STATE":
+    case META_GAME_LOAD_STATE:
       return payload.game;
 
     case "COMPETITION_REMOVE_TEAM":
@@ -302,4 +303,6 @@ export default function gameReducer(state = defaultState, action) {
     default:
       return state;
   }
-}
+};
+
+export default gameReducer;

@@ -13,6 +13,7 @@ class App extends React.Component {
   }
 
   componentDidCatch(error, info) {
+    return;
     Sentry.withScope(scope => {
       Object.keys(info).forEach(key => {
         scope.setExtra(key, info[key]);

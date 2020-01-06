@@ -1,8 +1,10 @@
 import { Map, List } from "immutable";
-import { call, select } from "redux-saga/effects";
+import { call, select, put, all } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { flag } from "../selectors";
 import { setFlag } from "../../sagas/game";
+import { alterStrength } from "../../ducks/country";
+import { MHMEvent } from "../../types/base";
 
 /*
 sat78:
@@ -14,10 +16,12 @@ RETURN*/
 
 const eventId = "attitudeCanada";
 
-const event = {
+const difference = 30;
+
+const event: MHMEvent = {
   type: "manager",
 
-  create: function*(data) {
+  create: function*(data: any) {
     const { manager } = data;
 
     const attitude = yield select(flag("canada"));
@@ -31,7 +35,6 @@ const event = {
         resolved: true
       })
     );
-    return;
   },
 
   render: data => {
@@ -50,7 +53,11 @@ const event = {
 
   process: function*(data) {
     const attitude = data.get("attitude");
-    yield call(setFlag, "canada", attitude);
+    const amount = attitude ? difference : -difference;
+    yield all([
+      call(setFlag, "canada", attitude),
+      put(alterStrength("CA", amount))
+    ]);
   }
 };
 

@@ -26,7 +26,7 @@ import { bet } from "../betting";
 export default function* actionPhase() {
   const managers = yield select(state => state.manager.get("managers"));
 
-  console.log("HELLUREI?", managers.toJS());
+  // console.log("HELLUREI?", managers.toJS());
 
   yield call(setActiveManager, managers.first().get("id"));
 

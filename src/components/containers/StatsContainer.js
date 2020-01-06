@@ -6,5 +6,5 @@ export default connect(state => ({
   teams: state.game.get("teams"),
   competitions: state.game.get("competitions"),
   stats: state.stats,
-  countries: state.game.get("countries")
+  countries: state.country.get("countries")
 }))(Stats);

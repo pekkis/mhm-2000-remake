@@ -18,11 +18,13 @@ const defaultState = Map({
   })
 });
 
-export const quitToMainMenu = () => {
-  return {
-    type: META_QUIT_TO_MAIN_MENU
-  };
-};
+export interface MetaQuitToMainMenuAction {
+  type: typeof META_QUIT_TO_MAIN_MENU;
+}
+
+export const quitToMainMenu = (): MetaQuitToMainMenuAction => ({
+  type: META_QUIT_TO_MAIN_MENU
+});
 
 export const startGame = () => {
   return {
@@ -42,7 +44,7 @@ export const loadGame = () => {
   };
 };
 
-export default function eventReducer(state = defaultState, action) {
+export default function metaReducer(state = defaultState, action) {
   const { type, payload } = action;
 
   switch (type) {

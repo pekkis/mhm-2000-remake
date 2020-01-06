@@ -1,72 +1,73 @@
 import { List, Map } from "immutable";
 import { competition, allTeams, flag } from "./selectors";
 import { select } from "redux-saga/effects";
+import { compose } from "ramda";
 
-const countries = List.of(
-  Map({
-    name: "Pekkalandia",
-    strength: function*() {
-      const phl = yield select(competition("phl"));
-      const teams = yield select(allTeams);
-
-      const avg = phl
-        .get("teams")
-        .map(t => teams.getIn([t, "strength"]))
-        .reduce((r, s) => r + s, 0);
-
-      return Math.round(avg / phl.get("teams").count());
-    }
-  }),
-  Map({
-    name: "Kanada",
-    strength: function*() {
-      const goCanada = yield select(flag("canada"));
-      return goCanada ? 202 : 232;
-    }
-  }),
-  Map({
-    name: "Yhdysvallat",
-    strength: function*() {
-      const goUSA = yield select(flag("usa"));
-      return goUSA ? 194 : 229;
-    }
-  }),
-  Map({
-    name: "Ruotsi",
-    strength: () => 206
-  }),
-  Map({
-    name: "Ranska",
-    strength: () => 153
-  }),
-  Map({
-    name: "Tshekki",
-    strength: () => 208
-  }),
-  Map({
-    name: "Slovakia",
-    strength: () => 189
-  }),
-  Map({
-    name: "Venäjä",
-    strength: () => 211
-  }),
-  Map({
-    name: "Saksa",
-    strength: () => 170
-  }),
-  Map({
-    name: "Latvia",
-    strength: () => 163
-  }),
-  Map({
-    name: "Italia",
-    strength: () => 168
-  }),
-  Map({
-    name: "Sveitsi",
-    strength: () => 159
-  })
+const countries = Map(
+  List.of(
+    Map({
+      iso: "FI",
+      name: "Pekkalandia",
+      strength: function() {
+        return undefined;
+      }
+    }),
+    Map({
+      iso: "CA",
+      name: "Kanada",
+      strength: () => 202
+    }),
+    Map({
+      iso: "US",
+      name: "Yhdysvallat",
+      strength: () => 194
+    }),
+    Map({
+      iso: "SE",
+      name: "Ruotsi",
+      strength: () => 206
+    }),
+    Map({
+      iso: "FR",
+      name: "Ranska",
+      strength: () => 153
+    }),
+    Map({
+      iso: "CZ",
+      name: "Tshekki",
+      strength: () => 208
+    }),
+    Map({
+      iso: "SK",
+      name: "Slovakia",
+      strength: () => 189
+    }),
+    Map({
+      iso: "RU",
+      name: "Venäjä",
+      strength: () => 211
+    }),
+    Map({
+      iso: "DE",
+      name: "Saksa",
+      strength: () => 170
+    }),
+    Map({
+      iso: "LV",
+      name: "Latvia",
+      strength: () => 163
+    }),
+    Map({
+      iso: "IT",
+      name: "Italia",
+      strength: () => 168
+    }),
+    Map({
+      iso: "CH",
+      name: "Sveitsi",
+      strength: () => 159
+    })
+  ).map(c => [c.get("iso"), c])
 );
 
 export default countries;
