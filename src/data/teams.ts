@@ -1,133 +1,135 @@
 import { List, Map } from "immutable";
 import r from "../services/random";
 
-const teams: List<any> = List.of(
-  Map({ name: "KalPa", strength: () => 95, domestic: true }),
-  Map({ name: "Jokerit", strength: () => 221, domestic: true }),
-  Map({ name: "TPS", strength: () => 250, domestic: true }),
-  Map({ name: "JyP HT", strength: () => 158, domestic: true }),
-  Map({ name: "HPK", strength: () => 155, domestic: true }),
-  Map({ name: "HIFK", strength: () => 260, domestic: true }),
-  Map({ name: "Ilves", strength: () => 262, domestic: true }),
-  Map({ name: "Tappara", strength: () => 180, domestic: true }),
-  Map({ name: "Kiekko-Espoo", strength: () => 185, domestic: true }),
-  Map({ name: "Lukko", strength: () => 160, domestic: true }),
-  Map({ name: "Ässät", strength: () => 220, domestic: true }),
-  Map({ name: "SaiPa", strength: () => 195, domestic: true }),
-  Map({ name: "Maso HT", strength: () => 65, domestic: true }),
-  Map({ name: "Karhut", strength: () => 80, domestic: true }),
-  Map({ name: "Kärpät", strength: () => 145, domestic: true }),
-  Map({ name: "TuTo", strength: () => 65, domestic: true }),
-  Map({ name: "Hermes", strength: () => 96, domestic: true }),
-  Map({ name: "Pelicans", strength: () => 99, domestic: true }),
-  Map({ name: "Diskos", strength: () => 55, domestic: true }),
-  Map({ name: "Jääkotkat", strength: () => 40, domestic: true }),
-  Map({ name: "SaPKo", strength: () => 74, domestic: true }),
-  Map({ name: "Haukat", strength: () => 55, domestic: true }),
-  Map({ name: "Ahmat", strength: () => 40, domestic: true }),
-  Map({ name: "Sport", strength: () => 80, domestic: true }),
+const teams = List.of(
+  Map({ name: "TPS", city: "Turku", level: 33, domestic: true }),
+  Map({ name: "HIFK", city: "Helsinki", level: 30, domestic: true }),
+  Map({ name: "HPK", city: "Hämeenlinna", level: 32, domestic: true }),
+  Map({ name: "SaiPa", city: "Lappeenranta", level: 29, domestic: true }),
+  Map({ name: "Jokerit", city: "Helsinki", level: 31, domestic: true }),
+  Map({ name: "Ilves", city: "Tampere", level: 30, domestic: true }),
+  Map({ name: "Blues", city: "Espoo", level: 31, domestic: true }),
+  Map({ name: "JYP", city: "Jyväskylä", level: 29, domestic: true }),
+  Map({ name: "Tappara", city: "Tampere", level: 32, domestic: true }),
+  Map({ name: "Ässät", city: "Pori", level: 29, domestic: true }),
+  Map({ name: "Lukko", city: "Rauma", level: 31, domestic: true }),
+  Map({ name: "Pelicans", city: "Lahti", level: 28, domestic: true }),
+  Map({ name: "KalPa", city: "Kuopio", level: 20, domestic: true }),
 
-  Map({ name: "Luleå", strength: () => r.integer(240, 320), domestic: false }),
-  Map({
-    name: "Djurgården",
-    strength: () => r.integer(210, 240),
-    domestic: false
-  }),
-  Map({
-    name: "Västra Frölunda",
-    strength: () => r.integer(200, 240),
-    domestic: false
-  }),
-  Map({
-    name: "Sparta Praha",
-    strength: () => r.integer(180, 270),
-    domestic: false
-  }),
-  Map({
-    name: "Budejovice",
-    strength: () => r.integer(160, 230),
-    domestic: false
-  }),
-  Map({ name: "Dukla", strength: () => r.integer(160, 190), domestic: false }),
-  Map({ name: "Lada", strength: () => r.integer(140, 290), domestic: false }),
-  Map({
-    name: "ZSKA Moskova",
-    strength: () => r.integer(170, 240),
-    domestic: false
-  }),
-  Map({
-    name: "Vålerengen",
-    strength: () => r.integer(130, 160),
-    domestic: false
-  }),
-  Map({
-    name: "Preussen Berlin",
-    strength: () => r.integer(180, 210),
-    domestic: false
-  }),
-  Map({
-    name: "Eisbären",
-    strength: () => r.integer(170, 220),
-    domestic: false
-  }),
-  Map({
-    name: "Feldkirch",
-    strength: () => r.integer(155, 205),
-    domestic: false
-  }),
-  Map({ name: "Rouen", strength: () => r.integer(85, 155), domestic: false }),
-  Map({
-    name: "Manchester Storm",
-    strength: () => r.integer(85, 115),
-    domestic: false
-  }),
-  Map({ name: "Kosice", strength: () => r.integer(175, 195), domestic: false }),
-  Map({ name: "Davos", strength: () => r.integer(195, 210), domestic: false }),
-  Map({
-    name: "Milano Devils",
-    strength: () => r.integer(120, 135),
-    domestic: false
-  }),
-  Map({
-    name: "Olimpija Ljubljana",
-    strength: () => r.integer(90, 120),
-    domestic: false
-  }),
-  Map({
-    name: "Medveščak Zagreb",
-    strength: () => r.integer(100, 130),
-    domestic: false
-  }),
-  Map({
-    name: "HC Bolzano",
-    strength: () => r.integer(80, 140),
-    domestic: false
-  }),
-  Map({
-    name: "HC Barcelona",
-    strength: () => r.integer(50, 100),
-    domestic: false
-  }),
-  Map({
-    name: "Lugano",
-    strength: () => r.integer(175, 250),
-    domestic: false
-  }),
-  Map({
-    name: "Ambri-Piotta",
-    strength: () => r.integer(150, 220),
-    domestic: false
-  }),
-  Map({
-    name: "AIK Tukholma",
-    strength: () => r.integer(230, 275),
-    domestic: false
-  }),
-  Map({
-    name: "Petra Vsetín",
-    strength: () => r.integer(190, 280),
-    domestic: false
-  })
-).map((t, i) => t.set("id", i));
+  Map({ name: "Kärpät", city: "Oulu", level: 29, domestic: true }),
+  Map({ name: "Hermes", city: "Kokkola", level: 24, domestic: true }),
+  Map({ name: "TuTo", city: "Turku", level: 26, domestic: true }),
+
+  Map({ name: "FPS", city: "Forssa", level: 22, domestic: true }),
+  Map({ name: "Diskos", city: "Jyväskylä", level: 23, domestic: true }),
+  Map({ name: "Sport", city: "Vaasa", level: 26, domestic: true }),
+  Map({ name: "SaPKo", city: "Savonlinna", level: 21, domestic: true }),
+
+  Map({ name: "Jokipojat", city: "Joensuu", level: 23, domestic: true }),
+  Map({ name: "KJT", city: "Järvenpää", level: 21, domestic: true }),
+  Map({ name: "Ahmat", city: "Hyvinkää", level: 22, domestic: true }),
+  Map({ name: "Jääkotkat", city: "Uusikaupunki", level: 23, domestic: true }),
+
+  Map({ name: "Jukurit", city: "Mikkeli", level: 17, domestic: true }),
+  Map({ name: "VG-62", city: "Naantali", level: 16, domestic: true }),
+  Map({ name: "Testicles", city: "Kivesjärvi", level: 17, domestic: true }),
+  Map({ name: "SantaClaus", city: "Rovaniemi", level: 15, domestic: true }),
+  Map({ name: "Ruiske", city: "Tiukukoski", level: 18, domestic: true }),
+  Map({ name: "Lightning", city: "Kerava", level: 17, domestic: true }),
+  Map({ name: "Nikkarit", city: "Riihimäki", level: 17, domestic: true }),
+  Map({ name: "Salama", city: "Sompio", level: 15, domestic: true }),
+  Map({ name: "Hait", city: "Nuuksio", level: 15, domestic: true }),
+  Map({ name: "Mahti", city: "Mäntsälä", level: 14, domestic: true }),
+  Map({ name: "Siat", city: "Syväri", level: 13, domestic: true }),
+  Map({ name: "Veto", city: "Töysä", level: 17, domestic: true }),
+  Map({ name: "Ikirouta", city: "Inari", level: 14, domestic: true }),
+  Map({ name: "Jymy", city: "Sotkamo", level: 12, domestic: true }),
+  Map({ name: "Hokki", city: "Salo", level: 17, domestic: true }),
+  Map({ name: "Voitto", city: "Kangasala", level: 17, domestic: true }),
+  Map({ name: "Teurastus", city: "Porvoo", level: 17, domestic: true }),
+  Map({ name: "KoMu HT", city: "Korsholm", level: 13, domestic: true }),
+  Map({ name: "Saappaat", city: "Nokia", level: 17, domestic: true }),
+  Map({ name: "Aromi", city: "Valkeakoski", level: 17, domestic: true }),
+  Map({ name: "Gepardit", city: "Klaukkala", level: 21, domestic: true }),
+  Map({ name: "KooKoo", city: "Kouvola", level: 23, domestic: true }),
+  Map({ name: "HardCore", city: "Loimaa", level: 21, domestic: true }),
+  Map({ name: "Turmio", city: "Kolari", level: 12, domestic: true }),
+
+  Map({ name: "Luleå", city: "Luulaja", level: 34, domestic: false }),
+  Map({ name: "Färjestad", city: "Karlstad", level: 34, domestic: false }),
+  Map({ name: "HV-71", city: "Jönköping", level: 34, domestic: false }),
+  Map({ name: "Djurgården", city: "Tukholma", level: 34, domestic: false }),
+  Map({ name: "AIK", city: "Tukholma", level: 33, domestic: false }),
+  Map({ name: "Brynäs", city: "Gävle", level: 32, domestic: false }),
+  Map({ name: "Malmö", city: "Malmö", level: 33, domestic: false }),
+  Map({ name: "Frölunda", city: "Götebord", level: 33, domestic: false }),
+  Map({ name: "Timrå", city: "Timrå", level: 32, domestic: false }),
+  Map({ name: "Leksand", city: "Leksand", level: 32, domestic: false }),
+
+  Map({ name: "Haie", city: "Köln", level: 30, domestic: false }),
+  Map({ name: "Huskies", city: "Kassel", level: 31, domestic: false }),
+  Map({ name: "Adler", city: "Mannheim", level: 28, domestic: false }),
+  Map({ name: "Eisbären", city: "Berliini", level: 30, domestic: false }),
+  Map({ name: "Lions", city: "Frankfurt", level: 30, domestic: false }),
+  Map({ name: "Moskitos", city: "Essen", level: 29, domestic: false }),
+  Map({ name: "Capitals", city: "Berliini", level: 30, domestic: false }),
+  Map({ name: "Landshut", city: "Landshut", level: 28, domestic: false }),
+  Map({ name: "Sparta", city: "Praha", level: 33, domestic: false }),
+  Map({ name: "Budejovice", city: "Budejovice", level: 33, domestic: false }),
+  Map({ name: "Vitkovice", city: "Ostrava", level: 32, domestic: false }),
+  Map({ name: "HC Petra", city: "Vsetin", level: 32, domestic: false }),
+  Map({ name: "Pardubice", city: "Pardubice", level: 33, domestic: false }),
+  Map({ name: "HC Kladno", city: "Kladno", level: 34, domestic: false }),
+  Map({ name: "Plzen", city: "Plzen", level: 31, domestic: false }),
+  Map({ name: "Slavia", city: "Praha", level: 31, domestic: false }),
+  Map({ name: "SKA", city: "Pietari", level: 31, domestic: false }),
+  Map({ name: "Dynamo", city: "Moskova", level: 32, domestic: false }),
+  Map({ name: "Torpedo", city: "Jaroslavl", level: 33, domestic: false }),
+  Map({ name: "Lada", city: "Togliatti", level: 33, domestic: false }),
+  Map({ name: "Metallurg", city: "Magnitogorsk", level: 34, domestic: false }),
+  Map({ name: "Bars", city: "Kazan", level: 33, domestic: false }),
+  Map({ name: "Lokomotiv", city: "Jaroslavl", level: 32, domestic: false }),
+  Map({ name: "Avangard", city: "Omsk", level: 31, domestic: false }),
+  Map({ name: "Davos", city: "Davos", level: 33, domestic: false }),
+  Map({ name: "Bern", city: "Bern", level: 32, domestic: false }),
+  Map({ name: "Zug", city: "Zug", level: 31, domestic: false }),
+  Map({ name: "Rapperswil", city: "Rapperswil", level: 31, domestic: false }),
+  Map({ name: "Lions", city: "Zürich", level: 32, domestic: false }),
+  Map({ name: "Kloten", city: "Kloten", level: 34, domestic: false }),
+  Map({ name: "EHC Chur", city: "Chur", level: 31, domestic: false }),
+  Map({ name: "Lugano", city: "Lugano", level: 32, domestic: false }),
+  Map({ name: "Fribourg", city: "Fribourg", level: 32, domestic: false }),
+  Map({ name: "Slovan", city: "Bratislava", level: 31, domestic: false }),
+  Map({ name: "Dukla", city: "Trencin", level: 30, domestic: false }),
+  Map({ name: "Kosice", city: "Kosice", level: 31, domestic: false }),
+
+  Map({ name: "HC Bolzano", city: "Bolzano", level: 26, domestic: false }),
+  Map({ name: "Devils", city: "Milano", level: 27, domestic: false }),
+  Map({ name: "Brunico", city: "Brunico", level: 26, domestic: false }),
+
+  Map({ name: "Storm", city: "Manchester", level: 25, domestic: false }),
+  Map({ name: "Jesters", city: "Newcastle", level: 24, domestic: false }),
+  Map({ name: "FeldKirch", city: "Feldkirch", level: 27, domestic: false }),
+  Map({ name: "Lustenau", city: "Lustenau", level: 26, domestic: false }),
+  Map({ name: "Välk-494", city: "Tartto", level: 22, domestic: false }),
+  Map({ name: "Herning", city: "Herning", level: 23, domestic: false }),
+  Map({ name: "Trondheim", city: "Trondheim", level: 24, domestic: false }),
+  Map({ name: "Vålerengen", city: "Oslo", level: 25, domestic: false }),
+  Map({ name: "Rouen", city: "Rouen", level: 29, domestic: false }),
+  Map({ name: "Amiens", city: "Somme", level: 27, domestic: false }),
+  Map({ name: "Brest", city: "Brest", level: 26, domestic: false }),
+  Map({ name: "Angers", city: "Angers", level: 25, domestic: false }),
+
+  Map({ name: "Caen", city: "Caen", level: 26, domestic: false }),
+  Map({ name: "Pagodromoi", city: "Ateena", level: 18, domestic: false }),
+  Map({ name: "Aris", city: "Salonika", level: 17, domestic: false }),
+  Map({ name: "Flyers", city: "Dublin", level: 19, domestic: false }),
+  Map({ name: "Chiefs", city: "Leuven", level: 20, domestic: false }),
+
+  Map({ name: "Podhale", city: "Nowy Targ", level: 29, domestic: false }),
+  Map({ name: "KS Unia", city: "Osviciem", level: 28, domestic: false }),
+  Map({ name: "Tigers", city: "Amsterdam", level: 19, domestic: false }),
+  Map({ name: "HC Niks", city: "Riika", level: 28, domestic: false })
+).map((t, i) => t.set("id", i).set("strength", () => t.get("level") * 10));
 
 export default teams;

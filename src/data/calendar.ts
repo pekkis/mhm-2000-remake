@@ -1,11 +1,35 @@
 import { List, Map, Repeat } from "immutable";
+import { pipe, append, curry, map, repeat, mergeRight, flatten } from "ramda";
+import { mapIndexed } from "ramda-adjunct";
 
 export const CRISIS_DEADLINE = 52;
 export const TRANSFER_DEADLINE = 30;
 export const EVENT_DEADLINE = 53;
 export const PRANKS_DEADLINE = 53;
 
-const defaultPhases = List.of(
+export type MHMTurnPhase =
+  | "startOfSeason"
+  | "action"
+  | "prank"
+  | "gameday"
+  | "calculations"
+  | "eventCreation"
+  | "event"
+  | "news"
+  | "seed";
+
+export type MHMCompetition =
+  | "phl"
+  | "division"
+  | "mutasarja"
+  | "ehl"
+  | "tournaments";
+
+export type MHMCompetitionsList = MHMCompetition[];
+
+export type MHMTurnPhasesList = MHMTurnPhase[];
+
+const defaultPhases: MHMTurnPhasesList = [
   "action",
   "prank",
   "gameday",
@@ -14,10 +38,99 @@ const defaultPhases = List.of(
   "event",
   "news",
   "seed"
+];
+
+export interface MHMCompetitionSeedDefinition {
+  competition: MHMCompetition;
+  phase: number;
+}
+
+export interface MHMTurnDefinition {
+  phases: MHMTurnPhasesList;
+  gamedays?: MHMCompetitionsList;
+  pranks: boolean;
+  createRandomEvent: boolean;
+  crisisMeeting: boolean;
+  transferMarket: boolean;
+  seed?: MHMCompetitionSeedDefinition[];
+}
+
+type MHMTurnExtraOptions = Omit<
+  MHMTurnDefinition,
+  "phases" | "gamedays" | "seed"
+>;
+
+export type MHMCalendar = MHMTurnDefinition[];
+
+const ehlPhases: MHMTurnPhasesList = ["action", "gameday", "event", "news"];
+
+const createTurnDefinition = (
+  phases: MHMTurnPhasesList,
+  gamedays: MHMCompetitionsList = [],
+  seed: MHMCompetitionSeedDefinition[] = [],
+  extra: Partial<MHMTurnExtraOptions> = {}
+): MHMTurnDefinition => {
+  return {
+    phases,
+    gamedays,
+    seed,
+    pranks: false,
+    createRandomEvent: false,
+    transferMarket: false,
+    crisisMeeting: false,
+    ...extra
+  };
+};
+
+const createSeedDefinition = curry(
+  (
+    phase: number,
+    competition: MHMCompetition
+  ): MHMCompetitionSeedDefinition => ({
+    competition,
+    phase
+  })
 );
 
-const ehlPhases = List.of("action", "gameday", "event", "news");
+const cal = pipe(
+  append(
+    createTurnDefinition(
+      ["startOfSeason", "seed"],
+      [],
+      map(createSeedDefinition(0), ["phl", "division", "mutasarja", "ehl"]),
+      {}
+    )
+  ),
+  append(
+    repeat(
+      createTurnDefinition(
+        defaultPhases,
+        ["phl", "division", "mutasarja"],
+        [],
+        {}
+      ),
+      4
+    )
+  ),
+  flatten as any,
+  mapIndexed(
+    (calendar: MHMTurnDefinition, index: number): MHMTurnDefinition => {
+      return {
+        ...calendar,
+        transferMarket: index <= TRANSFER_DEADLINE,
+        crisisMeeting: index <= CRISIS_DEADLINE,
+        createRandomEvent: index <= EVENT_DEADLINE,
+        pranks: index <= PRANKS_DEADLINE
+      };
+    }
+  )
+)([]);
 
+console.log(cal);
+
+export default cal;
+
+/*
 const calendar = List.of(
   Map({
     phases: List.of("startOfSeason", "seed"),
@@ -288,7 +401,8 @@ const decoratedCalendar = calendar.map((entry, index) => {
     pranks: index <= PRANKS_DEADLINE
   });
 });
+*/
 
 // console.log(calendar.toJS());
 
-export default decoratedCalendar;
+// export default decoratedCalendar;

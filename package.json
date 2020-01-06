@@ -52,6 +52,7 @@
     "polished": "^3.4.2",
     "prop-types": "^15.6.2",
     "ramda": "^0.26.1",
+    "ramda-adjunct": "^2.23.0",
     "random-js": "^2.1.0",
     "rc-slider": "^8.6.4",
     "react": "16.12.0",

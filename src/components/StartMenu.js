@@ -47,8 +47,10 @@ const StartMenu = props => {
           <Centerer>
             <TitleImg src={title} />
             <Box px={1} py={0}>
-              <h1>MHM 97</h1>
-              <h2>maailman paras jääkiekkomanagerisimulaatio</h2>
+              <h1>MHM 2000</h1>
+              <h2>
+                Maailman paras jääkiekkomanagerisimulaatio, syntynyt uudelleen!
+              </h2>
               <h2>build: {process.env.COMMIT_REF || "dev"}</h2>
             </Box>
           </Centerer>
@@ -83,31 +85,12 @@ const StartMenu = props => {
               </ul>
               <h3>Grafiikka</h3>
               <ul>
-                <li>Teemu Nevalainen</li>
+                <li>Santtu Huotilainen</li>
                 <li>Mikko Forsström</li>
               </ul>
               <h3>Laadunvalvonta</h3>
               <ul>
-                <li>Teemu Nevalainen</li>
-                <li>Sami Helen</li>
-                <li>A-P Nevalainen</li>
-                <li>Antti Kettunen</li>
-              </ul>
-              <h3>v1.2 betatestaus</h3>
-              <ul>
-                <li>Henri Hokkanen</li>
-                <li>Jussi Kniivilä </li>
-                <li>Tony Herranen</li>
-                <li>Antti Laakso</li>
-                <li>Markus Lämsä</li>
-                <li>Tomi Salmi</li>
-                <li>Aleksi Ursin</li>
-                <li>Ilmari Sandelin</li>
-              </ul>
-              <h3>Erityiskiitokset</h3>
-              <ul>
-                <li>Erno Vanhala</li>
-                <li>Sami Ritola</li>
+                <li>X</li>
               </ul>
             </Box>
           )}

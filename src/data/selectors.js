@@ -132,9 +132,8 @@ export const teamsPositionInRoundRobin = (
 };
 
 export const teamCompetesIn = (team, competition) => state => {
-  return pipe(
-    teamsCompetitions(team),
-    competitions => competitions.map(c => c.get("id")).includes(competition)
+  return pipe(teamsCompetitions(team), competitions =>
+    competitions.map(c => c.get("id")).includes(competition)
   )(state);
 };
 
@@ -151,7 +150,8 @@ export const teamHasActiveEffects = team => state => {
 
 export const allTeams = state => state.game.get("teams");
 
-export const pekkalandianTeams = state => state.game.get("teams").take(24);
+export const pekkalandianTeams = state =>
+  state.game.get("teams").filter(t => t.get("domestic"));
 
 export const managerHasService = (manager, service) => state => {
   return state.manager.getIn(["managers", manager, "services", service]);
@@ -296,3 +296,8 @@ export const managerHasEnoughMoney = (manager, neededAmount) => state => {
 
 export const managerWithId = id => state =>
   state.manager.getIn(["managers", id]);
+
+export const playableCompetitions = state =>
+  state.game
+    .get("competitions")
+    .filter((c, k) => ["phl", "division", "mutasarja"].includes(k));

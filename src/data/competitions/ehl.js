@@ -11,6 +11,7 @@ import { incrementStrength, incrementReadiness } from "../../sagas/team";
 import { incrementBalance } from "../../sagas/manager";
 import { setSeasonStat } from "../../sagas/stats";
 import { setCompetitionTeams } from "../../sagas/game";
+import { pekkalandianTeams } from "../selectors";
 
 const awards = List.of(
   Map({
@@ -150,12 +151,12 @@ export default Map({
       state.stats.getIn(["seasons", season - 1, "medalists"], List.of(2, 3, 5))
     );
 
-    console.log(ehlTeams, "lussi?");
+    const domesticTeams = yield select(pekkalandianTeams);
 
     const foreignTeams = yield select(state =>
       state.game
         .get("teams")
-        .slice(24)
+        .slice(domesticTeams.count())
         .take(17)
         .map(t => t.get("id"))
     );

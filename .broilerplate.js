@@ -72,17 +72,17 @@ module.exports = target => {
             description: "MHM 97",
             icons: [
               {
-                src: "icons/mhm97-48.png",
+                src: "icons/mhm2k-48.png",
                 sizes: "48x48",
                 type: "image/png"
               },
               {
-                src: "icons/mhm97-192.png",
+                src: "icons/mhm2k-192.png",
                 sizes: "192x192",
                 type: "image/png"
               },
               {
-                src: "icons/mhm97-512.png",
+                src: "icons/mhm2k-512.png",
                 sizes: "512x512",
                 type: "image/png"
               }

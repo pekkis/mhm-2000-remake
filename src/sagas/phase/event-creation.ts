@@ -167,7 +167,7 @@ export default function* eventCreationPhase() {
 
   if (calendarEntry.get("createRandomEvent")) {
     for (const [, manager] of managers) {
-      const eventId = getEventId("attitudeUSA");
+      const eventId = getEventId();
 
       const eventObj = events.get(eventId);
       if (!eventObj) {

@@ -1,4 +1,4 @@
-import { Map, List } from "immutable";
+import { Map, List, Range } from "immutable";
 import rr from "../../services/round-robin";
 import playoffScheduler, { victors } from "../../services/playoffs";
 import { defaultMoraleBoost } from "../../services/morale";
@@ -6,17 +6,42 @@ import r from "../../services/random";
 
 export default Map({
   data: Map({
-    abbr: "div",
-    weight: 1000,
-    id: "division",
+    abbr: "mut",
+    weight: 2000,
+    id: "mutasarja",
     phase: -1,
-    name: "Divisioona",
-    teams: List.of(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24),
+    name: "Mutasarja",
+    teams: List.of(
+      12,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47
+    ),
     phases: List()
   }),
 
   relegateTo: false,
-  promoteTo: "phl",
+  promoteTo: "division",
 
   gameBalance: (phase, facts, manager) => {
     const arenaLevel = manager.getIn(["arena", "level"]) + 1;
@@ -55,22 +80,20 @@ export default Map({
 
   seed: List.of(
     competitions => {
-      const competition = competitions.get("division");
+      const competition = competitions.get("mutasarja");
       const teams = competition.get("teams").sortBy(() => r.real(1, 1000));
       const times = 2;
-      return Map({
-        teams: teams,
-        name: "runkosarja",
-        type: "round-robin",
-        times,
-        groups: List.of(
-          Map({
+
+      const groups = Range(0, 2)
+        .map(r => {
+          const groupTeams = teams.slice(r * 12, r * 12 + 12);
+          return Map({
             penalties: List(),
             type: "round-robin",
             round: 0,
             name: "runkosarja",
-            teams,
-            schedule: rr(teams.count(), times),
+            teams: groupTeams,
+            schedule: rr(groupTeams.count(), times),
             colors: List.of(
               "d",
               "d",
@@ -85,8 +108,16 @@ export default Map({
               "l",
               "l"
             )
-          })
-        )
+          });
+        })
+        .toList();
+
+      return Map({
+        teams: teams,
+        name: "runkosarja",
+        type: "round-robin",
+        times,
+        groups
       });
     },
     competitions => {
@@ -129,9 +160,9 @@ export default Map({
           .map(e => e.get("id"))
           .last()
       ).concat(
-        victors(
-          competitions.getIn(["division", "phases", 1, "groups", 0])
-        ).map(t => t.get("id"))
+        victors(competitions.getIn(["division", "phases", 1, "groups", 0])).map(
+          t => t.get("id")
+        )
       );
 
       const matchups = List.of(List.of(0, 3), List.of(1, 2));
