@@ -17,6 +17,8 @@ export const GAME_NEXT_TURN = "GAME_NEXT_TURN";
 export const SEASON_START = "SEASON_START";
 export const SEASON_END = "SEASON_END";
 
+console.log(competitionList, "cl");
+
 const defaultState: Map<string, any> = Map({
   turn: Map({
     season: 0,

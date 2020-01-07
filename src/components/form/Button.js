@@ -7,7 +7,6 @@ const Button = styled.button`
   font-family: inherit;
   background-color: rgb(200, 200, 200);
   box-shadow: 0 3px rgba(0, 0, 0, 0.25);
-  outline: none;
 
   &:hover {
     background-color: rgb(180, 180, 180);

@@ -1996,6 +1996,11 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.9.0.tgz#24390e6ad61386b0a747265754d2a17219de862c"
   integrity sha512-Uvq6hVe90D0B2WEnUqtdgY1bATGz3mw33nH9Y+dmA+w5DHvUmBgkr5rM/KCHpCsiFNRUfokW/szpPPgMK2hm4A==
 
+axe-core@^3.3.2:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-3.4.1.tgz#e42623918bb85b5ef674633852cb9029db0309c5"
+  integrity sha512-+EhIdwR0hF6aeMx46gFDUy6qyCfsL0DmBrV3Z+LxYbsOd8e1zBaPHa3f9Rbjsz2dEwSBkLw6TwML/CAIIAqRpw==
+
 axios@0.19.0, axios@^0.19.0:
   version "0.19.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.19.0.tgz#8e09bff3d9122e133f7b8101c8fbdd00ed3d2ab8"
@@ -3931,6 +3936,11 @@ eslint-module-utils@^2.4.1:
     debug "^2.6.9"
     pkg-dir "^2.0.0"
 
+eslint-plugin-emotion@^10.0.27:
+  version "10.0.27"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-emotion/-/eslint-plugin-emotion-10.0.27.tgz#577a4265cc679f7bb826437a92fb9d709928e0a7"
+  integrity sha512-0IG9KWmyQTAWZNM4WoGjFbdre1Xq6uMp2jYOSHvh3ZNcDfOjOLXeH3ky1MuWZlbWIHxz/Ed5DMGlJAeKnd26VA==
+
 eslint-plugin-eslint-plugin@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-eslint-plugin/-/eslint-plugin-eslint-plugin-2.1.0.tgz#a7a00f15a886957d855feacaafee264f039e62d5"
@@ -3961,7 +3971,7 @@ eslint-plugin-import@^2.13.0:
     read-pkg-up "^2.0.0"
     resolve "^1.12.0"
 
-eslint-plugin-jsx-a11y@^6.1.2:
+eslint-plugin-jsx-a11y@^6.2.3:
   version "6.2.3"
   resolved "https://registry.yarnpkg.com/eslint-plugin-jsx-a11y/-/eslint-plugin-jsx-a11y-6.2.3.tgz#b872a09d5de51af70a97db1eea7dc933043708aa"
   integrity sha512-CawzfGt9w83tyuVekn0GDPU9ytYtxyxyFZ3aSWROmnRRFQFT2BiPJd7jvRdzNDi6oLWaS2asMeYSNMjWTV4eNg==
@@ -8800,6 +8810,14 @@ rc-util@^4.0.4, rc-util@^4.15.3, rc-util@^4.4.0:
     react-lifecycles-compat "^3.0.4"
     shallowequal "^1.1.0"
 
+react-axe@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/react-axe/-/react-axe-3.3.0.tgz#b87bff644ed3ed6f1ca12bcc64c00000e359c25b"
+  integrity sha512-JoxU2jcTla37U6MtqIoYnGaRQcAHkNm9JxTjx2wcEgFm8Zd2A2vo9eboxcmpLjklXDKJwJNbyDo2Jcbbme6xwA==
+  dependencies:
+    axe-core "^3.3.2"
+    requestidlecallback "^0.3.0"
+
 react-dev-utils@^9.0.1:
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-9.1.0.tgz#3ad2bb8848a32319d760d0a84c56c14bdaae5e81"
@@ -9329,6 +9347,11 @@ request-promise-native@^1.0.5:
     tough-cookie "~2.4.3"
     tunnel-agent "^0.6.0"
     uuid "^3.3.2"
+
+requestidlecallback@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/requestidlecallback/-/requestidlecallback-0.3.0.tgz#6fb74e0733f90df3faa4838f9f6a2a5f9b742ac5"
+  integrity sha1-b7dOBzP5DfP6pIOPn2oqX5t0KsU=
 
 require-directory@^2.1.1:
   version "2.1.1"

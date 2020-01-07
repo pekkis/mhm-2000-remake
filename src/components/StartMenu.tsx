@@ -19,11 +19,6 @@ const Contents = styled.div`
   }
 `;
 
-const TitleImg = styled.img`
-  max-width: 100%;
-  display: block;
-`;
-
 const Centerer = styled.div`
   text-align: center;
 `;
@@ -41,11 +36,17 @@ const StartMenu = props => {
   } = props;
 
   return (
-    <div className={className}>
+    <main className={className} role="main">
       <Menu>
         <Contents>
           <Centerer>
-            <TitleImg src={title} />
+            <img
+              src={title}
+              css={{
+                maxWidth: "100%",
+                display: "block"
+              }}
+            />
             <Box px={1} py={0}>
               <h1>MHM 2000</h1>
               <h2>
@@ -60,6 +61,7 @@ const StartMenu = props => {
               <Centerer>
                 <ButtonRow>
                   <Button
+                    tabindex="0"
                     onClick={() => {
                       startGame();
                     }}
@@ -67,6 +69,7 @@ const StartMenu = props => {
                     Uusi peli
                   </Button>
                   <Button
+                    tabindex="0"
                     onClick={() => {
                       loadGame();
                     }}
@@ -107,7 +110,7 @@ const StartMenu = props => {
           )}
         </Contents>
       </Menu>
-    </div>
+    </main>
   );
 };
 

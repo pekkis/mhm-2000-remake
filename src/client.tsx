@@ -1,23 +1,23 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Root from "./Root";
-
 import { getInitialState } from "./config/state";
-
 import createStore from "./store";
-
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faSpinner,
   faBars,
   faExclamationCircle
 } from "@fortawesome/free-solid-svg-icons";
-
 import runtime from "@dr-kobros/serviceworker-webpack-plugin/lib/runtime";
+import * as Sentry from "@sentry/browser";
 
 import "./style.pcss";
 
-import * as Sentry from "@sentry/browser";
+if (process.env.NODE_ENV !== "production") {
+  const axe = require("react-axe");
+  axe(React, ReactDOM, 1000);
+}
 
 Sentry.init({
   environment: process.env.NODE_ENV,
