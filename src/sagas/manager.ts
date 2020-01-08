@@ -7,7 +7,7 @@ import {
   all
 } from "redux-saga/effects";
 import { gameFacts } from "../services/game";
-// import competitionList from "../data/competitions";
+import competitionList from "../data/competitions";
 import playerTypes from "../data/transfer-market";
 import {
   managersTeam,

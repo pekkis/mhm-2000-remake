@@ -3,15 +3,10 @@ import { Map, List } from "immutable";
 import teams from "../data/teams";
 import managers from "../data/managers";
 
-import competitionList from "../data/competitions";
 import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
 import { Reducer } from "redux";
 import { getCalendar } from "../services/calendar";
-import {
-  MHMTurnPhase,
-  MHMTurnDefinition,
-  MHMTurnPhasesList
-} from "../types/base";
+import { MHMTurnPhase } from "../types/base";
 
 export const GAME_START = "GAME_START";
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
@@ -46,7 +41,77 @@ const defaultState: Map<string, any> = Map({
 
   managers,
 
-  competitions: competitionList.map(c => c.get("data")),
+  competitions: Map({
+    phl: Map({
+      weight: 500,
+      id: "phl",
+      abbr: "phl",
+      phase: -1,
+      name: "PHL",
+      teams: List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
+      phases: List()
+    }),
+    division: Map({
+      abbr: "div",
+      weight: 1000,
+      id: "division",
+      phase: -1,
+      name: "Divisioona",
+      teams: List.of(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24),
+      phases: List()
+    }),
+    mutasarja: Map({
+      abbr: "mut",
+      weight: 2000,
+      id: "mutasarja",
+      phase: -1,
+      name: "Mutasarja",
+      teams: List.of(
+        12,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47
+      ),
+      phases: List()
+    }),
+    tournaments: Map({
+      weight: 2000,
+      id: "tournaments",
+      phase: -1,
+      name: "Joulutauon turnaukset",
+      abbr: "tournaments",
+      phases: List(),
+      teams: List()
+    }),
+    ehl: Map({
+      weight: 2000,
+      id: "ehl",
+      phase: -1,
+      name: "EHL",
+      abbr: "ehl",
+      phases: List()
+    })
+  }),
 
   calendar: getCalendar(),
 

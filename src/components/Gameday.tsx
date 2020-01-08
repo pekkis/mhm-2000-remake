@@ -1,26 +1,29 @@
-import React from "react";
-
+import React, { FunctionComponent } from "react";
 import { List } from "immutable";
 import Table from "./league-table/Table";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
-import Results from "./gameday/Results";
+import Games from "./gameday/Games";
 import Box from "./styled-system/Box";
+import { MHMTurnDefinition } from "../types/base";
 
-const GamedayResults = props => {
-  const { turn, managers, teams, competitions, calendar } = props;
+interface Props {
+  calendarEntry: MHMTurnDefinition;
+}
 
-  const calendarEntry = calendar.get(turn.get("round"));
+const Gameday: FunctionComponent<Props> = props => {
+  const { managers, teams, competitions, calendarEntry } = props;
 
-  const currentCompetitions = calendarEntry
-    .get("gamedays", List())
-    .map(c => competitions.get(c));
+  const currentCompetitions = calendarEntry.gamedays.map(c =>
+    competitions.get(c)
+  );
 
   return (
     <HeaderedPage>
       <Header />
+
       <Box p={1}>
-        <h2>Tulokset</h2>
+        <h2>Pelipäivä</h2>
 
         {currentCompetitions.map(competition => {
           const currentPhase = competition.getIn([
@@ -31,7 +34,7 @@ const GamedayResults = props => {
           return (
             <div key={competition.get("name")}>
               {currentPhase.get("groups").map((group, groupIndex) => {
-                const currentRound = group.get("round") - 1;
+                const currentRound = group.get("round");
 
                 return (
                   <div key={groupIndex}>
@@ -40,7 +43,7 @@ const GamedayResults = props => {
                       {currentRound}]
                     </h3>
 
-                    <Results
+                    <Games
                       teams={teams}
                       context={group}
                       round={currentRound}
@@ -69,4 +72,4 @@ const GamedayResults = props => {
   );
 };
 
-export default GamedayResults;
+export default Gameday;

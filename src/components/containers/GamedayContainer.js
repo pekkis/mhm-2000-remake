@@ -3,9 +3,10 @@ import Gameday from "../Gameday";
 import { advance } from "../../ducks/game";
 import { resolveEvent } from "../../ducks/event";
 import { saveGame, quitToMainMenu } from "../../ducks/meta";
+import { currentCalendarEntry } from "../../data/selectors";
 export default connect(
   state => ({
-    turn: state.game.get("turn"),
+    calendarEntry: currentCalendarEntry(state),
     manager: state.manager.getIn(["managers", state.manager.get("active")]),
     managers: state.manager.get("managers"),
     teams: state.game.get("teams"),

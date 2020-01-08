@@ -12,16 +12,6 @@ import { incrementBalance } from "../../sagas/manager";
 import { amount as a } from "../../services/format";
 
 export default Map({
-  data: Map({
-    weight: 2000,
-    id: "tournaments",
-    phase: -1,
-    name: "Joulutauon turnaukset",
-    abbr: "tournaments",
-    phases: List(),
-    teams: List()
-  }),
-
   relegateTo: false,
   promoteTo: false,
 

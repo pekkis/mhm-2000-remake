@@ -5,16 +5,6 @@ import { defaultMoraleBoost } from "../../services/morale";
 import r from "../../services/random";
 
 export default Map({
-  data: Map({
-    weight: 500,
-    id: "phl",
-    abbr: "phl",
-    phase: -1,
-    name: "PHL",
-    teams: List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
-    phases: List()
-  }),
-
   gameBalance: (phase, facts, manager) => {
     const arenaLevel = manager.getIn(["arena", "level"]) + 1;
     if (facts.isLoss) {
@@ -149,9 +139,9 @@ export default Map({
       )
         .map(t => t.get("id"))
         .concat(
-          eliminated(competitions.getIn(["phl", "phases", 2, "groups", 0])).map(
-            t => t.get("id")
-          )
+          eliminated(
+            competitions.getIn(["phl", "phases", 2, "groups", 0])
+          ).map(t => t.get("id"))
         );
 
       const matchups = List.of(List.of(0, 1), List.of(2, 3));

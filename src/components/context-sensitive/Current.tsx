@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Calendar from "../ui/containers/CalendarContainer";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { nth } from "ramda";
 
 const CurrentEntry = styled.div`
   padding: 0.5em;
@@ -26,8 +27,8 @@ const Current = props => {
 
       <Calendar
         when={(turn, c) => {
-          const nextTurn = c.get(turn.get("round") + 1);
-          return turn.get("transferMarket") && !nextTurn.get("transferMarket");
+          const nextTurn = nth(turn.round + 1, c);
+          return turn.transferMarket && !nextTurn.transferMarket;
         }}
       >
         <CurrentEntry>
@@ -38,7 +39,7 @@ const Current = props => {
         </CurrentEntry>
       </Calendar>
 
-      <Calendar when={e => e.get("crisisMeeting") && team.get("morale") <= -3}>
+      <Calendar when={ce => ce.crisisMeeting && team.get("morale") <= -3}>
         <CurrentEntry>
           <FontAwesomeIcon icon={["fas", "exclamation-circle"]} /> Joukkueen
           moraali on huono. <Link to="/kriisipalaveri">Kriisipalaveri</Link>{" "}

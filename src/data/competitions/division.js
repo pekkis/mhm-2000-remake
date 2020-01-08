@@ -5,16 +5,6 @@ import { defaultMoraleBoost } from "../../services/morale";
 import r from "../../services/random";
 
 export default Map({
-  data: Map({
-    abbr: "div",
-    weight: 1000,
-    id: "division",
-    phase: -1,
-    name: "Divisioona",
-    teams: List.of(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24),
-    phases: List()
-  }),
-
   relegateTo: false,
   promoteTo: "phl",
 

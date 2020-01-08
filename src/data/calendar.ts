@@ -1,4 +1,4 @@
-import { pipe, append, curry, map, repeat, flatten } from "ramda";
+import { pipe, append, curry, map, repeat, flatten, assoc } from "ramda";
 import { mapIndexed } from "ramda-adjunct";
 import {
   MHMTurnPhasesList,
@@ -35,6 +35,7 @@ const createTurnDefinition = (
   extra: Partial<MHMTurnExtraOptions> = {}
 ): MHMTurnDefinition => {
   return {
+    round: -1,
     phases,
     gamedays,
     seed,
@@ -56,31 +57,90 @@ const createSeedDefinition = curry(
   })
 );
 
-const cal = pipe(
-  append(
-    createTurnDefinition(
-      ["startOfSeason", "seed"],
-      [],
-      map(createSeedDefinition(0), ["phl", "division", "mutasarja", "ehl"]),
-      {}
-    )
+const regularGameday = createTurnDefinition(
+  defaultPhases,
+  ["phl", "division", "mutasarja"],
+  [],
+  {}
+);
+
+const ehlGameday = createTurnDefinition(ehlPhases, ["ehl"], [], {});
+
+const cal: MHMCalendar = [
+  createTurnDefinition(
+    ["startOfSeason", "seed"],
+    [],
+    map(createSeedDefinition(0), ["phl", "division", "mutasarja", "ehl"]),
+    {}
   ),
-  append(
-    repeat(
-      createTurnDefinition(
-        defaultPhases,
-        ["phl", "division", "mutasarja"],
-        [],
-        {}
-      ),
-      4
-    )
+  ...repeat(regularGameday, 4),
+  ehlGameday,
+  ...repeat(regularGameday, 4),
+  ehlGameday,
+  ...repeat(regularGameday, 2),
+  assoc("phases", append("invitationsCreate", defaultPhases), regularGameday),
+  regularGameday,
+  ehlGameday,
+  ...repeat(regularGameday, 2),
+  assoc(
+    "seed",
+    [createSeedDefinition(0, "tournaments")] as MHMCompetitionSeedDefinition[],
+    regularGameday
   ),
-  flatten as any,
+  regularGameday,
+  ehlGameday,
+  ...repeat(regularGameday, 4),
+  ehlGameday,
+  ...repeat(regularGameday, 2),
+  // Christmas break (22 games played)
+  createTurnDefinition(defaultPhases, ["tournaments"], [], {
+    title: "Joulutauko"
+  }),
+  // Back to business
+  ...repeat(regularGameday, 2),
+  ehlGameday,
+  createTurnDefinition(["seed"], [], [createSeedDefinition(1, "ehl")]),
+  ...repeat(regularGameday, 10),
+  ehlGameday, // EHL finals
+  ...repeat(regularGameday, 10),
+  createTurnDefinition(
+    ["action", "event", "seed"],
+    [],
+    map(createSeedDefinition(1), ["phl", "division", "mutasarja"]),
+    {
+      title: "Playoff-pläjäys"
+    }
+  ),
+  ...repeat(regularGameday, 5),
+  createTurnDefinition(
+    ["action", "event", "seed"],
+    [],
+    map(createSeedDefinition(2), ["phl", "division", "mutasarja"]),
+    {
+      title: "Semifinaalipläjäys"
+    }
+  ),
+  ...repeat(regularGameday, 5),
+  createTurnDefinition(
+    ["action", "event", "seed", "gala"],
+    [],
+    map(createSeedDefinition(3), ["phl", "division", "mutasarja"]),
+    {
+      title: "Finaalipläjäys"
+    }
+  ),
+  ...repeat(regularGameday, 7),
+  createTurnDefinition(["action", "endOfSeason"], [], [], {
+    title: "Maailmanmestaruuskisat"
+  })
+];
+
+const cal2 = pipe(
   mapIndexed(
     (calendar: MHMTurnDefinition, index: number): MHMTurnDefinition => {
       return {
         ...calendar,
+        round: index,
         transferMarket: index <= TRANSFER_DEADLINE,
         crisisMeeting: index <= CRISIS_DEADLINE,
         createRandomEvent: index <= EVENT_DEADLINE,
@@ -88,285 +148,6 @@ const cal = pipe(
       };
     }
   )
-)([]);
+)(cal);
 
-console.log(cal);
-
-export default cal as MHMCalendar;
-
-/*
-const calendar = List.of(
-  Map({
-    phases: List.of("startOfSeason", "seed"),
-    seed: List.of(
-      Map({
-        competition: "phl",
-        phase: 0
-      }),
-      Map({
-        competition: "division",
-        phase: 0
-      }),
-      Map({
-        competition: "ehl",
-        phase: 0
-      })
-    )
-  })
-)
-  .concat(
-    List.of(
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: ehlPhases,
-        gamedays: List.of("ehl")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: ehlPhases,
-        gamedays: List.of("ehl")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        gamedays: List.of("phl", "division"),
-        phases: defaultPhases.push("invitationsCreate")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: ehlPhases,
-        gamedays: List.of("ehl")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division"),
-        seed: List.of(
-          Map({
-            competition: "tournaments",
-            phase: 0
-          })
-        )
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: ehlPhases,
-        gamedays: List.of("ehl")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: ehlPhases,
-        gamedays: List.of("ehl")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-
-      // Christmas break (22 games played)
-
-      Map({
-        title: "Joulutauko",
-        phases: defaultPhases,
-        gamedays: List.of("tournaments")
-      }),
-
-      // Christmas break over
-
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      Map({
-        phases: ehlPhases,
-        gamedays: List.of("ehl")
-      })
-    )
-  )
-  // seed EHL finals
-  .push(
-    Map({
-      phases: List.of("seed"),
-      seed: List.of(
-        Map({
-          competition: "ehl",
-          phase: 1
-        })
-      )
-    })
-  )
-  .concat(
-    Repeat(
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      10
-    )
-  )
-  // EHL final tournament
-  .push(
-    Map({
-      phases: ehlPhases,
-      gamedays: List.of("ehl")
-    })
-  )
-  .concat(
-    Repeat(
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      10
-    )
-  )
-  .push(
-    Map({
-      title: "Playoff-pläjäys",
-      phases: List.of("action", "event", "seed"),
-      seed: List.of(
-        Map({ competition: "phl", phase: 1 }),
-        Map({ competition: "division", phase: 1 })
-      )
-    })
-  )
-  .concat(
-    Repeat(
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      5
-    )
-  )
-  .push(
-    Map({
-      title: "Semifinaali-pläjäys",
-      phases: List.of("action", "event", "seed"),
-      seed: List.of(
-        Map({ competition: "phl", phase: 2 }),
-        Map({ competition: "division", phase: 2 })
-      )
-    })
-  )
-  .concat(
-    Repeat(
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      5
-    )
-  )
-  .push(
-    Map({
-      title: "Finaali-pläjäys",
-      phases: List.of("action", "event", "seed", "gala"),
-      seed: List.of(
-        Map({ competition: "phl", phase: 3 }),
-        Map({ competition: "division", phase: 3 })
-      )
-    })
-  )
-  .concat(
-    Repeat(
-      Map({
-        phases: defaultPhases,
-        gamedays: List.of("phl", "division")
-      }),
-      7
-    )
-  )
-  .push(
-    Map({
-      title: "Maailmanmestaruuskisat",
-      phases: List.of("action", "endOfSeason")
-    })
-  );
-
-const decoratedCalendar = calendar.map((entry, index) => {
-  return entry.merge({
-    round: index,
-    transferMarket: index <= TRANSFER_DEADLINE,
-    crisisMeeting: index <= CRISIS_DEADLINE,
-    createRandomEvent: index <= EVENT_DEADLINE,
-    pranks: index <= PRANKS_DEADLINE
-  });
-});
-*/
-
-// console.log(calendar.toJS());
-
-// export default decoratedCalendar;
+export default cal2 as MHMCalendar;

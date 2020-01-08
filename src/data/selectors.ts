@@ -1,7 +1,8 @@
-import { pipe } from "ramda";
+import { pipe, nth } from "ramda";
 import r from "../services/random";
 import { victors } from "../services/playoffs";
 import { List } from "immutable";
+import { MHMCalendar, MHMTurnDefinition } from "../types/base";
 
 export const foreignTeams = state =>
   state.game.get("teams").filter(t => !t.get("domestic"));
@@ -221,6 +222,7 @@ export const randomRankedTeam = (
   }
 
   const randomized = r.pick(ret.toArray());
+
   return state.game.getIn(["teams", randomized.get("id")]);
 };
 
@@ -301,3 +303,13 @@ export const playableCompetitions = state =>
   state.game
     .get("competitions")
     .filter((c, k) => ["phl", "division", "mutasarja"].includes(k));
+
+export const currentCalendarEntry = (state): MHMTurnDefinition => {
+  const round = state.game.getIn(["turn", "round"]);
+  const calendar: MHMCalendar = state.game.get("calendar");
+  const calendarEntry = nth(round, calendar);
+  if (!calendarEntry) {
+    throw new Error("Invalid calendar entry");
+  }
+  return calendarEntry;
+};

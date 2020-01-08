@@ -12,7 +12,8 @@ export default connect(
     teams: state.game.get("teams"),
     competitions: state.game.get("competitions"),
     events: state.event.get("events"),
-    news: state.news.get("news")
+    news: state.news.get("news"),
+    calendar: state.game.get("calendar")
   }),
   { advance, resolveEvent, saveGame, quitToMainMenu, closeMenu }
 )(Forward);

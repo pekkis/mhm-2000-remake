@@ -5,41 +5,6 @@ import { defaultMoraleBoost } from "../../services/morale";
 import r from "../../services/random";
 
 export default Map({
-  data: Map({
-    abbr: "mut",
-    weight: 2000,
-    id: "mutasarja",
-    phase: -1,
-    name: "Mutasarja",
-    teams: List.of(
-      12,
-      25,
-      26,
-      27,
-      28,
-      29,
-      30,
-      31,
-      32,
-      33,
-      34,
-      35,
-      36,
-      37,
-      38,
-      39,
-      40,
-      41,
-      42,
-      43,
-      44,
-      45,
-      46,
-      47
-    ),
-    phases: List()
-  }),
-
   relegateTo: false,
   promoteTo: "division",
 
@@ -160,9 +125,9 @@ export default Map({
           .map(e => e.get("id"))
           .last()
       ).concat(
-        victors(competitions.getIn(["division", "phases", 1, "groups", 0])).map(
-          t => t.get("id")
-        )
+        victors(
+          competitions.getIn(["division", "phases", 1, "groups", 0])
+        ).map(t => t.get("id"))
       );
 
       const matchups = List.of(List.of(0, 3), List.of(1, 2));

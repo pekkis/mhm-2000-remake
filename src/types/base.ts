@@ -21,6 +21,7 @@ export type MHMTurnPhase =
   | "action"
   | "prank"
   | "gameday"
+  | "results"
   | "calculations"
   | "eventCreation"
   | "event"
@@ -44,13 +45,15 @@ export interface MHMCompetitionSeedDefinition {
 }
 
 export interface MHMTurnDefinition {
+  round: number;
   phases: MHMTurnPhasesList;
-  gamedays?: MHMCompetitionsList;
+  gamedays: MHMCompetitionsList;
   pranks: boolean;
   createRandomEvent: boolean;
   crisisMeeting: boolean;
   transferMarket: boolean;
-  seed?: MHMCompetitionSeedDefinition[];
+  seed: MHMCompetitionSeedDefinition[];
+  title?: string;
 }
 
 export type MHMTurnExtraOptions = Omit<

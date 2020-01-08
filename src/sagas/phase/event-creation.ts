@@ -1,8 +1,10 @@
-import { select, call, put } from "redux-saga/effects";
+import { select, call } from "redux-saga/effects";
 import events from "../../data/events";
 import { cinteger } from "../../services/random";
 import { OrderedMap, List } from "immutable";
 import { setPhase } from "../game";
+import { currentCalendarEntry } from "../../data/selectors";
+import { MHMTurnDefinition } from "../../types/base";
 
 const eventsMap = OrderedMap<number, string>(
   List.of(
@@ -157,24 +159,22 @@ const getEventId = (predefined?: string): string | undefined => {
 };
 
 export default function* eventCreationPhase() {
-  yield call(setPhase, "event-creation");
+  yield call(setPhase, "eventCreation");
 
   const managers = yield select(state => state.manager.get("managers"));
-  const round = yield select(state => state.game.getIn(["turn", "round"]));
+  const calendarEntry: MHMTurnDefinition = yield select(currentCalendarEntry);
+  if (!calendarEntry.createRandomEvent) {
+    return;
+  }
 
-  const calendar = yield select(state => state.game.get("calendar"));
-  const calendarEntry = calendar.get(round);
+  for (const [, manager] of managers) {
+    const eventId = getEventId();
 
-  if (calendarEntry.get("createRandomEvent")) {
-    for (const [, manager] of managers) {
-      const eventId = getEventId();
-
-      const eventObj = events.get(eventId);
-      if (!eventObj) {
-        return;
-      }
-
-      yield call(events.get(eventId).create, { manager: manager.get("id") });
+    const eventObj = events.get(eventId);
+    if (!eventObj) {
+      return;
     }
+
+    yield call(events.get(eventId).create, { manager: manager.get("id") });
   }
 }

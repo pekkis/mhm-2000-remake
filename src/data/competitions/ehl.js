@@ -129,15 +129,6 @@ function* ehlAwards() {
 }
 
 export default Map({
-  data: Map({
-    weight: 2000,
-    id: "ehl",
-    phase: -1,
-    name: "EHL",
-    abbr: "ehl",
-    phases: List()
-  }),
-
   relegateTo: false,
   promoteTo: false,
 
