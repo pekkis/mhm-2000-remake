@@ -1,5 +1,5 @@
 import React from "react";
-import StartMenu from "./Puuperoinen";
+import StartMenu from "./containers/StartMenuContainer";
 import Game from "./containers/GameContainer";
 import * as Sentry from "@sentry/browser";
 

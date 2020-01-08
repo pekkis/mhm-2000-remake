@@ -1,9 +1,8 @@
 import React from "react";
-import calendar from "../../data/calendar";
 import { List } from "immutable";
 
 const Forward = props => {
-  const { turn, competitions } = props;
+  const { turn, competitions, calendar } = props;
 
   const calendarEntry = calendar.get(turn.get("round"));
 

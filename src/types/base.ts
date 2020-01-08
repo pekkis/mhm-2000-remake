@@ -11,3 +11,51 @@ export interface MHMEvent {
   render: (data: any) => List<string>;
   process: (data: any) => MHMEventGenerator;
 }
+
+export type MHMTurnPhase =
+  | "invitationsProcess"
+  | "invitationsCreate"
+  | "gala"
+  | "endOfSeason"
+  | "startOfSeason"
+  | "action"
+  | "prank"
+  | "gameday"
+  | "calculations"
+  | "eventCreation"
+  | "event"
+  | "news"
+  | "seed";
+
+export type MHMCompetition =
+  | "phl"
+  | "division"
+  | "mutasarja"
+  | "ehl"
+  | "tournaments";
+
+export type MHMCompetitionsList = MHMCompetition[];
+
+export type MHMTurnPhasesList = MHMTurnPhase[];
+
+export interface MHMCompetitionSeedDefinition {
+  competition: MHMCompetition;
+  phase: number;
+}
+
+export interface MHMTurnDefinition {
+  phases: MHMTurnPhasesList;
+  gamedays?: MHMCompetitionsList;
+  pranks: boolean;
+  createRandomEvent: boolean;
+  crisisMeeting: boolean;
+  transferMarket: boolean;
+  seed?: MHMCompetitionSeedDefinition[];
+}
+
+export type MHMTurnExtraOptions = Omit<
+  MHMTurnDefinition,
+  "phases" | "gamedays" | "seed"
+>;
+
+export type MHMCalendar = MHMTurnDefinition[];

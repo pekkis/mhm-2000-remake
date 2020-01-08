@@ -6,6 +6,12 @@ import managers from "../data/managers";
 import competitionList from "../data/competitions";
 import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
 import { Reducer } from "redux";
+import { getCalendar } from "../services/calendar";
+import {
+  MHMTurnPhase,
+  MHMTurnDefinition,
+  MHMTurnPhasesList
+} from "../types/base";
 
 export const GAME_START = "GAME_START";
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
@@ -13,11 +19,10 @@ export const GAME_ADVANCE = "GAME_ADVANCE";
 export const GAME_DECREMENT_DURATIONS = "GAME_DECREMENT_DURATIONS";
 export const GAME_CLEAR_EXPIRED = "GAME_CLEAR_EXPIRED";
 export const GAME_NEXT_TURN = "GAME_NEXT_TURN";
+export const GAME_SET_PHASE = "GAME_SET_PHASE";
 
 export const SEASON_START = "SEASON_START";
 export const SEASON_END = "SEASON_END";
-
-console.log(competitionList, "cl");
 
 const defaultState: Map<string, any> = Map({
   turn: Map({
@@ -43,6 +48,8 @@ const defaultState: Map<string, any> = Map({
 
   competitions: competitionList.map(c => c.get("data")),
 
+  calendar: getCalendar(),
+
   teams: teams.map(t => t.update("strength", s => s())),
 
   worldChampionshipResults: undefined
@@ -54,6 +61,16 @@ export const advance = payload => {
     payload
   };
 };
+
+export interface GameSetPhaseAction {
+  type: typeof GAME_SET_PHASE;
+  payload: MHMTurnPhase;
+}
+
+export const setPhase = (phase: MHMTurnPhase): GameSetPhaseAction => ({
+  type: GAME_SET_PHASE,
+  payload: phase
+});
 
 const gameReducer: Reducer<typeof defaultState> = (
   state = defaultState,
@@ -170,7 +187,7 @@ const gameReducer: Reducer<typeof defaultState> = (
         }
       );
 
-    case "GAME_SET_PHASE":
+    case GAME_SET_PHASE:
       return state.setIn(["turn", "phase"], payload);
 
     case "TEAM_INCREMENT_MORALE":

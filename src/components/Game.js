@@ -25,12 +25,8 @@ import Stats from "./containers/StatsContainer";
 import Invitations from "./containers/InvitationsContainer";
 import Gala from "./containers/GalaContainer";
 
-import calendar from "../data/calendar";
-
 const Phase = props => {
-  const { turn } = props;
-
-  const calendarEntry = calendar.get(turn.get("round"));
+  const { turn, calendar } = props;
 
   switch (true) {
     case turn.get("phase") === "select-strategy":

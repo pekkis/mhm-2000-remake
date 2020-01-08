@@ -2,7 +2,6 @@ import { select, call, put } from "redux-saga/effects";
 import events from "../../data/events";
 import { cinteger } from "../../services/random";
 import { OrderedMap, List } from "immutable";
-import calendar from "../../data/calendar";
 import { setPhase } from "../game";
 
 const eventsMap = OrderedMap<number, string>(
@@ -163,6 +162,7 @@ export default function* eventCreationPhase() {
   const managers = yield select(state => state.manager.get("managers"));
   const round = yield select(state => state.game.getIn(["turn", "round"]));
 
+  const calendar = yield select(state => state.game.get("calendar"));
   const calendarEntry = calendar.get(round);
 
   if (calendarEntry.get("createRandomEvent")) {

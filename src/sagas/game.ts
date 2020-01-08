@@ -1,5 +1,5 @@
 import competitionData from "../data/competitions";
-import { SEASON_START } from "../ducks/game";
+import { SEASON_START, GameSetPhaseAction } from "../ducks/game";
 
 import teamData from "../data/teams";
 
@@ -27,7 +27,6 @@ import startOfSeasonPhase from "./phase/start-of-season";
 import galaPhase from "./phase/gala";
 
 import calculationsPhase from "./phase/calculations";
-import calendar from "../data/calendar";
 import difficultyLevels from "../data/difficulty-levels";
 
 import { setExtra, decrementBalance, incrementInsuranceExtra } from "./manager";
@@ -42,6 +41,7 @@ import {
 } from "../data/selectors";
 import events from "../data/events";
 import { nth } from "ramda";
+import { MHMTurnPhase } from "../types/base";
 
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 
@@ -107,6 +107,8 @@ export function* gameLoop() {
 
   do {
     const turn = yield select(state => state.game.get("turn"));
+
+    const calendar = yield select(state => state.game.get("calendar"));
 
     const roundData = nth(turn.get("round"), calendar);
     if (!roundData) {
@@ -333,8 +335,8 @@ function* nextTurn() {
   yield put({ type: "GAME_NEXT_TURN" });
 }
 
-export function* setPhase(phase) {
-  yield put({
+export function* setPhase(phase: MHMTurnPhase) {
+  yield put(<GameSetPhaseAction>{
     type: "GAME_SET_PHASE",
     payload: phase
   });

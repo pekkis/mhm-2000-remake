@@ -14,4 +14,6 @@ const competitions = Map({
   tournaments
 }).sortBy(c => c.get("weight"));
 
+console.log(competitions, "competori");
+
 export default competitions;

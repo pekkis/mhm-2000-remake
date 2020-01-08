@@ -1,7 +1,5 @@
-import calendar from "../../data/calendar";
-
 const Calendar = props => {
-  const { turn, when, children, fallback, state } = props;
+  const { calendar, turn, when, children, fallback, state } = props;
 
   const entry = calendar.get(turn.get("round"));
 

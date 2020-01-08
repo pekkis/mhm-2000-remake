@@ -1,37 +1,19 @@
-import { List, Map, Repeat } from "immutable";
-import { pipe, append, curry, map, repeat, mergeRight, flatten } from "ramda";
+import { pipe, append, curry, map, repeat, flatten } from "ramda";
 import { mapIndexed } from "ramda-adjunct";
+import {
+  MHMTurnPhasesList,
+  MHMCompetitionsList,
+  MHMCompetitionSeedDefinition,
+  MHMTurnExtraOptions,
+  MHMTurnDefinition,
+  MHMCompetition,
+  MHMCalendar
+} from "../types/base";
 
 export const CRISIS_DEADLINE = 52;
 export const TRANSFER_DEADLINE = 30;
 export const EVENT_DEADLINE = 53;
 export const PRANKS_DEADLINE = 53;
-
-export type MHMTurnPhase =
-  | "invitationsProcess"
-  | "invitationsCreate"
-  | "gala"
-  | "endOfSeason"
-  | "startOfSeason"
-  | "action"
-  | "prank"
-  | "gameday"
-  | "calculations"
-  | "eventCreation"
-  | "event"
-  | "news"
-  | "seed";
-
-export type MHMCompetition =
-  | "phl"
-  | "division"
-  | "mutasarja"
-  | "ehl"
-  | "tournaments";
-
-export type MHMCompetitionsList = MHMCompetition[];
-
-export type MHMTurnPhasesList = MHMTurnPhase[];
 
 const defaultPhases: MHMTurnPhasesList = [
   "action",
@@ -43,28 +25,6 @@ const defaultPhases: MHMTurnPhasesList = [
   "news",
   "seed"
 ];
-
-export interface MHMCompetitionSeedDefinition {
-  competition: MHMCompetition;
-  phase: number;
-}
-
-export interface MHMTurnDefinition {
-  phases: MHMTurnPhasesList;
-  gamedays?: MHMCompetitionsList;
-  pranks: boolean;
-  createRandomEvent: boolean;
-  crisisMeeting: boolean;
-  transferMarket: boolean;
-  seed?: MHMCompetitionSeedDefinition[];
-}
-
-type MHMTurnExtraOptions = Omit<
-  MHMTurnDefinition,
-  "phases" | "gamedays" | "seed"
->;
-
-export type MHMCalendar = MHMTurnDefinition[];
 
 const ehlPhases: MHMTurnPhasesList = ["action", "gameday", "event", "news"];
 
@@ -132,7 +92,7 @@ const cal = pipe(
 
 console.log(cal);
 
-export default cal as MHMTurnDefinition[];
+export default cal as MHMCalendar;
 
 /*
 const calendar = List.of(

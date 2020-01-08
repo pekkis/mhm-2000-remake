@@ -8,7 +8,8 @@ export default withRouter(
     state => ({
       started: state.meta.get("started"),
       turn: state.game.get("turn"),
-      menu: state.ui.get("menu")
+      menu: state.ui.get("menu"),
+      calendar: state.game.get("calendar")
     }),
     { startGame, loadGame }
   )(Game)

@@ -1,6 +1,5 @@
 import { select, call, put, take } from "redux-saga/effects";
 import { gameday } from "../gameday";
-import calendar from "../../data/calendar";
 import { List } from "immutable";
 import { setPhase } from "../game";
 
@@ -8,6 +7,8 @@ export default function* gamedayPhase() {
   yield call(setPhase, "gameday");
 
   const round = yield select(state => state.game.getIn(["turn", "round"]));
+
+  const calendar = yield select(state => state.game.get("calendar"));
 
   const calendarEntry = calendar.get(round);
   const gamedays = calendarEntry.get("gamedays", List());

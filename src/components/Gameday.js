@@ -1,5 +1,4 @@
 import React from "react";
-import calendar from "../data/calendar";
 import { List } from "immutable";
 import Table from "./league-table/Table";
 import Header from "./containers/HeaderContainer";
@@ -8,7 +7,7 @@ import Games from "./gameday/Games";
 import Box from "./styled-system/Box";
 
 const Gameday = props => {
-  const { turn, managers, teams, competitions } = props;
+  const { turn, managers, teams, competitions, calendar } = props;
 
   const calendarEntry = calendar.get(turn.get("round"));
 
