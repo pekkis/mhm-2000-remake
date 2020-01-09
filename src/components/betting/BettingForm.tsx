@@ -1,12 +1,17 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { Formik } from "formik";
 import Slider from "rc-slider";
 import { amount as a } from "../../services/format";
 import Button from "../form/Button";
 import TeamName from "../team/Name";
 import { Seq, List } from "immutable";
+import { bet, BettingCouponRow } from "../../ducks/betting";
 
-const BettingForm = props => {
+interface Props {
+  bet: typeof bet;
+}
+
+const BettingForm: FunctionComponent<Props> = props => {
   const { manager, competition, teams, bet } = props;
 
   const group = competition.getIn(["phases", 0, "groups", 0]);
@@ -23,19 +28,20 @@ const BettingForm = props => {
         "3": "",
         "4": "",
         "5": "",
-        amount: 10000
+        amount: "10000"
       }}
       onSubmit={values => {
         console.log(values);
 
-        const coupon = List.of(
-          values["0"],
-          values["1"],
-          values["2"],
-          values["3"],
-          values["4"],
-          values["5"]
-        );
+        const coupon = [
+          values["0"] as BettingCouponRow,
+          values["1"] as BettingCouponRow,
+          values["2"] as BettingCouponRow,
+          values["3"] as BettingCouponRow,
+          values["4"] as BettingCouponRow,
+          values["5"] as BettingCouponRow
+        ];
+
         bet(manager.get("id"), coupon, parseInt(values.amount, 10));
       }}
     >

@@ -1,13 +1,8 @@
 import React from "react";
 
-import Events from "./events/Events";
-import News from "./news/News";
-import Situation from "./context-sensitive/Situation";
 import ManagerInfo from "./containers/ManagerInfoContainer";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
-import Button from "./form/Button";
-
 import BettingForm from "./betting/BettingForm";
 
 import Box from "./styled-system/Box";

@@ -1,29 +1,38 @@
 import { put, all, call, select } from "redux-saga/effects";
-import { BETTING_BET_CHAMPION, BETTING_BET } from "../ducks/betting";
+import {
+  BETTING_BET_CHAMPION,
+  BETTING_BET,
+  Bet,
+  BettingBetAction,
+  BettingCouponRow,
+  BettingBetChampionAction
+} from "../ducks/betting";
 import { decrementBalance, incrementBalance } from "./manager";
 import { addAnnouncement } from "./news";
 import { amount as a } from "../services/format";
 import { addNotification } from "./notification";
 import { resultFacts } from "../services/game";
 import { List } from "immutable";
+import { MHMState } from "../ducks";
+import { ChampionshipBet } from "../ducks/betting";
 
 const victories = List.of(false, false, false, 1, 2, 5, 10);
 
 export function* processChampionBets() {
-  const bets = yield select(state => state.betting.get("championshipBets"));
+  const bets: ChampionshipBet[] = yield select(
+    (state: MHMState) => state.betting.championshipBets
+  );
   const stats = yield select(state => state.stats.get("currentSeason"));
-
-  console.log("stats", stats.toJS());
 
   const champion = stats.getIn(["medalists", 0]);
 
   for (const bet of bets) {
-    if (bet.get("team") === champion) {
-      const amount = Math.round(bet.get("amount") * bet.get("odds"));
-      yield call(incrementBalance, bet.get("manager"), amount);
+    if (bet.team === champion) {
+      const amount = Math.round(bet.amount * bet.odds);
+      yield call(incrementBalance, bet.manager, amount);
       yield call(
         addAnnouncement,
-        bet.get("manager"),
+        bet.manager,
         `Voitit __${a(amount)}__ pekkaa mestariveikkauksessa. Hyvin veikattu!`
       );
     }
@@ -54,24 +63,20 @@ export function* bettingResults(round) {
     return "2";
   });
 
-  console.log("CORRETTI", correctCoupon);
-
-  const bets = yield select(state => state.betting.get("bets"));
+  const bets: Bet[] = yield select((state: MHMState) => state.betting.bets);
 
   for (const bet of bets) {
-    const correct = bet
-      .get("coupon")
-      .filter((c, i) => c === correctCoupon.get(i))
-      .count();
+    const correct = bet.coupon.filter((c, i) => c === correctCoupon.get(i))
+      .length;
 
     const victory = victories.get(correct);
     if (victory) {
-      const victoryAmount = Math.round(victory * bet.get("amount"));
+      const victoryAmount = Math.round(victory * bet.amount);
       yield all([
-        call(incrementBalance, bet.get("manager"), victoryAmount),
+        call(incrementBalance, bet.manager, victoryAmount),
         call(
           addAnnouncement,
-          bet.get("manager"),
+          bet.manager,
           `Voitit kavioveikkauksessa __${a(
             victoryAmount
           )}__ pekkaa. Rivissäsi oli __${correct}__ oikein. Panoksesi oli __${a(
@@ -82,24 +87,27 @@ export function* bettingResults(round) {
     } else {
       yield call(
         addAnnouncement,
-        bet.get("manager"),
+        bet.manager,
         `Et voittanut kavioveikkauksessa. Rivissäsi oli __${correct}__ oikein. Panoksesi oli __${a(
-          bet.get("amount")
+          bet.amount
         )}__ pekkaa.`
       );
     }
   }
 }
 
-export function* bet(manager, coupon, amount) {
-  console.log("BETTING", manager, coupon.toJS(), amount);
+export function* bet(
+  manager: string,
+  coupon: BettingCouponRow[],
+  amount: number
+) {
   yield all([
     call(
       addNotification,
       manager,
       "Kiikutat veikkauskuponkisi lähimmälle S-kioskille. Olkoon onni myötä!"
     ),
-    put({
+    put<BettingBetAction>({
       type: BETTING_BET,
       payload: {
         manager,
@@ -118,7 +126,7 @@ export function* betChampion(manager, team, amount, odds) {
       manager,
       "Kiikutat mestarusveikkauskuponkisi S-kioskille. Olkoon onni myötä!"
     ),
-    put({
+    put<BettingBetChampionAction>({
       type: BETTING_BET_CHAMPION,
       payload: {
         manager,

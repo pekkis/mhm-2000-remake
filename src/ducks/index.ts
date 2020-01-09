@@ -10,3 +10,11 @@ export { default as betting } from "./betting";
 export { default as stats } from "./stats";
 export { default as invitation } from "./invitation";
 export { default as country } from "./country";
+
+import { BettingState } from "./betting";
+import { NotificationState } from "./notification";
+
+export interface MHMState {
+  betting: BettingState;
+  notification: NotificationState;
+}

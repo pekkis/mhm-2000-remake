@@ -116,12 +116,12 @@ export function* renameArena(managerId, name) {
   });
 }
 
-export function* incrementBalance(managerId, amount) {
+export function* incrementBalance(managerId: string, amount: number) {
   const manager = yield select(state =>
     state.manager.getIn(["managers", managerId])
   );
   if (!manager) {
-    throw new Error("INVALID MANAGER", managerId, amount);
+    throw new Error("INVALID MANAGER");
   }
 
   return yield put({

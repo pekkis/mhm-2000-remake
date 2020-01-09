@@ -1,11 +1,12 @@
 import { connect } from "react-redux";
 import Notifications from "../Notifications";
 import { dismissNotification } from "../../../ducks/notification";
+import { MHMState } from "../../../ducks";
+import { values } from "ramda";
 
 export default connect(
-  state => ({
-    manager: state.manager.getIn(["managers", state.manager.get("active")]),
-    notifications: state.notification.get("notifications")
+  (state: MHMState) => ({
+    notifications: values(state.notification.notifications)
   }),
   { dismissNotification }
 )(Notifications);

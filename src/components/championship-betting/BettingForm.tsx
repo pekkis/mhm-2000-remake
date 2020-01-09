@@ -1,11 +1,16 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { Formik } from "formik";
 import Slider from "rc-slider";
 import { amount as a } from "../../services/format";
 import odds from "../../data/championship-betting";
 import Button from "../form/Button";
+import { betChampion } from "../../ducks/betting";
 
-const BettingForm = props => {
+interface Props {
+  betChampion: typeof betChampion;
+}
+
+const BettingForm: FunctionComponent<Props> = props => {
   const { manager, competition, teams, betChampion } = props;
 
   const teamsAndOdds = odds(competition, teams);
@@ -14,7 +19,7 @@ const BettingForm = props => {
     <Formik
       initialValues={{
         team: "",
-        amount: 10000
+        amount: "10000"
       }}
       onSubmit={values => {
         betChampion(
