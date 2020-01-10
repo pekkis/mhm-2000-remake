@@ -26,6 +26,7 @@ export type MHMTurnPhase =
   | "eventCreation"
   | "event"
   | "news"
+  | "worldChampionships"
   | "seed";
 
 export type MHMCompetition =

@@ -3,7 +3,7 @@ import { call, select, all, put } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { flag } from "../selectors";
 import { setFlag } from "../../sagas/game";
-import { alterStrength } from "../../ducks/country";
+import { alterCountryStrength } from "../../ducks/country";
 import { MHMEvent } from "../../types/base";
 
 /*
@@ -59,7 +59,7 @@ const event: MHMEvent = {
     const amount = attitude ? difference : -difference;
     yield all([
       call(setFlag, "usa", attitude),
-      put(alterStrength("US", amount))
+      put(alterCountryStrength("US", amount))
     ]);
   }
 };

@@ -1,6 +1,9 @@
-import { List, Map } from "immutable";
+import { mapIndexed } from "ramda-adjunct";
 
-const managers = List.of(
+const managers = mapIndexed((name: string, id: number) => ({
+  name,
+  id
+}))([
   "Marcó Harcimó",
   "Franco M. Berg",
   "Hannes DeAnsas",
@@ -17,11 +20,6 @@ const managers = List.of(
   "Juri Simonov",
   "Nykan Hågren",
   "Juri Simonov Jr."
-).map((name, id) => {
-  return Map({
-    name,
-    id
-  });
-});
+]);
 
 export default managers;

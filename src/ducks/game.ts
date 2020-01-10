@@ -6,7 +6,7 @@ import managers from "../data/managers";
 import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
 import { Reducer } from "redux";
 import { getCalendar } from "../services/calendar";
-import { MHMTurnPhase } from "../types/base";
+import { MHMTurnPhase, MHMCalendar } from "../types/base";
 
 export const GAME_START = "GAME_START";
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
@@ -19,27 +19,73 @@ export const GAME_SET_PHASE = "GAME_SET_PHASE";
 export const SEASON_START = "SEASON_START";
 export const SEASON_END = "SEASON_END";
 
-const defaultState: Map<string, any> = Map({
-  turn: Map({
+export interface Turn {
+  season: number;
+  round: number;
+  phase: MHMTurnPhase | undefined;
+}
+
+export interface Flags {
+  jarko: boolean;
+  usa: boolean;
+  canada: boolean;
+}
+
+export interface ServiceBasePrices {
+  insurance: number;
+  coach: number;
+  microphone: number;
+  cheer: number;
+}
+
+export interface Manager {
+  id: number;
+  name: string;
+}
+
+interface Team {
+  id: number;
+  name: string;
+  city: string;
+  level: number;
+  strength: number;
+  domestic: boolean;
+}
+
+export interface GameState {
+  turn: Turn;
+  flags: Flags;
+  serviceBasePrices: ServiceBasePrices;
+  managers: Manager[];
+  calendar: MHMCalendar;
+  teams: Team[];
+}
+
+const defaultState: GameState = {
+  turn: {
     season: 0,
     round: 0,
     phase: undefined
-  }),
+  },
 
-  flags: Map({
+  flags: {
     jarko: false,
     usa: false,
     canada: false
-  }),
+  },
 
-  serviceBasePrices: Map({
+  serviceBasePrices: {
     insurance: 1000,
     coach: 3200,
     microphone: 500,
     cheer: 3000
-  }),
+  },
 
   managers,
+
+  teams,
+
+  calendar: getCalendar(),
 
   competitions: Map({
     phl: Map({
@@ -113,12 +159,8 @@ const defaultState: Map<string, any> = Map({
     })
   }),
 
-  calendar: getCalendar(),
-
-  teams: teams.map(t => t.update("strength", s => s())),
-
   worldChampionshipResults: undefined
-});
+};
 
 export const advance = payload => {
   return {

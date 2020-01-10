@@ -13,8 +13,10 @@ export { default as country } from "./country";
 
 import { BettingState } from "./betting";
 import { NotificationState } from "./notification";
+import { CountryState } from "./country";
 
 export interface MHMState {
   betting: BettingState;
   notification: NotificationState;
+  country: CountryState;
 }

@@ -1,10 +1,20 @@
-import countryList from "../data/countries";
+import countries from "../data/countries";
 import { Map } from "immutable";
 import { MetaQuitToMainMenuAction, META_QUIT_TO_MAIN_MENU } from "./meta";
 import { Reducer } from "redux";
 
+export interface Country {
+  iso: string;
+  name: string;
+  strength: number;
+}
+
+export interface CountryState {
+  countries: Country[];
+}
+
 const defaultState = Map({
-  countries: countryList.map(country => country.update("strength", s => s()))
+  countries
 });
 
 const COUNTRY_ALTER_STRENGTH = "COUNTRY_ALTER_STRENGTH";
@@ -26,7 +36,7 @@ interface CountrySetStrengthAction {
   };
 }
 
-export const alterStrength = (
+export const alterCountryStrength = (
   country: string,
   amount: number
 ): CountryAlterStrengthAction => ({
@@ -37,7 +47,7 @@ export const alterStrength = (
   }
 });
 
-export const setStrength = (
+export const setCountryStrength = (
   country: string,
   strength: number
 ): CountrySetStrengthAction => ({

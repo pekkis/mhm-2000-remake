@@ -2,14 +2,15 @@ import { call, all, take, put, select, putResolve } from "redux-saga/effects";
 import { seasonStart, promote, relegate, setPhase } from "../game";
 import { victors, eliminated } from "../../services/playoffs";
 import awards from "../../data/awards";
-import { List, Map } from "immutable";
+import { List } from "immutable";
 import { cinteger } from "../../services/random";
 
-import countries from "../../data/countries";
 import { setSeasonStat, createSeasonStories } from "../stats";
 import { processChampionBets } from "../betting";
 import { competition, allTeams } from "../../data/selectors";
-import { csetStrength, setStrength } from "../../ducks/country";
+import { setCountryStrength, Country } from "../../ducks/country";
+import { MHMState } from "../../ducks";
+import { pipe, map, sort, descend } from "ramda";
 
 const getLuck = () => {
   const isLucky = cinteger(1, 10);
@@ -38,30 +39,32 @@ function* definePekkalandiaStrength() {
 
   console.log("strength", strength);
 
-  yield putResolve(setStrength("FI", strength));
+  yield putResolve(setCountryStrength("FI", strength));
+}
+
+interface ExtendedCountry extends Country {
+  luck: number;
+  random: number;
 }
 
 function* worldChampionships() {
-  yield call(setPhase, "world-championships");
+  yield call(setPhase, "worldChampionships");
   yield call(definePekkalandiaStrength);
 
-  const countries = yield select(state => state.country.get("countries"));
+  const countries: Country[] = yield select(
+    (state: MHMState) => state.country.countries
+  );
 
-  const entries = countries
-    .map(c => {
-      return Map({
-        id: c.get("iso"),
-        name: c.get("name"),
-        strength: c.get("strength"),
+  const entries = pipe(
+    map<Country, ExtendedCountry>(c => {
+      return {
+        ...c,
         luck: getLuck(),
         random: cinteger(0, 20) - cinteger(0, 10)
-      });
-    })
-    .sortBy(e => e.get("strength") + e.get("luck") + e.get("random"))
-    .toList()
-    .reverse();
-
-  console.log(entries.toJS(), "entries");
+      };
+    }),
+    sort(descend((c: ExtendedCountry) => c.strength + c.luck + c.random))
+  )(countries);
 
   yield put({
     type: "GAME_WORLD_CHAMPIONSHIP_RESULTS",
@@ -71,7 +74,7 @@ function* worldChampionships() {
   yield call(
     setSeasonStat,
     ["worldChampionships"],
-    entries.map(e => e.get("id"))
+    entries.map(e => e.iso)
   );
 
   yield take("GAME_ADVANCE_REQUEST");
@@ -80,11 +83,11 @@ function* worldChampionships() {
 export default function* endOfSeasonPhase() {
   yield call(worldChampionships);
 
-  yield call(setPhase, "end-of-season");
+  yield call(setPhase, "endOfSeason");
 
   yield call(awards);
 
-  yield call(setPhase, "end-of-season");
+  yield call(setPhase, "endOfSeason");
 
   const division = yield select(state =>
     state.game.getIn(["competitions", "division"])
