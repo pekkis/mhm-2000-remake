@@ -1,5 +1,13 @@
 import { Range, Map, List } from "immutable";
 import { gameFacts } from "./game";
+import {
+  Matchups,
+  Matchup,
+  Schedule,
+  ScheduleGame,
+  ScheduleRound
+} from "../data/competitions/phl";
+import { range, map } from "ramda";
 
 export const victors = phase => {
   const winsToAdvance = phase.get("winsToAdvance");
@@ -60,24 +68,28 @@ export const matchups = phase => {
   });
 };
 
-const scheduler = (matchups, winsToAdvance) => {
-  return Range(1, winsToAdvance * 2)
-    .map(r => {
-      return matchups.map(matchup => {
-        if (r % 2 !== 0) {
-          return Map({
-            home: matchup.get(0),
-            away: matchup.get(1)
-          });
-        }
+const createGame = (matchup: Matchup, round: number): ScheduleGame => {
+  const [first, second] = matchup;
+  if (round % 2 !== 0) {
+    return {
+      home: first,
+      away: second
+    };
+  }
 
-        return Map({
-          home: matchup.get(1),
-          away: matchup.get(0)
-        });
-      });
-    })
-    .toList();
+  return {
+    home: second,
+    away: first
+  };
+};
+
+const createRound = (matchups: Matchups, round: number): ScheduleRound => {
+  return map(m => createGame(m, round), matchups);
+};
+
+const scheduler = (matchups: Matchups, winsToAdvance: number): Schedule => {
+  const r = range(1, winsToAdvance * 2);
+  return map(r => createRound(matchups, r), r);
 };
 
 export default scheduler;

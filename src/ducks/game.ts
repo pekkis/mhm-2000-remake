@@ -43,13 +43,14 @@ export interface Manager {
   name: string;
 }
 
-interface Team {
+export interface Team {
   id: number;
   name: string;
   city: string;
   level: number;
   strength: number;
   domestic: boolean;
+  morale: number;
 }
 
 export interface GameState {

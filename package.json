@@ -25,13 +25,6 @@
   ],
   "author": "Pekkis",
   "license": "BSD-3-Clause",
-  "jest": {
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
-      "\\.(css)$": "<rootDir>/__mocks__/styleMock.js",
-      "\\.(pcss)$": "identity-obj-proxy"
-    }
-  },
   "dependencies": {
     "@dr-kobros/broilerplate-serviceworker": "^0.29.2",
     "@emotion/core": "^10.0.22",
@@ -50,7 +43,7 @@
     "lodash": "^4.17.11",
     "luxon": "^1.8.2",
     "polished": "^3.4.2",
-    "prop-types": "^15.6.2",
+    "prop-types": "^15.7.2",
     "ramda": "^0.26.1",
     "ramda-adjunct": "^2.23.0",
     "random-js": "^2.1.0",
@@ -87,6 +80,7 @@
     "@babel/node": "^7.2.2",
     "@babel/plugin-proposal-class-properties": "^7.2.1",
     "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.7.5",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-flow-strip-types": "^7.2.0",
     "@babel/plugin-transform-react-jsx": "^7.2.0",
@@ -99,6 +93,7 @@
     "@dr-kobros/broilerplate-postcss": "^0.29.2",
     "@dr-kobros/broilerplate-styled-components": "^0.29.2",
     "@emotion/babel-preset-css-prop": "^10.0.23",
+    "@types/jest": "^24.0.25",
     "@types/ramda": "^0.26.39",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
@@ -126,7 +121,7 @@
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.10.0",
     "eslint-plugin-react-hooks": "1.x",
-    "jest": "^23.6.0",
+    "jest": "^24.9.0",
     "normalize.css": "^8.0.1",
     "postcss-advanced-variables": "^3.0.0",
     "postcss-import": "^12.0.1",

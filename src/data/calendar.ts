@@ -2,11 +2,11 @@ import { pipe, append, curry, map, repeat, flatten, assoc } from "ramda";
 import { mapIndexed } from "ramda-adjunct";
 import {
   MHMTurnPhasesList,
-  MHMCompetitionsList,
+  CompetitionNameList,
   MHMCompetitionSeedDefinition,
   MHMTurnExtraOptions,
   MHMTurnDefinition,
-  MHMCompetition,
+  CompetitionNames,
   MHMCalendar
 } from "../types/base";
 
@@ -30,7 +30,7 @@ const ehlPhases: MHMTurnPhasesList = ["action", "gameday", "event", "news"];
 
 const createTurnDefinition = (
   phases: MHMTurnPhasesList,
-  gamedays: MHMCompetitionsList = [],
+  gamedays: CompetitionNameList = [],
   seed: MHMCompetitionSeedDefinition[] = [],
   extra: Partial<MHMTurnExtraOptions> = {}
 ): MHMTurnDefinition => {
@@ -50,7 +50,7 @@ const createTurnDefinition = (
 const createSeedDefinition = curry(
   (
     phase: number,
-    competition: MHMCompetition
+    competition: CompetitionNames
   ): MHMCompetitionSeedDefinition => ({
     competition,
     phase

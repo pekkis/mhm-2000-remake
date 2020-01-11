@@ -29,26 +29,26 @@ export type MHMTurnPhase =
   | "worldChampionships"
   | "seed";
 
-export type MHMCompetition =
+export type CompetitionNames =
   | "phl"
   | "division"
   | "mutasarja"
   | "ehl"
   | "tournaments";
 
-export type MHMCompetitionsList = MHMCompetition[];
+export type CompetitionNameList = CompetitionNames[];
 
 export type MHMTurnPhasesList = MHMTurnPhase[];
 
 export interface MHMCompetitionSeedDefinition {
-  competition: MHMCompetition;
+  competition: CompetitionNames;
   phase: number;
 }
 
 export interface MHMTurnDefinition {
   round: number;
   phases: MHMTurnPhasesList;
-  gamedays: MHMCompetitionsList;
+  gamedays: CompetitionNameList;
   pranks: boolean;
   createRandomEvent: boolean;
   crisisMeeting: boolean;
