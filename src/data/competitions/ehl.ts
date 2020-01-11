@@ -1,17 +1,24 @@
-import { Map, List, Range } from "immutable";
-import { select, putResolve, call, all } from "redux-saga/effects";
+import { Map, List } from "immutable";
+import { select, call, all } from "redux-saga/effects";
 import rr from "../../services/round-robin";
 import tournamentScheduler from "../../services/tournament";
-import table, { sortStats } from "../../services/league";
-import r from "../../services/random";
+import table from "../../services/league";
 import { defaultMoraleBoost } from "../../services/morale";
 import { addAnnouncement } from "../../sagas/news";
 import { amount as a } from "../../services/format";
 import { incrementStrength, incrementReadiness } from "../../sagas/team";
 import { incrementBalance } from "../../sagas/manager";
 import { setSeasonStat } from "../../sagas/stats";
-import { setCompetitionTeams } from "../../sagas/game";
-import { pekkalandianTeams } from "../selectors";
+import {
+  CompetitionService,
+  RoundRobinCompetitionGroup,
+  RoundRobinCompetitionPhase,
+  LeagueTableRow,
+  TournamentCompetitionPhase,
+  TournamentCompetitionGroup
+} from "../../types/base";
+import { map, range, head, drop, prop } from "ramda";
+import { sortLeagueTable } from "../../services/league";
 
 const awards = List.of(
   Map({
@@ -128,14 +135,14 @@ function* ehlAwards() {
   // yield call(addAnnouncement, 0, `Ripulikakka __haisee__.`);
 }
 
-export default Map({
+const ehl: CompetitionService = {
   relegateTo: false,
   promoteTo: false,
 
   start: function*() {
     // const ehlTeams = yield select(state => state.game.get("ehlParticipants"));
-
-    const turn = yield select(state => state.game.get("turn"));
+    /*
+    const turn = yield select((state: MHMState) => state.game.get("turn"));
     const season = turn.get("season");
 
     const ehlTeams = yield select(state =>
@@ -155,9 +162,10 @@ export default Map({
     const teams = ehlTeams.concat(foreignTeams).sortBy(() => r.real(1, 10000));
 
     yield call(setCompetitionTeams, "ehl", teams);
+    */
   },
 
-  groupEnd: function*(phase, group) {
+  groupEnd: function*(phase: number, group: number) {
     if (phase === 1) {
       yield call(ehlAwards);
     }
@@ -168,7 +176,7 @@ export default Map({
       return 0;
     }
 
-    const arenaLevel = manager.getIn(["arena", "level"]) + 1;
+    const arenaLevel = manager.arena.level + 1;
     return 100000 + 20000 * arenaLevel;
   },
 
@@ -187,80 +195,78 @@ export default Map({
     return -1;
   },
 
-  parameters: Map({
+  parameters: {
     gameday: phase => ({
-      advantage: Map({
+      advantage: {
         home: team => (phase === 0 ? 10 : 0),
         away: team => (phase === 0 ? -10 : 0)
-      }),
+      },
       base: () => 20,
       moraleEffect: team => {
-        return team.get("morale") * 2;
+        return team.morale * 2;
       }
     })
-  }),
+  },
 
-  seed: List.of(
+  seed: [
     competitions => {
       const times = 1;
-      const ehl = competitions.get("ehl");
+      const ehl = competitions.ehl;
 
-      const teams = ehl.get("teams");
+      const teams = ehl.teams;
 
-      const groups = Range(0, 5)
-        .map(groupId => {
-          const teamSlice = teams.slice(groupId * 4, groupId * 4 + 4);
-          return Map({
-            type: "round-robin",
-            round: 0,
-            name: `lohko ${groupId + 1}`,
-            teams: teamSlice,
-            schedule: rr(teamSlice.count(), times),
-            colors: List.of("d", "l", "l", "l"),
-            penalties: List()
-          });
-        })
-        .toList();
+      const groups: RoundRobinCompetitionGroup[] = map(groupId => {
+        const teamSlice = teams.slice(groupId * 4, groupId * 4 + 4);
+        return {
+          type: "round-robin",
+          times,
+          round: 0,
+          name: `lohko ${groupId + 1}`,
+          teams: teamSlice,
+          schedule: rr(teamSlice.length, times),
+          colors: ["d", "l", "l", "l"],
+          penalties: [],
+          stats: []
+        } as RoundRobinCompetitionGroup;
+      }, range(0, 5));
 
-      return Map({
+      return {
         teams,
         name: "runkosarja",
         type: "round-robin",
         groups
-      });
+      } as RoundRobinCompetitionPhase;
     },
     competitions => {
-      const ehlGroups = competitions.getIn(["ehl", "phases", 0, "groups"]);
+      const ehlGroups = (competitions.ehl
+        .phases[0] as RoundRobinCompetitionPhase).groups;
+
       const ehlTables = ehlGroups.map(table);
+      const qualifiedVictors = ehlTables.map(t => head(t) as LeagueTableRow);
+      const sortedSeconds = sortLeagueTable(ehlTables.flatMap(drop(1)));
+      const qualifiedSecond = head(sortedSeconds) as LeagueTableRow;
 
-      const qualifiedVictors = ehlTables.map(table => table.first());
+      const teams = map(prop("id"), [...qualifiedVictors, qualifiedSecond]);
 
-      const sortedSeconds = sortStats(ehlTables.flatMap(table => table.rest()));
-
-      const qualifiedSecond = sortedSeconds.first();
-
-      const teams = qualifiedVictors
-        .push(qualifiedSecond)
-        .map(e => e.get("id"));
-
-      console.log("Qualified teams", teams);
-
-      return Map({
+      return {
         name: "lopputurnaus",
         type: "tournament",
         teams,
-        groups: List.of(
-          Map({
+        groups: [
+          {
             type: "tournament",
-            penalties: List(),
-            colors: List.of("d", "l", "l", "l", "l", "l"),
+            penalties: [],
+            colors: ["d", "l", "l", "l", "l", "l"],
             teams,
             round: 0,
             name: "lopputurnaus",
-            schedule: tournamentScheduler(teams.count())
-          })
-        )
-      });
+            schedule: tournamentScheduler(teams.length),
+            stats: []
+          } as TournamentCompetitionGroup
+        ]
+      } as TournamentCompetitionPhase;
     }
-  )
-});
+  ]
+};
+
+export default ehl;

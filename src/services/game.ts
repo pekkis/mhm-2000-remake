@@ -1,8 +1,9 @@
 import { Map, List } from "immutable";
 import r from "./random";
 import { pipe } from "ramda";
-import { getEffective, getEffectiveOpponent } from "../services/effects";
+import { getEffective, getEffectiveOpponent } from "./effects";
 import services from "../data/services";
+import { ScheduleGame, ScheduleGameResult } from "../types/base";
 
 /*
 mla(a) = mal(a) / ducka: mla(b) = mal(b) / ducka
@@ -133,14 +134,23 @@ export default {
   simulate
 };
 
-export const resultFacts = (result, key) => {
+interface GameFacts {
+  isWin: boolean;
+  isDraw: boolean;
+  isLoss: boolean;
+}
+
+export const resultFacts = (
+  result: ScheduleGameResult,
+  key: "home" | "away"
+): GameFacts => {
   const theirKey = key === "home" ? "away" : "home";
 
-  const isWin = result.get(key) > result.get(theirKey);
+  const isWin = result[key] > result[theirKey];
 
-  const isDraw = result.get(key) === result.get(theirKey);
+  const isDraw = result[key] === result[theirKey];
 
-  const isLoss = result.get(key) < result.get(theirKey);
+  const isLoss = result[key] < result[theirKey];
 
   return {
     isWin,
@@ -149,8 +159,13 @@ export const resultFacts = (result, key) => {
   };
 };
 
-export const gameFacts = (game, team) => {
-  const isHome = team === game.get("home");
+export const gameFacts = (game: ScheduleGame, team: number): GameFacts => {
+  const isHome = team === game.home;
   const myKey = isHome ? "home" : "away";
-  return resultFacts(game.get("result"), myKey);
+
+  if (!game.result) {
+    throw new Error("Trying to get facts for a game with no result");
+  }
+
+  return resultFacts(game.result, myKey);
 };

@@ -1,29 +1,7 @@
 import { SEASON_START } from "./game";
+import { Manager } from "../types/base";
 
 export const MANAGER_NEXT = "MANAGER_NEXT";
-
-export interface Manager {
-  id: string;
-  name: string;
-  difficulty: number;
-  pranksExecuted: number;
-  services: {
-    coach: boolean;
-    insurance: boolean;
-    microphone: boolean;
-    cheer: boolean;
-  };
-  balance: number;
-  arena: {
-    name: string;
-    level: number;
-  };
-  extra: number;
-  insuranceExtra: number;
-  flags: {
-    [key: string]: any;
-  };
-}
 
 export interface ManagerState {
   active: string | undefined;

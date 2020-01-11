@@ -142,7 +142,8 @@ const teamList: TeamData[] = [
 const teams = mapIndexed((team: TeamData, id: number) => ({
   ...team,
   strength: team.level * 10,
-  id
+  id,
+  morale: 0
 }))(teamList);
 
 export default teams;
