@@ -13,7 +13,9 @@ import {
   Flags,
   ServiceBasePrices,
   ComputerManager,
-  Team
+  Team,
+  Competition,
+  ForEveryCompetition
 } from "../types/base";
 
 export const GAME_START = "GAME_START";
@@ -34,6 +36,8 @@ export interface GameState {
   managers: ComputerManager[];
   calendar: MHMCalendar;
   teams: Team[];
+  competitions: ForEveryCompetition<Competition>;
+  worldChampionshipResults: unknown;
 }
 
 const defaultState: GameState = {
@@ -62,32 +66,32 @@ const defaultState: GameState = {
 
   calendar: getCalendar(),
 
-  competitions: Map({
-    phl: Map({
+  competitions: {
+    phl: {
       weight: 500,
       id: "phl",
       abbr: "phl",
       phase: -1,
       name: "PHL",
-      teams: List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
-      phases: List()
-    }),
-    division: Map({
+      teams: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      phases: []
+    },
+    division: {
       abbr: "div",
       weight: 1000,
       id: "division",
       phase: -1,
       name: "Divisioona",
-      teams: List.of(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24),
-      phases: List()
-    }),
-    mutasarja: Map({
+      teams: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+      phases: []
+    },
+    mutasarja: {
       abbr: "mut",
       weight: 2000,
       id: "mutasarja",
       phase: -1,
       name: "Mutasarja",
-      teams: List.of(
+      teams: [
         12,
         25,
         26,
@@ -112,27 +116,28 @@ const defaultState: GameState = {
         45,
         46,
         47
-      ),
-      phases: List()
-    }),
-    tournaments: Map({
+      ],
+      phases: []
+    },
+    tournaments: {
       weight: 2000,
       id: "tournaments",
       phase: -1,
       name: "Joulutauon turnaukset",
       abbr: "tournaments",
-      phases: List(),
-      teams: List()
-    }),
-    ehl: Map({
+      phases: [],
+      teams: []
+    },
+    ehl: {
       weight: 2000,
       id: "ehl",
       phase: -1,
       name: "EHL",
       abbr: "ehl",
-      phases: List()
-    })
-  }),
+      phases: [],
+      teams: []
+    }
+  },
 
   worldChampionshipResults: undefined
 };
@@ -144,9 +149,21 @@ export const advance = payload => {
   };
 };
 
+export interface GameSeasonStartAction {
+  type: typeof SEASON_START;
+}
+
+export interface GameSeasonEndAction {
+  type: typeof SEASON_END;
+}
+
 export interface GameSetPhaseAction {
   type: typeof GAME_SET_PHASE;
   payload: MHMTurnPhase;
+}
+
+export interface GameNextTurnAction {
+  type: typeof GAME_NEXT_TURN;
 }
 
 export const setPhase = (phase: MHMTurnPhase): GameSetPhaseAction => ({

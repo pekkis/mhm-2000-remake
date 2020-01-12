@@ -5,7 +5,7 @@ export type MHMEventTypes = "manager";
 
 export type MHMEventGenerator = Generator<Effect, void, unknown>;
 
-export interface MHMEvent {
+export interface MHMEventHandler {
   type: MHMEventTypes;
   create: (data: any) => MHMEventGenerator;
   render: (data: any) => List<string>;
@@ -67,7 +67,12 @@ export type CompetitionNames = keyof Competitions;
 export type CompetitionNameList = CompetitionNames[];
 
 export interface Competition {
+  id: string;
+  weight: number;
   teams: number[];
+  abbr: string;
+  name: string;
+  phase: number;
   phases: CompetitionPhase[];
 }
 
@@ -175,6 +180,7 @@ export interface Managers {
 
 export interface Manager {
   id: string;
+  team: number;
   name: string;
   difficulty: number;
   pranksExecuted: number;
@@ -228,6 +234,7 @@ export interface Team {
   strength: number;
   domestic: boolean;
   morale: number;
+  manager?: string;
 }
 
 export interface CompetitionService {
@@ -235,8 +242,8 @@ export interface CompetitionService {
   moraleBoost: (phase: number, facts: Facts, manager: Manager) => number;
   readinessBoost: (phase: number, facts: Facts, manager: Manager) => number;
 
-  start?: () => Generator;
-  groupEnd?: (phase: number, group: number) => Generator;
+  start?: () => Generator<any, void, any>;
+  groupEnd?: (phase: number, group: number) => Generator<any, void, any>;
 
   relegateTo: CompetitionNames | false;
   promoteTo: CompetitionNames | false;
@@ -271,4 +278,51 @@ export interface LeagueTableRow {
   goalsFor: number;
   goalsAgainst: number;
   points: number;
+}
+
+export interface Invitation {
+  id: string;
+  manager: string;
+  duration: number;
+  participate: boolean | undefined;
+  tournament: number;
+}
+
+export interface Streak {
+  win: number;
+  draw: number;
+  loss: number;
+  noLoss: number;
+  noWin: number;
+}
+
+export type ForEveryCompetition<T> = {
+  [P in CompetitionNames]: T;
+};
+
+export type ForEveryManager<T> = {
+  [key: string]: T;
+};
+
+export interface ManagerSeasonStats {}
+
+export interface CompetitionStatistics {}
+
+export interface Announcement {
+  content: string;
+}
+
+export interface NewsPiece {
+  content: string;
+}
+
+export interface Prank {
+  id: string;
+  manager: string;
+  victim: number;
+  type: number;
+}
+
+export interface MHMEvent {
+  id: string;
 }

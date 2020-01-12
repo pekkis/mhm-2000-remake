@@ -77,7 +77,7 @@ export function* setReadiness(teamId, readiness) {
   });
 }
 
-export function* incrementReadiness(teamId, amount) {
+export function* incrementReadiness(teamId: number, amount: number) {
   return yield put({
     type: "TEAM_INCREMENT_READINESS",
     payload: {

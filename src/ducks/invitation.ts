@@ -1,5 +1,6 @@
 import { Map, List } from "immutable";
 import uuid from "uuid";
+import { Invitation } from "../types/base";
 
 import {
   SEASON_START,
@@ -7,9 +8,13 @@ import {
   GAME_CLEAR_EXPIRED
 } from "./game";
 
-const defaultState = Map({
-  invitations: List()
-});
+export interface InvitationState {
+  invitations: Invitation[];
+}
+
+const defaultState: InvitationState = {
+  invitations: []
+};
 
 export const INVITATION_ACCEPT_REQUEST = "INVITATION_ACCEPT_REQUEST";
 export const INVITATION_ADD = "INVITATION_ADD_INVITATION";
@@ -42,7 +47,6 @@ export default function invitationReducer(state = defaultState, action) {
       );
 
     case INVITATION_ACCEPT:
-      console.log(action, "HAERIEWWFE");
       return state.update("invitations", invitations => {
         return invitations
           .update(

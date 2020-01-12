@@ -4,7 +4,7 @@ import { addEvent } from "../../sagas/event";
 import { flag } from "../selectors";
 import { setFlag } from "../../sagas/game";
 import { alterCountryStrength } from "../../ducks/country";
-import { MHMEvent } from "../../types/base";
+import { MHMEventHandler } from "../../types/base";
 
 /*
 sat78:
@@ -18,7 +18,7 @@ const eventId = "attitudeCanada";
 
 const difference = 30;
 
-const event: MHMEvent = {
+const event: MHMEventHandler = {
   type: "manager",
 
   create: function*(data: any) {

@@ -1,35 +1,44 @@
-import { Map, List, Range } from "immutable";
 import { select } from "redux-saga/effects";
 import { managersMainCompetition, managersTeamId } from "./selectors";
 import { amount as a } from "../services/format";
+import { Team, CompetitionNames, LeagueTable } from "../types/base";
+import { inRange } from "ramda-adjunct";
+import { MHMState } from "../ducks";
 
-const invitationCreator = (competitionId, maxRanking) => {
+const invitationCreator = (
+  competitionId: string,
+  maxRanking: number
+): ((manager: string) => Generator<any, boolean, any>) => {
   return function*(manager) {
-    const mainCompetition = yield select(managersMainCompetition(manager));
-    const teamId = yield select(managersTeamId(manager));
+    const mainCompetition: CompetitionNames = yield select(
+      managersMainCompetition(manager)
+    );
+    const teamId: number = yield select(managersTeamId(manager));
+
     if (mainCompetition !== competitionId) {
       return false;
     }
 
-    const stats = yield select(state =>
-      state.game.getIn([
-        "competitions",
-        mainCompetition,
-        "phases",
-        0,
-        "groups",
-        0,
-        "stats"
-      ])
+    const stats: LeagueTable = yield select(
+      (state: MHMState) =>
+        state.game.competitions[mainCompetition].phases[0].groups[0].stats
     );
 
-    const ranking = stats.findIndex(stat => stat.get("id") === teamId);
+    const ranking = stats.findIndex(stat => stat.id === teamId);
     return ranking <= maxRanking;
   };
 };
 
-const tournamentList = List.of(
-  Map({
+interface TournamentDefinition {
+  name: string;
+  award: number;
+  description: (amount: number) => string;
+  filter: (team: Team) => boolean;
+  isInvited: (manager: string) => Generator<any, boolean, any>;
+}
+
+const tournamentList: TournamentDefinition[] = [
+  {
     name: "Christmas Cup",
     award: 300000,
     description: amount =>
@@ -37,9 +46,9 @@ const tournamentList = List.of(
         amount
       )}__ pekkaa.`,
     isInvited: invitationCreator("phl", 5),
-    filter: t => t.get("strength") > 200
-  }),
-  Map({
+    filter: t => t.strength > 200
+  },
+  {
     name: "Go-Go Cola Cup",
     award: 250000,
     description: amount =>
@@ -47,9 +56,9 @@ const tournamentList = List.of(
         amount
       )}__ pekalla.`,
     isInvited: invitationCreator("phl", 9),
-    filter: t => Range(150, 225).includes(t.get("strength"))
-  }),
-  Map({
+    filter: t => inRange(150, 226, t.strength)
+  },
+  {
     name: "Cacca Cup",
     award: 100000,
     description: amount =>
@@ -57,8 +66,8 @@ const tournamentList = List.of(
         amount
       )}__ pekan palkkio.`,
     isInvited: invitationCreator("division", 5),
-    filter: t => t.get("strength") <= 175
-  })
-);
+    filter: t => t.strength <= 175
+  }
+];
 
 export default tournamentList;

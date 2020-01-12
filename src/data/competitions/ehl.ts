@@ -15,10 +15,12 @@ import {
   RoundRobinCompetitionPhase,
   LeagueTableRow,
   TournamentCompetitionPhase,
-  TournamentCompetitionGroup
+  TournamentCompetitionGroup,
+  Turn
 } from "../../types/base";
 import { map, range, head, drop, prop } from "ramda";
 import { sortLeagueTable } from "../../services/league";
+import { MHMState } from "../../ducks";
 
 const awards = List.of(
   Map({
@@ -140,12 +142,10 @@ const ehl: CompetitionService = {
   promoteTo: false,
 
   start: function*() {
-    // const ehlTeams = yield select(state => state.game.get("ehlParticipants"));
-    /*
-    const turn = yield select((state: MHMState) => state.game.get("turn"));
-    const season = turn.get("season");
+    const turn: Turn = yield select((state: MHMState) => state.game.turn);
+    const season = turn.season;
 
-    const ehlTeams = yield select(state =>
+    const ehlTeams = yield select((state: MHMState) =>
       state.stats.getIn(["seasons", season - 1, "medalists"], List.of(2, 3, 5))
     );
 
@@ -162,7 +162,6 @@ const ehl: CompetitionService = {
     const teams = ehlTeams.concat(foreignTeams).sortBy(() => r.real(1, 10000));
 
     yield call(setCompetitionTeams, "ehl", teams);
-    */
   },
 
   groupEnd: function*(phase: number, group: number) {

@@ -1,40 +1,80 @@
-import { Map, List } from "immutable";
 import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
 import { SEASON_START, SEASON_END } from "./game";
+import { assoc } from "ramda";
+import {
+  ManagerSeasonStats,
+  Streak,
+  ForEveryCompetition,
+  CompetitionStatistics
+} from "../types/base";
 
 export const STATS_UPDATE_FROM_FACTS = "STATS_UPDATE_FROM_FACTS";
 export const STATS_SET_SEASON_STAT = "STATS_SET_SEASON_STAT";
 
-const emptyStreak = Map({
+export interface SeasonStats {
+  ehlChampion: number;
+  presidentsTrophy: number;
+  medalists: number[];
+  worldChampionships: number[];
+  promoted: number[];
+  relegated: number[];
+  managers: {
+    [key: string]: ManagerSeasonStats;
+  };
+}
+
+const emptyStreak: Streak = {
   win: 0,
   draw: 0,
   loss: 0,
   noLoss: 0,
   noWin: 0
-});
+};
 
-const emptySeasonStats = Map({
+const emptySeasonStats: Partial<SeasonStats> = {
   ehlChampion: undefined,
   presidentsTrophy: undefined,
   medalists: undefined,
   worldChampionships: undefined,
   promoted: undefined,
   relegated: undefined,
-  managers: Map()
-});
+  managers: {}
+};
 
-const defaultState = Map({
-  managers: Map(),
-  currentSeason: undefined,
-  seasons: List(),
-  stories: Map(),
-  streaks: Map({
-    team: Map(),
-    manager: Map()
-  })
-});
+export interface StatsState {
+  currentSeason: Partial<SeasonStats>;
 
-export default function statsReducer(state = defaultState, action) {
+  managers: {
+    [key: string]: {
+      games: ForEveryCompetition<CompetitionStatistics>;
+    };
+  };
+
+  seasons: {
+    [key: string]: SeasonStats;
+  };
+
+  streaks: {
+    teams: {
+      [key: string]: Streak;
+    };
+    managers: {
+      [key: string]: Streak;
+    };
+  };
+}
+
+const defaultState: StatsState = {
+  currentSeason: emptySeasonStats,
+  managers: {},
+  seasons: {},
+  streaks: {
+    teams: {},
+    managers: {}
+  }
+};
+
+export default function statsReducer(state = defaultState, action): StatsState {
   const { type, payload } = action;
 
   switch (type) {
@@ -45,7 +85,7 @@ export default function statsReducer(state = defaultState, action) {
       return payload.stats;
 
     case SEASON_START:
-      return state.set("currentSeason", emptySeasonStats);
+      return assoc("currentSeason", emptySeasonStats, state);
 
     case SEASON_END:
       return state.update("seasons", seasons =>

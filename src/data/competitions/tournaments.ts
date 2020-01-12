@@ -15,9 +15,12 @@ import {
   TournamentCompetitionPhase,
   Team,
   Manager,
-  Managers
+  Managers,
+  Invitation,
+  TournamentCompetitionGroup
 } from "../../types/base";
 import { MHMState } from "../../ducks";
+import { prop, difference, append } from "ramda";
 
 const tournaments: CompetitionService = {
   relegateTo: false,
@@ -28,47 +31,41 @@ const tournaments: CompetitionService = {
   },
 
   groupEnd: function*(phase, group) {
-    /*
-    const tournament = yield select(state =>
-      state.game.getIn([
-        "competitions",
-        "tournaments",
-        "phases",
-        phase,
-        "groups",
-        group
-      ])
+    const tournament: TournamentCompetitionGroup = yield select(
+      (state: MHMState) =>
+        state.game.competitions.tournaments.phases[phase].groups[group]
     );
 
-    const managers = yield select(state => state.manager.get("managers"));
-    const teams = yield select(state => state.game.get("teams"));
+    const managers: Managers = yield select(
+      (state: MHMState) => state.manager.managers
+    );
+    const teams: Team[] = yield select((state: MHMState) => state.game.teams);
 
-    for (const [, stat] of tournament.get("stats").entries()) {
-      const team = teams.get(stat.get("id"));
+    for (const stat of tournament.stats) {
+      const team = teams[stat.id];
 
-      if (team.get("domestic", true)) {
-        yield call(incrementReadiness, team.get("id"), -2);
+      if (team.domestic) {
+        yield call(incrementReadiness, team.id, -2);
 
-        if (team.get("manager") !== undefined) {
-          const award = tournamentList.getIn([group, "award"]);
-          const manager = managers.get(team.get("manager"));
-          console.log("manager", manager.toJS());
+        if (team.manager !== undefined) {
+          const award = tournamentList[group].award;
+          const manager = managers[team.manager];
 
           yield all([
             call(
               addAnnouncement,
-              manager.get("id"),
+              manager.id,
               `Tilillenne on siirretty __${a(
                 award
-              )}__ pekkaa rahaa. Viiteviesti: joulutauon turnaus, osallistumismaksu, _${tournament.get(
-                "name"
-              )}_.`
+              )}__ pekkaa rahaa. Viiteviesti: joulutauon turnaus, osallistumismaksu, _${
+                tournament.name
+              }_.`
             ),
-            call(incrementBalance, manager.get("id"), award)
+            call(incrementBalance, manager.id, award)
           ]);
         }
       }
-    }*/
+    }
   },
 
   gameBalance: (phase, facts, manager) => {
@@ -104,65 +101,53 @@ const tournaments: CompetitionService = {
         (state: MHMState) => state.manager.managers
       );
 
-      const invitations = yield select((state: MHMState) =>
-        state.invitation.get("invitations").filter(i => i.get("participate"))
+      const invitations: Invitation[] = yield select((state: MHMState) =>
+        state.invitation.invitations.filter(i => i.participate === true)
       );
 
-      const invited = invitations
-        .map(i => {
-          return i.set("team", managers.getIn([i.get("manager"), "team"]));
-        })
-        .groupBy(i => i.get("tournament"));
+      const invited: [number, number][] = invitations.map(i => [
+        i.tournament,
+        managers[i.manager].team
+      ]);
 
-      console.log("INVITED", invited.toJS());
-
-      const reducer = Map({
-        teams: teams,
-        groups: List(),
-        invited
-      });
+      const reduced: {
+        alreadyInvited: number[];
+        groups: TournamentCompetitionGroup[];
+      } = {
+        alreadyInvited: [],
+        groups: []
+      };
 
       const ret = tournamentList.reduce((re, tournament, tournamentIndex) => {
-        console.log("RE", re.toJS());
+        const invitedTeams = invited.filter(i => i[0] === tournamentIndex);
 
-        const invitedTeams = re
-          .get("invited")
-          .get(tournamentIndex, List())
-          .map(i => i.get("team"));
-
-        const participants = invitedTeams.concat(
-          re
-            .get("teams")
-            .filter(tournament.get("filter"))
-            .sortBy(() => r.real(1, 1000))
-            .take(6 - invitedTeams.count())
-            .map(t => t.get("id"))
+        const assignables = difference(
+          teams.filter(tournament.filter).map(prop("id")),
+          re.alreadyInvited
         );
 
-        return re
-          .update("groups", groups =>
-            groups.push(
-              Map({
-                type: "tournament",
-                penalties: List(),
-                colors: List.of("d", "l", "l", "l", "l", "l"),
-                teams: participants,
-                round: 0,
-                name: tournament.get("name"),
-                schedule: tournamentScheduler(participants.count())
-              })
-            )
-          )
-          .update("teams", teams =>
-            teams.filterNot(t => participants.contains(t.get("id")))
-          );
-      }, reducer);
+        const sampled = r.sample(assignables, 6 - invitedTeams.length);
 
-      const groups = ret.get("groups");
+        const participants = [...invitedTeams.map(i => i[1]), ...sampled];
 
-      console.log("groups", groups.toJS());
+        const group: TournamentCompetitionGroup = {
+          type: "tournament",
+          penalties: [],
+          colors: ["d", "l", "l", "l", "l", "l"],
+          teams: participants,
+          round: 0,
+          name: tournament.name,
+          schedule: tournamentScheduler(participants.length),
+          stats: []
+        };
 
-      const teamz = groups.reduce((re, g) => re.concat(g.get("teams")), List());
+        return {
+          alreadyInvited: [...re.alreadyInvited, ...sampled],
+          groups: append(group, re.groups)
+        };
+      }, reduced);
+
+      const teamz = ret.groups.map(g => g.teams).flat();
 
       yield call(setCompetitionTeams, "tournaments", teamz);
 
@@ -170,7 +155,7 @@ const tournaments: CompetitionService = {
         name: "jouluturnaukset",
         type: "tournament",
         teams: teamz,
-        groups
+        groups: ret.groups
       } as TournamentCompetitionPhase;
     }
   ]
