@@ -1,4 +1,4 @@
-import { pipe, nth } from "ramda";
+import { pipe, nth, filter } from "ramda";
 import r from "../services/random";
 import { victors } from "../services/playoffs";
 import { List } from "immutable";
@@ -300,10 +300,11 @@ export const managerHasEnoughMoney = (manager, neededAmount) => state => {
 export const managerWithId = id => state =>
   state.manager.getIn(["managers", id]);
 
-export const playableCompetitions = state =>
-  state.game
-    .get("competitions")
-    .filter((c, k) => ["phl", "division", "mutasarja"].includes(k));
+export const playableCompetitions = (state: MHMState) =>
+  filter(
+    c => ["phl", "division", "mutasarja"].includes(c.id),
+    state.game.competitions
+  );
 
 export const currentCalendarEntry = (state): MHMTurnDefinition => {
   const round = state.game.getIn(["turn", "round"]);

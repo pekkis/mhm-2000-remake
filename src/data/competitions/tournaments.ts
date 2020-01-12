@@ -160,3 +160,5 @@ const tournaments: CompetitionService = {
     }
   ]
 };
+
+export default tournaments;

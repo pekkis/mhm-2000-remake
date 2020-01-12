@@ -296,9 +296,11 @@ export interface Streak {
   noWin: number;
 }
 
-export type ForEveryCompetition<T> = {
-  [P in CompetitionNames]: T;
+export type ForEvery<L extends string | symbol | number, T> = {
+  [P in L]: T;
 };
+
+export type ForEveryCompetition<T> = ForEvery<CompetitionNames, T>;
 
 export type ForEveryManager<T> = {
   [key: string]: T;

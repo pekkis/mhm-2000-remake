@@ -1,0 +1,39 @@
+Oikeasta yl„kulmasta l”ytyv„t tiedot:
+
+MANAGERI
+-Vuorossa oleva manageri omalla tunnusv„rill„„n. Tunnusv„ri on k„yt”ss„
+joka puolella peliss„, joten siit„ voi helposti tunnistaa itsens„ moninpeli„
+pelattaessa.
+
+SALDO
+-Joukkueen tilill„ olevan rahan m„„r„. Jos tili on miinuksella, ei palkkoja
+voida maksaa eik„ juuri mit„„n muutakaan tehd„.
+
+MORAALI
+-Nollamoraali tarkoittaa MHM 2000:n tapauksessa normaalia moraalia, ja siit„
+alas- ja yl”sp„in ment„ess„ korkeampi luku on parempi. Moraalin laskiessa
+tietyn pisteen alapuolelle tulee kriisipalaveri mahdolliseksi.
+
+INTENSITEETTI (nuolin„pp„imet yl”s ja alas)
+-Vaikuttaa suoraan peliesityksen tasoon ja v„symyksen kertymiseen.
+
+SOPUPELI (^S)
+-Nimens„ mukainen. Kun sopupeli on p„„ll„, joukkueesi h„vi„„ ottelun (paitsi
+jos toisellakin osapuolella on sama juttu, tuloksena on tasapeli). Aitoon
+pes„pallotyyliin sopupelej„ EI pelata koskaan, mutta VILKKUVA EI on MHM 2000:n
+tapauksessa se VŽHEMMŽN EI eli KYLLŽ?
+
+TOIMINNOT
+----------
+INTENSITEETTI  Nuolin„pp„imet yl”s ja alas
+SOPUPELI       ^S
+
+FLŽPPITAULUT   Nuolin„pp„imet vasemmalle ja oikealle
+-N„ill„ vaihdat apulaisvalmentajasta katsomovalmentajaan jos fl„ppitaulussa
+nuoli on valkoinen jompaan kumpaan suuntaan.
+
+AUTOMAATTISET KETJUT  ^A
+-Rakentaa ketjut automaattisesti
+
+JATKUVA AUTOMAATIO    U
+-Apulaisvalmentaja kertoo fl„ppitaulullaan, onko t„m„ p„„ll„/pois.

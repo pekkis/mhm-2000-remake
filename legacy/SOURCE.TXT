@@ -1,0 +1,38 @@
+PIKADOKUMENTAATIO
+==================
+
+Dingeli dongeli. Ep‰ilen, ettei t‰st‰ l‰hdekoodista ole sinulle paljoakaan apua, se kun on t‰ysin dokumentoimaton. Mutta ett‰ sinulla olisi edes jonkinlainen mahdollisuus p‰‰st‰ alkuun, tein pikadokumentaation. Myˆhemmin mahdollisesti kerron lis‰‰ ja tarkemmin.
+
+Kuten todettua, ohjelmointikieli on Microsoftin QuickBasic 4.5. Ei, se ei tule l‰hdekoodien mukana. Ei, en tied‰ mist‰ sen saa. Ei, en neuvo kuinka ohjelmoidaan. Minulta saa kysy‰ kysymyksi‰ koskien MHM 2000:n l‰hdekoodia, mutta minulta ei saa kysy‰ tyhmi‰.
+
+TIEDOSTOT
+----------
+
+MHM2K.BAS
+ILEX5.BAS
+ILEZ5.BAS
+ILES5.BAS
+
+N‰m‰ ovat varsinaisen pelin l‰hdekooditiedostot. MHM2K on alku, ILEX5 perustoiminnot, ILES5 tilastokeskus ja ILEZ5 kauden loppu. J‰rkytt‰v‰ m‰‰r‰ aliohjelmia, jotka toimivat mahdollisimman monessa yhteydess‰. Muisti OLI tiukilla, se oli niin tiukilla ettei sit‰ usko kukaan, ja siksi optimoin ja optimoin ja lopputulos on t‰ss‰. Jopa muuttujien nimet ovat mahdollisimman lyhyit‰ muistin s‰‰st‰miseksi.
+
+ILPO1.BAS -> ILPO5.BAS
+
+Kuten tied‰t, 64 kilon (tms) segmentit olivat ennen must kun koodia k‰‰nnettiin konekieleksi. N‰m‰ ovat ILEX5.BAS pilkottuna valmiiksi. Ne voi k‰‰nt‰‰ EXEksi vaikka saman tien (versio 1.2)
+
+*.BAS
+
+MHM 2000:N VIRTUAALIMUISTITEKNOLOGIA SELITETTYNƒ LYHYESTI
+------------------------------------------------
+
+MHM 2000 toimii about 500 kilolla muistia. On selv‰‰, ettei sen kokoista peli‰ voi mahduttaa kokonaisuudessaan n‰in surkeaan m‰‰r‰‰n. Siksip‰ MHM 2000 kiert‰‰ ongelman ovelasti k‰ytt‰m‰ll‰ virtuaalimuistia kuin se olisi keksinyt sen itse.
+
+DATA-alikansiossa majailee lukuisia .MHM - p‰‰tteisi‰ tiedostoja. N‰m‰ ovat MHM 2000:n mahmaX2(tm) - virtuaalimuistin k‰sittelij‰n tekstitiedostoja. Niihin p‰‰set k‰siksi LUEX.BAS - ohjelmalla. Ohjelma kysyy kirjainta tms, jos haluat muokata x.mhm - tiedostoa kirjoitat x ja painat enteri‰. Helppoa ja hauskaa.
+
+Editorissa itsess‰‰n on monia toimintoja. Niit‰ ei ole dokumentoitu. Tutki l‰hdekoodia.
+
+Tulevaisuudessa, jos / kun dokumentoin LUEXin ja muutaman muun editorin tai joku tutkii ohjelman toimintaa syv‰llisesti itse, kuka tahansa voi laajentaa peli‰ esim. uusilla erikoistapahtumilla, pelaajilla, tms.
+
+
+
+
+

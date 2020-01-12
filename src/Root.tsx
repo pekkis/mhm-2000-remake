@@ -5,6 +5,8 @@ import { BrowserRouter } from "react-router-dom";
 import typography from "./services/typography";
 import { GoogleFont, TypographyStyle } from "react-typography";
 import { createGlobalStyle } from "styled-components";
+import ErrorBoundary from "react-error-boundary";
+import ErrorView from "./components/error/Error";
 
 import { ThemeProvider } from "styled-components";
 import theme from "./themes/white";
@@ -42,7 +44,9 @@ const Root = props => {
           <ThemeProvider theme={theme}>
             <>
               <GlobalStyle />
-              <App />
+              <ErrorBoundary FallbackComponent={ErrorView}>
+                <App />
+              </ErrorBoundary>
             </>
           </ThemeProvider>
         </BrowserRouter>

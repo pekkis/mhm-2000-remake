@@ -1,21 +1,18 @@
-import countries from "../data/countries";
-import { Map } from "immutable";
 import { MetaQuitToMainMenuAction, META_QUIT_TO_MAIN_MENU } from "./meta";
 import { Reducer } from "redux";
-
-export interface Country {
-  iso: string;
-  name: string;
-  strength: number;
-}
+import { Country, ForEveryCountry } from "../types/country";
+import { mapObjIndexed } from "ramda";
+import countryData, { CountryData } from "../data/countries";
 
 export interface CountryState {
-  countries: Country[];
+  countries: ForEveryCountry<Country>;
 }
 
-const defaultState = Map({
-  countries
-});
+const defaultState: CountryState = {
+  countries: mapObjIndexed<CountryData, Country>(countryData => {
+    return { ...countryData, strength: countryData.strength() };
+  }, countryData) as ForEveryCountry<Country>
+};
 
 const COUNTRY_ALTER_STRENGTH = "COUNTRY_ALTER_STRENGTH";
 const COUNTRY_SET_STRENGTH = "COUNTRY_SET_STRENGTH";

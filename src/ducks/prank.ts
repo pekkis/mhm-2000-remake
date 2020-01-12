@@ -6,7 +6,7 @@ import {
   MetaQuitToMainMenuAction,
   META_GAME_LOAD_STATE
 } from "./meta";
-import uuid = require("uuid");
+import uuid from "uuid";
 
 export const PRANK_ORDER = "PRANK_ORDER";
 export const PRANK_ADD = "PRANK_ADD";
