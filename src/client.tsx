@@ -1,28 +1,30 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Root from "./Root";
-import { getInitialState } from "./config/state";
-import createStore from "./store";
+import { getInitialState } from "./config/state.js";
+import createStore from "./store.js";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faSpinner,
   faBars,
   faExclamationCircle
 } from "@fortawesome/free-solid-svg-icons";
-import runtime from "@dr-kobros/serviceworker-webpack-plugin/lib/runtime";
+// import runtime from "@dr-kobros/serviceworker-webpack-plugin/lib/runtime";
 import * as Sentry from "@sentry/browser";
 
-import "./style.pcss";
+import "./style.css";
 
 if (process.env.NODE_ENV !== "production") {
   const axe = require("react-axe");
   axe(React, ReactDOM, 1000);
 }
 
+/*
 Sentry.init({
   environment: process.env.NODE_ENV,
   dsn: "https://38630b0d78f645abb5cae7e82bc1582c@sentry.io/1367033"
 });
+*/
 
 library.add(faSpinner, faBars, faExclamationCircle);
 
@@ -43,9 +45,11 @@ if (!rootElement) {
 
 render(Root, rootElement);
 
+/*
 runtime.register().then((sw: ServiceWorker) => {
   console.log(sw, "serviis wörker");
 });
+*/
 
 // Webpack's hot reloading magic happens here.
 

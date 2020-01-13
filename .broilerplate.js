@@ -37,28 +37,7 @@ module.exports = target => {
   const env = process.env.NODE_ENV;
 
   const config = pipe(
-    empty,
-    defaultPaths(env, target, __dirname),
-    defaultBaseConfig(env, target),
-    mergeOptions(
-      Map({
-        debug: env === "development" ? true : false
-      })
-    ),
-    setEntry("client", "./client.tsx"),
-    defaultFeatures,
-    removeFeature("environmentVariablesFeature"),
     addFeatures(
-      [
-        "environmentVariablesFeature",
-        Map({
-          filter: (v, k) => {
-            const whitelisted = ["NODE_ENV", "COMMIT_REF"];
-
-            return whitelisted.includes(k) || k.startsWith("REACT_APP_");
-          }
-        })
-      ],
       swFeature(),
       manifestFeature(
         Map({
@@ -91,8 +70,6 @@ module.exports = target => {
         })
       ),
       postCssFeature(),
-      styledComponentsFeature(),
-      // babelPolyfillFeature(),
       externalCssFeature(),
       extractCssFeature(),
       nodeExternalsFeature({
@@ -114,8 +91,8 @@ module.exports = target => {
     toJS
   )(Map());
 
-  // console.log("config", util.inspect(config, { depth: 666 }));
-  // process.exit();
+  console.log("config", util.inspect(config, { depth: 666 }));
+  process.exit();
 
   return config;
 };

@@ -17,5 +17,5 @@
     "isolatedModules": true,
     "allowJs": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "/webpack.config.ts"]
 }
