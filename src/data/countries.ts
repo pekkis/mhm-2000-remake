@@ -27,6 +27,7 @@ import plNames from "./country/players-PL";
 export interface CountryData {
   iso: string;
   name: string;
+  special: boolean;
   strength: () => number;
 }
 
@@ -52,6 +53,7 @@ export const playerNames: ForEveryPlayableCountry<NameList> = {
 
 const countryData: ForEveryCountry<CountryData> = {
   FI: {
+    special: false,
     iso: "FI",
     name: "Pekkalandia",
     strength: function() {
@@ -59,106 +61,127 @@ const countryData: ForEveryCountry<CountryData> = {
     }
   },
   EE: {
+    special: false,
     iso: "EE",
     name: "Viro",
     strength: () => 66
   },
   CA: {
+    special: false,
     iso: "CA",
     name: "Kanada",
     strength: () => 202
   },
   US: {
+    special: false,
     iso: "US",
     name: "Yhdysvallat",
     strength: () => 194
   },
   SE: {
+    special: false,
     iso: "SE",
     name: "Ruotsi",
     strength: () => 206
   },
   FR: {
+    special: false,
     iso: "FR",
     name: "Ranska",
     strength: () => 153
   },
   CZ: {
+    special: false,
     iso: "CZ",
     name: "Tshekki",
     strength: () => 208
   },
   SK: {
+    special: false,
     iso: "SK",
     name: "Slovakia",
     strength: () => 189
   },
   RU: {
+    special: false,
     iso: "RU",
     name: "Venäjä",
     strength: () => 211
   },
   DE: {
+    special: false,
     iso: "DE",
     name: "Saksa",
     strength: () => 170
   },
   LV: {
+    special: false,
     iso: "LV",
     name: "Latvia",
     strength: () => 163
   },
   IT: {
+    special: false,
     iso: "IT",
     name: "Italia",
     strength: () => 168
   },
   CH: {
+    special: false,
     iso: "CH",
     name: "Sveitsi",
     strength: () => 159
   },
   JP: {
+    special: false,
     iso: "JP",
     name: "Japani",
     strength: () => 66
   },
   NO: {
+    special: false,
     iso: "NO",
     name: "Norja",
     strength: () => 66
   },
   AT: {
+    special: false,
     iso: "AT",
     name: "Itävalta",
     strength: () => 66
   },
   PL: {
+    special: false,
     iso: "PL",
     name: "Puola",
     strength: () => 66
   },
   BR: {
+    special: true,
     iso: "BR",
     name: "Brasilia",
     strength: () => 66
   },
   ZW: {
+    special: true,
     iso: "ZW",
     name: "Zimbabwe",
     strength: () => 66
   },
   ES: {
+    special: true,
     iso: "ES",
     name: "Espanja",
     strength: () => 66
   },
   "??": {
+    special: true,
     iso: "??",
     name: "Tuntematon",
     strength: () => 999
   },
   KP: {
+    special: true,
     iso: "KP",
     name: "Pohjois-Korea",
     strength: () => 999

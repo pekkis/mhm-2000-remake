@@ -1,10 +1,10 @@
 import countryData, { playerNames } from "../data/countries";
-import { PlayableCountries } from "../types/country";
+import { PlayableCountries, AllCountries } from "../types/country";
 import random from "./random";
-import { flip, invertObj } from "ramda";
+import { flip, invertObj, filter } from "ramda";
 
 interface LegacyIdToId {
-  [key: number]: PlayableCountries;
+  [key: number]: AllCountries;
 }
 
 interface IdToLegacyId {
@@ -28,7 +28,12 @@ const legacyIdToId: LegacyIdToId = {
   14: "NO",
   15: "FR",
   16: "AT",
-  17: "PL"
+  17: "PL",
+  18: "BR",
+  19: "ZW",
+  20: "ES",
+  21: "??",
+  22: "KP"
 };
 
 const idToLegacyId: IdToLegacyId = invertObj(legacyIdToId);
@@ -59,11 +64,16 @@ const initialLetters = [
   "F"
 ];
 
-export const countryFromLegacyCountry = (legacyId: number): PlayableCountries =>
+export const countryIds = (): string[] => Object.keys(countryData);
+
+export const normalCountryIds = (): string[] =>
+  Object.keys(filter(cd => cd.special === false, countryData));
+
+export const countryFromLegacyCountry = (legacyId: number): AllCountries =>
   legacyIdToId[legacyId];
 
 export const legacyCountryFromCountry = (id: string): number =>
-  parseInt(idToLegacyId[id.toString()], 10) - 1;
+  parseInt(idToLegacyId[id.toString()], 10);
 
 export const getData = () => countryData;
 

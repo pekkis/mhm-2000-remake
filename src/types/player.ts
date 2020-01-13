@@ -6,6 +6,7 @@ export interface Player {
   lastName: string;
   firstName: string;
   country: AllCountries;
+  skill: number;
   position: PlayerPosition;
   age: number;
   ego: number;

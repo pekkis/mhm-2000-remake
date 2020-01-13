@@ -1,5 +1,5 @@
-import random, { doubleNormalizedInt } from "./random";
-import { range, indexBy, map, reduce } from "ramda";
+import { doubleNormalizedInt } from "./random";
+import { range, reduce } from "ramda";
 
 test("weird randomizing", () => {
   const randomized = range(0, 100000).map(() => doubleNormalizedInt(100));
