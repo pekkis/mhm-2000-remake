@@ -3,8 +3,8 @@ import { call, select, put, all } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { flag } from "../selectors";
 import { setFlag } from "../../sagas/game";
-import { alterStrength } from "../../ducks/country";
-import { MHMEvent } from "../../types/base";
+import { alterCountryStrength } from "../../ducks/country";
+import { MHMEventHandler } from "../../types/base";
 
 /*
 sat78:
@@ -18,7 +18,7 @@ const eventId = "attitudeCanada";
 
 const difference = 30;
 
-const event: MHMEvent = {
+const event: MHMEventHandler = {
   type: "manager",
 
   create: function*(data: any) {
@@ -56,7 +56,7 @@ const event: MHMEvent = {
     const amount = attitude ? difference : -difference;
     yield all([
       call(setFlag, "canada", attitude),
-      put(alterStrength("CA", amount))
+      put(alterCountryStrength("CA", amount))
     ]);
   }
 };

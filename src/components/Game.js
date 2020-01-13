@@ -47,10 +47,10 @@ const Phase = props => {
     case turn.get("phase") === "gameday":
       return <Gameday />;
 
-    case turn.get("phase") === "world-championships":
+    case turn.get("phase") === "worldChampionships":
       return <WorldChampionships />;
 
-    case turn.get("phase") === "end-of-season":
+    case turn.get("phase") === "endOfSeason":
       return <EndOfSeason />;
 
     case turn.get("phase") === "results":

@@ -1,11 +1,18 @@
-import countryList from "../data/countries";
-import { Map } from "immutable";
 import { MetaQuitToMainMenuAction, META_QUIT_TO_MAIN_MENU } from "./meta";
 import { Reducer } from "redux";
+import { Country, ForEveryCountry } from "../types/country";
+import { mapObjIndexed } from "ramda";
+import countryData, { CountryData } from "../data/countries";
 
-const defaultState = Map({
-  countries: countryList.map(country => country.update("strength", s => s()))
-});
+export interface CountryState {
+  countries: ForEveryCountry<Country>;
+}
+
+const defaultState: CountryState = {
+  countries: mapObjIndexed<CountryData, Country>(countryData => {
+    return { ...countryData, strength: countryData.strength() };
+  }, countryData) as ForEveryCountry<Country>
+};
 
 const COUNTRY_ALTER_STRENGTH = "COUNTRY_ALTER_STRENGTH";
 const COUNTRY_SET_STRENGTH = "COUNTRY_SET_STRENGTH";
@@ -26,7 +33,7 @@ interface CountrySetStrengthAction {
   };
 }
 
-export const alterStrength = (
+export const alterCountryStrength = (
   country: string,
   amount: number
 ): CountryAlterStrengthAction => ({
@@ -37,7 +44,7 @@ export const alterStrength = (
   }
 });
 
-export const setStrength = (
+export const setCountryStrength = (
   country: string,
   strength: number
 ): CountrySetStrengthAction => ({

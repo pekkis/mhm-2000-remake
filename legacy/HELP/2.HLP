@@ -1,0 +1,58 @@
+KETJUKOKOONPANO
+================
+
+NIMI
+-Nimi
+
+PP
+-Pelipaikka:
+MV=Maalivahti   PU=Puolustaja
+VH=Vasen laita  KH=Keskushy”kk„„j„
+OH=Oikea laita
+
+IK
+-Ik„
+
+TA
+-Taitotaso. V„lill„ 1-20, mit„ korkeampi sen parempi.
+
+YV, AV
+-Suhteellinen taitotaso yli- ja alivoimilla.
+
+KU
+-Kunto. >0 OK, -1 tai pienempi v„symyst„. Mit„ enemm„n miinusta, sit„
+v„syneempi mies.
+
+KETJUJEN KOKOAMINEN
+====================
+
+ K      TYHJENNŽ VALITTU KETJU
+^K      PYYHI KAIKKI FLŽPPITAULUT
+^A      AUTOMAATTINEN KETJUJENRAKENTAJA
+
+Editoitava ketju ja haluttu pelaaja valitaan nuolin„pp„imill„. Sen j„lkeen
+mies voidaan asettaa paikalle seuraavilla n„pp„imill„:
+
+          MAALIVAHTI  Z
+    VASEN PUOLUSTAJA  A
+    OIKEA PUOLUSTAJA  S
+VASEN LAITAHY™KKŽŽJŽ  Q
+     KESKUSHY™KKŽŽJŽ  W
+OIKEA LAITAHY™KKŽŽJŽ  E
+
+VŽRIEN MERKITYS
+----------------
+Harmaalla n„kyv„ pelaaja ei ole yhdess„k„„n ketjussa. KELTAISELLA merkitty
+pelaaja pelaa 1 ketjussa, ja SINISELLŽ v„ritetty v„hint„„n kahdessa v„syen
+hirmuista tahtia.
+
+PELUUTTAMINEN
+--------------
+Huomaa, ett„ ainoastaan maalivahti voi pelata maalivahdin paikkaa -
+muut pelaajat voit asetella vapaasti. Vasen laita ei tietenk„„n puolusta
+yht„ tehokkaasti kuin 'oikea' pakki, eik„ ole t„ysin elementiss„„n my”sk„„n
+sentterin„ tai oikealla laidalla.
+
+Poikkeuskin l”ytyy: ALIVOIMAkoostumusta m„„ritelless„si on aivan sama,
+mik„ hy”kk„„j„ pelaa hy”kk„„j„n paikkaa - kaksi sentteri„ on yht„ mainio
+yhdistelm„ kuin sentteri ja oikea laita tms.

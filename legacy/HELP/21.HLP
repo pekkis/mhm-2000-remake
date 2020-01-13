@@ -1,0 +1,29 @@
+SARJATAULUKKO & KUNTOPUNTARI
+=============================
+
+Voit vaihtaa sarjataulukon ja kuntopuntarin v„lill„ yl”s- ja alas-
+nuolin„pp„imill„.
+
+SARJATAULUKKO
+--------------
+
+Vasemmalta oikealle, kohta kohdalta:
+Joukkue (Kotikaupunki)
+Ottelut
+Voitot
+Tasapelit
+Tappiot
+Tehdyt maalit - P„„stetyt maalit
+Pisteet
+Kuntopuntari
+
+KUNTOPUNTARI
+-------------
+
+Kuntopuntari asettaa joukkueet j„rjestykseen t„m„nhetkisen kunnon mukaan.
+Se ottaa huomioon KYMMENEN (10) edellist„ ottelua, ja symbolit merkitsev„t
+seuraavaa:
+
+w=kotivoitto    W=vierasvoitto
+d=kotitasapeli  D=vierastasapeli
+l=kotitappio    L=vierastappio

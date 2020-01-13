@@ -1,12 +1,19 @@
-import { Map } from "immutable";
 import { SEASON_START } from "./game";
+import { Manager } from "../types/base";
 
 export const MANAGER_NEXT = "MANAGER_NEXT";
 
-const defaultState = Map({
+export interface ManagerState {
+  active: string | undefined;
+  managers: {
+    [key: string]: Manager;
+  };
+}
+
+const defaultState: ManagerState = {
   active: undefined,
-  managers: Map()
-});
+  managers: {}
+};
 
 export const toggleService = (manager, service) => {
   return {

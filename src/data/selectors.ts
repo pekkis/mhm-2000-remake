@@ -1,11 +1,12 @@
-import { pipe, nth } from "ramda";
+import { pipe, nth, filter } from "ramda";
 import r from "../services/random";
 import { victors } from "../services/playoffs";
 import { List } from "immutable";
-import { MHMCalendar, MHMTurnDefinition } from "../types/base";
+import { MHMCalendar, MHMTurnDefinition, Team } from "../types/base";
+import { MHMState } from "../ducks";
 
-export const foreignTeams = state =>
-  state.game.get("teams").filter(t => !t.get("domestic"));
+export const foreignTeams = (state: MHMState): Team[] =>
+  state.game.teams.filter(t => !t.domestic);
 
 export const totalGamesPlayed = (manager, competition, phase) => state => {
   const stats = state.stats.getIn([
@@ -299,10 +300,11 @@ export const managerHasEnoughMoney = (manager, neededAmount) => state => {
 export const managerWithId = id => state =>
   state.manager.getIn(["managers", id]);
 
-export const playableCompetitions = state =>
-  state.game
-    .get("competitions")
-    .filter((c, k) => ["phl", "division", "mutasarja"].includes(k));
+export const playableCompetitions = (state: MHMState) =>
+  filter(
+    c => ["phl", "division", "mutasarja"].includes(c.id),
+    state.game.competitions
+  );
 
 export const currentCalendarEntry = (state): MHMTurnDefinition => {
   const round = state.game.getIn(["turn", "round"]);
