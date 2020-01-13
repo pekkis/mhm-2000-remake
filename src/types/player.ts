@@ -7,4 +7,10 @@ export interface Player {
   firstName: string;
   country: AllCountries;
   position: PlayerPosition;
+  age: number;
+  ego: number;
+  leadership: number;
+  charisma: number;
+  pk: number;
+  pp: number;
 }

@@ -1,12 +1,17 @@
 import countryData, { playerNames } from "../data/countries";
 import { PlayableCountries } from "../types/country";
 import random from "./random";
+import { flip, invertObj } from "ramda";
 
-interface LegacyMappings {
+interface LegacyIdToId {
   [key: number]: PlayableCountries;
 }
 
-const legacyMappings: LegacyMappings = {
+interface IdToLegacyId {
+  [key: string]: string;
+}
+
+const legacyIdToId: LegacyIdToId = {
   1: "FI",
   2: "SE",
   3: "DE",
@@ -25,6 +30,8 @@ const legacyMappings: LegacyMappings = {
   16: "AT",
   17: "PL"
 };
+
+const idToLegacyId: IdToLegacyId = invertObj(legacyIdToId);
 
 const initialLetters = [
   "A",
@@ -53,7 +60,10 @@ const initialLetters = [
 ];
 
 export const countryFromLegacyCountry = (legacyId: number): PlayableCountries =>
-  legacyMappings[legacyId];
+  legacyIdToId[legacyId];
+
+export const legacyCountryFromCountry = (id: string): number =>
+  parseInt(idToLegacyId[id.toString()], 10) - 1;
 
 export const getData = () => countryData;
 

@@ -1,11 +1,13 @@
 import { Player, PlayerPosition } from "../types/player";
-import random from "./random";
+import random, { doubleNormalizedInt } from "./random";
 import {
   countryFromLegacyCountry,
   createFirstName,
-  createLastName
+  createLastName,
+  legacyCountryFromCountry
 } from "./country";
-import { AllCountries } from "../types/country";
+import { AllCountries, PlayableCountries } from "../types/country";
+import util from "util";
 
 interface PlayerRandomGenerator {
   nationality: number[];
@@ -742,6 +744,68 @@ const randoms: PlayerRandomGenerator = {
   ]
 };
 
+const skillzors = [
+  [10, 26, 40, 43, 45, 20, 10, 5, 1],
+  [10, 26, 40, 43, 45, 20, 10, 5, 1],
+  [20, 32, 40, 50, 40, 10, 5, 2, 1],
+  [20, 32, 40, 50, 40, 10, 5, 2, 1],
+  [10, 26, 40, 43, 45, 20, 10, 5, 1],
+  [10, 26, 40, 43, 45, 20, 10, 5, 1],
+  [20, 32, 40, 50, 40, 10, 5, 2, 1],
+  [20, 33, 46, 50, 25, 13, 8, 4, 1],
+  [10, 30, 30, 35, 45, 20, 15, 10, 5],
+  [10, 30, 30, 35, 45, 20, 15, 10, 5],
+  [20, 33, 40, 46, 32, 16, 8, 4, 1],
+  [20, 33, 40, 46, 32, 16, 8, 4, 1],
+  [20, 32, 40, 50, 40, 10, 5, 2, 1],
+  [20, 32, 40, 50, 40, 10, 5, 2, 1],
+  [20, 32, 40, 50, 40, 10, 5, 2, 1],
+  [20, 32, 40, 50, 40, 10, 5, 2, 1],
+  [20, 32, 40, 50, 40, 10, 5, 2, 1]
+];
+
+export const randomSkill = (country: PlayableCountries) => {
+  const row = skillzors[legacyCountryFromCountry(country)];
+
+  const pros: number[] = [];
+  let c = 1;
+  let d = 1;
+
+  for (let x = 1; x <= 200; x = x + 1) {
+    if (row[c - 1] > d) {
+      pros.push(c);
+      d = d + 1;
+      continue;
+    }
+    if (row[c - 1] === d) {
+      pros.push(c);
+      d = 1;
+      c = c + 1;
+      continue;
+    }
+  }
+
+  return pros;
+};
+
+/*
+  DIM pros(1 TO 200) AS INTEGER
+c = 1
+d = 1
+FOR qwe = 1 TO 200
+IF borssix(c, nats) > d THEN pros(qwe) = c: d = d + 1: GOTO purkka
+IF borssix(c, nats) = d THEN pros(qwe) = c: d = 1: c = c + 1
+purkka:
+NEXT qwe
+bel(xxx).psk = ((pros(INT(200 * RND) + 1)) * 2) + INT(3 * RND) - 1
+ERASE pros
+IF bel(xxx).psk > 6 THEN
+temp% = INT(100 * RND) + 1
+IF temp% < 11 THEN bel(xxx).spe = 8 ELSE IF temp% < 16 THEN bel(xxx).spe = 5 ELSE IF temp% < 19 THEN bel(xxx).spe = 2 ELSE IF temp% < 22 AND bel(xxx).age >= 30 THEN bel(xxx).spe = 1
+END IF
+}
+*/
+
 export const positionFromLegacyPosition = (
   legacyPosition: number
 ): PlayerPosition => legacyPositionMap[legacyPosition];
@@ -755,17 +819,40 @@ export const createRandomPlayer = (): Player => {
   const age = random.pick(randoms.age);
   const ego = random.pick(randoms.ego);
 
+  const leadership =
+    randoms.leadership[doubleNormalizedInt(randoms.leadership.length)];
+
+  const charisma =
+    randoms.charisma[doubleNormalizedInt(randoms.charisma.length)];
+
   const pp = random.pick(randoms.specialTeams);
   const pk = random.pick(randoms.specialTeams);
 
-  return createPlayer(lastName, firstName, country, position);
+  return createPlayer(
+    lastName,
+    firstName,
+    country,
+    position,
+    age,
+    ego,
+    leadership,
+    charisma,
+    pp,
+    pk
+  );
 };
 
 export const createPlayer = (
   lastName: string,
   firstName: string,
   country: AllCountries,
-  position: PlayerPosition
+  position: PlayerPosition,
+  age: number,
+  ego: number,
+  leadership: number,
+  charisma: number,
+  pp: number,
+  pk: number
 ): Player => {
   const player: Player = {
     firstName: firstName.substr(0, 1),
