@@ -1,9 +1,9 @@
 import {
-  MetaQuitToMainMenuAction,
-  MetaGameLoadStateAction,
-  META_QUIT_TO_MAIN_MENU,
-  META_GAME_LOAD_STATE
-} from "./meta";
+  GameQuitToMainMenuAction,
+  GameLoadStateAction,
+  GAME_QUIT_TO_MAIN_MENU,
+  GAME_LOAD_STATE
+} from "./game";
 import { MHMEvent } from "../types/base";
 import { assoc, assocPath } from "ramda";
 
@@ -56,18 +56,18 @@ type EventActions =
   | EventClearEventsAction
   | EventResolveAction
   | EventSetProcessedAction
-  | MetaQuitToMainMenuAction
-  | MetaGameLoadStateAction;
+  | GameQuitToMainMenuAction
+  | GameLoadStateAction;
 
 export default function eventReducer(
   state = defaultState,
   action: EventActions
 ) {
   switch (action.type) {
-    case META_QUIT_TO_MAIN_MENU:
+    case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
-    case META_GAME_LOAD_STATE:
+    case GAME_LOAD_STATE:
       return action.payload.event;
 
     case EVENT_ADD:

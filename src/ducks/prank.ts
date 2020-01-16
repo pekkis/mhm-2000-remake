@@ -1,11 +1,11 @@
 import { Prank } from "../types/base";
 import { assocPath, dissocPath } from "ramda";
 import {
-  META_QUIT_TO_MAIN_MENU,
-  MetaGameLoadStateAction,
-  MetaQuitToMainMenuAction,
-  META_GAME_LOAD_STATE
-} from "./meta";
+  GAME_QUIT_TO_MAIN_MENU,
+  GameLoadStateAction,
+  GameQuitToMainMenuAction,
+  GAME_LOAD_STATE
+} from "./game";
 import uuid from "uuid";
 
 export const PRANK_ORDER = "PRANK_ORDER";
@@ -77,18 +77,18 @@ export const orderPrank = (
 type PrankActions =
   | PrankAddAction
   | PrankDismissAction
-  | MetaQuitToMainMenuAction
-  | MetaGameLoadStateAction;
+  | GameQuitToMainMenuAction
+  | GameLoadStateAction;
 
 export default function prankReducer(
   state: PrankState = defaultState,
   action: PrankActions
 ): PrankState {
   switch (action.type) {
-    case META_QUIT_TO_MAIN_MENU:
+    case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
-    case META_GAME_LOAD_STATE:
+    case GAME_LOAD_STATE:
       return action.payload.prank;
 
     case PRANK_ADD:

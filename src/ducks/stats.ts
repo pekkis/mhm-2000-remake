@@ -1,5 +1,9 @@
-import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
-import { SEASON_START, SEASON_END } from "./game";
+import {
+  GAME_SEASON_START,
+  GAME_SEASON_END,
+  GAME_QUIT_TO_MAIN_MENU,
+  GAME_LOAD_STATE
+} from "./game";
 import { assoc } from "ramda";
 import {
   ManagerSeasonStats,
@@ -78,16 +82,16 @@ export default function statsReducer(state = defaultState, action): StatsState {
   const { type, payload } = action;
 
   switch (type) {
-    case META_QUIT_TO_MAIN_MENU:
+    case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
-    case META_GAME_LOAD_STATE:
+    case GAME_LOAD_STATE:
       return payload.stats;
 
-    case SEASON_START:
+    case GAME_SEASON_START:
       return assoc("currentSeason", emptySeasonStats, state);
 
-    case SEASON_END:
+    case GAME_SEASON_END:
       return state.update("seasons", seasons =>
         seasons.push(state.get("currentSeason"))
       );

@@ -3,9 +3,11 @@ import uuid from "uuid";
 import { Invitation } from "../types/base";
 
 import {
-  SEASON_START,
+  GAME_SEASON_START,
   GAME_DECREMENT_DURATIONS,
-  GAME_CLEAR_EXPIRED
+  GAME_CLEAR_EXPIRED,
+  GAME_QUIT_TO_MAIN_MENU,
+  GAME_LOAD_STATE
 } from "./game";
 
 export interface InvitationState {
@@ -35,10 +37,10 @@ export default function invitationReducer(state = defaultState, action) {
   const { type, payload } = action;
 
   switch (type) {
-    case "META_QUIT_TO_MAIN_MENU":
+    case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
-    case "META_GAME_LOAD_STATE":
+    case GAME_LOAD_STATE:
       return payload.invitation;
 
     case INVITATION_ADD:
@@ -63,7 +65,7 @@ export default function invitationReducer(state = defaultState, action) {
             return i.get("manager") !== payload.manager || i.get("participate");
           });
       });
-    case SEASON_START:
+    case GAME_SEASON_START:
       return state.set("invitations", List());
 
     case GAME_DECREMENT_DURATIONS:

@@ -39,7 +39,7 @@ export default function* actionPhase() {
     fork(watchTransferMarket),
     takeEvery("MANAGER_CRISIS_MEETING", crisisMeeting),
     takeEvery("MANAGER_IMPROVE_ARENA", improveArena),
-    takeEvery("META_GAME_SAVE_REQUEST", gameSave),
+    takeEvery("GAME_SAVE_REQUEST", gameSave),
     takeEvery("MANAGER_TOGGLE_SERVICE", toggleService),
     takeEvery("PRANK_ORDER", orderPrank),
     takeEvery(INVITATION_ACCEPT_REQUEST, function*(action) {

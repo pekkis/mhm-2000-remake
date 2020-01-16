@@ -1,4 +1,8 @@
-import { SEASON_START } from "./game";
+import {
+  GAME_SEASON_START,
+  GAME_QUIT_TO_MAIN_MENU,
+  GAME_LOAD_STATE
+} from "./game";
 import { Manager } from "../types/base";
 
 export const MANAGER_NEXT = "MANAGER_NEXT";
@@ -77,13 +81,13 @@ export default function managerReducer(state = defaultState, action) {
   const { type, payload } = action;
 
   switch (type) {
-    case "META_QUIT_TO_MAIN_MENU":
+    case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
-    case "META_GAME_LOAD_STATE":
+    case GAME_LOAD_STATE:
       return payload.manager;
 
-    case SEASON_START:
+    case GAME_SEASON_START:
       return state.update("managers", managers => {
         return managers.map(manager => {
           return manager

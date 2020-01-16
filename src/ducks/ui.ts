@@ -1,4 +1,4 @@
-import { META_QUIT_TO_MAIN_MENU, MetaQuitToMainMenuAction } from "./meta";
+import { GAME_QUIT_TO_MAIN_MENU, GameQuitToMainMenuAction } from "./game";
 import { assoc } from "ramda";
 
 export interface UIState {
@@ -45,7 +45,7 @@ export const closeMenu = (): UIMenuCloseAction => {
 };
 
 type UIActions =
-  | MetaQuitToMainMenuAction
+  | GameQuitToMainMenuAction
   | UIDisableAdvanceAction
   | UIEnableAdvanceAction
   | UIMenuCloseAction
@@ -53,7 +53,7 @@ type UIActions =
 
 export default function uiReducer(state = defaultState, action: UIActions) {
   switch (action.type) {
-    case META_QUIT_TO_MAIN_MENU:
+    case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
     case UI_DISABLE_ADVANCE:

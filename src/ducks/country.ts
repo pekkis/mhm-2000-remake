@@ -1,4 +1,4 @@
-import { MetaQuitToMainMenuAction, META_QUIT_TO_MAIN_MENU } from "./meta";
+import { GameQuitToMainMenuAction, GAME_QUIT_TO_MAIN_MENU } from "./game";
 import { Reducer } from "redux";
 import { Country, ForEveryCountry } from "../types/country";
 import { mapObjIndexed } from "ramda";
@@ -57,7 +57,7 @@ export const setCountryStrength = (
 
 type CountryActions =
   | CountryAlterStrengthAction
-  | MetaQuitToMainMenuAction
+  | GameQuitToMainMenuAction
   | CountrySetStrengthAction;
 
 const countryReducer: Reducer<typeof defaultState, CountryActions> = (
@@ -65,7 +65,7 @@ const countryReducer: Reducer<typeof defaultState, CountryActions> = (
   action
 ) => {
   switch (action.type) {
-    case META_QUIT_TO_MAIN_MENU:
+    case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
     case COUNTRY_SET_STRENGTH:

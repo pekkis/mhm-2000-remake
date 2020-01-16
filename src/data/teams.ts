@@ -1,5 +1,7 @@
 import { mapIndexed } from "ramda-adjunct";
-import { string } from "random-js";
+import { Team } from "../types/team";
+import uuid from "uuid";
+import { indexBy, prop } from "ramda";
 
 interface TeamData {
   name: string;
@@ -139,11 +141,21 @@ const teamList: TeamData[] = [
   { name: "HC Niks", city: "Riika", level: 28, domestic: false }
 ];
 
-const teams = mapIndexed((team: TeamData, id: number) => ({
-  ...team,
-  strength: team.level * 10,
-  id,
-  morale: 0
-}))(teamList);
+const teams = indexBy(
+  prop("id"),
+  mapIndexed(
+    (team: TeamData): Team => ({
+      ...team,
+      id: uuid(),
+      strength: {
+        g: 0,
+        d: 0,
+        a: 0
+      },
+      morale: 0,
+      isHumanControlled: false
+    })
+  )(teamList)
+);
 
 export default teams;

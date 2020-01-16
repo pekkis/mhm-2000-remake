@@ -1,9 +1,7 @@
 import { Map, List } from "immutable";
 
-import teams from "../data/teams";
-import managers from "../data/managers";
+import teamData from "../data/teams";
 
-import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
 import { Reducer } from "redux";
 import { getCalendar } from "../services/calendar";
 import {
@@ -11,12 +9,28 @@ import {
   MHMCalendar,
   Turn,
   Flags,
-  ServiceBasePrices,
-  ComputerManager,
-  Team,
-  Competition,
-  ForEveryCompetition
+  ServiceBasePrices
 } from "../types/base";
+import { Team } from "../types/team";
+import { MHMState } from ".";
+import {
+  mergeRight,
+  assoc,
+  propEq,
+  pipe,
+  lensProp,
+  over,
+  mergeLeft,
+  map,
+  lensPath
+} from "ramda";
+
+export const GAME_QUIT_TO_MAIN_MENU = "GAME_QUIT_TO_MAIN_MENU";
+export const GAME_LOAD_STATE = "GAME_LOAD_STATE";
+export const GAME_START_REQUEST = "GAME_START_REQUEST";
+export const GAME_LOAD_REQUEST = "GAME_LOAD_REQUEST";
+export const GAME_SAVE_REQUEST = "GAME_SAVE_REQUEST";
+export const GAME_LOADED = "GAME_LOADED";
 
 export const GAME_START = "GAME_START";
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
@@ -25,22 +39,76 @@ export const GAME_DECREMENT_DURATIONS = "GAME_DECREMENT_DURATIONS";
 export const GAME_CLEAR_EXPIRED = "GAME_CLEAR_EXPIRED";
 export const GAME_NEXT_TURN = "GAME_NEXT_TURN";
 export const GAME_SET_PHASE = "GAME_SET_PHASE";
+export const GAME_SEASON_START = "GAME_SEASON_START";
+export const GAME_SEASON_END = "GAME_SEASON_END";
 
-export const SEASON_START = "SEASON_START";
-export const SEASON_END = "SEASON_END";
+export interface GameQuitToMainMenuAction {
+  type: typeof GAME_QUIT_TO_MAIN_MENU;
+}
+
+export interface GameLoadStateAction {
+  type: typeof GAME_LOAD_STATE;
+  payload: MHMState;
+}
+
+export interface GameStartAction {
+  type: typeof GAME_START_REQUEST;
+}
+
+export interface GameSaveRequestAction {
+  type: typeof GAME_SAVE_REQUEST;
+}
+
+export interface GameLoadRequestAction {
+  type: typeof GAME_LOAD_REQUEST;
+}
+
+export interface GameLoadedAction {
+  type: typeof GAME_LOADED;
+}
+
+export const quitToMainMenu = (): GameQuitToMainMenuAction => ({
+  type: GAME_QUIT_TO_MAIN_MENU
+});
+
+export const startGame = (): GameStartAction => {
+  return {
+    type: GAME_START_REQUEST
+  };
+};
+
+export const saveGame = (): GameSaveRequestAction => {
+  return {
+    type: GAME_SAVE_REQUEST
+  };
+};
+
+export const loadGame = (): GameLoadRequestAction => {
+  return {
+    type: GAME_LOAD_REQUEST
+  };
+};
 
 export interface GameState {
+  started: boolean;
+  loading: boolean;
+  saving: false;
+  starting: false;
+
   turn: Turn;
   flags: Flags;
   serviceBasePrices: ServiceBasePrices;
-  managers: ComputerManager[];
   calendar: MHMCalendar;
-  teams: Team[];
-  competitions: ForEveryCompetition<Competition>;
+  teams: { [key: string]: Team };
   worldChampionshipResults: unknown;
 }
 
 const defaultState: GameState = {
+  started: false,
+  loading: false,
+  saving: false,
+  starting: false,
+
   turn: {
     season: 0,
     round: 0,
@@ -60,84 +128,9 @@ const defaultState: GameState = {
     cheer: 3000
   },
 
-  managers,
-
-  teams,
+  teams: teamData,
 
   calendar: getCalendar(),
-
-  competitions: {
-    phl: {
-      weight: 500,
-      id: "phl",
-      abbr: "phl",
-      phase: -1,
-      name: "PHL",
-      teams: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-      phases: []
-    },
-    division: {
-      abbr: "div",
-      weight: 1000,
-      id: "division",
-      phase: -1,
-      name: "Divisioona",
-      teams: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
-      phases: []
-    },
-    mutasarja: {
-      abbr: "mut",
-      weight: 2000,
-      id: "mutasarja",
-      phase: -1,
-      name: "Mutasarja",
-      teams: [
-        12,
-        25,
-        26,
-        27,
-        28,
-        29,
-        30,
-        31,
-        32,
-        33,
-        34,
-        35,
-        36,
-        37,
-        38,
-        39,
-        40,
-        41,
-        42,
-        43,
-        44,
-        45,
-        46,
-        47
-      ],
-      phases: []
-    },
-    tournaments: {
-      weight: 2000,
-      id: "tournaments",
-      phase: -1,
-      name: "Joulutauon turnaukset",
-      abbr: "tournaments",
-      phases: [],
-      teams: []
-    },
-    ehl: {
-      weight: 2000,
-      id: "ehl",
-      phase: -1,
-      name: "EHL",
-      abbr: "ehl",
-      phases: [],
-      teams: []
-    }
-  },
 
   worldChampionshipResults: undefined
 };
@@ -150,11 +143,15 @@ export const advance = payload => {
 };
 
 export interface GameSeasonStartAction {
-  type: typeof SEASON_START;
+  type: typeof GAME_SEASON_START;
+}
+
+export interface GameAdvanceAction {
+  type: typeof GAME_ADVANCE;
 }
 
 export interface GameSeasonEndAction {
-  type: typeof SEASON_END;
+  type: typeof GAME_SEASON_END;
 }
 
 export interface GameSetPhaseAction {
@@ -178,80 +175,55 @@ const gameReducer: Reducer<typeof defaultState> = (
   const { type, payload } = action;
 
   switch (type) {
-    case META_QUIT_TO_MAIN_MENU:
+    case GAME_LOADED:
+      return mergeRight(state, {
+        started: true,
+        loading: false
+      });
+
+    case GAME_START_REQUEST:
+      return assoc("starting", true, state);
+
+    case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
-    case META_GAME_LOAD_STATE:
+    case GAME_LOAD_STATE:
       return payload.game;
 
-    case "COMPETITION_REMOVE_TEAM":
-      return state.updateIn(
-        ["competitions", payload.competition, "teams"],
-        teams => teams.filterNot(t => t === payload.team)
-      );
-
-    case "COMPETITION_ADD_TEAM":
-      return state.updateIn(
-        ["competitions", payload.competition, "teams"],
-        teams => teams.push(payload.team)
-      );
-
-    case "COMPETITION_UPDATE_STATS":
-      return state.setIn(
-        [
-          "competitions",
-          payload.competition,
-          "phases",
-          payload.phase,
-          "groups",
-          payload.group,
-          "stats"
-        ],
-        payload.stats
-      );
-
-    case "COMPETITION_SET_TEAMS":
-      return state.setIn(
-        ["competitions", payload.competition, "teams"],
-        payload.teams
-      );
-
-    case "COMPETITION_START":
-      return state.updateIn(["competitions", payload.competition], c => {
-        return c.set("phases", List());
-      });
-
-    case "COMPETITION_SEED":
-      return state
-        .setIn(
-          ["competitions", payload.competition, "phases", payload.phase],
-          payload.seed
+    case GAME_SEASON_START:
+      return pipe(
+        mergeLeft({
+          started: true,
+          loading: false,
+          flags: {
+            jarko: false
+          }
+        }),
+        over(
+          lensProp("teams"),
+          map(
+            mergeLeft({
+              effects: [],
+              opponentEffects: [],
+              morale: 0,
+              strategy: 2,
+              readiness: 0
+            })
+          )
         )
-        .setIn(["competitions", payload.competition, "phase"], payload.phase);
+      )(state);
 
-    case SEASON_START:
-      return state
-        .update("teams", teams =>
-          teams.map(t => {
-            return t
-              .set("effects", List())
-              .set("opponentEffects", List())
-              .set("morale", 0)
-              .set("strategy", 2)
-              .set("readiness", 0);
-          })
-        )
-        .setIn(["flags", "jarko"], false)
-        .update("competitions", competitions => {
-          return competitions.map(competition =>
-            competition.set("phase", -1).set("phases", List())
-          );
-        });
-
-    case SEASON_END:
-      return state.update("turn", turn => {
-        return turn.update("season", season => season + 1).set("round", -1);
-      });
+    case GAME_SEASON_END:
+      return over(
+        lensPath(["turn"]),
+        turn => {
+          return {
+            season: turn.season + 1,
+            round: -1
+          };
+        },
+        state
+      );
 
     case "GAME_GAME_RESULT":
       // console.log("pl", payload);

@@ -37,8 +37,8 @@ function* gameStart() {
 function* mainMenu() {
   do {
     const { load } = yield race({
-      load: take("META_GAME_LOAD_REQUEST"),
-      start: take("META_GAME_START_REQUEST")
+      load: take("GAME_LOAD_REQUEST"),
+      start: take("GAME_START_REQUEST")
     });
 
     if (load) {
@@ -49,7 +49,7 @@ function* mainMenu() {
 
     const task = yield fork(gameLoop);
 
-    yield take("META_QUIT_TO_MAIN_MENU");
+    yield take("GAME_QUIT_TO_MAIN_MENU");
     yield cancel(task);
   } while (true);
 }
@@ -66,12 +66,12 @@ export function* gameSave(action) {
 function* gameLoad(action) {
   const state = yield call(load);
   yield putResolve({
-    type: "META_GAME_LOAD_STATE",
+    type: "GAME_LOAD_STATE",
     payload: state
   });
 
   yield putResolve({
-    type: "META_GAME_LOADED"
+    type: "GAME_LOADED"
   });
 }
 

@@ -1,5 +1,5 @@
 import competitionData from "../data/competitions";
-import { SEASON_START, GameSetPhaseAction } from "../ducks/game";
+import { GAME_SEASON_START, GameSetPhaseAction } from "../ducks/game";
 
 import teamData from "../data/teams";
 
@@ -284,7 +284,7 @@ export function* seasonStart() {
   }
 
   yield put({
-    type: SEASON_START
+    type: GAME_SEASON_START
   });
 }
 

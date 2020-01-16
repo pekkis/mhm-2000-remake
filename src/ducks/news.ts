@@ -1,11 +1,12 @@
-import { GAME_NEXT_TURN, GameNextTurnAction } from "./game";
-import { ForEveryManager } from "../types/base";
 import {
-  META_QUIT_TO_MAIN_MENU,
-  META_GAME_LOAD_STATE,
-  MetaQuitToMainMenuAction,
-  MetaGameLoadStateAction
-} from "./meta";
+  GAME_NEXT_TURN,
+  GameNextTurnAction,
+  GAME_QUIT_TO_MAIN_MENU,
+  GAME_LOAD_STATE,
+  GameQuitToMainMenuAction,
+  GameLoadStateAction
+} from "./game";
+import { ForEveryManager } from "../types/base";
 import { over, lensPath, append, assoc } from "ramda";
 import { NewsPiece, Announcement } from "../types/base";
 
@@ -57,18 +58,18 @@ type NewsActions =
   | NewsNewsPieceAddAction
   | NewsAnnouncementsClearAction
   | GameNextTurnAction
-  | MetaQuitToMainMenuAction
-  | MetaGameLoadStateAction;
+  | GameQuitToMainMenuAction
+  | GameLoadStateAction;
 
 export default function newsReducer(
   state = defaultState,
   action: NewsActions
 ): NewsState {
   switch (action.type) {
-    case META_QUIT_TO_MAIN_MENU:
+    case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
-    case META_GAME_LOAD_STATE:
+    case GAME_LOAD_STATE:
       return action.payload.news;
 
     case GAME_NEXT_TURN:

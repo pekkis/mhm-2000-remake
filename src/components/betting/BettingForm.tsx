@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from "react";
 import { Formik } from "formik";
-import Slider from "rc-slider";
 import { amount as a } from "../../services/format";
 import Button from "../form/Button";
 import TeamName from "../team/Name";

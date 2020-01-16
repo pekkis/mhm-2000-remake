@@ -1,4 +1,4 @@
-import { META_QUIT_TO_MAIN_MENU, MetaQuitToMainMenuAction } from "./meta";
+import { GAME_QUIT_TO_MAIN_MENU, GameQuitToMainMenuAction } from "./game";
 import { Reducer } from "redux";
 import { dissocPath, assocPath } from "ramda";
 
@@ -38,7 +38,7 @@ export const dismissNotification = (id: string): NotificationDismissAction => {
 };
 
 type NotificationActions =
-  | MetaQuitToMainMenuAction
+  | GameQuitToMainMenuAction
   | NotificationDismissAction
   | NotificationAddAction;
 
@@ -47,7 +47,7 @@ const notificationReducer: Reducer<NotificationState, NotificationActions> = (
   action: NotificationActions
 ): NotificationState => {
   switch (action.type) {
-    case META_QUIT_TO_MAIN_MENU:
+    case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
     case NOTIFICATION_ADD:

@@ -13,7 +13,7 @@ import broilerplate, {
 
 import babel from "@dr-kobros/webpack-broilerplate/dist/features/babel";
 import mjs from "@dr-kobros/webpack-broilerplate/dist/features/mjs";
-import CoreJSPlugin from "corejs-upgrade-webpack-plugin";
+// import CoreJSPlugin from "corejs-upgrade-webpack-plugin";
 
 import images from "@dr-kobros/webpack-broilerplate/dist/features/images";
 import html from "@dr-kobros/webpack-broilerplate/dist/features/html";
@@ -63,10 +63,12 @@ const externalCSS = () => (bp: BroilerplateContext): BroilerplateContext => {
   )(bp);
 };
 
+/*
 const coreJS = () =>
   addPlugin(
-    createPluginDefinition(() => CoreJSPlugin({ resolveFrom: bp.paths.root }))
+    createPluginDefinition(() => CoreJSPlugin({ resolveFrom: [process.cwd()] }))
   );
+*/
 
 const bp2 = pipe(
   saneDefaultOptions(),
@@ -77,7 +79,7 @@ const bp2 = pipe(
   addEntrypoint("client", "./client.tsx"),
   babel({ browsers: pkg.browserslist[mode] }),
   mjs(),
-  coreJS(),
+  // coreJS(),
   externalCSS()
 )(bp);
 const config = build(bp2);

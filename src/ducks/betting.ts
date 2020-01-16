@@ -1,5 +1,9 @@
-import { META_QUIT_TO_MAIN_MENU, META_GAME_LOAD_STATE } from "./meta";
-import { SEASON_START, GAME_NEXT_TURN } from "./game";
+import {
+  GAME_QUIT_TO_MAIN_MENU,
+  GAME_LOAD_STATE,
+  GAME_SEASON_START,
+  GAME_NEXT_TURN
+} from "./game";
 import { assoc, over, lensProp, append } from "ramda";
 
 export const BETTING_BET = "BETTING_BET";
@@ -88,13 +92,13 @@ export default function bettingReducer(state = defaultState, action) {
   const { type, payload } = action;
 
   switch (type) {
-    case META_QUIT_TO_MAIN_MENU:
+    case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
-    case META_GAME_LOAD_STATE:
+    case GAME_LOAD_STATE:
       return payload.betting;
 
-    case SEASON_START:
+    case GAME_SEASON_START:
       return assoc("championshipBets", [], state);
 
     case BETTING_BET_CHAMPION:

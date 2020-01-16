@@ -12,8 +12,6 @@ import {
 // import runtime from "@dr-kobros/serviceworker-webpack-plugin/lib/runtime";
 import * as Sentry from "@sentry/browser";
 
-import "./style.css";
-
 if (process.env.NODE_ENV !== "production") {
   const axe = require("react-axe");
   axe(React, ReactDOM, 1000);

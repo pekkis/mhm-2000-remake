@@ -134,7 +134,7 @@ export default function* endOfSeasonPhase() {
   yield take("GAME_ADVANCE_REQUEST");
 
   yield put({
-    type: "SEASON_END"
+    type: "GAME_SEASON_END"
   });
 
   if (divisionVictor !== phlLoser) {

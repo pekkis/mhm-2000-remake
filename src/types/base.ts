@@ -147,24 +147,29 @@ export interface PlayoffsCompetitionGroup extends CompetitionGroup {
 
 type Color = "l" | "d";
 
-interface CompetitionPhase {
+interface BaseCompetitionPhase {
   name: string;
   type: CompetitionType;
   teams: number[];
   groups: CompetitionGroup[];
 }
 
-export interface RoundRobinCompetitionPhase extends CompetitionPhase {
+export interface RoundRobinCompetitionPhase extends BaseCompetitionPhase {
   groups: RoundRobinCompetitionGroup[];
 }
 
-export interface PlayoffsCompetitionPhase extends CompetitionPhase {
+export interface PlayoffsCompetitionPhase extends BaseCompetitionPhase {
   groups: PlayoffsCompetitionGroup[];
 }
 
-export interface TournamentCompetitionPhase extends CompetitionPhase {
+export interface TournamentCompetitionPhase extends BaseCompetitionPhase {
   groups: TournamentCompetitionGroup[];
 }
+
+export type CompetitionPhase =
+  | RoundRobinCompetitionPhase
+  | PlayoffsCompetitionPhase
+  | TournamentCompetitionPhase;
 
 export interface Facts {
   isLoss: boolean;
@@ -220,11 +225,6 @@ export interface ServiceBasePrices {
   coach: number;
   microphone: number;
   cheer: number;
-}
-
-export interface ComputerManager {
-  id: number;
-  name: string;
 }
 
 export interface CompetitionService {

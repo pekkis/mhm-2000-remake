@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from "react";
 import { Formik } from "formik";
-import Slider from "rc-slider";
 import { amount as a } from "../../services/format";
 import odds from "../../data/championship-betting";
 import Button from "../form/Button";
@@ -57,14 +56,13 @@ const BettingForm: FunctionComponent<Props> = props => {
             <h3>Valitse panos</h3>
 
             <div>
-              <Slider
+              <input
+                type="range"
                 min={10000}
                 max={1000000}
                 step={10000}
                 value={values.amount}
-                onChange={value => {
-                  setFieldValue("amount", value);
-                }}
+                onChange={handleChange}
               />
               <strong>{a(values.amount)}</strong> pekkaa
             </div>
