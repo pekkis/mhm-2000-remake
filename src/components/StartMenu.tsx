@@ -1,10 +1,15 @@
-import React from "react";
+import React, { FunctionComponent, useCallback } from "react";
 import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
 import Box from "./styled-system/Box";
 import ManagerForm from "./start-menu/ManagerForm";
 import styled from "styled-components";
 import title from "../assets/title.png";
+import { useSelector, useDispatch } from "react-redux";
+import { MHMState } from "../ducks";
+import { startGame, loadGame, advance } from "../ducks/game";
+import { sortedTeamList } from "../data/selectors";
+import { Team } from "../types/team";
 
 const Menu = styled.div``;
 
@@ -23,24 +28,45 @@ const Centerer = styled.div`
   text-align: center;
 `;
 
-const StartMenu = props => {
-  const {
-    teams,
-    competitions,
-    className,
-    startGame,
-    manager,
-    loadGame,
-    starting,
-    advance
-  } = props;
+const StartMenu: FunctionComponent = () => {
+  /*
+  state => ({
+    started: state.meta.get("started"),
+    turn: state.game.get("turn"),
+    menu: state.ui.get("menu"),
+    calendar: state.game.get("calendar")
+  }),
+  { startGame, loadGame }
+  */
+
+  const teams = useSelector<MHMState, Team[]>(sortedTeamList);
+  const competitions = useSelector(
+    (state: MHMState) => state.competition.competitions
+  );
+  const starting = useSelector((state: MHMState) => state.game.starting);
+  const dispatch = useDispatch();
+
+  const advance = useCallback(() => {
+    dispatch(advance());
+  }, [dispatch]);
 
   return (
-    <main className={className} role="main">
+    <main
+      css={{
+        margin: "0 auto",
+        maxWidth: "600px",
+
+        p: {
+          margin: "1em 0"
+        }
+      }}
+      role="main"
+    >
       <Menu>
         <Contents>
           <Centerer>
             <img
+              alt="MHM 2000"
               src={title}
               css={{
                 maxWidth: "100%",
@@ -63,7 +89,7 @@ const StartMenu = props => {
                   <Button
                     tabindex="0"
                     onClick={() => {
-                      startGame();
+                      dispatch(startGame());
                     }}
                   >
                     Uusi peli
@@ -71,7 +97,7 @@ const StartMenu = props => {
                   <Button
                     tabindex="0"
                     onClick={() => {
-                      loadGame();
+                      dispatch(loadGame());
                     }}
                   >
                     Lataa peli
@@ -103,7 +129,6 @@ const StartMenu = props => {
               <ManagerForm
                 teams={teams}
                 competitions={competitions}
-                manager={manager}
                 advance={advance}
               />
             </Box>
@@ -114,11 +139,4 @@ const StartMenu = props => {
   );
 };
 
-export default styled(StartMenu)`
-  margin: 0 auto;
-  max-width: 600px;
-
-  p {
-    margin: 1em 0;
-  }
-`;
+export default StartMenu;

@@ -1,9 +1,10 @@
-import { pipe, nth, filter } from "ramda";
+import { pipe, nth, filter, sortWith, ascend, values, prop } from "ramda";
 import r from "../services/random";
 import { victors } from "../services/playoffs";
 import { List } from "immutable";
-import { MHMCalendar, MHMTurnDefinition, Team } from "../types/base";
+import { MHMCalendar, MHMTurnDefinition } from "../types/base";
 import { MHMState } from "../ducks";
+import { Team } from "../types/team";
 
 export const foreignTeams = (state: MHMState): Team[] =>
   state.game.teams.filter(t => !t.domestic);
@@ -303,7 +304,7 @@ export const managerWithId = id => state =>
 export const playableCompetitions = (state: MHMState) =>
   filter(
     c => ["phl", "division", "mutasarja"].includes(c.id),
-    state.game.competitions
+    state.competition.competitions
   );
 
 export const currentCalendarEntry = (state): MHMTurnDefinition => {
@@ -314,4 +315,9 @@ export const currentCalendarEntry = (state): MHMTurnDefinition => {
     throw new Error("Invalid calendar entry");
   }
   return calendarEntry;
+};
+
+export const sortedTeamList = (state: MHMState): Team[] => {
+  const sorter = sortWith<Team>([ascend(prop("name")), ascend(prop("id"))]);
+  return sorter(values(state.game.teams));
 };

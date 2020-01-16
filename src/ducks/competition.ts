@@ -22,6 +22,7 @@ import {
   GAME_LOAD_STATE,
   GAME_QUIT_TO_MAIN_MENU
 } from "./game";
+import { namesToIds } from "../services/team";
 
 export interface CompetitionState {
   competitions: ForEveryCompetition<Competition>;

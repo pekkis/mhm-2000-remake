@@ -6,8 +6,8 @@ import Select from "../form/Select";
 import Label from "../form/Label";
 import LabelDiv from "../form/LabelDiv";
 import Field from "../form/Field";
-import difficultyLevels from "../../services/difficulty-levels";
-import { mapObjIndexed, map, values as rValues } from "ramda";
+import difficultyLevelMap from "../../services/difficulty-levels";
+import { map, values as rValues, values } from "ramda";
 import { Competition, ForEveryCompetition } from "../../types/base";
 import { Team } from "../../types/team";
 
@@ -20,10 +20,27 @@ interface Props {
   };
   competitions: ForEveryCompetition<Competition>;
   teams: Team[];
+  advance: (values: object) => void;
 }
 
+interface ManagerInput {
+  name: string;
+  arena: string;
+  difficulty: string;
+  team: string;
+}
+
+const manager: ManagerInput = {
+  name: "Gaylord Lohiposki",
+  arena: "Dr. Kobros Areena",
+  difficulty: "1",
+  team: "1"
+};
+
 const ManagerForm: FunctionComponent<Props> = props => {
-  const { manager, advance, competitions, teams } = props;
+  const { advance, competitions, teams } = props;
+
+  const difficultyLevels = values(difficultyLevelMap);
 
   return (
     <div>
@@ -58,24 +75,22 @@ const ManagerForm: FunctionComponent<Props> = props => {
 
               <Field>
                 <LabelDiv>Vaikeustaso</LabelDiv>
-                {difficultyLevels
-                  .map(dl => {
-                    return (
-                      <div key={dl.get("value")}>
-                        <label>
-                          <Input
-                            type="radio"
-                            name="difficulty"
-                            value={dl.get("value")}
-                            checked={values.difficulty === dl.get("value")}
-                            onChange={handleChange}
-                          />{" "}
-                          {dl.get("name")} ({dl.get("description")})
-                        </label>
-                      </div>
-                    );
-                  })
-                  .toList()}
+                {difficultyLevels.map(dl => {
+                  return (
+                    <div key={dl.value}>
+                      <label>
+                        <Input
+                          type="radio"
+                          name="difficulty"
+                          value={dl.value}
+                          checked={values.difficulty === dl.value.toString()}
+                          onChange={handleChange}
+                        />{" "}
+                        {dl.name} ({dl.description})
+                      </label>
+                    </div>
+                  );
+                })}
               </Field>
 
               <Field>

@@ -1,7 +1,9 @@
 import React, { FunctionComponent } from "react";
-import StartMenu from "./containers/StartMenuContainer";
-import Game from "./containers/GameContainer";
+import StartMenu from "./StartMenu";
+import Game from "./Game";
 import * as Sentry from "@sentry/browser";
+import { useSelector } from "react-redux";
+import { MHMState } from "../ducks";
 
 /*
     Sentry.withScope(scope => {
@@ -12,12 +14,8 @@ import * as Sentry from "@sentry/browser";
     });
 */
 
-interface Props {
-  started: boolean;
-}
-
-const App: FunctionComponent<Props> = props => {
-  const { started } = props;
+const App: FunctionComponent = () => {
+  const started = useSelector<MHMState, boolean>(state => state.game.started);
 
   switch (true) {
     case !started:

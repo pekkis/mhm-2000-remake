@@ -3,7 +3,7 @@ import Forward from "../Forward";
 import { advance } from "../../../ducks/game";
 import { resolveEvent } from "../../../ducks/event";
 import { closeMenu } from "../../../ducks/ui";
-import { saveGame, quitToMainMenu } from "../../../ducks/meta";
+import { saveGame, quitToMainMenu } from "../../../ducks/game";
 export default connect(
   state => ({
     turn: state.game.get("turn"),

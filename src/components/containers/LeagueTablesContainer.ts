@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import LeagueTables from "../LeagueTables";
 import { advance } from "../../ducks/game";
 import { resolveEvent } from "../../ducks/event";
-import { saveGame, quitToMainMenu } from "../../ducks/meta";
+import { saveGame, quitToMainMenu } from "../../ducks/game";
 export default connect(
   state => ({
     turn: state.game.get("turn"),

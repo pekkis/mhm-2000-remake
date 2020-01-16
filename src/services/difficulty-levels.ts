@@ -60,7 +60,7 @@ const difficultyLevels: DifficultyLevelMap = {
     value: 3,
     name: "Kahvivatsa",
     description:
-      "Vahvan elämyksen ystäville. Kaikki maksaa, sponsorit ovat pihejä ja tietokoneen managerit eivät pidä sinusta. Menestys on työn ja tuskan takana.",
+      "MHM 2000:n perustaso tarjoaa keskitasoista haastetta kaikin puolin: menestyksen eteen saa nähdä jo vähän vaivaakin.",
     moraleMin: -10,
     moraleMax: 10,
     moraleBoost: 0,
@@ -80,7 +80,8 @@ const difficultyLevels: DifficultyLevelMap = {
   4: {
     value: 4,
     name: "Haavavatsa",
-    description: "Vahvan elämyksen ystäville",
+    description:
+      "Vahvan elämyksen ystäville. Kaikki maksaa, sponsorit ovat pihejä ja tietokoneen managerit eivät pidä sinusta. Menestys on työn ja tuskan takana.",
     moraleMin: -0,
     moraleMax: 10,
     moraleBoost: -1,

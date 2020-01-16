@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import GamedayResults from "../GamedayResults";
 import { advance } from "../../ducks/game";
 import { resolveEvent } from "../../ducks/event";
-import { saveGame, quitToMainMenu } from "../../ducks/meta";
+import { saveGame, quitToMainMenu } from "../../ducks/game";
 import { currentCalendarEntry } from "../../data/selectors";
 export default connect(
   state => ({

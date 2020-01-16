@@ -70,7 +70,7 @@ export type CompetitionNameList = CompetitionNames[];
 export interface Competition {
   id: string;
   weight: number;
-  teams: number[];
+  teams: string[];
   abbr: string;
   name: string;
   phase: number;
