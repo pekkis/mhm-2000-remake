@@ -6,9 +6,10 @@ import Select from "../form/Select";
 import Label from "../form/Label";
 import LabelDiv from "../form/LabelDiv";
 import Field from "../form/Field";
-import difficultyLevels from "../../data/difficulty-levels";
+import difficultyLevels from "../../services/difficulty-levels";
 import { mapObjIndexed, map, values as rValues } from "ramda";
-import { Competition, Team, ForEveryCompetition } from "../../types/base";
+import { Competition, ForEveryCompetition } from "../../types/base";
+import { Team } from "../../types/team";
 
 interface Props {
   manager: {

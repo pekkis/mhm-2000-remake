@@ -21,7 +21,7 @@ import {
 import { incrementMorale, incrementReadiness, incurPenalty } from "./team";
 import { addNotification } from "./notification";
 import crisis from "../data/crisis";
-import difficultyLevels from "../data/difficulty-levels";
+import difficultyLevels from "../services/difficulty-levels";
 import arenas from "../data/arenas";
 import { incrementStrength, decrementStrength } from "./team";
 import uuid from "uuid";

@@ -1,7 +1,6 @@
 import { addManager } from "./manager";
 import { gameLoop } from "./game";
 import { addNotification } from "./notification";
-import transit from "transit-immutable-js";
 
 import {
   all,

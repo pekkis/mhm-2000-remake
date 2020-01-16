@@ -34,6 +34,14 @@ const phl: CompetitionService = {
     return 0;
   },
 
+  homeAdvantage: (phase, group) => {
+    return 1;
+  },
+
+  awayAdvantage: (phase, group) => {
+    return 0.85;
+  },
+
   relegateTo: "division",
   promoteTo: false,
 

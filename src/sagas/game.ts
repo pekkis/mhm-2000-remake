@@ -27,7 +27,7 @@ import startOfSeasonPhase from "./phase/start-of-season";
 import galaPhase from "./phase/gala";
 
 import calculationsPhase from "./phase/calculations";
-import difficultyLevels from "../data/difficulty-levels";
+import difficultyLevels from "../services/difficulty-levels";
 
 import { setExtra, decrementBalance, incrementInsuranceExtra } from "./manager";
 import { stats } from "./stats";

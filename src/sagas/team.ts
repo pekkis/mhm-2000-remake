@@ -1,6 +1,6 @@
 import { put, call, select, putResolve } from "redux-saga/effects";
 import { teamsManager } from "../data/selectors";
-import difficultyLevels from "../data/difficulty-levels";
+import difficultyLevels from "../services/difficulty-levels";
 import { calculateGroupStats } from "./stats";
 
 const getMoraleMinMax = manager => {

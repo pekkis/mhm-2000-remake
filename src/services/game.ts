@@ -3,7 +3,7 @@ import r from "./random";
 import { pipe } from "ramda";
 import { getEffective, getEffectiveOpponent } from "./effects";
 import services from "../data/services";
-import { ScheduleGame, ScheduleGameResult } from "../types/base";
+import { ScheduleGame, MatchResult } from "../types/base";
 
 /*
 mla(a) = mal(a) / ducka: mla(b) = mal(b) / ducka
@@ -141,7 +141,7 @@ interface GameFacts {
 }
 
 export const resultFacts = (
-  result: ScheduleGameResult,
+  result: MatchResult,
   key: "home" | "away"
 ): GameFacts => {
   const theirKey = key === "home" ? "away" : "home";

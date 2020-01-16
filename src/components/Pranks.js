@@ -9,7 +9,7 @@ import ConfirmPrank from "./pranks/ConfirmPrank";
 import Box from "./styled-system/Box";
 import Calendar from "./ui/containers/CalendarContainer";
 
-import difficultyLevels from "../data/difficulty-levels";
+import difficultyLevels from "../services/difficulty-levels";
 
 const Pranks = props => {
   const {

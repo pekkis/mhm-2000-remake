@@ -14,7 +14,7 @@ import {
 } from "../selectors";
 import { cinteger } from "../../services/random";
 import { setFlag, setExtra } from "../../sagas/manager";
-import difficultyLevels from "../../data/difficulty-levels";
+import difficultyLevels from "../../services/difficulty-levels";
 
 /*
 IF sarja = 1 THEN RETURN

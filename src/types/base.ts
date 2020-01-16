@@ -1,5 +1,6 @@
 import { Effect } from "redux-saga/effects";
 import { List } from "immutable";
+import { Team } from "./team";
 
 export type MHMEventTypes = "manager";
 
@@ -86,7 +87,7 @@ export interface TeamPenalty {
 export type Schedule = ScheduleRound[];
 export type ScheduleRound = ScheduleGame[];
 
-export interface ScheduleGameResult {
+export interface MatchResult {
   home: number;
   away: number;
   overtime: boolean;
@@ -95,7 +96,7 @@ export interface ScheduleGameResult {
 export interface ScheduleGame {
   home: number;
   away: number;
-  result?: ScheduleGameResult;
+  result?: MatchResult;
 }
 
 export type PlayoffsStats = PlayoffStat[];
@@ -226,18 +227,10 @@ export interface ComputerManager {
   name: string;
 }
 
-export interface Team {
-  id: number;
-  name: string;
-  city: string;
-  level: number;
-  strength: number;
-  domestic: boolean;
-  morale: number;
-  manager?: string;
-}
-
 export interface CompetitionService {
+  homeAdvantage: (phase: number, group: number) => number;
+  awayAdvantage: (phase: number, group: number) => number;
+
   gameBalance: (phase: number, facts: Facts, manager: Manager) => number;
   moraleBoost: (phase: number, facts: Facts, manager: Manager) => number;
   readinessBoost: (phase: number, facts: Facts, manager: Manager) => number;
@@ -327,4 +320,22 @@ export interface Prank {
 
 export interface MHMEvent {
   id: string;
+}
+
+export interface DifficultyLevelMap {
+  1: DifficultyLevel;
+  2: DifficultyLevel;
+  3: DifficultyLevel;
+  4: DifficultyLevel;
+  5: DifficultyLevel;
+}
+
+export type DifficultyLevels = keyof DifficultyLevelMap;
+
+export interface DifficultyLevel {
+  name: string;
+  description: string;
+  value: number;
+  moraleMin: number;
+  moraleMax: number;
 }

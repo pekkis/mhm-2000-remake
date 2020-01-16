@@ -9,7 +9,7 @@ import {
   managersDifficulty
 } from "../selectors";
 import { setFlag, setExtra } from "../../sagas/manager";
-import difficultyLevels from "../../data/difficulty-levels";
+import difficultyLevels from "../../services/difficulty-levels";
 
 /*
 IF sarja = 2 THEN RETURN
