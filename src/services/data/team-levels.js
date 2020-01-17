@@ -1,6 +1,4 @@
-import { List, fromJS } from "immutable";
-
-const levels = fromJS([
+const levels = [
   [2, 6, 12],
   [3, 8, 16],
   [4, 10, 20],
@@ -59,9 +57,9 @@ const levels = fromJS([
   [19, 116, 232],
   [20, 118, 236],
   [20, 120, 240]
-]).map(level => {
-  const [g, d, f] = level;
-  return { g, d, f };
+].map(level => {
+  const [g, d, a] = level;
+  return { g, d, a };
 });
 
 export default levels;

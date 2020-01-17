@@ -65,6 +65,6 @@ function* championshipBetting() {
 
 export default function* startOfSeasonPhase() {
   yield call(seasonStart);
-  yield call(selectStrategy);
-  yield call(championshipBetting);
+  // yield call(selectStrategy);
+  // yield call(championshipBetting);
 }

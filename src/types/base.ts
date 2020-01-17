@@ -1,6 +1,7 @@
 import { Effect } from "redux-saga/effects";
 import { List } from "immutable";
 import { Team } from "./team";
+import { Manager } from "./manager";
 
 export type MHMEventTypes = "manager";
 
@@ -184,30 +185,6 @@ export interface Managers {
   [key: string]: Manager;
 }
 
-export interface Manager {
-  id: string;
-  team: number;
-  name: string;
-  difficulty: number;
-  pranksExecuted: number;
-  services: {
-    coach: boolean;
-    insurance: boolean;
-    microphone: boolean;
-    cheer: boolean;
-  };
-  balance: number;
-  arena: {
-    name: string;
-    level: number;
-  };
-  extra: number;
-  insuranceExtra: number;
-  flags: {
-    [key: string]: any;
-  };
-}
-
 export interface Turn {
   season: number;
   round: number;
@@ -339,3 +316,7 @@ export interface DifficultyLevel {
   moraleMin: number;
   moraleMax: number;
 }
+
+export type MapOf<T> = {
+  [key: string]: T;
+};

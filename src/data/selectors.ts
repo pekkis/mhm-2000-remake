@@ -1,13 +1,54 @@
 import { pipe, nth, filter, sortWith, ascend, values, prop } from "ramda";
 import r from "../services/random";
 import { victors } from "../services/playoffs";
-import { List } from "immutable";
-import { MHMCalendar, MHMTurnDefinition } from "../types/base";
+import { MHMTurnDefinition } from "../types/base";
 import { MHMState } from "../ducks";
 import { Team } from "../types/team";
 
+export const allTeams = (state: MHMState) => values(state.team.teams);
+
+export const managersCurrentTeam = (manager: string) => (
+  state: MHMState
+): string | undefined => {
+  return state.manager.managers[manager].team;
+};
+
 export const foreignTeams = (state: MHMState): Team[] =>
-  state.game.teams.filter(t => !t.domestic);
+  values(state.team.teams).filter(t => t.country !== "FI");
+
+export const teamsMainCompetition = (team: string) => (state: MHMState) => {
+  const mainCompetition = values(state.competition.competitions).find(c =>
+    c.teams.includes(team)
+  );
+  if (!mainCompetition) {
+    throw new Error(`Main competition not found for team ${team}`);
+  }
+
+  return mainCompetition;
+};
+
+export const playableCompetitions = (state: MHMState) =>
+  filter(
+    c => ["phl", "division", "mutasarja"].includes(c.id),
+    state.competition.competitions
+  );
+
+export const currentCalendarEntry = (state: MHMState): MHMTurnDefinition => {
+  const round = state.game.turn.round;
+  const calendar = state.game.calendar;
+  const calendarEntry = nth(round, calendar);
+  if (!calendarEntry) {
+    throw new Error("Invalid calendar entry");
+  }
+  return calendarEntry;
+};
+
+export const sortedTeamList = (state: MHMState): Team[] => {
+  const sorter = sortWith<Team>([ascend(prop("name")), ascend(prop("id"))]);
+  return sorter(values(state.team.teams));
+};
+
+// UNREFACTORED BEGINS
 
 export const totalGamesPlayed = (manager, competition, phase) => state => {
   const stats = state.stats.getIn([
@@ -39,13 +80,6 @@ export const managerObject = manager => state =>
 
 export const managersMainCompetition = manager => state => {
   const competesInPHL = managerCompetesIn(manager, "phl")(state);
-  return competesInPHL ? "phl" : "division";
-};
-
-export const teamsMainCompetition = team => state => {
-  console.log("team", team);
-
-  const competesInPHL = teamCompetesIn(team, "phl")(state);
   return competesInPHL ? "phl" : "division";
 };
 
@@ -150,8 +184,6 @@ export const teamHasActiveEffects = team => state => {
   const effects = state.game.getIn(["teams", team, "effects"]);
   return effects.count() > 0;
 };
-
-export const allTeams = state => state.game.get("teams");
 
 export const pekkalandianTeams = state =>
   state.game.get("teams").filter(t => t.get("domestic"));
@@ -300,24 +332,3 @@ export const managerHasEnoughMoney = (manager, neededAmount) => state => {
 
 export const managerWithId = id => state =>
   state.manager.getIn(["managers", id]);
-
-export const playableCompetitions = (state: MHMState) =>
-  filter(
-    c => ["phl", "division", "mutasarja"].includes(c.id),
-    state.competition.competitions
-  );
-
-export const currentCalendarEntry = (state): MHMTurnDefinition => {
-  const round = state.game.getIn(["turn", "round"]);
-  const calendar: MHMCalendar = state.game.get("calendar");
-  const calendarEntry = nth(round, calendar);
-  if (!calendarEntry) {
-    throw new Error("Invalid calendar entry");
-  }
-  return calendarEntry;
-};
-
-export const sortedTeamList = (state: MHMState): Team[] => {
-  const sorter = sortWith<Team>([ascend(prop("name")), ascend(prop("id"))]);
-  return sorter(values(state.game.teams));
-};

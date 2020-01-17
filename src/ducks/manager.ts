@@ -1,22 +1,52 @@
 import {
   GAME_SEASON_START,
   GAME_QUIT_TO_MAIN_MENU,
-  GAME_LOAD_STATE
+  GAME_LOAD_STATE,
+  GameQuitToMainMenuAction,
+  GameLoadStateAction,
+  GameSeasonStartAction
 } from "./game";
-import { Manager } from "../types/base";
+import { MapOf } from "../types/base";
+import { HumanManager, Manager } from "../types/manager";
+import {
+  append,
+  over,
+  assocPath,
+  dissocPath,
+  ifElse,
+  values,
+  find
+} from "ramda";
+import {
+  TeamRemoveManagerAction,
+  TeamAddManagerAction,
+  TEAM_REMOVE_MANAGER,
+  TEAM_ADD_MANAGER
+} from "./team";
 
 export const MANAGER_NEXT = "MANAGER_NEXT";
+export const MANAGER_ADD = "MANAGER_ADD";
+
+export interface ManagerAddManagerAction {
+  type: typeof MANAGER_ADD;
+  payload: HumanManager;
+}
 
 export interface ManagerState {
   active: string | undefined;
-  managers: {
-    [key: string]: Manager;
-  };
+  managers: MapOf<Manager>;
 }
 
 const defaultState: ManagerState = {
   active: undefined,
   managers: {}
+};
+
+export const addManager = (manager: HumanManager): ManagerAddManagerAction => {
+  return {
+    type: MANAGER_ADD,
+    payload: manager
+  };
 };
 
 export const toggleService = (manager, service) => {
@@ -77,15 +107,44 @@ export const crisisMeeting = manager => {
   };
 };
 
-export default function managerReducer(state = defaultState, action) {
-  const { type, payload } = action;
+type ManagerActions =
+  | GameQuitToMainMenuAction
+  | GameLoadStateAction
+  | ManagerAddManagerAction
+  | GameSeasonStartAction
+  | TeamRemoveManagerAction
+  | TeamAddManagerAction;
 
-  switch (type) {
+export default function managerReducer(
+  state: ManagerState = defaultState,
+  action: ManagerActions
+) {
+  switch (action.type) {
     case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
     case GAME_LOAD_STATE:
-      return payload.manager;
+      return action.payload.manager;
+
+    case MANAGER_ADD:
+      return assocPath(["managers", action.payload.id], action.payload, state);
+
+    case TEAM_REMOVE_MANAGER:
+      const manager = find(
+        m => m.team === action.payload.team,
+        values(state.managers)
+      );
+      if (!manager) {
+        return state;
+      }
+      return dissocPath(["managers", manager.id, "team"]);
+
+    case TEAM_ADD_MANAGER:
+      return assocPath(
+        ["managers", action.payload.manager, "team"],
+        action.payload.team,
+        state
+      );
 
     case GAME_SEASON_START:
       return state.update("managers", managers => {
@@ -126,16 +185,6 @@ export default function managerReducer(state = defaultState, action) {
         b => b - payload.amount
       );
 
-    case "TEAM_REMOVE_MANAGER":
-      return state.removeIn([
-        "managers",
-        state.get("managers").findKey(m => m.get("team") === payload.team),
-        "team"
-      ]);
-
-    case "TEAM_ADD_MANAGER":
-      return state.setIn(["managers", payload.manager, "team"], payload.team);
-
     case "MANAGER_INCREMENT_INSURANCE_EXTRA":
       return state.updateIn(
         ["managers", payload.manager, "insuranceExtra"],
@@ -149,12 +198,6 @@ export default function managerReducer(state = defaultState, action) {
       return state.setIn(
         ["managers", payload.manager, "insuranceExtra"],
         payload.value
-      );
-
-    case "MANAGER_ADD":
-      return state.setIn(
-        ["managers", payload.manager.get("id")],
-        payload.manager
       );
 
     case "MANAGER_RENAME_ARENA":

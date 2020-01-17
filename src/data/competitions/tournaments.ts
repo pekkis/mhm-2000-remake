@@ -39,7 +39,7 @@ const tournaments: CompetitionService = {
     const managers: Managers = yield select(
       (state: MHMState) => state.manager.managers
     );
-    const teams: Team[] = yield select((state: MHMState) => state.game.teams);
+    const teams: Team[] = yield select((state: MHMState) => state.team.teams);
 
     for (const stat of tournament.stats) {
       const team = teams[stat.id];

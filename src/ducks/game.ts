@@ -1,7 +1,3 @@
-import { Map, List } from "immutable";
-
-import teamData from "../services/data/teams";
-
 import { Reducer } from "redux";
 import { getCalendar } from "../services/calendar";
 import {
@@ -11,12 +7,10 @@ import {
   Flags,
   ServiceBasePrices
 } from "../types/base";
-import { Team } from "../types/team";
 import { MHMState } from ".";
 import {
   mergeRight,
   assoc,
-  propEq,
   pipe,
   lensProp,
   over,
@@ -99,7 +93,6 @@ export interface GameState {
   flags: Flags;
   serviceBasePrices: ServiceBasePrices;
   calendar: MHMCalendar;
-  teams: { [key: string]: Team };
   worldChampionshipResults: unknown;
 }
 
@@ -128,14 +121,12 @@ const defaultState: GameState = {
     cheer: 3000
   },
 
-  teams: teamData,
-
   calendar: getCalendar(),
 
   worldChampionshipResults: undefined
 };
 
-export const advance = payload => {
+export const advance = (payload: any) => {
   return {
     type: GAME_ADVANCE_REQUEST,
     payload
@@ -148,6 +139,7 @@ export interface GameSeasonStartAction {
 
 export interface GameAdvanceAction {
   type: typeof GAME_ADVANCE;
+  payload: any;
 }
 
 export interface GameSeasonEndAction {
@@ -260,120 +252,6 @@ const gameReducer: Reducer<typeof defaultState> = (
 
     case GAME_SET_PHASE:
       return state.setIn(["turn", "phase"], payload);
-
-    case "TEAM_INCREMENT_MORALE":
-      return state.updateIn(["teams", payload.team, "morale"], m => {
-        return Math.min(payload.max, Math.max(payload.min, m + payload.amount));
-      });
-
-    case "TEAM_SET_MORALE":
-      return state.setIn(
-        ["teams", payload.team, "morale"],
-        Math.min(payload.max, Math.max(payload.min, payload.morale))
-      );
-
-    case "TEAM_SET_STRATEGY":
-      return state.setIn(["teams", payload.team, "strategy"], payload.strategy);
-
-    case "TEAM_SET_READINESS":
-      return state.setIn(
-        ["teams", payload.team, "readiness"],
-        payload.readiness
-      );
-
-    case "TEAM_INCUR_PENALTY":
-      return state.updateIn(
-        [
-          "competitions",
-          payload.competition,
-          "phases",
-          payload.phase,
-          "groups",
-          payload.group,
-          "penalties"
-        ],
-        List(),
-        penalties => {
-          return penalties.push(
-            Map({
-              team: payload.team,
-              penalty: payload.penalty
-            })
-          );
-        }
-      );
-
-    case "TEAM_INCREMENT_READINESS":
-      return state.updateIn(
-        ["teams", payload.team, "readiness"],
-        r => r + payload.amount
-      );
-
-    case "TEAM_INCREMENT_STRENGTH":
-      return state.updateIn(
-        ["teams", payload.team, "strength"],
-        m => m + payload.amount
-      );
-
-    case "TEAM_SET_STRENGTH":
-      return state.setIn(["teams", payload.team, "strength"], payload.amount);
-
-    case "TEAM_SET_STRENGTHS":
-      return payload.reduce((state, entry) => {
-        return state.setIn(["teams", entry.id, "strength"], entry.strength);
-      }, state);
-
-    case "TEAM_DECREMENT_STRENGTH":
-      return state.updateIn(
-        ["teams", payload.team, "strength"],
-        m => m - payload.amount
-      );
-
-    case "TEAM_RENAME":
-      return state.setIn(["teams", payload.team, "name"], payload.name);
-
-    case "TEAM_ADD_EFFECT":
-      return state.updateIn(["teams", payload.team, "effects"], effects =>
-        effects.push(Map(payload.effect))
-      );
-
-    case "TEAM_ADD_OPPONENT_EFFECT":
-      return state.updateIn(
-        ["teams", payload.team, "opponentEffects"],
-        opponentEffects => opponentEffects.push(Map(payload.effect))
-      );
-
-    case "TEAM_REMOVE_MANAGER":
-      return state.removeIn(["teams", payload.team, "manager"]);
-
-    case "TEAM_ADD_MANAGER":
-      return state.setIn(["teams", payload.team, "manager"], payload.manager);
-
-    case GAME_DECREMENT_DURATIONS:
-      return state.update("teams", teams => {
-        return teams.map(team => {
-          return team
-            .update("effects", effects => {
-              return effects.map(e => e.update("duration", d => d - 1));
-            })
-            .update("opponentEffects", effects => {
-              return effects.map(e => e.update("duration", d => d - 1));
-            });
-        });
-      });
-
-    case GAME_CLEAR_EXPIRED:
-      return state.update("teams", teams => {
-        return teams.map(team => {
-          return team
-            .update("effects", effects => {
-              return effects.filter(e => e.get("duration") > 0);
-            })
-            .update("opponentEffects", effects => {
-              return effects.filter(e => e.get("duration") > 0);
-            });
-        });
-      });
 
     case GAME_NEXT_TURN:
       return state.updateIn(["turn", "round"], r => r + 1);

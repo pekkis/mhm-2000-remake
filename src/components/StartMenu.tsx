@@ -8,7 +8,7 @@ import title from "../assets/title.png";
 import { useSelector, useDispatch } from "react-redux";
 import { MHMState } from "../ducks";
 import { startGame, loadGame, advance } from "../ducks/game";
-import { sortedTeamList } from "../data/selectors";
+import { playableCompetitions } from "../data/selectors";
 import { Team } from "../types/team";
 
 const Menu = styled.div``;
@@ -40,17 +40,11 @@ const StartMenu: FunctionComponent = () => {
   */
 
   const teams = useSelector<MHMState, { [key: string]: Team }>(
-    state => state.game.teams
+    state => state.team.teams
   );
-  const competitions = useSelector(
-    (state: MHMState) => state.competition.competitions
-  );
+  const competitions = useSelector(playableCompetitions);
   const starting = useSelector((state: MHMState) => state.game.starting);
   const dispatch = useDispatch();
-
-  const advance = useCallback(() => {
-    dispatch(advance());
-  }, [dispatch]);
 
   return (
     <main
@@ -131,7 +125,7 @@ const StartMenu: FunctionComponent = () => {
               <ManagerForm
                 teams={teams}
                 competitions={competitions}
-                advance={advance}
+                dispatch={dispatch}
               />
             </Box>
           )}

@@ -2,7 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Root from "./Root";
 import { getInitialState } from "./config/state.js";
-import createStore from "./store.js";
+import { createStore } from "./services/redux";
+import {
+  getMiddlewares,
+  getReducers,
+  getEnhancers,
+  getSagaMiddleware
+} from "./config/redux";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faSpinner,
@@ -11,6 +17,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 // import runtime from "@dr-kobros/serviceworker-webpack-plugin/lib/runtime";
 import * as Sentry from "@sentry/browser";
+import rootSaga from "./sagas/root";
 
 if (process.env.NODE_ENV !== "production") {
   const axe = require("react-axe");
@@ -28,7 +35,15 @@ library.add(faSpinner, faBars, faExclamationCircle);
 
 const initialState = getInitialState();
 
-const store = createStore(initialState);
+const store = createStore(
+  getReducers(),
+  getMiddlewares(),
+  getEnhancers(),
+  initialState
+);
+
+const sagaMiddleware = getSagaMiddleware();
+sagaMiddleware.run(rootSaga);
 
 // Just a small DRY abstraction here.
 function render(Component: typeof Root, rootElement: HTMLElement) {

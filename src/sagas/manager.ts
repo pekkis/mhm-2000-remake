@@ -16,7 +16,8 @@ import {
   managerCompetesIn,
   managersArena,
   managerHasService,
-  teamsMainCompetition
+  teamsMainCompetition,
+  managersCurrentTeam
 } from "../data/selectors";
 import { incrementMorale, incrementReadiness, incurPenalty } from "./team";
 import { addNotification } from "./notification";
@@ -29,40 +30,46 @@ import { Map } from "immutable";
 import r from "../services/random";
 import { addAnnouncement } from "./news";
 import { amount as a } from "../services/format";
+import { ManagerInput } from "../components/start-menu/ManagerForm";
+import { Manager, HumanManager } from "../types/manager";
+import { DifficultyLevels } from "../types/base";
+import { ManagerAddManagerAction, MANAGER_ADD } from "../ducks/manager";
+import { Team } from "../types/team";
+import {
+  TeamRemoveManagerAction,
+  TeamAddManagerAction,
+  TEAM_REMOVE_MANAGER,
+  TEAM_ADD_MANAGER
+} from "../ducks/team";
 
-export function* addManager(details) {
-  const teamId = parseInt(details.team, 10);
-  const mainCompetition = yield select(teamsMainCompetition(teamId));
+export function* addManager(details: ManagerInput) {
+  // const mainCompetition = yield select(teamsMainCompetition(details.team));
 
-  const manager = Map({
+  const manager: HumanManager = {
     id: uuid(),
     name: details.name,
-    difficulty: parseInt(details.difficulty, 10),
+    difficultyLevel: parseInt(details.difficulty, 10) as DifficultyLevels,
     pranksExecuted: 0,
-    services: Map({
-      coach: false,
-      insurance: false,
-      microphone: false,
-      cheer: false
-    }),
-    balance: difficultyLevels.getIn([details.difficulty, "startBalance"]),
-    arena: Map({
-      name: details.arena,
-      level: mainCompetition === "phl" ? 3 : 0
-    }),
-    extra: 0,
-    insuranceExtra: 0,
-    flags: Map()
-  });
-
-  yield putResolve({
-    type: "MANAGER_ADD",
-    payload: {
-      manager
+    balance: 0,
+    isHuman: true,
+    team: details.team,
+    country: "FI",
+    abilities: {
+      strategy: 0,
+      specialTeams: 0,
+      negotiation: 0,
+      cunning: 0,
+      charisma: 0,
+      luck: 0
     }
+  };
+
+  yield putResolve<ManagerAddManagerAction>({
+    type: MANAGER_ADD,
+    payload: manager
   });
 
-  yield call(hireManager, manager.get("id"), teamId);
+  yield call(hireManager, manager.id, details.team);
 }
 
 export function* setActiveManager(managerId) {
@@ -72,28 +79,29 @@ export function* setActiveManager(managerId) {
   });
 }
 
-export function* hireManager(managerId, teamId) {
-  const managersCurrentTeam = yield select(state =>
-    state.manager.getIn(["managers", managerId, "team"])
+export function* hireManager(manager: string, team: string) {
+  console.log("hire manager", manager, team);
+
+  const managersTeam: string | undefined = yield select(
+    managersCurrentTeam(manager)
   );
 
-  // if (managersCurrentTeam) {
-  yield all([
-    putResolve({
-      type: "TEAM_REMOVE_MANAGER",
+  if (managersTeam) {
+    yield putResolve<TeamRemoveManagerAction>({
+      type: TEAM_REMOVE_MANAGER,
       payload: {
-        team: managersCurrentTeam
+        team: managersTeam
       }
-    }),
-    putResolve({
-      type: "TEAM_ADD_MANAGER",
-      payload: {
-        team: teamId,
-        manager: managerId
-      }
-    })
-  ]);
-  // }
+    });
+  }
+
+  yield putResolve<TeamAddManagerAction>({
+    type: TEAM_ADD_MANAGER,
+    payload: {
+      team,
+      manager
+    }
+  });
 }
 
 export function* setBalance(managerId, amount) {

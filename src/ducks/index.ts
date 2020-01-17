@@ -10,6 +10,7 @@ import { UIState } from "./ui";
 import { EventState } from "./event";
 import { StatsState } from "./stats";
 import { CompetitionState } from "./competition";
+import { TeamState } from "./team";
 
 export { default as game } from "./game";
 export { default as manager } from "./manager";
@@ -23,6 +24,7 @@ export { default as stats } from "./stats";
 export { default as invitation } from "./invitation";
 export { default as country } from "./country";
 export { default as competition } from "./competition";
+export { default as team } from "./team";
 
 export interface MHMState {
   competition: CompetitionState;
@@ -37,4 +39,5 @@ export interface MHMState {
   ui: UIState;
   event: EventState;
   stats: StatsState;
+  team: TeamState;
 }

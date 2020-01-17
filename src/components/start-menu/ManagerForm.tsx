@@ -8,33 +8,25 @@ import LabelDiv from "../form/LabelDiv";
 import UIField from "../form/Field";
 import difficultyLevelMap from "../../services/difficulty-levels";
 import { map, values as rValues, values } from "ramda";
-import { Competition, ForEveryCompetition } from "../../types/base";
+import { Competition, ForEveryCompetition, MapOf } from "../../types/base";
 import { Team } from "../../types/team";
-import { teamListByIds } from "../../services/team";
+import { teamListByIds, nameToId } from "../../services/team";
 import * as Yup from "yup";
+import { Dispatch } from "redux";
+import { advance } from "../../ducks/game";
 
-interface Props {
-  manager: {
-    name: string;
-    arena: string;
-    difficulty: string;
-  };
-  competitions: ForEveryCompetition<Competition>;
-  teams: { [key: string]: Team };
-  advance: (values: object) => void;
-}
-
-interface ManagerInput {
+export interface ManagerInput {
   name: string;
   arena: string;
   difficulty: string;
-  team?: string;
+  team: string;
 }
 
 const manager: ManagerInput = {
   name: "Gaylord Lohiposki",
   arena: "Dr. Kobros Areena",
-  difficulty: "1"
+  difficulty: "1",
+  team: nameToId("turmio") // ""
 };
 
 const managerFormSchema = Yup.object().shape({
@@ -45,21 +37,30 @@ const managerFormSchema = Yup.object().shape({
   team: Yup.string().required("required")
 });
 
+interface Props {
+  manager: {
+    name: string;
+    arena: string;
+    difficulty: string;
+  };
+  competitions: MapOf<Competition>;
+  teams: { [key: string]: Team };
+  dispatch: Dispatch;
+}
+
 const ManagerForm: FunctionComponent<Props> = props => {
-  const { competitions, teams } = props;
+  const { competitions, teams, dispatch } = props;
 
   const difficultyLevels = values(difficultyLevelMap);
 
   return (
     <div>
       <Formik
-        isInitialValid={false}
+        isInitialValid={true}
         validationSchema={managerFormSchema}
         initialValues={manager}
         onSubmit={values => {
-          console.log(values);
-
-          // advance(values);
+          dispatch(advance(values));
         }}
       >
         {({ handleChange, values, isValid, errors }) => {

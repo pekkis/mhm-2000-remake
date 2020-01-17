@@ -128,12 +128,12 @@ const defaultState: CompetitionState = {
   }
 };
 
-const COMPETITION_ADD_TEAM = "COMPETITION_ADD_TEAM";
-const COMPETITION_REMOVE_TEAM = "COMPETITION_REMOVE_TEAM";
-const COMPETITION_UPDATE_STATS = "COMPETITION_UPDATE_STATS";
-const COMPETITION_SET_TEAMS = "COMPETITION_SET_TEAMS";
-const COMPETITION_START = "COMPETITION_START";
-const COMPETITION_SEED = "COMPETITION_SEED";
+export const COMPETITION_ADD_TEAM = "COMPETITION_ADD_TEAM";
+export const COMPETITION_REMOVE_TEAM = "COMPETITION_REMOVE_TEAM";
+export const COMPETITION_UPDATE_STATS = "COMPETITION_UPDATE_STATS";
+export const COMPETITION_SET_TEAMS = "COMPETITION_SET_TEAMS";
+export const COMPETITION_START = "COMPETITION_START";
+export const COMPETITION_SEED = "COMPETITION_SEED";
 
 export interface CompetitionAddTeamAction {
   type: typeof COMPETITION_ADD_TEAM;
@@ -183,7 +183,7 @@ export interface CompetitionSeedAction {
 export interface CompetitionStartAction {
   type: typeof COMPETITION_START;
   payload: {
-    competition: CompetitionNames;
+    competition: string;
   };
 }
 

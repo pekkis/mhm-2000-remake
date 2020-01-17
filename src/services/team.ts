@@ -1,26 +1,27 @@
 import teamData from "./data/teams";
 import { values, find, map, prop, pipe, sortWith, ascend } from "ramda";
-import { Team } from "../types/team";
+import { Team, TeamStrength } from "../types/team";
+import levels from "./data/team-levels";
 
 const isTeam = (team: Team | undefined): team is Team => {
   return team !== undefined;
 };
 
-export const namesToIds = (names: string[]): string[] => {
-  const found = map(name => {
-    return find(
-      team => team.name.toLowerCase() === name.toLowerCase(),
-      values(teamData)
-    );
-  }, names);
+export const nameToId = (name: string) => {
+  const found = find(
+    team => team.name.toLowerCase() === name.toLowerCase(),
+    values(teamData)
+  );
 
-  const filtered: Team[] = found.filter(isTeam);
-
-  if (filtered.length !== names.length) {
-    throw new Error("Lenghts dont match");
+  if (!found) {
+    throw new Error("Not found");
   }
 
-  return map(prop("id"), filtered);
+  return found.id;
+};
+
+export const namesToIds = (names: string[]): string[] => {
+  return map(nameToId, names);
 };
 
 export const teamSorter = sortWith<Team>([
@@ -36,4 +37,17 @@ export const teamListByIds = (
     map<string, Team>(id => teamMap[id]),
     teamSorter
   )(ids);
+};
+
+export const teamLevelToStrength = (level: number): TeamStrength => {
+  const data = levels[level - 1];
+  if (!data) {
+    throw new Error("Invalid team level");
+  }
+
+  return {
+    g: data.g,
+    d: data.d,
+    a: data.a
+  };
 };

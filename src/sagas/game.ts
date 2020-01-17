@@ -1,7 +1,19 @@
 import competitionData from "../data/competitions";
-import { GAME_SEASON_START, GameSetPhaseAction } from "../ducks/game";
-
-import teamData from "../services/data/teams";
+import {
+  GAME_SEASON_START,
+  GameSetPhaseAction,
+  GAME_LOAD_STATE,
+  GameLoadStateAction,
+  GameLoadedAction,
+  GAME_LOADED,
+  GameAdvanceAction,
+  GameStartAction,
+  GAME_START,
+  GAME_SET_PHASE,
+  GAME_LOAD_REQUEST,
+  GAME_START_REQUEST,
+  GAME_QUIT_TO_MAIN_MENU
+} from "../ducks/game";
 
 import {
   all,
@@ -10,7 +22,10 @@ import {
   putResolve,
   select,
   takeEvery,
-  fork
+  fork,
+  take,
+  cancel,
+  race
 } from "redux-saga/effects";
 
 import actionPhase from "./phase/action";
@@ -25,11 +40,17 @@ import seedPhase from "./phase/seed";
 import endOfSeasonPhase from "./phase/end-of-season";
 import startOfSeasonPhase from "./phase/start-of-season";
 import galaPhase from "./phase/gala";
+import gameStateService from "../services/game-state";
 
 import calculationsPhase from "./phase/calculations";
 import difficultyLevels from "../services/difficulty-levels";
 
-import { setExtra, decrementBalance, incrementInsuranceExtra } from "./manager";
+import {
+  setExtra,
+  decrementBalance,
+  incrementInsuranceExtra,
+  addManager
+} from "./manager";
 import { stats } from "./stats";
 import {
   allTeams,
@@ -37,11 +58,25 @@ import {
   managersDifficulty,
   managersMainCompetition,
   managerHasService,
-  managersArena
+  managersArena,
+  currentCalendarEntry
 } from "../data/selectors";
 import events from "../data/events";
-import { nth } from "ramda";
-import { MHMTurnPhase } from "../types/base";
+import { nth, map, values, toPairs } from "ramda";
+import {
+  MHMTurnPhase,
+  MHMTurnDefinition,
+  Turn,
+  CompetitionNames
+} from "../types/base";
+import { MHMState } from "../ducks";
+import { Team, TeamStrength } from "../types/team";
+import { teamLevelToStrength } from "../services/team";
+import { TeamSetStrengthsAction, TEAM_SET_STRENGTHS } from "../ducks/team";
+import {
+  CompetitionStartAction,
+  COMPETITION_START
+} from "../ducks/competition";
 
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 
@@ -102,20 +137,21 @@ export function* beforeGame(action) {
 }
 
 export function* gameLoop() {
+  // what is this?
   yield takeEvery("GAME_GAME_BEGIN", beforeGame);
   yield fork(stats);
 
   do {
-    const turn = yield select(state => state.game.get("turn"));
+    const calendarEntry: MHMTurnDefinition = yield select(currentCalendarEntry);
 
-    const calendar = yield select(state => state.game.get("calendar"));
+    // const turn = yield select((state: MHMState) => state.game.turn);
+    // const calendar = yield select(state => state.game.get("calendar"));
+    // const roundData = nth(turn.get("round"), calendar);
+    // if (!roundData) {
+    //   throw new Error("Invalid turn data");
+    // }
 
-    const roundData = nth(turn.get("round"), calendar);
-    if (!roundData) {
-      throw new Error("Invalid turn data");
-    }
-
-    const phases = roundData.phases;
+    const phases = calendarEntry.phases;
 
     // console.log(roundData.toJS(), "round data");
 
@@ -174,19 +210,22 @@ export function* gameLoop() {
       yield call(endOfSeasonPhase);
     }
 
+    // Todo: this should be in a turn cleanup phase.
     yield putResolve({ type: "GAME_CLEAR_EXPIRED" });
 
     yield call(nextTurn);
   } while (true);
 }
 
-function* competitionStart(competitionId) {
-  const competitionStarter = competitionData.getIn([competitionId, "start"]);
-  if (competitionStarter) {
-    yield call(competitionStarter);
+function* competitionStart(competitionId: string) {
+  const competition = competitionData[competitionId];
+
+  if (competition.start) {
+    yield call(competition.start);
   }
-  yield put({
-    type: "COMPETITION_START",
+
+  yield put<CompetitionStartAction>({
+    type: COMPETITION_START,
     payload: {
       competition: competitionId
     }
@@ -211,25 +250,37 @@ export function* groupEnd(competition, phase, group) {
 }
 
 export function* seasonStart() {
-  const turn = yield select(state => state.game.get("turn"));
-  const season = turn.get("season");
+  const turn: Turn = yield select((state: MHMState) => state.game.turn);
 
-  const teams = yield select(allTeams);
+  const teams: Team[] = yield select(allTeams);
+
+  console.log("teams", teams);
+
+  const strengths: [string, TeamStrength][] = map(
+    team => [team.id, teamLevelToStrength(team.level)],
+    teams
+  );
+
+  console.log("strenghtetore", strengths);
 
   // Re-strength European teams.
+
+  /*
   const reStrengths = teams.slice(24).map(t => {
     return {
       id: t.get("id"),
       strength: teamData.get(t.get("id")).get("strength")()
     };
   });
-  yield put({
-    type: "TEAM_SET_STRENGTHS",
-    payload: reStrengths.toJS()
+  */
+
+  yield put<TeamSetStrengthsAction>({
+    type: TEAM_SET_STRENGTHS,
+    payload: strengths
   });
 
   // Start all competitions.
-  for (const [key, competitionObj] of competitionData) {
+  for (const [key, competitionObj] of toPairs(competitionData)) {
     yield competitionStart(key);
     // const competitions = yield select(state => state.game.get("competitions"));
 
@@ -336,8 +387,8 @@ function* nextTurn() {
 }
 
 export function* setPhase(phase: MHMTurnPhase) {
-  yield put(<GameSetPhaseAction>{
-    type: "GAME_SET_PHASE",
+  yield put<GameSetPhaseAction>({
+    type: GAME_SET_PHASE,
     payload: phase
   });
 }
@@ -388,4 +439,57 @@ export function* setCompetitionTeams(competition, teams) {
       teams
     }
   });
+}
+
+export function* gameStart() {
+  const action: GameAdvanceAction = yield take(GAME_ADVANCE_REQUEST);
+
+  // TODO: multiple managers... very soon, actually!
+  yield call(addManager, action.payload);
+
+  yield putResolve({
+    type: GAME_START
+  });
+}
+
+export function* gameSave(action) {
+  const manager = yield select(state =>
+    state.manager.getIn(["managers", state.manager.get("active")])
+  );
+
+  const state = yield select(state => state);
+  yield call(save, state);
+  yield call(addNotification, manager.get("id"), "Peli tallennettiin.");
+}
+
+export function* gameLoad() {
+  const state = yield call(gameStateService.loadGame);
+  yield putResolve<GameLoadStateAction>({
+    type: GAME_LOAD_STATE,
+    payload: state
+  });
+
+  yield putResolve<GameLoadedAction>({
+    type: GAME_LOADED
+  });
+}
+
+export function* mainMenu() {
+  do {
+    const { load } = yield race({
+      load: take(GAME_LOAD_REQUEST),
+      start: take(GAME_START_REQUEST)
+    });
+
+    if (load) {
+      yield call(gameLoad);
+    } else {
+      yield call(gameStart);
+    }
+
+    const task = yield fork(gameLoop);
+
+    yield take(GAME_QUIT_TO_MAIN_MENU);
+    yield cancel(task);
+  } while (true);
 }
