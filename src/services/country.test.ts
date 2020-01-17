@@ -24,7 +24,6 @@ const countries = [
 test("creates last name for each country", () => {
   countries.forEach(iso => {
     const lastName = createLastName(iso as PlayableCountries);
-    console.log(iso, lastName);
     expect(typeof lastName).toBe("string");
   });
 });
@@ -32,7 +31,6 @@ test("creates last name for each country", () => {
 test("creates first name as initial letter for each country", () => {
   countries.forEach(iso => {
     const firstName = createFirstName(iso as PlayableCountries);
-    console.log(iso, firstName);
     expect(typeof firstName).toBe("string");
     expect(firstName).toHaveLength(1);
   });

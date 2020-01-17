@@ -1,4 +1,4 @@
-import { NameList } from "../../types/country";
+import { NameList } from "../../../types/country";
 
 const names: NameList = [
   "Adamski",

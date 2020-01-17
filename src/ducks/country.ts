@@ -2,7 +2,7 @@ import { GameQuitToMainMenuAction, GAME_QUIT_TO_MAIN_MENU } from "./game";
 import { Reducer } from "redux";
 import { Country, ForEveryCountry } from "../types/country";
 import { mapObjIndexed } from "ramda";
-import countryData, { CountryData } from "../data/countries";
+import countryData, { CountryData } from "../services/data/countries";
 
 export interface CountryState {
   countries: ForEveryCountry<Country>;

@@ -1,4 +1,4 @@
-import countryData, { playerNames } from "../data/countries";
+import countryData, { playerNames } from "./data/countries";
 import { PlayableCountries, AllCountries } from "../types/country";
 import random from "./random";
 import { flip, invertObj, filter } from "ramda";

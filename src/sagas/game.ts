@@ -1,7 +1,7 @@
 import competitionData from "../data/competitions";
 import { GAME_SEASON_START, GameSetPhaseAction } from "../ducks/game";
 
-import teamData from "../data/teams";
+import teamData from "../services/data/teams";
 
 import {
   all,

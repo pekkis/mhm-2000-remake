@@ -2,7 +2,6 @@ import React, { FunctionComponent } from "react";
 import Notification from "./Notification";
 import {
   MHMNotification,
-  dismissNotification,
   NotificationDismissAction
 } from "../../ducks/notification";
 

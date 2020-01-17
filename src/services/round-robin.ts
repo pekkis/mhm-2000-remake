@@ -10,11 +10,7 @@ import {
   concat,
   repeat
 } from "ramda";
-import {
-  Schedule,
-  ScheduleGame,
-  ScheduleRound
-} from "../data/competitions/phl";
+import { Schedule, ScheduleGame, ScheduleRound } from "../types/base";
 
 const DUMMY = -1;
 

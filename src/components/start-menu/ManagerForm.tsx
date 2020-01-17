@@ -1,25 +1,26 @@
 import React, { FunctionComponent } from "react";
-import { Formik } from "formik";
+import { Formik, Field, Form } from "formik";
 import Button from "../form/Button";
 import Input from "../form/Input";
 import Select from "../form/Select";
 import Label from "../form/Label";
 import LabelDiv from "../form/LabelDiv";
-import Field from "../form/Field";
+import UIField from "../form/Field";
 import difficultyLevelMap from "../../services/difficulty-levels";
 import { map, values as rValues, values } from "ramda";
 import { Competition, ForEveryCompetition } from "../../types/base";
 import { Team } from "../../types/team";
+import { teamListByIds } from "../../services/team";
+import * as Yup from "yup";
 
 interface Props {
   manager: {
     name: string;
     arena: string;
     difficulty: string;
-    team: string;
   };
   competitions: ForEveryCompetition<Competition>;
-  teams: Team[];
+  teams: { [key: string]: Team };
   advance: (values: object) => void;
 }
 
@@ -27,56 +28,58 @@ interface ManagerInput {
   name: string;
   arena: string;
   difficulty: string;
-  team: string;
+  team?: string;
 }
 
 const manager: ManagerInput = {
   name: "Gaylord Lohiposki",
   arena: "Dr. Kobros Areena",
-  difficulty: "1",
-  team: "1"
+  difficulty: "1"
 };
 
+const managerFormSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(2, "Too Short!")
+    .max(50, "Too Long!")
+    .required("Required"),
+  team: Yup.string().required("required")
+});
+
 const ManagerForm: FunctionComponent<Props> = props => {
-  const { advance, competitions, teams } = props;
+  const { competitions, teams } = props;
 
   const difficultyLevels = values(difficultyLevelMap);
 
   return (
     <div>
       <Formik
+        isInitialValid={false}
+        validationSchema={managerFormSchema}
         initialValues={manager}
         onSubmit={values => {
-          advance(values);
+          console.log(values);
+
+          // advance(values);
         }}
       >
-        {({ handleSubmit, handleChange, values }) => {
+        {({ handleChange, values, isValid, errors }) => {
+          console.log(isValid, values, errors, "validato");
           return (
-            <form onSubmit={handleSubmit}>
-              <Field>
+            <Form>
+              <UIField>
                 <Label>Managerin nimi</Label>
-                <Input
-                  block
-                  id="name"
-                  value={values.name}
-                  onChange={handleChange}
-                />
-              </Field>
+                <Field as={Input} type="text" block name="name" />
+              </UIField>
 
-              <Field>
+              <UIField>
                 <Label>Areenan nimi</Label>
-                <Input
-                  block
-                  id="arena"
-                  value={values.arena}
-                  onChange={handleChange}
-                />
-              </Field>
+                <Field as={Input} block name="arena" onChange={handleChange} />
+              </UIField>
 
-              <Field>
+              <UIField>
                 <LabelDiv>Vaikeustaso</LabelDiv>
-                {difficultyLevels.map(dl => {
-                  return (
+                {map(
+                  dl => (
                     <div key={dl.value}>
                       <label>
                         <Input
@@ -89,38 +92,40 @@ const ManagerForm: FunctionComponent<Props> = props => {
                         {dl.name} ({dl.description})
                       </label>
                     </div>
-                  );
-                })}
-              </Field>
+                  ),
+                  difficultyLevels
+                )}
+              </UIField>
 
-              <Field>
+              <UIField>
                 <LabelDiv>Joukkue</LabelDiv>
 
-                <Select name="team" value={values.team} onChange={handleChange}>
+                <Field component="select" name="team">
+                  <option>Valitse joukkue</option>
                   {map((c: Competition) => {
+                    const competitionTeams = teamListByIds(teams, c.teams);
+
                     return (
                       <optgroup key={c.id} label={c.name}>
-                        {c.teams
-                          .map(t => teams[t])
-                          .map(t => {
-                            return (
-                              <option key={t.id} value={t.id}>
-                                {t.name}
-                              </option>
-                            );
-                          })}
+                        {competitionTeams.map(t => {
+                          return (
+                            <option key={t.id} value={t.id}>
+                              {t.name}
+                            </option>
+                          );
+                        })}
                       </optgroup>
                     );
                   }, rValues(competitions))}
-                </Select>
-              </Field>
+                </Field>
+              </UIField>
 
-              <Field>
-                <Button block type="submit">
+              <UIField>
+                <Button disabled={!isValid} block type="submit">
                   Eteenpäin
                 </Button>
-              </Field>
-            </form>
+              </UIField>
+            </Form>
           );
         }}
       </Formik>

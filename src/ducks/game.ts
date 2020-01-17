@@ -1,6 +1,6 @@
 import { Map, List } from "immutable";
 
-import teamData from "../data/teams";
+import teamData from "../services/data/teams";
 
 import { Reducer } from "redux";
 import { getCalendar } from "../services/calendar";

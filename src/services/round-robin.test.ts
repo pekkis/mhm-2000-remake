@@ -1,6 +1,6 @@
 import scheduler, { roundRobin } from "./round-robin";
 import { flatten, uniq, reduce, forEachObjIndexed } from "ramda";
-import { ScheduleRound, ScheduleGame } from "../data/competitions/phl";
+import { ScheduleRound, ScheduleGame } from "../types/base";
 
 test("round robin for equal number of teams", () => {
   const rr = roundRobin(12);

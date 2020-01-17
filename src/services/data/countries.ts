@@ -2,7 +2,7 @@ import {
   ForEveryCountry,
   NameList,
   ForEveryPlayableCountry
-} from "../types/country";
+} from "../../types/country";
 
 import fiNames from "./country/players-FI";
 import seNames from "./country/players-SE";
@@ -185,6 +185,42 @@ const countryData: ForEveryCountry<CountryData> = {
     iso: "KP",
     name: "Pohjois-Korea",
     strength: () => 999
+  },
+  GB: {
+    iso: "GB",
+    name: "Britannia",
+    special: true,
+    strength: (): number => 100
+  },
+  GR: {
+    iso: "GR",
+    name: "Kreikka",
+    special: true,
+    strength: (): number => 100
+  },
+  IE: {
+    iso: "IE",
+    name: "Irlanti",
+    special: true,
+    strength: (): number => 100
+  },
+  BE: {
+    iso: "BE",
+    name: "Belgia",
+    special: true,
+    strength: (): number => 100
+  },
+  DK: {
+    iso: "DK",
+    name: "Tanska",
+    special: true,
+    strength: (): number => 100
+  },
+  NL: {
+    iso: "NL",
+    name: "Alankomaat",
+    special: true,
+    strength: (): number => 100
   }
 };
 

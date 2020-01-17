@@ -8,12 +8,13 @@ import {
   StoreEnhancer
 } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension/developmentOnly";
+import { MHMState } from "../ducks";
 
 export function createStore(
   reducers: { [key: string]: Reducer },
   middlewares: Middleware[] = [],
   enhancers: StoreEnhancer[] = [],
-  initialState: any = undefined
+  initialState?: MHMState
 ): Store {
   const createStoreWithMiddleware = composeWithDevTools(
     ...enhancers,

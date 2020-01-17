@@ -23,7 +23,19 @@ export type PlayableCountries =
 
 export type AllCountries = PlayableCountries | SpecialCountries;
 
-export type SpecialCountries = "??" | "ES" | "ZW" | "ES" | "BR" | "KP";
+export type SpecialCountries =
+  | "??"
+  | "ES"
+  | "ZW"
+  | "ES"
+  | "BR"
+  | "KP"
+  | "GB"
+  | "GR"
+  | "IE"
+  | "BE"
+  | "DK"
+  | "NL";
 
 export type ForEveryCountry<T> = ForEvery<AllCountries, T>;
 

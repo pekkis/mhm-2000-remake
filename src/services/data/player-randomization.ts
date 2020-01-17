@@ -1,6 +1,6 @@
 import { normalCountryIds, legacyCountryFromCountry } from "../country";
 import { mapObjIndexed, filter } from "ramda";
-import countryData from "../../data/countries";
+import countryData from "./countries";
 import { Country } from "../../types/country";
 
 interface PlayerRandomGenerator {

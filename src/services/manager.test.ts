@@ -1,5 +1,5 @@
-import { managers } from "./manager/manager-data";
+import { managers } from "./data/manager-data";
 
 test("smoke", () => {
-  console.log(managers);
+  // console.log(managers);
 });

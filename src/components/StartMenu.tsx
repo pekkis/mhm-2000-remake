@@ -39,7 +39,9 @@ const StartMenu: FunctionComponent = () => {
   { startGame, loadGame }
   */
 
-  const teams = useSelector<MHMState, Team[]>(sortedTeamList);
+  const teams = useSelector<MHMState, { [key: string]: Team }>(
+    state => state.game.teams
+  );
   const competitions = useSelector(
     (state: MHMState) => state.competition.competitions
   );
