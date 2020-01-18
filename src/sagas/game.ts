@@ -12,7 +12,8 @@ import {
   GAME_SET_PHASE,
   GAME_LOAD_REQUEST,
   GAME_START_REQUEST,
-  GAME_QUIT_TO_MAIN_MENU
+  GAME_QUIT_TO_MAIN_MENU,
+  GameSeasonStartAction
 } from "../ducks/game";
 
 import {
@@ -59,7 +60,8 @@ import {
   managersMainCompetition,
   managerHasService,
   managersArena,
-  currentCalendarEntry
+  currentCalendarEntry,
+  humanManagers
 } from "../data/selectors";
 import events from "../data/events";
 import { nth, map, values, toPairs } from "ramda";
@@ -282,59 +284,11 @@ export function* seasonStart() {
   // Start all competitions.
   for (const [key, competitionObj] of toPairs(competitionData)) {
     yield competitionStart(key);
-    // const competitions = yield select(state => state.game.get("competitions"));
-
-    /*
-    const seed = competitionObj.getIn(["seed", 0])(competitions);
-    yield putResolve({
-      type: "COMPETITION_SEED",
-      payload: {
-        competition: key,
-        phase: 0,
-        seed
-      }
-    });
-    */
   }
 
-  const managers = yield select(state => state.manager.get("managers"));
-  for (const [, manager] of managers) {
-    console.log("MANAGER", manager);
+  console.log("HELLUREI!");
 
-    // Skip the first season for salary payments.
-    if (season > 0) {
-      const managerId = manager.get("id");
-      const team = yield select(managersTeam(managerId));
-      const difficulty = yield select(managersDifficulty(managerId));
-      const mainCompetition = yield select(managersMainCompetition(managerId));
-      const salaryPerStrength = difficultyLevels.getIn([difficulty, "salary"])(
-        mainCompetition
-      );
-      const totalSalary = salaryPerStrength * team.get("strength");
-      yield call(decrementBalance, managerId, totalSalary);
-
-      const hasInsurance = yield select(
-        managerHasService(managerId, "insurance")
-      );
-
-      if (hasInsurance) {
-        const arena = yield select(managersArena(managerId));
-        yield call(
-          incrementInsuranceExtra,
-          managerId,
-          -50 * arena.get("level")
-        );
-      }
-    }
-
-    // Reset extra each season.
-    yield setExtra(
-      manager.get("id"),
-      difficultyLevels.getIn([manager.get("difficulty"), "extra"])
-    );
-  }
-
-  yield put({
+  yield put<GameSeasonStartAction>({
     type: GAME_SEASON_START
   });
 }
@@ -407,36 +361,6 @@ export function* seedCompetition(competitionId, phase) {
       competition: competitionId,
       phase,
       seed
-    }
-  });
-}
-
-export function* removeTeamFromCompetition(competition, team) {
-  yield putResolve({
-    type: "COMPETITION_REMOVE_TEAM",
-    payload: {
-      competition,
-      team
-    }
-  });
-}
-
-export function* addTeamToCompetition(competition, team) {
-  yield putResolve({
-    type: "COMPETITION_ADD_TEAM",
-    payload: {
-      competition,
-      team
-    }
-  });
-}
-
-export function* setCompetitionTeams(competition, teams) {
-  yield putResolve({
-    type: "COMPETITION_SET_TEAMS",
-    payload: {
-      competition,
-      teams
     }
   });
 }

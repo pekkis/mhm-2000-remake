@@ -81,7 +81,7 @@ export interface Competition {
 export type CompetitionType = "round-robin" | "playoffs" | "tournament";
 
 export interface TeamPenalty {
-  team: number;
+  team: string;
   points: number;
 }
 
@@ -109,7 +109,7 @@ export interface PlayoffStat {
 
 export interface PlayoffTeamStat {
   index: number;
-  id: number;
+  id: string;
   wins: number;
   losses: number;
 }
@@ -118,7 +118,7 @@ export interface CompetitionGroup {
   type: CompetitionType;
   round: number;
   name: string;
-  teams: number[];
+  teams: string[];
 }
 
 export interface RoundRobinCompetitionGroup extends CompetitionGroup {
@@ -151,7 +151,7 @@ type Color = "l" | "d";
 interface BaseCompetitionPhase {
   name: string;
   type: CompetitionType;
-  teams: number[];
+  teams: string[];
   groups: CompetitionGroup[];
 }
 
@@ -212,7 +212,7 @@ export interface CompetitionService {
   moraleBoost: (phase: number, facts: Facts, manager: Manager) => number;
   readinessBoost: (phase: number, facts: Facts, manager: Manager) => number;
 
-  start?: () => Generator<any, void, any>;
+  start?: () => Generator<any, any, any>;
   groupEnd?: (phase: number, group: number) => Generator<any, void, any>;
 
   relegateTo: CompetitionNames | false;
@@ -240,7 +240,7 @@ export type LeagueTable = LeagueTableRow[];
 
 export interface LeagueTableRow {
   index: number;
-  id: number;
+  id: string;
   gamesPlayed: number;
   wins: number;
   draws: number;
@@ -258,14 +258,6 @@ export interface Invitation {
   tournament: number;
 }
 
-export interface Streak {
-  win: number;
-  draw: number;
-  loss: number;
-  noLoss: number;
-  noWin: number;
-}
-
 export type ForEvery<L extends string | symbol | number, T> = {
   [P in L]: T;
 };
@@ -275,10 +267,6 @@ export type ForEveryCompetition<T> = ForEvery<CompetitionNames, T>;
 export type ForEveryManager<T> = {
   [key: string]: T;
 };
-
-export interface ManagerSeasonStats {}
-
-export interface CompetitionStatistics {}
 
 export interface Announcement {
   content: string;

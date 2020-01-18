@@ -70,7 +70,7 @@ const defaultState: CompetitionState = {
         "kjt",
         "ahmat",
         "jääkotkat",
-        "jukurit"
+        "kookoo"
       ]),
       phases: []
     },
@@ -100,7 +100,7 @@ const defaultState: CompetitionState = {
         "saappaat",
         "aromi",
         "gepardit",
-        "kookoo",
+        "jukurit",
         "hardcore",
         "turmio",
         "kalpa"
@@ -165,8 +165,6 @@ export interface CompetitionSetTeamsAction {
   type: typeof COMPETITION_SET_TEAMS;
   payload: {
     competition: CompetitionNames;
-    phase: number;
-    group: number;
     teams: string[];
   };
 }

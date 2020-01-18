@@ -1,8 +1,9 @@
 import { mapIndexed } from "ramda-adjunct";
 import { Team } from "../../types/team";
 import uuid from "uuid";
-import { indexBy, prop } from "ramda";
+import { indexBy, prop, pipe, toPairs, map, fromPairs } from "ramda";
 import { AllCountries } from "../../types/country";
+import { nameToId } from "../team";
 
 interface TeamData {
   name: string;
@@ -144,7 +145,7 @@ const teamList: TeamData[] = [
   { name: "Pagodromoi", city: "Ateena", level: 19, country: "GR" },
   { name: "Storm", city: "Manchester", level: 26, country: "GR" },
   { name: "Jesters", city: "Newcastle", level: 25, country: "GB" },
-  { name: "Herning", city: "Herning", level: 24, country: "GB" }
+  { name: "Herning", city: "Herning", level: 24, country: "DK" }
 ];
 
 export const teams = indexBy(
@@ -165,3 +166,158 @@ export const teams = indexBy(
 );
 
 export default teams;
+
+export interface StatsData {
+  ranking: [number, number, number];
+}
+
+export interface StatsDatas {
+  [key: string]: StatsData;
+}
+
+export const rawTeamStats: StatsDatas = {
+  tps: {
+    ranking: [1, 5, 2]
+  },
+  hifk: {
+    ranking: [2, 1, 9]
+  },
+  hpk: {
+    ranking: [3, 10, 3]
+  },
+  saipa: {
+    ranking: [4, 7, 11]
+  },
+  jokerit: {
+    ranking: [5, 3, 1]
+  },
+  ilves: {
+    ranking: [6, 2, 4]
+  },
+  blues: {
+    ranking: [7, 4, 7]
+  },
+  jyp: {
+    ranking: [8, 11, 5]
+  },
+  tappara: {
+    ranking: [9, 6, 8]
+  },
+  ässät: {
+    ranking: [10, 8, 6]
+  },
+  lukko: {
+    ranking: [11, 9, 10]
+  },
+  pelicans: {
+    ranking: [13, 14, 18]
+  },
+  kalpa: {
+    ranking: [12, 12, 12]
+  },
+  kärpät: {
+    ranking: [14, 13, 13]
+  },
+  hermes: {
+    ranking: [15, 15, 14]
+  },
+  tuto: {
+    ranking: [16, 18, 15]
+  },
+  fps: {
+    ranking: [17, 20, 21]
+  },
+  diskos: {
+    ranking: [18, 22, 22]
+  },
+  sport: {
+    ranking: [19, 19, 16]
+  },
+  sapko: {
+    ranking: [20, 23, 19]
+  },
+  jokipojat: {
+    ranking: [21, 17, 20]
+  },
+  kjt: {
+    ranking: [22, 16, 17]
+  },
+  ahmat: {
+    ranking: [23, 24, 23]
+  },
+  jääkotkat: {
+    ranking: [24, 21, 24]
+  },
+  jukurit: {
+    ranking: [28, 32, 36]
+  },
+  "vg-62": {
+    ranking: [35, 33, 41]
+  },
+  testicles: {
+    ranking: [40, 39, 29]
+  },
+  santaclaus: {
+    ranking: [39, 41, 37]
+  },
+  ruiske: {
+    ranking: [37, 38, 27]
+  },
+  lightning: {
+    ranking: [34, 30, 42]
+  },
+  nikkarit: {
+    ranking: [31, 31, 34]
+  },
+  salama: {
+    ranking: [44, 44, 38]
+  },
+  hait: {
+    ranking: [33, 42, 32]
+  },
+  mahti: {
+    ranking: [42, 36, 39]
+  },
+  siat: {
+    ranking: [29, 34, 25]
+  },
+  veto: {
+    ranking: [45, 43, 43]
+  },
+  ikirouta: {
+    ranking: [43, 48, 45]
+  },
+  jymy: {
+    ranking: [46, 45, 47]
+  },
+  hokki: {
+    ranking: [30, 26, 30]
+  },
+  voitto: {
+    ranking: [32, 28, 43]
+  },
+  teurastus: {
+    ranking: [41, 40, 48]
+  },
+  "komu ht": {
+    ranking: [47, 47, 44]
+  },
+  saappaat: {
+    ranking: [38, 37, 35]
+  },
+  aromi: {
+    ranking: [36, 35, 31]
+  },
+  gepardit: {
+    ranking: [27, 27, 28]
+  },
+  kookoo: {
+    ranking: [25, 25, 26]
+  },
+  hardcore: {
+    ranking: [26, 29, 33]
+  },
+  turmio: {
+    ranking: [48, 46, 46]
+  }
+};

@@ -13,6 +13,9 @@ export const managersCurrentTeam = (manager: string) => (
   return state.manager.managers[manager].team;
 };
 
+export const domesticTeams = (state: MHMState): Team[] =>
+  values(state.team.teams).filter(t => t.country === "FI");
+
 export const foreignTeams = (state: MHMState): Team[] =>
   values(state.team.teams).filter(t => t.country !== "FI");
 
@@ -184,9 +187,6 @@ export const teamHasActiveEffects = team => state => {
   const effects = state.game.getIn(["teams", team, "effects"]);
   return effects.count() > 0;
 };
-
-export const pekkalandianTeams = state =>
-  state.game.get("teams").filter(t => t.get("domestic"));
 
 export const managerHasService = (manager, service) => state => {
   return state.manager.getIn(["managers", manager, "services", service]);

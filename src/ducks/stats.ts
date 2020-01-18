@@ -9,8 +9,15 @@ import {
   ManagerSeasonStats,
   Streak,
   ForEveryCompetition,
-  CompetitionStatistics
+  CompetitionStatistics,
+  MapOf
 } from "../types/base";
+import {
+  ManagerStatistic,
+  TeamStatistic,
+  SeasonStatistic
+} from "../types/stats";
+import { initialTeamStats, initialSeasonStats } from "../services/team";
 
 export const STATS_UPDATE_FROM_FACTS = "STATS_UPDATE_FROM_FACTS";
 export const STATS_SET_SEASON_STAT = "STATS_SET_SEASON_STAT";
@@ -27,14 +34,6 @@ export interface SeasonStats {
   };
 }
 
-const emptyStreak: Streak = {
-  win: 0,
-  draw: 0,
-  loss: 0,
-  noLoss: 0,
-  noWin: 0
-};
-
 const emptySeasonStats: Partial<SeasonStats> = {
   ehlChampion: undefined,
   presidentsTrophy: undefined,
@@ -48,34 +47,18 @@ const emptySeasonStats: Partial<SeasonStats> = {
 export interface StatsState {
   currentSeason: Partial<SeasonStats>;
 
-  managers: {
-    [key: string]: {
-      games: ForEveryCompetition<CompetitionStatistics>;
-    };
-  };
+  managers: MapOf<ManagerStatistic>;
 
-  seasons: {
-    [key: string]: SeasonStats;
-  };
+  teams: MapOf<TeamStatistic>;
 
-  streaks: {
-    teams: {
-      [key: string]: Streak;
-    };
-    managers: {
-      [key: string]: Streak;
-    };
-  };
+  seasons: SeasonStatistic[];
 }
 
 const defaultState: StatsState = {
   currentSeason: emptySeasonStats,
   managers: {},
-  seasons: {},
-  streaks: {
-    teams: {},
-    managers: {}
-  }
+  teams: initialTeamStats(),
+  seasons: initialSeasonStats()
 };
 
 export default function statsReducer(state = defaultState, action): StatsState {

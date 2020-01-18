@@ -1,14 +1,14 @@
 import { Map, List } from "immutable";
 import { select, call, all } from "redux-saga/effects";
-import rr from "../../services/round-robin";
-import tournamentScheduler from "../../services/tournament";
-import table from "../../services/league";
-import { defaultMoraleBoost } from "../../services/morale";
-import { addAnnouncement } from "../../sagas/news";
-import { amount as a } from "../../services/format";
-import { incrementStrength, incrementReadiness } from "../../sagas/team";
-import { incrementBalance } from "../../sagas/manager";
-import { setSeasonStat } from "../../sagas/stats";
+import rr from "../../round-robin";
+import tournamentScheduler from "../../tournament";
+import table from "../../league";
+import { defaultMoraleBoost } from "../../morale";
+import { addAnnouncement } from "../../../sagas/news";
+import { amount as a } from "../../format";
+import { incrementStrength, incrementReadiness } from "../../../sagas/team";
+import { incrementBalance } from "../../../sagas/manager";
+import { setSeasonStat } from "../../../sagas/stats";
 import {
   CompetitionService,
   RoundRobinCompetitionGroup,
@@ -17,10 +17,14 @@ import {
   TournamentCompetitionPhase,
   TournamentCompetitionGroup,
   Turn
-} from "../../types/base";
+} from "../../../types/base";
 import { map, range, head, drop, prop } from "ramda";
-import { sortLeagueTable } from "../../services/league";
-import { MHMState } from "../../ducks";
+import { sortLeagueTable } from "../../league";
+import { MHMState } from "../../../ducks";
+import { domesticTeams, foreignTeams } from "../../../data/selectors";
+import { Team } from "../../../types/team";
+import random from "../../random";
+import { setCompetitionTeams } from "../../../sagas/competition";
 
 const awards = List.of(
   Map({
@@ -137,30 +141,75 @@ function* ehlAwards() {
   // yield call(addAnnouncement, 0, `Ripulikakka __haisee__.`);
 }
 
+const teamsFromCountrySet = (
+  n: number,
+  cs: string[],
+  teams: Team[]
+): string[] => {
+  const filtered = teams.filter(t => cs.includes(t.country)).map(t => t.id);
+
+  console.log("filterado", cs, filtered, n);
+
+  return random.sample(filtered, n);
+};
+
 const ehl: CompetitionService = {
   relegateTo: false,
   promoteTo: false,
 
+  homeAdvantage: (phase, group) => {
+    return 1;
+  },
+
+  awayAdvantage: (phase, group) => {
+    if (phase === 0) {
+      return 0.85;
+    }
+
+    return 1;
+  },
+
   start: function*() {
     const turn: Turn = yield select((state: MHMState) => state.game.turn);
-    const season = turn.season;
 
-    const ehlTeams = yield select((state: MHMState) =>
-      state.stats.getIn(["seasons", season - 1, "medalists"], List.of(2, 3, 5))
+    const domesticParticipants: [string, string, string] = yield select(
+      (state: MHMState) => state.stats.seasons[turn.season - 1].medalists
     );
 
-    const domesticTeams = yield select(pekkalandianTeams);
+    const foreign: Team[] = yield select(foreignTeams);
 
-    const foreignTeams = yield select(state =>
-      state.game
-        .get("teams")
-        .slice(domesticTeams.count())
-        .take(17)
-        .map(t => t.get("id"))
+    const countrySets: [string[], number][] = [
+      [["SE"], 3],
+      [["DE"], 2],
+      [["CZ"], 3],
+      [["RU"], 2],
+      [["CH"], 2],
+      [["SK"], 1],
+      [
+        [
+          "IT",
+          "AT",
+          "EE",
+          "NO",
+          "FR",
+          "PL",
+          "LV",
+          "NL",
+          "GR",
+          "IE",
+          "BE",
+          "GB",
+          "DK"
+        ],
+        4
+      ]
+    ];
+
+    const foreignParticipants: string[][] = countrySets.map(([cs, n]) =>
+      teamsFromCountrySet(n, cs, foreign)
     );
 
-    const teams = ehlTeams.concat(foreignTeams).sortBy(() => r.real(1, 10000));
-
+    const teams = [...domesticParticipants, ...foreignParticipants.flat()];
     yield call(setCompetitionTeams, "ehl", teams);
   },
 

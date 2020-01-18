@@ -103,7 +103,7 @@ const defaultState: GameState = {
   starting: false,
 
   turn: {
-    season: 0,
+    season: 3,
     round: 0,
     phase: undefined
   },

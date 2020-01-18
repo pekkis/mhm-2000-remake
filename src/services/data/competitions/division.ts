@@ -1,26 +1,39 @@
-import rr from "../../services/round-robin";
-import playoffScheduler, { victors, eliminated } from "../../services/playoffs";
-import { defaultMoraleBoost } from "../../services/morale";
-import r from "../../services/random";
-import { sortBy, take, map, prop } from "ramda";
+import rr from "../../round-robin";
+import playoffScheduler, { victors } from "../../playoffs";
+import { defaultMoraleBoost } from "../../morale";
+import r from "../../random";
 import {
   CompetitionService,
+  RoundRobinCompetitionGroup,
   RoundRobinCompetitionPhase,
   Matchups,
   PlayoffsCompetitionPhase,
   PlayoffsCompetitionGroup,
-  RoundRobinCompetitionGroup
-} from "../../types/base";
+  LeagueTable
+} from "../../../types/base";
+import { sortBy, map, prop, take, takeLast } from "ramda";
 
-const phl: CompetitionService = {
+const division: CompetitionService = {
+  homeAdvantage: (phase, group) => {
+    return 1;
+  },
+
+  awayAdvantage: (phase, group) => {
+    return 0.85;
+  },
+
+  relegateTo: false,
+  promoteTo: "phl",
+
   gameBalance: (phase, facts, manager) => {
     const arenaLevel = manager.arena.level + 1;
+
     if (facts.isLoss) {
       return manager.extra;
     }
 
     if (facts.isDraw) {
-      return 5000 + 3000 * arenaLevel + manager.extra;
+      return 3000 + 2000 * arenaLevel + manager.extra;
     }
 
     return 10000 + 3000 * arenaLevel + manager.extra;
@@ -34,48 +47,37 @@ const phl: CompetitionService = {
     return 0;
   },
 
-  homeAdvantage: (phase, group) => {
-    return 1;
-  },
-
-  awayAdvantage: (phase, group) => {
-    return 0.85;
-  },
-
-  relegateTo: "division",
-  promoteTo: false,
-
   parameters: {
     gameday: phase => ({
       advantage: {
-        home: team => 10,
-        away: team => -10
+        home: team => 5,
+        away: team => -5
       },
-      base: () => 20,
+      base: () => 10,
       moraleEffect: team => {
-        return team.morale * 2;
+        return team.morale;
       }
     })
   },
 
   seed: [
     competitions => {
-      const competition = competitions.phl;
+      const competition = competitions.division;
       const teams = sortBy(() => r.real(1, 1000), competition.teams);
       const times = 2;
-
-      const phase: RoundRobinCompetitionPhase = {
+      return {
+        teams: teams,
         name: "runkosarja",
         type: "round-robin",
-        teams,
+        times,
         groups: [
           {
             penalties: [],
+            times,
             type: "round-robin",
             round: 0,
             name: "runkosarja",
             teams,
-            times,
             schedule: rr(teams.length, times),
             colors: [
               "d",
@@ -84,63 +86,72 @@ const phl: CompetitionService = {
               "d",
               "d",
               "d",
-              "d",
-              "d",
               "l",
               "l",
               "l",
-              "d"
+              "l",
+              "l",
+              "l"
             ],
             stats: []
-          }
+          } as RoundRobinCompetitionGroup
         ]
-      };
-      return phase;
+      } as RoundRobinCompetitionPhase;
     },
     competitions => {
       const teams = take(
-        8,
+        6,
         map(
           prop("id"),
-          (competitions.phl.phases[0].groups[0] as RoundRobinCompetitionGroup)
-            .stats
+          (competitions.division.phases[0] as RoundRobinCompetitionPhase)
+            .groups[0].stats
         )
       );
 
-      const winsToAdvance = 3;
       const matchups: Matchups = [
-        [0, 7],
-        [1, 6],
-        [2, 5],
-        [3, 4]
+        [0, 5],
+        [1, 4],
+        [2, 3]
       ];
 
-      const phase: PlayoffsCompetitionPhase = {
-        name: "quarterfinals",
+      const winsToAdvance = 3;
+
+      return {
+        name: "neljännesfinaalit",
         type: "playoffs",
         teams,
         groups: [
           {
             type: "playoffs",
-            name: "playoffs",
-            round: 0,
             teams,
-            winsToAdvance,
+            round: 0,
+            name: "quarterfinals",
             matchups,
-            schedule: playoffScheduler(matchups, 3),
+            winsToAdvance,
+            schedule: playoffScheduler(matchups, winsToAdvance),
             stats: []
           } as PlayoffsCompetitionGroup
         ]
-      };
-      return phase;
+      } as PlayoffsCompetitionPhase;
     },
     competitions => {
-      const teams = map(
-        prop("id"),
-        victors(
-          competitions.phl.phases[1].groups[0] as PlayoffsCompetitionGroup
+      const teams = [
+        ...takeLast(
+          1,
+          map(
+            prop("id"),
+            (competitions.phl.phases[0] as RoundRobinCompetitionPhase).groups[0]
+              .stats
+          )
+        ),
+        ...map(
+          prop("id"),
+          victors(
+            (competitions.division.phases[1] as PlayoffsCompetitionPhase)
+              .groups[0]
+          )
         )
-      );
+      ];
 
       const matchups: Matchups = [
         [0, 3],
@@ -150,13 +161,14 @@ const phl: CompetitionService = {
       const winsToAdvance = 3;
 
       return {
-        name: "semifinals",
+        name: "semifinaalit",
         type: "playoffs",
         teams,
         groups: [
           {
             type: "playoffs",
             round: 0,
+            name: "semifinals",
             teams,
             matchups,
             winsToAdvance,
@@ -166,31 +178,26 @@ const phl: CompetitionService = {
       } as PlayoffsCompetitionPhase;
     },
     competitions => {
-      const teams = map(prop("id"), [
-        ...victors(
-          competitions.phl.phases[2].groups[0] as PlayoffsCompetitionGroup
-        ),
-        ...eliminated(
-          competitions.phl.phases[2].groups[0] as PlayoffsCompetitionGroup
+      const teams = map(
+        prop("id"),
+        victors(
+          (competitions.division.phases[2] as PlayoffsCompetitionPhase)
+            .groups[0]
         )
-      ]);
+      );
 
-      const matchups: Matchups = [
-        [0, 1],
-        [2, 3]
-      ];
-
+      const matchups: Matchups = [[0, 1]];
       const winsToAdvance = 4;
 
       return {
-        name: "finals",
+        name: "finaalit",
         type: "playoffs",
         teams,
         groups: [
           {
             type: "playoffs",
-            teams,
             round: 0,
+            teams,
             matchups,
             winsToAdvance,
             schedule: playoffScheduler(matchups, winsToAdvance)
@@ -201,4 +208,4 @@ const phl: CompetitionService = {
   ]
 };
 
-export default phl;
+export default division;

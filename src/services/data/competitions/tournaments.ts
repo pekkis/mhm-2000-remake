@@ -1,15 +1,15 @@
 import { Map, List } from "immutable";
 import { select, call, all } from "redux-saga/effects";
-import tournamentScheduler from "../../services/tournament";
-import r from "../../services/random";
-import { foreignTeams } from "../selectors";
+import tournamentScheduler from "../../tournament";
+import r from "../../random";
+import { foreignTeams } from "../../../data/selectors";
 
-import tournamentList from "../tournaments";
-import { setCompetitionTeams } from "../../sagas/game";
-import { incrementReadiness } from "../../sagas/team";
-import { addAnnouncement } from "../../sagas/news";
-import { incrementBalance } from "../../sagas/manager";
-import { amount as a } from "../../services/format";
+import tournamentList from "../../../data/tournaments";
+import { setCompetitionTeams } from "../../../sagas/game";
+import { incrementReadiness } from "../../../sagas/team";
+import { addAnnouncement } from "../../../sagas/news";
+import { incrementBalance } from "../../../sagas/manager";
+import { amount as a } from "../../format";
 import {
   CompetitionService,
   TournamentCompetitionPhase,
@@ -18,13 +18,21 @@ import {
   Managers,
   Invitation,
   TournamentCompetitionGroup
-} from "../../types/base";
-import { MHMState } from "../../ducks";
+} from "../../../types/base";
+import { MHMState } from "../../../ducks";
 import { prop, difference, append } from "ramda";
 
 const tournaments: CompetitionService = {
   relegateTo: false,
   promoteTo: false,
+
+  homeAdvantage: (phase, group) => {
+    return 1;
+  },
+
+  awayAdvantage: (phase, group) => {
+    return 1;
+  },
 
   start: function*() {
     yield call(setCompetitionTeams, "tournaments", List());

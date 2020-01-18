@@ -1,7 +1,7 @@
-import rr from "../../services/round-robin";
-import playoffScheduler, { victors } from "../../services/playoffs";
-import { defaultMoraleBoost } from "../../services/morale";
-import r from "../../services/random";
+import rr from "../../round-robin";
+import playoffScheduler, { victors } from "../../playoffs";
+import { defaultMoraleBoost } from "../../morale";
+import r from "../../random";
 import {
   CompetitionService,
   RoundRobinCompetitionGroup,
@@ -9,11 +9,19 @@ import {
   Matchups,
   PlayoffsCompetitionPhase,
   PlayoffsCompetitionGroup
-} from "../../types/base";
+} from "../../../types/base";
 import { sortBy, range, map, take, prop, takeLast } from "ramda";
-import { sortLeagueTable } from "../../services/league";
+import { sortLeagueTable } from "../../league";
 
 const mutasarja: CompetitionService = {
+  homeAdvantage: (phase, group) => {
+    return 1;
+  },
+
+  awayAdvantage: (phase, group) => {
+    return 0.85;
+  },
+
   relegateTo: false,
   promoteTo: "division",
 
