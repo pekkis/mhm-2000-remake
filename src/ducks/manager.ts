@@ -15,7 +15,11 @@ import {
   dissocPath,
   ifElse,
   values,
-  find
+  find,
+  lensProp,
+  map,
+  mergeLeft,
+  assoc
 } from "ramda";
 import {
   TeamRemoveManagerAction,
@@ -26,15 +30,21 @@ import {
 
 export const MANAGER_NEXT = "MANAGER_NEXT";
 export const MANAGER_ADD = "MANAGER_ADD";
+export const MANAGER_SET_ACTIVE = "MANAGER_SET_ACTIVE";
 
 export interface ManagerAddManagerAction {
   type: typeof MANAGER_ADD;
   payload: HumanManager;
 }
 
+export interface ManagerSetActiveAction {
+  type: typeof MANAGER_SET_ACTIVE;
+  payload: HumanManager;
+}
+
 export interface ManagerState {
   active: string | undefined;
-  managers: MapOf<Manager>;
+  managers: MapOf<Manager | HumanManager>;
 }
 
 const defaultState: ManagerState = {
@@ -113,7 +123,8 @@ type ManagerActions =
   | ManagerAddManagerAction
   | GameSeasonStartAction
   | TeamRemoveManagerAction
-  | TeamAddManagerAction;
+  | TeamAddManagerAction
+  | ManagerSetActiveAction;
 
 export default function managerReducer(
   state: ManagerState = defaultState,
@@ -137,7 +148,7 @@ export default function managerReducer(
       if (!manager) {
         return state;
       }
-      return dissocPath(["managers", manager.id, "team"]);
+      return dissocPath(["managers", manager.id, "team"], state);
 
     case TEAM_ADD_MANAGER:
       return assocPath(
@@ -147,13 +158,18 @@ export default function managerReducer(
       );
 
     case GAME_SEASON_START:
-      return state.update("managers", managers => {
-        return managers.map(manager => {
-          return manager
-            .set("pranksExecuted", 0)
-            .setIn(["flags", "rally"], false);
-        });
-      });
+      return over(
+        lensProp("managers"),
+        map(
+          mergeLeft({
+            pranksExecuted: 0
+          })
+        ),
+        state
+      );
+
+    case MANAGER_SET_ACTIVE:
+      return assoc("active", action.payload, state);
 
     case "MANAGER_SET_FLAG":
       return state.setIn(
@@ -211,9 +227,6 @@ export default function managerReducer(
         ["managers", payload.manager, "arena", "level"],
         payload.level
       );
-
-    case "MANAGER_SET_ACTIVE":
-      return state.set("active", payload);
 
     case "PRANK_ORDER":
       return state.updateIn(

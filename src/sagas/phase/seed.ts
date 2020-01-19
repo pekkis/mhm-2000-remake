@@ -1,28 +1,21 @@
-import { select, put, call } from "redux-saga/effects";
-import { List } from "immutable";
+import { select, call } from "redux-saga/effects";
 import { seedCompetition, setPhase } from "../game";
-import { MHMCalendar } from "../../types/base";
-import { nth } from "ramda";
+import { MHMTurnDefinition } from "../../types/base";
+import { currentCalendarEntry } from "../../data/selectors";
 
 export default function* seedPhase() {
   yield setPhase("seed");
 
-  const calendar: MHMCalendar = yield select(state =>
-    state.game.get("calendar")
-  );
-
-  const round = yield select(state => state.game.getIn(["turn", "round"]));
-  const calRound = nth(round, calendar);
-
-  if (!calRound) {
+  const calendarEntry: MHMTurnDefinition = yield select(currentCalendarEntry);
+  if (!calendarEntry) {
     throw new Error("Invalid calendar round");
   }
 
-  if (!calRound.seed) {
+  if (!calendarEntry.seed) {
     return;
   }
 
-  for (const seed of calRound.seed) {
+  for (const seed of calendarEntry.seed) {
     yield call(seedCompetition, seed.competition, seed.phase);
   }
 }

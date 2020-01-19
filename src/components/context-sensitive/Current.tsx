@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Calendar from "../ui/containers/CalendarContainer";
-import styled from "styled-components";
+import Calendar from "../ui/Calendar";
+import styled from "@emotion/styled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { nth } from "ramda";
 

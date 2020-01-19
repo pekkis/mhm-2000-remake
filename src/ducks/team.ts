@@ -4,13 +4,27 @@ import teamData from "../services/data/teams";
 
 import { MapOf } from "../types/base";
 import { Team, TeamStrength } from "../types/team";
-import { dissocPath, assocPath, reduce } from "ramda";
+import {
+  dissocPath,
+  assocPath,
+  reduce,
+  over,
+  lensProp,
+  map,
+  mergeLeft,
+  pipe,
+  evolve,
+  dec
+} from "ramda";
 import {
   GAME_DECREMENT_DURATIONS,
   GAME_CLEAR_EXPIRED,
   GAME_LOAD_STATE,
   GameLoadStateAction,
-  GameQuitToMainMenuAction
+  GameQuitToMainMenuAction,
+  GameSeasonStartAction,
+  GAME_SEASON_START,
+  GameCleanupAction
 } from "./game";
 
 export interface TeamState {
@@ -50,12 +64,29 @@ type TeamActions =
   | GameQuitToMainMenuAction
   | TeamRemoveManagerAction
   | TeamAddManagerAction
-  | TeamSetStrengthsAction;
+  | GameSeasonStartAction
+  | TeamSetStrengthsAction
+  | GameCleanupAction;
 
 const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
   switch (action.type) {
     case GAME_LOAD_STATE:
       return action.payload.team;
+
+    case GAME_SEASON_START:
+      return over(
+        lensProp("teams"),
+        map(
+          mergeLeft({
+            effects: [],
+            opponentEffects: [],
+            morale: 0,
+            strategy: 2,
+            readiness: 0
+          })
+        ),
+        state
+      );
 
     case TEAM_REMOVE_MANAGER:
       return dissocPath(["teams", action.payload.team, "manager"], state);
@@ -73,6 +104,22 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
           assocPath(["teams", id, "strength"], strength, a),
         state,
         action.payload
+      );
+
+    case GAME_CLEAR_EXPIRED:
+      return over(
+        lensProp("teams"),
+        map(
+          evolve({
+            effects: {
+              duration: dec
+            },
+            opponentEffects: {
+              duration: dec
+            }
+          })
+        ),
+        state
       );
 
     case "TEAM_INCREMENT_MORALE":
@@ -155,19 +202,6 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
             })
             .update("opponentEffects", effects => {
               return effects.map(e => e.update("duration", d => d - 1));
-            });
-        });
-      });
-
-    case GAME_CLEAR_EXPIRED:
-      return state.update("teams", teams => {
-        return teams.map(team => {
-          return team
-            .update("effects", effects => {
-              return effects.filter(e => e.get("duration") > 0);
-            })
-            .update("opponentEffects", effects => {
-              return effects.filter(e => e.get("duration") > 0);
             });
         });
       });

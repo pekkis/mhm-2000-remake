@@ -5,7 +5,7 @@ import { Middleware, Reducer, StoreEnhancer } from "redux";
 const sagaMiddleware = createSagaMiddleware();
 
 export function getMiddlewares(): Middleware[] {
-  let middlewares = [sagaMiddleware];
+  const middlewares = [sagaMiddleware];
   return middlewares;
 }
 

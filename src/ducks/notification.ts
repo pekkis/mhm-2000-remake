@@ -2,9 +2,13 @@ import { GAME_QUIT_TO_MAIN_MENU, GameQuitToMainMenuAction } from "./game";
 import { Reducer } from "redux";
 import { dissocPath, assocPath } from "ramda";
 
+export type MHMNotificationTypes = "info" | "error";
+
 export interface MHMNotification {
   id: string;
   message: string;
+  manager: string;
+  type: "info" | "error";
 }
 
 export interface NotificationState {

@@ -19,6 +19,7 @@ import images from "@dr-kobros/webpack-broilerplate/dist/features/images";
 import html from "@dr-kobros/webpack-broilerplate/dist/features/html";
 import copyFiles from "@dr-kobros/webpack-broilerplate/dist/features/copyFiles";
 import saneDefaultOptions from "@dr-kobros/webpack-broilerplate/dist/features/saneDefaultOptions";
+import emotion from "@dr-kobros/webpack-broilerplate-emotion";
 
 import { pipe } from "ramda";
 import path from "path";
@@ -80,7 +81,8 @@ const bp2 = pipe(
   babel({ browsers: pkg.browserslist[mode] }),
   mjs(),
   // coreJS(),
-  externalCSS()
+  externalCSS(),
+  emotion()
 )(bp);
 const config = build(bp2);
 

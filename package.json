@@ -41,6 +41,7 @@
     ]
   },
   "dependencies": {
+    "@dr-kobros/webpack-broilerplate-emotion": "^0.1.13",
     "@emotion/core": "^10.0.22",
     "@emotion/styled": "^10.0.23",
     "@fortawesome/fontawesome-svg-core": "^1.2.9",
@@ -51,6 +52,7 @@
     "@types/react-redux": "^7.1.5",
     "axios": "^0.19.0",
     "classnames": "^2.2.6",
+    "emotion-theming": "^10.0.27",
     "formik": "^2.0.8",
     "graphql": "^14.0.2",
     "immutable": "^4.0.0-rc.12",

@@ -1,4 +1,8 @@
-import { RoundRobinCompetitionGroup, ScheduleGame } from "../types/base";
+import {
+  RoundRobinCompetitionGroup,
+  ScheduleGame,
+  TournamentCompetitionGroup
+} from "../types/base";
 import {
   over,
   lensProp,
@@ -52,7 +56,9 @@ const changedStats = (
   } as LeagueTableRow;
 };
 
-export const groupStats = (group: RoundRobinCompetitionGroup) => {
+export const groupStats = (
+  group: RoundRobinCompetitionGroup | TournamentCompetitionGroup
+) => {
   const stats = group.teams.map((id, index) => {
     const stats = group.schedule
       .map(round => round.filter(p => p.home === index || p.away === index))
@@ -96,7 +102,9 @@ export const sortLeagueTable = sortWith<LeagueTableRow>([
   descend(prop("points"))
 ]);
 
-const table = (group: RoundRobinCompetitionGroup): LeagueTable => {
+const table = (
+  group: RoundRobinCompetitionGroup | TournamentCompetitionGroup
+): LeagueTable => {
   const unsorted = groupStats(group);
   return sortLeagueTable(unsorted);
 };

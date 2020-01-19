@@ -12,7 +12,9 @@ import {
   set,
   lensProp,
   map,
-  mergeLeft
+  mergeLeft,
+  pipe,
+  assocPath
 } from "ramda";
 import {
   GameSeasonStartAction,
@@ -85,6 +87,7 @@ const defaultState: CompetitionState = {
         "testicles",
         "santaclaus",
         "ruiske",
+        "lightning",
         "nikkarit",
         "salama",
         "hait",
@@ -215,8 +218,9 @@ export default function competitionReducer(
             phase: -1,
             phases: []
           })
-        )
-      )(state);
+        ),
+        state
+      );
 
     case COMPETITION_REMOVE_TEAM:
       return over(
@@ -262,15 +266,21 @@ export default function competitionReducer(
       );
 
     case COMPETITION_SEED:
+      const state2 = assocPath(
+        ["competitions", action.payload.competition, "phase"],
+        action.payload.phase,
+        state
+      );
+
       return set(
         lensPath([
           "competitions",
           action.payload.competition,
-          "phase",
+          "phases",
           action.payload.phase
         ]),
         action.payload.seed,
-        state
+        state2
       );
 
     default:

@@ -919,7 +919,14 @@
   resolved "https://registry.yarnpkg.com/@csstools/sass-import-resolve/-/sass-import-resolve-1.0.0.tgz#32c3cdb2f7af3cd8f0dca357b592e7271f3831b5"
   integrity sha512-pH4KCsbtBLLe7eqUrw8brcuFO8IZlN36JjdKlOublibVdAIPHCzEnpBWOVUXK5sCf+DpBi8ZtuWtjF0srybdeA==
 
-"@dr-kobros/webpack-broilerplate@^0.1.9":
+"@dr-kobros/webpack-broilerplate-emotion@^0.1.13":
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/@dr-kobros/webpack-broilerplate-emotion/-/webpack-broilerplate-emotion-0.1.13.tgz#76a59b151dbcbd5e2cab2294e1e37d62ae572646"
+  integrity sha512-KCSK/DQFC3MR5yLMN0Ph8RjgkIiHxAHZZjktD/UNWjD258RmA85ExKGkRiwjBRd0BkNa3WNsaxtQdxDOnYT55A==
+  dependencies:
+    "@dr-kobros/webpack-broilerplate" "^0.1.13"
+
+"@dr-kobros/webpack-broilerplate@^0.1.13", "@dr-kobros/webpack-broilerplate@^0.1.9":
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/@dr-kobros/webpack-broilerplate/-/webpack-broilerplate-0.1.13.tgz#6e05e0919c0f77a021edd7c526da617343956524"
   integrity sha512-/xCW4z1aJaX8HdBeSL4AthLwOOGxq4uf0RfdkFdN57inZL7C9ubXE5Haj+b552FXN6t57fv4eoKnGhMMn0vKWg==
@@ -3955,6 +3962,15 @@ emojis-list@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/emojis-list/-/emojis-list-2.1.0.tgz#4daa4d9db00f9819880c79fa457ae5b09a1fd389"
   integrity sha1-TapNnbAPmBmIDHn6RXrlsJof04k=
+
+emotion-theming@^10.0.27:
+  version "10.0.27"
+  resolved "https://registry.yarnpkg.com/emotion-theming/-/emotion-theming-10.0.27.tgz#1887baaec15199862c89b1b984b79806f2b9ab10"
+  integrity sha512-MlF1yu/gYh8u+sLUqA0YuA9JX0P4Hb69WlKc/9OLo+WCXuX6sy/KoIa+qJimgmr2dWqnypYKYPX37esjDBbhdw==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@emotion/weak-memoize" "0.2.5"
+    hoist-non-react-statics "^3.3.0"
 
 encodeurl@~1.0.2:
   version "1.0.2"

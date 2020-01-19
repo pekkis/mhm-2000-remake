@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Root from "./Root";
-import { getInitialState } from "./config/state.js";
 import { createStore } from "./services/redux";
 import {
   getMiddlewares,
@@ -33,14 +32,7 @@ Sentry.init({
 
 library.add(faSpinner, faBars, faExclamationCircle);
 
-const initialState = getInitialState();
-
-const store = createStore(
-  getReducers(),
-  getMiddlewares(),
-  getEnhancers(),
-  initialState
-);
+const store = createStore(getReducers(), getMiddlewares(), getEnhancers());
 
 const sagaMiddleware = getSagaMiddleware();
 sagaMiddleware.run(rootSaga);

@@ -1,17 +1,68 @@
-import { pipe, nth, filter, sortWith, ascend, values, prop } from "ramda";
+import {
+  pipe,
+  nth,
+  filter,
+  sortWith,
+  ascend,
+  values,
+  prop,
+  toPairs
+} from "ramda";
 import r from "../services/random";
 import { victors } from "../services/playoffs";
-import { MHMTurnDefinition } from "../types/base";
+import {
+  MHMTurnDefinition,
+  CompetitionNames,
+  CompetitionPhase,
+  CompetitionGroup
+} from "../types/base";
 import { MHMState } from "../ducks";
 import { Team } from "../types/team";
+import { isHumanManager, HumanManager } from "../types/manager";
+
+export const advanceEnabled = (state: MHMState) => state.ui.advanceEnabled;
 
 export const allTeams = (state: MHMState) => values(state.team.teams);
+
+export const humanManagers = (state: MHMState): HumanManager[] => {
+  return values(state.manager.managers).filter(isHumanManager);
+};
+
+export const activeManager = (state: MHMState): HumanManager => {
+  if (!state.manager.active) {
+    throw new Error("No active manager");
+  }
+
+  const manager = state.manager.managers[state.manager.active];
+
+  if (!isHumanManager(manager)) {
+    throw new Error("Computer manager has the turn?!?!");
+  }
+
+  return manager;
+};
 
 export const managersCurrentTeam = (manager: string) => (
   state: MHMState
 ): string | undefined => {
   return state.manager.managers[manager].team;
 };
+
+export const competitionPhase = (
+  competition: CompetitionNames,
+  phase: number
+) => (state: MHMState): CompetitionPhase => {
+  console.log(state.competition.competitions[competition], "poppelipii");
+
+  return state.competition.competitions[competition].phases[phase];
+};
+
+export const competitionGroup = (
+  competition: CompetitionNames,
+  phase: number,
+  group: number
+) => (state: MHMState): CompetitionGroup =>
+  state.competition.competitions[competition].phases[phase].groups[group];
 
 export const domesticTeams = (state: MHMState): Team[] =>
   values(state.team.teams).filter(t => t.country === "FI");
@@ -49,6 +100,29 @@ export const currentCalendarEntry = (state: MHMState): MHMTurnDefinition => {
 export const sortedTeamList = (state: MHMState): Team[] => {
   const sorter = sortWith<Team>([ascend(prop("name")), ascend(prop("id"))]);
   return sorter(values(state.team.teams));
+};
+
+export const managersTeam = (manager: string) => (
+  state: MHMState
+): string | undefined => state.manager.managers[manager].team;
+
+export const interestingCompetitions = (manager: string) => (
+  state: MHMState
+): CompetitionNames[] => {
+  const team = managersTeam(manager)(state);
+  if (!team) {
+    return [];
+  }
+  const competitions = values(state.competition.competitions);
+  const interdasting = competitions.filter(c =>
+    c.phases.some(phase => phase.teams.includes(team))
+  );
+  return interdasting.map(prop("id"));
+};
+
+export const weightedCompetitions = (state: MHMState) => {
+  const sorter = sortWith([ascend(prop("weight"))]);
+  return sorter(values(state.competition.competitions));
 };
 
 // UNREFACTORED BEGINS
@@ -211,12 +285,6 @@ export const flag = flag => state => {
 export const managerFlag = (manager, flag) => state =>
   state.manager.getIn(["managers", manager, "flags", flag]);
 
-export const managersTeam = manager => state =>
-  state.game.getIn([
-    "teams",
-    state.manager.getIn(["managers", manager, "team"])
-  ]);
-
 export const managersBalance = manager => state =>
   state.manager.getIn(["managers", manager, "balance"]);
 
@@ -290,23 +358,6 @@ export const randomTeamFrom = (
 
   const randomized = r.pick(teams.toArray());
   return state.game.getIn(["teams", randomized.get("id")]);
-};
-
-export const interestingCompetitions = manager => state => {
-  const team = managersTeam(manager)(state);
-
-  return state.game
-    .get("competitions")
-    .filter(competition => {
-      return competition.get("phases").some(phase => {
-        return phase
-          .get("groups")
-          .some(group => group.get("teams").includes(team.get("id")));
-      });
-
-      // return competition.get("teams").includes(team.get("id"));
-    })
-    .map(c => c.get("id"));
 };
 
 export const randomManager = (exclude = []) => state => {

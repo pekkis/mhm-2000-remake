@@ -1,24 +1,32 @@
 import React, { FunctionComponent, ReactNode } from "react";
-import { MHMCalendar, MHMTurnDefinition } from "../../types/base";
-import { nth } from "ramda";
+import {
+  MHMCalendar,
+  MHMTurnDefinition,
+  ForEveryCompetition,
+  Competition
+} from "../../types/base";
+import { useSelector } from "react-redux";
+import { currentCalendarEntry } from "../../data/selectors";
+import { MHMState } from "../../ducks";
 
 interface Props {
-  state: any;
-  calendar: MHMCalendar;
-  when: (turn: MHMTurnDefinition, calendar: MHMCalendar, state: any) => boolean;
-  turn: unknown;
+  when: (
+    turn: MHMTurnDefinition,
+    calendar: MHMCalendar,
+    competitions: ForEveryCompetition<Competition>
+  ) => boolean;
   fallback?: ReactNode;
 }
 
-const Calendar: FunctionComponent<Props> = props => {
-  const { calendar, turn, when, children, fallback, state } = props;
-  const entry = nth(turn.get("round"), calendar);
-  if (!entry) {
-    throw new Error("Invalid calendar entry");
-  }
+const Calendar: FunctionComponent<Props> = ({ when, children, fallback }) => {
+  const calendar = useSelector((state: MHMState) => state.game.calendar);
+  const entry = useSelector(currentCalendarEntry);
+  const competitions = useSelector(
+    (state: MHMState) => state.competition.competitions
+  );
 
-  if (when(entry, calendar, state)) {
-    return <>children</>;
+  if (when(entry, calendar, competitions)) {
+    return <>{children}</>;
   }
 
   return fallback ? <>{fallback}</> : null;

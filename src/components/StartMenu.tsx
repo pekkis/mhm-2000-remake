@@ -3,7 +3,7 @@ import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
 import Box from "./styled-system/Box";
 import ManagerForm from "./start-menu/ManagerForm";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import title from "../assets/title.png";
 import { useSelector, useDispatch } from "react-redux";
 import { MHMState } from "../ducks";

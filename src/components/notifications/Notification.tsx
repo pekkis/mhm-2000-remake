@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 const Notification = props => {
   const { className, notification, dismiss } = props;

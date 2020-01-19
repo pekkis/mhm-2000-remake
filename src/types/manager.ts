@@ -11,7 +11,9 @@ ONNEKKUUS
 */
 
 export const isHumanManager = (manager: Manager): manager is HumanManager => {
-  return "isHuman" in manager;
+  console.log("managers", manager);
+
+  return manager.isHuman === true;
 };
 
 export interface Manager {
@@ -19,6 +21,7 @@ export interface Manager {
   name: string;
   country: AllCountries;
   team?: string;
+  isHuman: boolean;
 
   abilities: {
     strategy: number;
@@ -28,6 +31,10 @@ export interface Manager {
     charisma: number;
     luck: number;
   };
+}
+
+export interface ComputerManager extends Manager {
+  isHuman: false;
 }
 
 export interface HumanManager extends Manager {

@@ -13,13 +13,13 @@ const pluginOverrides = {
         plugin.options(env, target, paths, options).setIn(
           [0, "seed"],
           Map({
-            name: "MHM 97",
-            short_name: "MHM 97",
+            name: "MHM 2000",
+            short_name: "MHM 2000",
             start_url: "/",
             display: "standalone",
             background_color: "rgb(0, 0, 0)",
             theme_color: "rgb(0, 0, 0)",
-            description: "MHM 97",
+            description: "MHM 2000",
             icons: [
               {
                 src: "icons/mhm97-48.png",

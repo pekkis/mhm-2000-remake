@@ -1,26 +1,39 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { Link } from "react-router-dom";
-import Calendar from "./ui/containers/CalendarContainer";
-import { getEffective } from "../services/effects";
+import Calendar from "./ui/Calendar";
 import { CRISIS_MORALE_MAX } from "../data/constants";
 import Button from "./form/Button";
-import { List } from "immutable";
+import { useDispatch, useSelector } from "react-redux";
+import { activeManager } from "../data/selectors";
+import { MHMState } from "../ducks";
+import { closeMenu } from "../ducks/ui";
+import { saveGame, quitToMainMenu } from "../ducks/game";
 
-const ActionMenu = props => {
-  const { manager, teams, closeMenu, saveGame, quitToMainMenu, turn } = props;
-  const team = getEffective(teams.get(manager.get("team")));
+const ActionMenu: FunctionComponent = () => {
+  // const team = getEffective(teams.get(manager.get("team")));
+
+  const dispatch = useDispatch();
+  const manager = useSelector(activeManager);
+  const turn = useSelector((state: MHMState) => state.game.turn);
+  const teams = useSelector((state: MHMState) => state.team.teams);
+
+  if (!manager.team) {
+    throw new Error("Invalid team for manager");
+  }
+
+  const team = teams[manager.team];
 
   return (
     <div>
       <nav>
         <ul>
           <li>
-            <Link onClick={() => closeMenu()} to="/">
+            <Link onClick={() => dispatch(closeMenu())} to="/">
               Päävalikko
             </Link>
           </li>
 
-          {team.get("morale") <= CRISIS_MORALE_MAX && (
+          {team.morale <= CRISIS_MORALE_MAX && (
             <Calendar when={c => c.crisisMeeting}>
               <li>
                 <Link onClick={() => closeMenu()} to="/kriisipalaveri">
@@ -69,10 +82,9 @@ const ActionMenu = props => {
           </li>
 
           <Calendar
-            when={(e, c, s) => {
+            when={(turn, calendar, competitions) => {
               return (
-                e.gamedays.includes("phl") &&
-                s.game.getIn(["competitions", "phl", "phase"]) === 0
+                turn.gamedays.includes("phl") && competitions.phl.phase === 0
               );
             }}
           >
@@ -92,10 +104,10 @@ const ActionMenu = props => {
       </nav>
       <Button
         block
-        disabled={turn.get("phase") !== "action"}
+        disabled={turn.phase !== "action"}
         type="button"
         onClick={() => {
-          saveGame();
+          dispatch(saveGame());
           closeMenu();
         }}
       >
@@ -106,7 +118,7 @@ const ActionMenu = props => {
         block
         type="button"
         onClick={() => {
-          quitToMainMenu();
+          dispatch(quitToMainMenu());
           closeMenu();
         }}
       >

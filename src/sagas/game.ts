@@ -13,7 +13,12 @@ import {
   GAME_LOAD_REQUEST,
   GAME_START_REQUEST,
   GAME_QUIT_TO_MAIN_MENU,
-  GameSeasonStartAction
+  GameSeasonStartAction,
+  GameCleanupAction,
+  GAME_CLEAR_EXPIRED,
+  GameNextTurnAction,
+  GAME_NEXT_TURN,
+  GameSaveRequestAction
 } from "../ducks/game";
 
 import {
@@ -61,7 +66,8 @@ import {
   managerHasService,
   managersArena,
   currentCalendarEntry,
-  humanManagers
+  humanManagers,
+  activeManager
 } from "../data/selectors";
 import events from "../data/events";
 import { nth, map, values, toPairs } from "ramda";
@@ -69,7 +75,8 @@ import {
   MHMTurnPhase,
   MHMTurnDefinition,
   Turn,
-  CompetitionNames
+  CompetitionNames,
+  CompetitionPhase
 } from "../types/base";
 import { MHMState } from "../ducks";
 import { Team, TeamStrength } from "../types/team";
@@ -77,8 +84,11 @@ import { teamLevelToStrength } from "../services/team";
 import { TeamSetStrengthsAction, TEAM_SET_STRENGTHS } from "../ducks/team";
 import {
   CompetitionStartAction,
-  COMPETITION_START
+  COMPETITION_START,
+  CompetitionSeedAction,
+  COMPETITION_SEED
 } from "../ducks/competition";
+import { addNotification } from "./notification";
 
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 
@@ -213,7 +223,7 @@ export function* gameLoop() {
     }
 
     // Todo: this should be in a turn cleanup phase.
-    yield putResolve({ type: "GAME_CLEAR_EXPIRED" });
+    yield putResolve<GameCleanupAction>({ type: GAME_CLEAR_EXPIRED });
 
     yield call(nextTurn);
   } while (true);
@@ -283,14 +293,17 @@ export function* seasonStart() {
 
   // Start all competitions.
   for (const [key, competitionObj] of toPairs(competitionData)) {
+    console.log("HELLU", key);
     yield competitionStart(key);
   }
 
-  console.log("HELLUREI!");
+  console.log("HELLUREI!!!!!!");
 
-  yield put<GameSeasonStartAction>({
+  yield putResolve<GameSeasonStartAction>({
     type: GAME_SEASON_START
   });
+
+  console.log("HELLUREI!!!!!!");
 }
 
 export function* promote(competition, team) {
@@ -335,9 +348,11 @@ export function* incrementServiceBasePrice(service, amount) {
 }
 
 function* nextTurn() {
+  // TODO: Refactor this to be better (pre and post effect, let the reducers deduce their own logic), maybe merge this logic with cleanup?
+
   yield put({ type: "NEWS_ANNOUNCEMENTS_CLEAR" });
   yield put({ type: "EVENT_CLEAR_EVENTS" });
-  yield put({ type: "GAME_NEXT_TURN" });
+  yield put<GameNextTurnAction>({ type: GAME_NEXT_TURN });
 }
 
 export function* setPhase(phase: MHMTurnPhase) {
@@ -347,18 +362,20 @@ export function* setPhase(phase: MHMTurnPhase) {
   });
 }
 
-export function* seedCompetition(competitionId, phase) {
-  const competitions = yield select(state => state.game.get("competitions"));
-  const competitionObj = competitionData.getIn([competitionId]);
+export function* seedCompetition(competition: CompetitionNames, phase: number) {
+  const competitions = yield select(state => state.competition.competitions);
 
-  const seeder = competitionObj.getIn(["seed", phase]);
+  const seeder = competitionData[competition].seed[phase];
+  if (!seeder) {
+    throw new Error(`Invalid seeder for ${competition}; ${phase}`);
+  }
 
-  const seed = yield call(seeder, competitions);
+  const seed: CompetitionPhase = yield call(seeder, competitions);
 
-  yield putResolve({
-    type: "COMPETITION_SEED",
+  yield putResolve<CompetitionSeedAction>({
+    type: COMPETITION_SEED,
     payload: {
-      competition: competitionId,
+      competition: competition,
       phase,
       seed
     }
@@ -376,14 +393,11 @@ export function* gameStart() {
   });
 }
 
-export function* gameSave(action) {
-  const manager = yield select(state =>
-    state.manager.getIn(["managers", state.manager.get("active")])
-  );
-
+export function* gameSave() {
+  const manager = yield select(activeManager);
   const state = yield select(state => state);
-  yield call(save, state);
-  yield call(addNotification, manager.get("id"), "Peli tallennettiin.");
+  yield call(gameStateService.saveGame, state);
+  yield call(addNotification, manager.id, "Peli tallennettiin.");
 }
 
 export function* gameLoad() {

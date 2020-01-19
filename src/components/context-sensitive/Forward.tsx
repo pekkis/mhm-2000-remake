@@ -1,18 +1,13 @@
 import React, { FunctionComponent } from "react";
-import { MHMCalendar } from "../../types/base";
-import { nth } from "ramda";
+import { useSelector } from "react-redux";
+import { MHMState } from "../../ducks";
+import { currentCalendarEntry } from "../../data/selectors";
 
-interface Props {
-  calendar: MHMCalendar;
-}
-
-const Forward: FunctionComponent<Props> = props => {
-  const { turn, competitions, calendar } = props;
-
-  const calendarEntry = nth(turn.get("round"), calendar);
-  if (!calendarEntry) {
-    return null;
-  }
+const Forward: FunctionComponent = () => {
+  const competitions = useSelector(
+    (state: MHMState) => state.competition.competitions
+  );
+  const calendarEntry = useSelector(currentCalendarEntry);
 
   const gamedays = calendarEntry.gamedays;
 
@@ -21,8 +16,8 @@ const Forward: FunctionComponent<Props> = props => {
       <div>
         Pelipäivä (
         {gamedays
-          .map(gd => competitions.get(gd))
-          .map(c => c.get("abbr"))
+          .map(gd => competitions[gd])
+          .map(c => c.abbr)
           .join(", ")}
         )
       </div>

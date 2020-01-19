@@ -5,7 +5,7 @@ import r from "../../random";
 import { foreignTeams } from "../../../data/selectors";
 
 import tournamentList from "../../../data/tournaments";
-import { setCompetitionTeams } from "../../../sagas/game";
+import { setCompetitionTeams } from "../../../sagas/competition";
 import { incrementReadiness } from "../../../sagas/team";
 import { addAnnouncement } from "../../../sagas/news";
 import { incrementBalance } from "../../../sagas/manager";
@@ -13,14 +13,13 @@ import { amount as a } from "../../format";
 import {
   CompetitionService,
   TournamentCompetitionPhase,
-  Team,
-  Manager,
   Managers,
   Invitation,
   TournamentCompetitionGroup
 } from "../../../types/base";
 import { MHMState } from "../../../ducks";
 import { prop, difference, append } from "ramda";
+import { Team } from "../../../types/team";
 
 const tournaments: CompetitionService = {
   relegateTo: false,
@@ -35,13 +34,13 @@ const tournaments: CompetitionService = {
   },
 
   start: function*() {
-    yield call(setCompetitionTeams, "tournaments", List());
+    yield call(setCompetitionTeams, "tournaments", []);
   },
 
   groupEnd: function*(phase, group) {
     const tournament: TournamentCompetitionGroup = yield select(
       (state: MHMState) =>
-        state.game.competitions.tournaments.phases[phase].groups[group]
+        state.competition.competitions.tournaments.phases[phase].groups[group]
     );
 
     const managers: Managers = yield select(

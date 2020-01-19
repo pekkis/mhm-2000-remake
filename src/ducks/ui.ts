@@ -2,8 +2,8 @@ import { GAME_QUIT_TO_MAIN_MENU, GameQuitToMainMenuAction } from "./game";
 import { assoc } from "ramda";
 
 export interface UIState {
-  menu: Boolean;
-  advanceEnabled: Boolean;
+  menu: boolean;
+  advanceEnabled: boolean;
 }
 
 export interface UIDisableAdvanceAction {

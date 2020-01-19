@@ -29,7 +29,9 @@ export type MHMTurnPhase =
   | "event"
   | "news"
   | "worldChampionships"
-  | "seed";
+  | "seed"
+  | "selectStrategy"
+  | "championshipBetting";
 
 export type MHMTurnPhasesList = MHMTurnPhase[];
 
@@ -69,7 +71,7 @@ export type CompetitionNames = keyof Competitions;
 export type CompetitionNameList = CompetitionNames[];
 
 export interface Competition {
-  id: string;
+  id: CompetitionNames;
   weight: number;
   teams: string[];
   abbr: string;
@@ -78,7 +80,11 @@ export interface Competition {
   phases: CompetitionPhase[];
 }
 
-export type CompetitionType = "round-robin" | "playoffs" | "tournament";
+export type CompetitionTypes =
+  | "round-robin"
+  | "playoffs"
+  | "tournament"
+  | "training";
 
 export interface TeamPenalty {
   team: string;
@@ -115,32 +121,48 @@ export interface PlayoffTeamStat {
 }
 
 export interface CompetitionGroup {
-  type: CompetitionType;
+  type: CompetitionTypes;
   round: number;
+  schedule: Schedule;
   name: string;
   teams: string[];
 }
+
+export const isRoundRobinCompetitionGroup = (
+  group: CompetitionGroup
+): group is RoundRobinCompetitionGroup => {
+  return group.type === "round-robin";
+};
 
 export interface RoundRobinCompetitionGroup extends CompetitionGroup {
   penalties: TeamPenalty[];
   type: "round-robin";
   times: number;
-  schedule: Schedule;
   colors: Color[];
   stats: LeagueTable;
 }
+
+export const isTournamentCompetitionGroup = (
+  group: CompetitionGroup
+): group is TournamentCompetitionGroup => {
+  return group.type === "tournament";
+};
 
 export interface TournamentCompetitionGroup extends CompetitionGroup {
   penalties: TeamPenalty[];
   type: "tournament";
-  schedule: Schedule;
   colors: Color[];
   stats: LeagueTable;
 }
 
+export const isPlayoffsCompetitionGroup = (
+  group: CompetitionGroup
+): group is PlayoffsCompetitionGroup => {
+  return group.type === "playoffs";
+};
+
 export interface PlayoffsCompetitionGroup extends CompetitionGroup {
   type: "playoffs";
-  schedule: Schedule;
   matchups: Matchups;
   winsToAdvance: number;
   stats: PlayoffsStats;
@@ -150,7 +172,7 @@ type Color = "l" | "d";
 
 interface BaseCompetitionPhase {
   name: string;
-  type: CompetitionType;
+  type: CompetitionTypes;
   teams: string[];
   groups: CompetitionGroup[];
 }

@@ -16,7 +16,10 @@ import {
   over,
   mergeLeft,
   map,
-  lensPath
+  lensPath,
+  assocPath,
+  evolve,
+  inc
 } from "ramda";
 
 export const GAME_QUIT_TO_MAIN_MENU = "GAME_QUIT_TO_MAIN_MENU";
@@ -59,6 +62,10 @@ export interface GameLoadRequestAction {
 
 export interface GameLoadedAction {
   type: typeof GAME_LOADED;
+}
+
+export interface GameCleanupAction {
+  type: typeof GAME_CLEAR_EXPIRED;
 }
 
 export const quitToMainMenu = (): GameQuitToMainMenuAction => ({
@@ -142,6 +149,10 @@ export interface GameAdvanceAction {
   payload: any;
 }
 
+export interface GameAdvanceRequestAction {
+  type: typeof GAME_ADVANCE_REQUEST;
+}
+
 export interface GameSeasonEndAction {
   type: typeof GAME_SEASON_END;
 }
@@ -183,27 +194,16 @@ const gameReducer: Reducer<typeof defaultState> = (
       return payload.game;
 
     case GAME_SEASON_START:
-      return pipe(
-        mergeLeft({
+      return mergeLeft(
+        {
           started: true,
           loading: false,
           flags: {
             jarko: false
           }
-        }),
-        over(
-          lensProp("teams"),
-          map(
-            mergeLeft({
-              effects: [],
-              opponentEffects: [],
-              morale: 0,
-              strategy: 2,
-              readiness: 0
-            })
-          )
-        )
-      )(state);
+        },
+        state
+      );
 
     case GAME_SEASON_END:
       return over(
@@ -251,10 +251,17 @@ const gameReducer: Reducer<typeof defaultState> = (
       );
 
     case GAME_SET_PHASE:
-      return state.setIn(["turn", "phase"], payload);
+      return assocPath(["turn", "phase"], payload, state);
 
     case GAME_NEXT_TURN:
-      return state.updateIn(["turn", "round"], r => r + 1);
+      return evolve(
+        {
+          turn: {
+            round: inc
+          }
+        },
+        state
+      );
 
     case "GAME_SET_FLAG":
       return state.setIn(["flags", payload.flag], payload.value);

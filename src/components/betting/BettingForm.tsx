@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 import { Formik } from "formik";
 import { amount as a } from "../../services/format";
 import Button from "../form/Button";
-import TeamName from "../team/Name";
+import TeamName from "../team/TeamName";
 import { Seq, List } from "immutable";
 import { bet, BettingCouponRow } from "../../ducks/betting";
 
