@@ -2,7 +2,7 @@ import { select, call, take } from "redux-saga/effects";
 import { gameday } from "../gameday";
 import { setPhase, GAME_ADVANCE_REQUEST } from "../game";
 import { MHMTurnDefinition } from "../../types/base";
-import { currentCalendarEntry } from "../../data/selectors";
+import { currentCalendarEntry } from "../../services/selectors";
 
 export default function* gamedayPhase() {
   yield call(setPhase, "gameday");

@@ -2,7 +2,7 @@ import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent, resolvedEvent } from "../../sagas/event";
 import { addOpponentEffect } from "../../sagas/team";
-import { managersTeamId, managerCompetesIn } from "../selectors";
+import { managersTeamId, managerCompetesIn } from "../../services/selectors";
 import { amount as a } from "../../services/format";
 import { decrementBalance, incrementBalance } from "../../sagas/manager";
 

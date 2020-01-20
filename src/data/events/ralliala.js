@@ -1,6 +1,6 @@
 import { Map, List } from "immutable";
 import { select, put, call } from "redux-saga/effects";
-import { managersTeam } from "../selectors";
+import { managersTeam } from "../../services/selectors";
 import { amount as a } from "../../services/format";
 import { addEvent } from "../../sagas/event";
 import { incrementBalance } from "../../sagas/manager";

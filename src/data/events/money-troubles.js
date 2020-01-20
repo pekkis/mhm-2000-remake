@@ -2,7 +2,7 @@ import { Map, List, Range } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { decrementStrength, incrementStrength } from "../../sagas/team";
-import { randomTeamFrom, randomRankedTeam, randomManager } from "../selectors";
+import { randomTeamFrom, randomRankedTeam, randomManager } from "../../services/selectors";
 import { cinteger } from "../../services/random";
 
 const eventId = "moneyTroubles";

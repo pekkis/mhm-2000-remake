@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import ChampionshipBetting from "../ChampionshipBetting";
 import { advance } from "../../ducks/game";
 import { betChampion } from "../../ducks/betting";
-import { interestingCompetitions } from "../../data/selectors";
+import { interestingCompetitions } from "../../services/selectors";
 import { MHMState } from "../../ducks";
 
 export default connect(

@@ -5,7 +5,8 @@ import {
   MHMCalendar,
   Turn,
   Flags,
-  ServiceBasePrices
+  ServiceBasePrices,
+  MatchResultsSet
 } from "../types/base";
 import { MHMState } from ".";
 import {
@@ -19,7 +20,8 @@ import {
   lensPath,
   assocPath,
   evolve,
-  inc
+  inc,
+  reduce
 } from "ramda";
 
 export const GAME_QUIT_TO_MAIN_MENU = "GAME_QUIT_TO_MAIN_MENU";
@@ -38,6 +40,8 @@ export const GAME_NEXT_TURN = "GAME_NEXT_TURN";
 export const GAME_SET_PHASE = "GAME_SET_PHASE";
 export const GAME_SEASON_START = "GAME_SEASON_START";
 export const GAME_SEASON_END = "GAME_SEASON_END";
+
+export const GAME_MATCH_RESULTS = "GAME_MATCH_RESULTS";
 
 export interface GameQuitToMainMenuAction {
   type: typeof GAME_QUIT_TO_MAIN_MENU;
@@ -133,7 +137,7 @@ const defaultState: GameState = {
   worldChampionshipResults: undefined
 };
 
-export const advance = (payload: any) => {
+export const advance = (payload?: any) => {
   return {
     type: GAME_ADVANCE_REQUEST,
     payload
@@ -166,18 +170,31 @@ export interface GameNextTurnAction {
   type: typeof GAME_NEXT_TURN;
 }
 
+export interface GameMatchResultsAction {
+  type: typeof GAME_MATCH_RESULTS;
+  payload: MatchResultsSet[];
+}
+
 export const setPhase = (phase: MHMTurnPhase): GameSetPhaseAction => ({
   type: GAME_SET_PHASE,
   payload: phase
 });
 
+type GameActions =
+  | GameStartAction
+  | GameQuitToMainMenuAction
+  | GameLoadedAction
+  | GameLoadStateAction
+  | GameSeasonStartAction
+  | GameMatchResultsAction
+  | GameSeasonEndAction
+  | GameSetPhaseAction;
+
 const gameReducer: Reducer<typeof defaultState> = (
   state = defaultState,
-  action
+  action: GameActions
 ) => {
-  const { type, payload } = action;
-
-  switch (type) {
+  switch (action.type) {
     case GAME_LOADED:
       return mergeRight(state, {
         started: true,
@@ -191,7 +208,7 @@ const gameReducer: Reducer<typeof defaultState> = (
       return defaultState;
 
     case GAME_LOAD_STATE:
-      return payload.game;
+      return action.payload.game;
 
     case GAME_SEASON_START:
       return mergeLeft(
@@ -213,6 +230,19 @@ const gameReducer: Reducer<typeof defaultState> = (
             season: turn.season + 1,
             round: -1
           };
+        },
+        state
+      );
+
+    case GAME_SET_PHASE:
+      return assocPath(["turn", "phase"], action.payload, state);
+
+    case GAME_NEXT_TURN:
+      return evolve(
+        {
+          turn: {
+            round: inc
+          }
         },
         state
       );
@@ -248,19 +278,6 @@ const gameReducer: Reducer<typeof defaultState> = (
         group => {
           return group.update("round", r => r + 1);
         }
-      );
-
-    case GAME_SET_PHASE:
-      return assocPath(["turn", "phase"], payload, state);
-
-    case GAME_NEXT_TURN:
-      return evolve(
-        {
-          turn: {
-            round: inc
-          }
-        },
-        state
       );
 
     case "GAME_SET_FLAG":

@@ -13,7 +13,6 @@ interface Props {
 }
 
 const TeamName: FunctionComponent<Props> = ({ team, managers = [] }) => {
-  console.log(team, managers);
   const humanControlled = managers.map(p => p.team).includes(team.id);
   return <Span humanControlled={humanControlled}>{team.name}</Span>;
 };

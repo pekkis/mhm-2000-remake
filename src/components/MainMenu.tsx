@@ -16,7 +16,7 @@ import {
   activeManager,
   interestingCompetitions,
   weightedCompetitions
-} from "../data/selectors";
+} from "../services/selectors";
 
 const MainMenu: FunctionComponent = () => {
   const manager = useSelector<MHMState, HumanManager>(activeManager);

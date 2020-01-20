@@ -2,7 +2,7 @@ import { select, call } from "redux-saga/effects";
 import { Map, List } from "immutable";
 import { incrementMorale } from "../../sagas/team";
 import { addEvent } from "../../sagas/event";
-import { managersMainCompetition, managersTeamId } from "../selectors";
+import { managersMainCompetition, managersTeamId } from "../../services/selectors";
 import r from "../../services/random";
 
 const eventId = "fortuneTeller";

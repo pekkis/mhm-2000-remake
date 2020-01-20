@@ -2,7 +2,7 @@ import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { decrementMorale } from "../../sagas/team";
-import { managersTeam, managersDifficulty, randomTeamFrom } from "../selectors";
+import { managersTeam, managersDifficulty, randomTeamFrom } from "../../services/selectors";
 
 const eventId = "arilander";
 

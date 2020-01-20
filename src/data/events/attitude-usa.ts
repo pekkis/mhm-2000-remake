@@ -1,7 +1,7 @@
 import { Map, List } from "immutable";
 import { call, select, all, put } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
-import { flag } from "../selectors";
+import { flag } from "../../services/selectors";
 import { setFlag } from "../../sagas/game";
 import { alterCountryStrength } from "../../ducks/country";
 import { MHMEventHandler } from "../../types/base";

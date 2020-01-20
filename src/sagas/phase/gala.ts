@@ -2,7 +2,7 @@ import { take, call, select } from "redux-saga/effects";
 import { GAME_ADVANCE_REQUEST } from "../../ducks/game";
 import { setPhase } from "../game";
 import { addNews } from "../news";
-import { randomManager } from "../../data/selectors";
+import { randomManager } from "../../services/selectors";
 
 export default function* galaPhase() {
   yield call(setPhase, "gala");

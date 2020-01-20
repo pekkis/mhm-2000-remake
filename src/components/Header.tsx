@@ -7,7 +7,7 @@ import { Dispatch } from "redux";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { advance } from "../ducks/game";
-import { advanceEnabled } from "../data/selectors";
+import { advanceEnabled } from "../services/selectors";
 
 const Container = styled.header`
   background-color: rgb(133, 133, 133);
@@ -35,14 +35,14 @@ const Container = styled.header`
 `;
 
 interface Props {
-  menu: boolean;
-  back: boolean;
-  forward: string | ReactElement;
+  menu?: boolean;
+  back?: boolean;
+  forward?: string | ReactElement;
 }
 
 const Header: FunctionComponent<Props> = ({
   menu = false,
-  forward,
+  forward = "Eteenpäin!",
   back = false
 }) => {
   const dispatch = useDispatch();

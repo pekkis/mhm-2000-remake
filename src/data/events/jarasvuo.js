@@ -8,7 +8,7 @@ import {
   incrementMorale,
   addEffect
 } from "../../sagas/team";
-import { managersTeamId, managerCompetesIn } from "../selectors";
+import { managersTeamId, managerCompetesIn } from "../../services/selectors";
 import { incrementBalance } from "../../sagas/manager";
 
 /*

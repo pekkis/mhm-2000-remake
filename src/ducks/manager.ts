@@ -27,6 +27,7 @@ import {
   TEAM_REMOVE_MANAGER,
   TEAM_ADD_MANAGER
 } from "./team";
+import { managers } from "../services/data/manager-data";
 
 export const MANAGER_NEXT = "MANAGER_NEXT";
 export const MANAGER_ADD = "MANAGER_ADD";
@@ -49,7 +50,7 @@ export interface ManagerState {
 
 const defaultState: ManagerState = {
   active: undefined,
-  managers: {}
+  managers: managers
 };
 
 export const addManager = (manager: HumanManager): ManagerAddManagerAction => {

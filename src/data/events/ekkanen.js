@@ -7,7 +7,7 @@ import {
   managersDifficulty,
   managersArena,
   managersBalance
-} from "../selectors";
+} from "../../services/selectors";
 import { incrementStrength } from "../../sagas/team";
 import { setArenaLevel, incrementBalance } from "../../sagas/manager";
 

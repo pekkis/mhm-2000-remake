@@ -1,7 +1,7 @@
 import React from "react";
 import ButtonContainer from "../ui/ButtonContainer";
 import Button from "../form/Button";
-import pranks from "../../data/pranks";
+import pranks from "../../services/data/pranks";
 
 const ConfirmPrank = props => {
   const { cancel, manager, teams, prank, execute } = props;

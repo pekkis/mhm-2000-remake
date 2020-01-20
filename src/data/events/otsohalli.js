@@ -1,7 +1,7 @@
 import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent, resolvedEvent } from "../../sagas/event";
-import { managersArena } from "../selectors";
+import { managersArena } from "../../services/selectors";
 import { incrementBalance, renameArena } from "../../sagas/manager";
 import { amount as a } from "../../services/format";
 

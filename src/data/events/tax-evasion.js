@@ -7,7 +7,7 @@ import {
   managerHasService,
   managersDifficulty,
   managersArena
-} from "../selectors";
+} from "../../services/selectors";
 import { currency as c, amount as a } from "../../services/format";
 import r from "../../services/random";
 import { decrementMorale } from "../../sagas/team";

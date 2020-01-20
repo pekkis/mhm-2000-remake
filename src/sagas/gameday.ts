@@ -8,6 +8,19 @@ import { groupEnd } from "./game";
 import { calculateGroupStats } from "./stats";
 import { afterGameday } from "./manager";
 import { bettingResults } from "./betting";
+import {
+  CompetitionNames,
+  Competition,
+  CompetitionGroup,
+  MapOf
+} from "../types/base";
+import { MHMState } from "../ducks";
+import { allTeamsMap } from "../services/selectors";
+import { Team } from "../types/team";
+import { MatchInput } from "../types/match";
+import { playMatch } from "../services/match";
+import { evolve } from "ramda";
+import { GameMatchResultsAction, GAME_MATCH_RESULTS } from "../ducks/game";
 
 function* playGame(
   group,
@@ -77,15 +90,97 @@ function* completeGameday(competition, phase, group, round) {
   });
 }
 
-export function* gameday(payload) {
-  const competition = yield select(state =>
-    state.game.getIn(["competitions", payload])
+function* playRoundOfMatches(
+  competitionId: string,
+  phaseId: number,
+  groupId: number,
+  roundId: number
+) {
+  const competition: Competition = yield select(
+    (state: MHMState) => state.competition.competitions[competitionId]
   );
 
-  const phase = competition.getIn(["phases", competition.get("phase")]);
+  const teams: MapOf<Team> = yield select(allTeamsMap);
 
-  const overtime = competitionTypes.getIn([phase.get("type"), "overtime"]);
-  const playMatch = competitionTypes.getIn([phase.get("type"), "playMatch"]);
+  const phase = competition.phases[phaseId];
+  const group = phase.groups[groupId];
+
+  const overtimeFunc = competitionTypes[group.type].overtime;
+  const playMatchFunc = competitionTypes[group.type].playMatch;
+
+  const results: any[] = [];
+
+  for (const [pairingId, pairing] of group.schedule[roundId].entries()) {
+    console.log("P", pairingId, pairing);
+
+    const matchInput: MatchInput = {
+      competition: {
+        id: competition.id,
+        group: groupId,
+        phase: phaseId
+      },
+      teams: {
+        home: teams[group.teams[pairing.home]],
+        away: teams[group.teams[pairing.home]]
+      }
+    };
+
+    const matchOutput = playMatch(matchInput);
+
+    const result = {
+      ...pairing,
+      ...matchOutput
+    };
+
+    console.log("reslut", result);
+    results.push(result);
+  }
+
+  return {
+    competition: competitionId,
+    phase: phaseId,
+    group: groupId,
+    round: roundId,
+    results
+  };
+}
+
+export function* gameday(competitionId: CompetitionNames) {
+  const competition: Competition = yield select(
+    (state: MHMState) => state.competition.competitions[competitionId]
+  );
+
+  const currentPhase = competition.phases[competition.phase];
+
+  const results: any[] = [];
+
+  for (const [
+    groupId,
+    group
+  ] of (currentPhase.groups as CompetitionGroup[]).entries()) {
+    const groupResults = yield call(
+      playRoundOfMatches,
+      competition.id,
+      competition.phase,
+      groupId,
+      group.round
+    );
+
+    results.push(groupResults);
+  }
+
+  const flattened = results.flat();
+
+  yield putResolve<GameMatchResultsAction>({
+    type: GAME_MATCH_RESULTS,
+    payload: flattened
+  });
+
+  console.log("FINAL FLATTENED RESULTS", flattened);
+
+  return;
+
+  return;
 
   // Play one round if not a tournament, otherwise loop all rounds.
   // TODO: Will not work for multiple sizes of tournaments (groups) as this.

@@ -11,8 +11,6 @@ ONNEKKUUS
 */
 
 export const isHumanManager = (manager: Manager): manager is HumanManager => {
-  console.log("managers", manager);
-
   return manager.isHuman === true;
 };
 

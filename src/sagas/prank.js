@@ -1,8 +1,8 @@
 import { put, call, select } from "redux-saga/effects";
 import { Map } from "immutable";
 
-import prankTypes from "../data/pranks";
-import { managerCompetesIn } from "../data/selectors";
+import prankTypes from "../services/data/pranks";
+import { managerCompetesIn } from "../services/selectors";
 import { decrementBalance } from "../sagas/manager";
 
 export function* orderPrank(action) {

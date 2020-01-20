@@ -1,19 +1,28 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import styled from "@emotion/styled";
+import { MHMNotification } from "../../ducks/notification";
+import { Dispatch } from "redux";
+import { dismissNotification } from "../../sagas/notification";
 
-const Notification = props => {
-  const { className, notification, dismiss } = props;
+interface Props {
+  notification: MHMNotification;
+  dispatch: Dispatch;
+}
 
+const Notification: FunctionComponent<Props> = ({ notification, dispatch }) => {
   return (
-    <div onClick={() => dismiss(notification.id)} className={className}>
+    <div
+      onClick={() => dispatch(dismissNotification(notification.id))}
+      css={{
+        backgroundColor: "rgb(33, 33, 33)",
+        color: "rgb(222, 222, 222)",
+        padding: "1em",
+        cursor: "pointer"
+      }}
+    >
       {notification.message}
     </div>
   );
 };
 
-export default styled(Notification)`
-  background-color: rgb(33, 33, 33);
-  color: rgb(222, 222, 222);
-  padding: 1em;
-  cursor: pointer;
-`;
+export default Notification;

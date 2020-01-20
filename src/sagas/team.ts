@@ -1,5 +1,5 @@
 import { put, call, select, putResolve } from "redux-saga/effects";
-import { teamsManager } from "../data/selectors";
+import { teamsManager } from "../services/selectors";
 import difficultyLevels from "../services/difficulty-levels";
 import { calculateGroupStats } from "./stats";
 

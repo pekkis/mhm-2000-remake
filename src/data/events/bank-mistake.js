@@ -3,7 +3,7 @@ import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { incrementBalance, decrementBalance } from "../../sagas/manager";
 import { amount as a } from "../../services/format";
-import { managersDifficulty } from "../selectors";
+import { managersDifficulty } from "../../services/selectors";
 
 /*
 PRINT "Pankkinne on tehnyt virheen. Tilill„nne on 500.000 pekkaa liikaa."

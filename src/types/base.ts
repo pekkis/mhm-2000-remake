@@ -94,16 +94,42 @@ export interface TeamPenalty {
 export type Schedule = ScheduleRound[];
 export type ScheduleRound = ScheduleGame[];
 
+export interface ScheduleGame {
+  home: number;
+  away: number;
+  result?: MatchResult;
+}
+
 export interface MatchResult {
+  audience: number;
   home: number;
   away: number;
   overtime: boolean;
 }
 
-export interface ScheduleGame {
-  home: number;
-  away: number;
-  result?: MatchResult;
+export interface MatchInput {
+  competition: {
+    id: CompetitionNames;
+    phase: number;
+    group: number;
+  };
+
+  teams: {
+    home: Team;
+    away: Team;
+  };
+}
+
+export interface MatchOutput {
+  result: MatchResult;
+}
+
+export interface MatchResultsSet {
+  competition: number;
+  phase: number;
+  group: number;
+  round: number;
+  results: Required<MatchResult>[];
 }
 
 export type PlayoffsStats = PlayoffStat[];

@@ -4,7 +4,7 @@ import { call, select, put } from "redux-saga/effects";
 
 import { INVITATION_ADD, INVITATION_ACCEPT } from "../ducks/invitation";
 import { addNotification } from "./notification";
-import { managersTeamId } from "../data/selectors";
+import { managersTeamId } from "../services/selectors";
 import { addTeamToCompetition } from "./game";
 
 export function* acceptInvitation(managerId, id) {

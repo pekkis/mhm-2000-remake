@@ -1,6 +1,6 @@
 import { Map, List } from "immutable";
 import { put, select, call } from "redux-saga/effects";
-import { managersTeamId, teamCompetesIn } from "../selectors";
+import { managersTeamId, teamCompetesIn } from "../../services/selectors";
 import { currency as c } from "../../services/format";
 import { cinteger } from "../../services/random";
 import { addEvent } from "../../sagas/event";

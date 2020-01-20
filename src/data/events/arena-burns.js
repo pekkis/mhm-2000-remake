@@ -11,7 +11,7 @@ import {
   managerHasService,
   managersDifficulty,
   managersArena
-} from "../selectors";
+} from "../../services/selectors";
 import arenas from "../../data/arenas";
 
 /*

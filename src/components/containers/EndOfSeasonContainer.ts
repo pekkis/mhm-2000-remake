@@ -3,7 +3,7 @@ import EndOfSeason from "../EndOfSeason";
 import { advance } from "../../ducks/game";
 import { resolveEvent } from "../../ducks/event";
 import { saveGame, quitToMainMenu } from "../../ducks/game";
-import { interestingCompetitions } from "../../data/selectors";
+import { interestingCompetitions } from "../../services/selectors";
 export default connect(
   state => ({
     turn: state.game.get("turn"),

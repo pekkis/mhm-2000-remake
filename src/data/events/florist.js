@@ -2,7 +2,7 @@ import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { decrementStrength } from "../../sagas/team";
-import { randomTeamFrom } from "../selectors";
+import { randomTeamFrom } from "../../services/selectors";
 
 /*
 sat66:

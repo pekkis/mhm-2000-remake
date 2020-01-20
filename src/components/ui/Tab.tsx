@@ -1,5 +1,6 @@
 import React from "react";
-import styled, { css } from "@emotion/styled";
+import styled from "@emotion/styled";
+import { css } from "@emotion/core";
 
 const Tab = props => {
   const { title, className, onSelect } = props;

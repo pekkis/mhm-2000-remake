@@ -7,7 +7,7 @@ import {
   randomTeamFrom,
   managersTeam,
   managersDifficulty
-} from "../selectors";
+} from "../../services/selectors";
 import { addEvent } from "../../sagas/event";
 
 import { incrementBalance } from "../../sagas/manager";

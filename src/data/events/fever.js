@@ -4,7 +4,7 @@ import { addEvent } from "../../sagas/event";
 import { incrementBalance, incrementInsuranceExtra } from "../../sagas/manager";
 import { amount as a } from "../../services/format";
 import { addEffect } from "../../sagas/team";
-import { managersTeam, managerHasService } from "../selectors";
+import { managersTeam, managerHasService } from "../../services/selectors";
 
 /*
 sat20:

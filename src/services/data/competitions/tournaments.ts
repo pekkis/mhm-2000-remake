@@ -2,7 +2,7 @@ import { Map, List } from "immutable";
 import { select, call, all } from "redux-saga/effects";
 import tournamentScheduler from "../../tournament";
 import r from "../../random";
-import { foreignTeams } from "../../../data/selectors";
+import { foreignTeams } from "../../selectors";
 
 import tournamentList from "../../../data/tournaments";
 import { setCompetitionTeams } from "../../../sagas/competition";

@@ -7,7 +7,7 @@ import { cinteger } from "../../services/random";
 
 import { setSeasonStat, createSeasonStories } from "../stats";
 import { processChampionBets } from "../betting";
-import { competition, allTeams } from "../../data/selectors";
+import { competition, allTeams } from "../../services/selectors";
 import { setCountryStrength, Country } from "../../ducks/country";
 import { MHMState } from "../../ducks";
 import { pipe, map, sort, descend } from "ramda";

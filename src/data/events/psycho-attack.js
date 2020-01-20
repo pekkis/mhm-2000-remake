@@ -1,7 +1,7 @@
 import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
-import { randomManager, flag, totalGamesPlayed } from "../selectors";
+import { randomManager, flag, totalGamesPlayed } from "../../services/selectors";
 import { setFlag } from "../../sagas/game";
 
 /*

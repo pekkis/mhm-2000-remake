@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import Gala from "../Gala";
 import { advance } from "../../ducks/game";
 import { betChampion } from "../../ducks/betting";
-import { interestingCompetitions } from "../../data/selectors";
+import { interestingCompetitions } from "../../services/selectors";
 export default connect(
   state => ({
     turn: state.game.get("turn"),

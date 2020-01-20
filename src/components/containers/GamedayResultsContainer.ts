@@ -3,7 +3,7 @@ import GamedayResults from "../GamedayResults";
 import { advance } from "../../ducks/game";
 import { resolveEvent } from "../../ducks/event";
 import { saveGame, quitToMainMenu } from "../../ducks/game";
-import { currentCalendarEntry } from "../../data/selectors";
+import { currentCalendarEntry } from "../../services/selectors";
 export default connect(
   state => ({
     calendarEntry: currentCalendarEntry(state),

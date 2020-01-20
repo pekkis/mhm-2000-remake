@@ -1,7 +1,7 @@
 import { select, call } from "redux-saga/effects";
 import { seedCompetition, setPhase } from "../game";
 import { MHMTurnDefinition } from "../../types/base";
-import { currentCalendarEntry } from "../../data/selectors";
+import { currentCalendarEntry } from "../../services/selectors";
 
 export default function* seedPhase() {
   yield setPhase("seed");

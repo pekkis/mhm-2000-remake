@@ -8,7 +8,7 @@ import title from "../assets/title.png";
 import { useSelector, useDispatch } from "react-redux";
 import { MHMState } from "../ducks";
 import { startGame, loadGame, advance } from "../ducks/game";
-import { playableCompetitions } from "../data/selectors";
+import { playableCompetitions } from "../services/selectors";
 import { Team } from "../types/team";
 
 const Menu = styled.div``;

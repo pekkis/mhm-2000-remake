@@ -3,6 +3,8 @@ import competitions from "../data/competitions";
 import { Competitions, CompetitionNames } from "../types/base";
 import { mapObjIndexed } from "ramda";
 import { takeMaybe } from "redux-saga/effects";
+import random from "./random";
+import { MatchInput, MatchOutput } from "../types/match";
 
 /*
 TODO:
@@ -25,21 +27,6 @@ const moraleModifier = (team: Team, advantage: number) => {
 
   return advantage + team.morale / 125;
 };
-
-export interface MatchInput {
-  competition: {
-    id: CompetitionNames;
-    phase: number;
-    group: number;
-  };
-
-  teams: {
-    home: Team;
-    away: Team;
-  };
-}
-
-export interface MatchOutput {}
 
 export const playMatch = (match: MatchInput) => {
   const advantages = {
@@ -73,9 +60,10 @@ export const playMatch = (match: MatchInput) => {
   console.log("advantages after team", advantagesAfterTeamModifiers);
 
   return {
+    audience: 3000,
     result: {
-      home: 5,
-      away: 0
+      home: random.integer(0, 12),
+      away: random.integer(0, 12)
     }
-  };
+  } as MatchOutput;
 };

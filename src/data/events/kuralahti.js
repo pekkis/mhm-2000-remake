@@ -5,7 +5,7 @@ import {
   teamCompetesIn,
   managerHasService,
   teamHasActiveEffects
-} from "../selectors";
+} from "../../services/selectors";
 import { currency as c } from "../../services/format";
 import { cinteger } from "../../services/random";
 import { addEvent } from "../../sagas/event";

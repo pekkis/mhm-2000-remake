@@ -9,7 +9,7 @@ import {
   managersTeam,
   managerHasService,
   managersArena
-} from "../selectors";
+} from "../../services/selectors";
 import { amount as a } from "../../services/format";
 import {
   decrementBalance,

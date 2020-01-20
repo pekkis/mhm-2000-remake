@@ -1,7 +1,7 @@
 import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
-import { managersDifficulty, managersTeam } from "../selectors";
+import { managersDifficulty, managersTeam } from "../../services/selectors";
 import { addEffect } from "../../sagas/team";
 
 /*

@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "../form/Button";
 import ButtonContainer from "../ui/ButtonContainer";
-import pranks from "../../data/pranks";
+import pranks from "../../services/data/pranks";
 import { currency as c } from "../../services/format";
 
 const SelectType = props => {

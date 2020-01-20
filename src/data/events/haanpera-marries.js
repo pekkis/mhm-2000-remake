@@ -2,7 +2,7 @@ import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { addEffect, incrementMorale } from "../../sagas/team";
-import { managersTeam, flag } from "../selectors";
+import { managersTeam, flag } from "../../services/selectors";
 import { setFlag } from "../../sagas/game";
 
 /*

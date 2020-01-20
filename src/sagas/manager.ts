@@ -18,7 +18,7 @@ import {
   managerHasService,
   teamsMainCompetition,
   managersCurrentTeam
-} from "../data/selectors";
+} from "../services/selectors";
 import { incrementMorale, incrementReadiness, incurPenalty } from "./team";
 import { addNotification } from "./notification";
 import crisis from "../data/crisis";

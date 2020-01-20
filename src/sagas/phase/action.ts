@@ -24,7 +24,7 @@ import { acceptInvitation } from "../invitation";
 import { INVITATION_ACCEPT_REQUEST } from "../../ducks/invitation";
 import { BETTING_BET_REQUEST } from "../../ducks/betting";
 import { bet } from "../betting";
-import { humanManagers } from "../../data/selectors";
+import { humanManagers } from "../../services/selectors";
 import { HumanManager } from "../../types/manager";
 import {
   GameSetPhaseAction,

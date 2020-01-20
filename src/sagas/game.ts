@@ -68,7 +68,7 @@ import {
   currentCalendarEntry,
   humanManagers,
   activeManager
-} from "../data/selectors";
+} from "../services/selectors";
 import events from "../data/events";
 import { nth, map, values, toPairs } from "ramda";
 import {

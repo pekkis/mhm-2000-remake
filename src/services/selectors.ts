@@ -8,8 +8,8 @@ import {
   prop,
   toPairs
 } from "ramda";
-import r from "../services/random";
-import { victors } from "../services/playoffs";
+import r from "./random";
+import { victors } from "./playoffs";
 import {
   MHMTurnDefinition,
   CompetitionNames,
@@ -20,9 +20,14 @@ import { MHMState } from "../ducks";
 import { Team } from "../types/team";
 import { isHumanManager, HumanManager } from "../types/manager";
 
+export const allCompetitions = (state: MHMState) =>
+  state.competition.competitions;
+
 export const advanceEnabled = (state: MHMState) => state.ui.advanceEnabled;
 
 export const allTeams = (state: MHMState) => values(state.team.teams);
+
+export const allTeamsMap = (state: MHMState) => state.team.teams;
 
 export const humanManagers = (state: MHMState): HumanManager[] => {
   return values(state.manager.managers).filter(isHumanManager);

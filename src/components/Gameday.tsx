@@ -1,22 +1,25 @@
 import React, { FunctionComponent } from "react";
-import { List } from "immutable";
 import Table from "./league-table/Table";
-import Header from "./containers/HeaderContainer";
+import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
 import Games from "./gameday/Games";
 import Box from "./styled-system/Box";
-import { MHMTurnDefinition } from "../types/base";
+import { CompetitionGroup, isTournamentCompetitionGroup } from "../types/base";
+import { useSelector } from "react-redux";
+import {
+  currentCalendarEntry,
+  allCompetitions,
+  humanManagers,
+  allTeamsMap
+} from "../services/selectors";
 
-interface Props {
-  calendarEntry: MHMTurnDefinition;
-}
+const Gameday: FunctionComponent = () => {
+  const calendarEntry = useSelector(currentCalendarEntry);
+  const competitions = useSelector(allCompetitions);
+  const managers = useSelector(humanManagers);
+  const teams = useSelector(allTeamsMap);
 
-const Gameday: FunctionComponent<Props> = props => {
-  const { managers, teams, competitions, calendarEntry } = props;
-
-  const currentCompetitions = calendarEntry.gamedays.map(c =>
-    competitions.get(c)
-  );
+  const currentCompetitions = calendarEntry.gamedays.map(c => competitions[c]);
 
   return (
     <HeaderedPage>
@@ -26,44 +29,42 @@ const Gameday: FunctionComponent<Props> = props => {
         <h2>Pelipäivä</h2>
 
         {currentCompetitions.map(competition => {
-          const currentPhase = competition.getIn([
-            "phases",
-            competition.get("phase")
-          ]);
+          const currentPhase = competition.phases[competition.phase];
 
           return (
-            <div key={competition.get("name")}>
-              {currentPhase.get("groups").map((group, groupIndex) => {
-                const currentRound = group.get("round");
+            <div key={competition.name}>
+              {(currentPhase.groups as CompetitionGroup[]).map(
+                (group, groupIndex) => {
+                  const currentRound = group.round;
 
-                return (
-                  <div key={groupIndex}>
-                    <h3>
-                      {competition.get("name")}, {group.get("name")} [
-                      {currentRound}]
-                    </h3>
+                  return (
+                    <div key={groupIndex}>
+                      <h3>
+                        {competition.name}, {group.name} [{currentRound}]
+                      </h3>
 
-                    <Games
-                      teams={teams}
-                      context={group}
-                      round={currentRound}
-                      managers={managers}
-                    />
+                      <Games
+                        teams={teams}
+                        context={group}
+                        round={currentRound}
+                        managers={managers}
+                      />
 
-                    {currentPhase.get("type") === "tournament" && (
-                      <div>
-                        <Table
-                          division={group}
-                          managers={managers}
-                          teams={teams}
-                        />
-                      </div>
-                    )}
+                      {isTournamentCompetitionGroup(group) && (
+                        <div>
+                          <Table
+                            division={group}
+                            managers={managers}
+                            teams={teams}
+                          />
+                        </div>
+                      )}
 
-                    <div />
-                  </div>
-                );
-              })}
+                      <div />
+                    </div>
+                  );
+                }
+              )}
             </div>
           );
         })}

@@ -21,7 +21,7 @@ import {
 import { map, range, head, drop, prop } from "ramda";
 import { sortLeagueTable } from "../../league";
 import { MHMState } from "../../../ducks";
-import { domesticTeams, foreignTeams } from "../../../data/selectors";
+import { domesticTeams, foreignTeams } from "../../selectors";
 import { Team } from "../../../types/team";
 import random from "../../random";
 import { setCompetitionTeams } from "../../../sagas/competition";

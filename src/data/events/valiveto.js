@@ -3,7 +3,7 @@ import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { setArenaLevel } from "../../sagas/manager";
 import { amount as a } from "../../services/format";
-import { managersDifficulty, managersArena } from "../selectors";
+import { managersDifficulty, managersArena } from "../../services/selectors";
 import arenas from "../../data/arenas";
 
 /*

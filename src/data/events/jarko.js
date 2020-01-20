@@ -6,7 +6,7 @@ import {
   flag,
   managerHasEnoughMoney,
   randomTeamFrom
-} from "../selectors";
+} from "../../services/selectors";
 import { amount as a } from "../../services/format";
 import { incrementMorale, incrementStrength } from "../../sagas/team";
 import { addEvent } from "../../sagas/event";

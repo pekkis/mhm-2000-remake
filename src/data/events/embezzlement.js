@@ -4,7 +4,7 @@ import {
   managersDifficulty,
   managerObject,
   managerHasService
-} from "../selectors";
+} from "../../services/selectors";
 import { amount as a } from "../../services/format";
 import { addEvent } from "../../sagas/event";
 import {

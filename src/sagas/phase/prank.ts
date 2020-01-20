@@ -1,13 +1,16 @@
 import { select, call, put } from "redux-saga/effects";
-import prankTypes from "../../data/pranks";
+import prankTypes from "../../services/data/pranks";
+import { MHMState } from "../../ducks";
+import { toPairs } from "ramda";
+import { MapOf, Prank } from "../../types/base";
 
 export default function* prankPhase() {
-  const pranks = yield select(state => state.prank.get("pranks"));
+  const pranks: MapOf<Prank> = yield select(
+    (state: MHMState) => state.prank.pranks
+  );
 
-  console.log("PRANK FUCKING TIME!");
-
-  for (const [prankId, prank] of pranks.entries()) {
-    console.log("PRANK TO EXECUTE", prank.toJS());
+  for (const [prankId, prank] of toPairs(pranks)) {
+    console.log("PRANK TO EXECUTE", prank);
     const prankInfo = prankTypes.get(prank.get("type"));
     const prankExecutor = prankInfo.get("execute");
 

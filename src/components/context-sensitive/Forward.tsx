@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { useSelector } from "react-redux";
 import { MHMState } from "../../ducks";
-import { currentCalendarEntry } from "../../data/selectors";
+import { currentCalendarEntry } from "../../services/selectors";
 
 const Forward: FunctionComponent = () => {
   const competitions = useSelector(

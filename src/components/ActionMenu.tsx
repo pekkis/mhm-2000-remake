@@ -4,7 +4,7 @@ import Calendar from "./ui/Calendar";
 import { CRISIS_MORALE_MAX } from "../data/constants";
 import Button from "./form/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { activeManager } from "../data/selectors";
+import { activeManager } from "../services/selectors";
 import { MHMState } from "../ducks";
 import { closeMenu } from "../ducks/ui";
 import { saveGame, quitToMainMenu } from "../ducks/game";

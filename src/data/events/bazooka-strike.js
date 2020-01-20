@@ -1,6 +1,6 @@
 import { select, call } from "redux-saga/effects";
 import { Map, List } from "immutable";
-import { randomManager } from "../selectors";
+import { randomManager } from "../../services/selectors";
 import { decrementStrength } from "../../sagas/team";
 import { addEvent } from "../../sagas/event";
 

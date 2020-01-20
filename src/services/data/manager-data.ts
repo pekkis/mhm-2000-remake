@@ -1,8 +1,9 @@
-import { map, trim } from "ramda";
-import { Manager } from "../../types/manager";
+import { map, trim, indexBy, prop } from "ramda";
+import { Manager, ComputerManager } from "../../types/manager";
 import { mapIndexed } from "ramda-adjunct";
 import uuid from "uuid";
 import { countryFromLegacyCountry } from "../country";
+import { MapOf } from "../../types/base";
 
 type ManagerData = [
   string,
@@ -72,7 +73,7 @@ const managerData: ManagerData[] = [
   ["Qimbo Tondvist      ", 1, -1, 0, 0, -1, 1, 1]
 ];
 
-export const managers = mapIndexed<ManagerData, Manager>(md => {
+const managerList = mapIndexed<ManagerData, ComputerManager>(md => {
   const [
     name,
     countryId,
@@ -84,7 +85,7 @@ export const managers = mapIndexed<ManagerData, Manager>(md => {
     luck
   ] = md;
 
-  const manager: Manager = {
+  const manager: ComputerManager = {
     id: uuid(),
     name: trim(name),
     country: countryFromLegacyCountry(countryId),
@@ -95,8 +96,14 @@ export const managers = mapIndexed<ManagerData, Manager>(md => {
       cunning,
       charisma,
       luck
-    }
+    },
+    isHuman: false
   };
 
   return manager;
 }, managerData);
+
+export const managers: MapOf<ComputerManager> = indexBy(
+  prop("id"),
+  managerList
+);

@@ -1,3 +1,3 @@
-import calendarData from "../data/calendar";
+import calendarData from "./data/calendar";
 
 export const getCalendar = () => calendarData;

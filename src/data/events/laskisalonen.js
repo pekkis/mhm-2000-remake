@@ -7,7 +7,7 @@ import {
   managerCompetesIn,
   managerHasService,
   managersTeamId
-} from "../selectors";
+} from "../../services/selectors";
 import { amount as a } from "../../services/format";
 import { incrementBalance, incrementInsuranceExtra } from "../../sagas/manager";
 

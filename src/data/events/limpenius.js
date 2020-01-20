@@ -4,7 +4,7 @@ import { addEvent } from "../../sagas/event";
 import { incrementBalance, decrementBalance } from "../../sagas/manager";
 import { incrementMorale, decrementMorale } from "../../sagas/team";
 import { amount as a } from "../../services/format";
-import { managersTeamId } from "../../data/selectors";
+import { managersTeamId } from "../../services/selectors";
 import r from "../../services/random";
 
 /*

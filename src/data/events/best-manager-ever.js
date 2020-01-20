@@ -2,7 +2,7 @@ import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { incrementMorale } from "../../sagas/team";
-import { randomManager, managersTeamId } from "../selectors";
+import { randomManager, managersTeamId } from "../../services/selectors";
 
 /*
 sat64:

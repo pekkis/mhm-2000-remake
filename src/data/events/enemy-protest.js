@@ -6,7 +6,7 @@ import {
   randomManager,
   managerCompetesIn,
   randomTeamFrom
-} from "../selectors";
+} from "../../services/selectors";
 import { addEvent } from "../../sagas/event";
 import { incurPenalty } from "../../sagas/team";
 

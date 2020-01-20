@@ -2,7 +2,8 @@ import {
   ForEveryCompetition,
   Competition,
   CompetitionNames,
-  CompetitionPhase
+  CompetitionPhase,
+  ScheduleGame
 } from "../types/base";
 import {
   over,
@@ -14,7 +15,8 @@ import {
   map,
   mergeLeft,
   pipe,
-  assocPath
+  assocPath,
+  reduce
 } from "ramda";
 import {
   GameSeasonStartAction,
@@ -22,7 +24,9 @@ import {
   GameLoadStateAction,
   GameQuitToMainMenuAction,
   GAME_LOAD_STATE,
-  GAME_QUIT_TO_MAIN_MENU
+  GAME_QUIT_TO_MAIN_MENU,
+  GameMatchResultsAction,
+  GAME_MATCH_RESULTS
 } from "./game";
 import { namesToIds } from "../services/team";
 
@@ -197,7 +201,8 @@ type CompetitionActions =
   | CompetitionSeedAction
   | GameSeasonStartAction
   | GameLoadStateAction
-  | GameQuitToMainMenuAction;
+  | GameQuitToMainMenuAction
+  | GameMatchResultsAction;
 
 export default function competitionReducer(
   state = defaultState,
@@ -209,6 +214,28 @@ export default function competitionReducer(
 
     case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
+
+    case GAME_MATCH_RESULTS:
+      return reduce(
+        (a, resultSet) => {
+          return assocPath(
+            [
+              "competitions",
+              resultSet.competition,
+              "phases",
+              resultSet.phase,
+              "groups",
+              resultSet.group,
+              "schedule",
+              resultSet.round
+            ],
+            resultSet.results,
+            a
+          );
+        },
+        state,
+        action.payload
+      );
 
     case GAME_SEASON_START:
       return over(

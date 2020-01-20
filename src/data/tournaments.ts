@@ -1,5 +1,5 @@
 import { select } from "redux-saga/effects";
-import { managersMainCompetition, managersTeamId } from "./selectors";
+import { managersMainCompetition, managersTeamId } from "../services/selectors";
 import { amount as a } from "../services/format";
 import { Team, CompetitionNames, LeagueTable } from "../types/base";
 import { inRange } from "ramda-adjunct";

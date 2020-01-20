@@ -3,7 +3,7 @@ import events from "../../data/events";
 import { cinteger } from "../../services/random";
 import { OrderedMap, List } from "immutable";
 import { setPhase } from "../game";
-import { currentCalendarEntry } from "../../data/selectors";
+import { currentCalendarEntry } from "../../services/selectors";
 import { MHMTurnDefinition } from "../../types/base";
 
 const eventsMap = OrderedMap<number, string>(

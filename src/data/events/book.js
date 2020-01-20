@@ -2,7 +2,7 @@ import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { incrementMorale } from "../../sagas/team";
-import { managersTeamId, managerById, totalGamesPlayed } from "../selectors";
+import { managersTeamId, managerById, totalGamesPlayed } from "../../services/selectors";
 import { cinteger } from "../../services/random";
 
 /*

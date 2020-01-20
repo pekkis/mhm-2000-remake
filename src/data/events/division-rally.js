@@ -11,7 +11,7 @@ import {
   managersTeamId,
   managersDifficulty,
   managerById
-} from "../selectors";
+} from "../../services/selectors";
 import { cinteger } from "../../services/random";
 import { setFlag, setExtra } from "../../sagas/manager";
 import difficultyLevels from "../../services/difficulty-levels";

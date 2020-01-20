@@ -1,6 +1,6 @@
 import { select, putResolve, put, call } from "redux-saga/effects";
 import { Map, List } from "immutable";
-import { teamCompetesIn } from "../selectors";
+import { teamCompetesIn } from "../../services/selectors";
 import r, { cinteger } from "../../services/random";
 import { decrementStrength } from "../../sagas/team";
 import { decrementBalance } from "../../sagas/manager";

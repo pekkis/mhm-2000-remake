@@ -9,7 +9,7 @@ import {
   teamsPositionInRoundRobin,
   teamWasRelegated,
   teamWasPromoted
-} from "./selectors";
+} from "../services/selectors";
 import { victors, eliminated } from "../services/playoffs";
 import { List, Map, Repeat } from "immutable";
 import r from "../services/random";

@@ -1,17 +1,14 @@
 import React, { FunctionComponent } from "react";
 import Notification from "./Notification";
-import {
-  MHMNotification,
-  NotificationDismissAction
-} from "../../ducks/notification";
+import { useDispatch, useSelector } from "react-redux";
+import { MHMState } from "../../ducks";
+import { values } from "ramda";
 
-interface Props {
-  notifications: MHMNotification[];
-  dismissNotification: (id: string) => NotificationDismissAction;
-}
-
-const Notifications: FunctionComponent<Props> = props => {
-  const { notifications, dismissNotification } = props;
+const Notifications: FunctionComponent = () => {
+  const dispatch = useDispatch();
+  const notifications = useSelector(
+    (state: MHMState) => state.notification.notifications
+  );
 
   return (
     <div
@@ -22,12 +19,8 @@ const Notifications: FunctionComponent<Props> = props => {
         width: "100%"
       }}
     >
-      {notifications.map(n => (
-        <Notification
-          key={n.id}
-          dismiss={dismissNotification}
-          notification={n}
-        />
+      {values(notifications).map(n => (
+        <Notification key={n.id} dispatch={dispatch} notification={n} />
       ))}
     </div>
   );

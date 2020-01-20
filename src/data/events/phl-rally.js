@@ -7,7 +7,7 @@ import {
   managerFlag,
   managersTeamId,
   managersDifficulty
-} from "../selectors";
+} from "../../services/selectors";
 import { setFlag, setExtra } from "../../sagas/manager";
 import difficultyLevels from "../../services/difficulty-levels";
 

@@ -6,7 +6,7 @@ import {
   Competition
 } from "../../types/base";
 import { useSelector } from "react-redux";
-import { currentCalendarEntry } from "../../data/selectors";
+import { currentCalendarEntry } from "../../services/selectors";
 import { MHMState } from "../../ducks";
 
 interface Props {

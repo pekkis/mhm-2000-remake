@@ -14,7 +14,7 @@ import {
   managerHasService,
   managerCompetesIn,
   managersTeamId
-} from "../selectors";
+} from "../../services/selectors";
 import { cinteger } from "../../services/random";
 
 const eventId = "juznetsov";

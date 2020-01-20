@@ -1,6 +1,6 @@
 import { Map, List } from "immutable";
 import { select, call, all } from "redux-saga/effects";
-import { randomTeamFrom, randomManager, managersTeamId } from "../selectors";
+import { randomTeamFrom, randomManager, managersTeamId } from "../../services/selectors";
 import { addEvent, resolvedEvent } from "../../sagas/event";
 import {
   hireManager,

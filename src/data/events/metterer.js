@@ -2,7 +2,7 @@ import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent, resolvedEvent } from "../../sagas/event";
 import { addOpponentEffect } from "../../sagas/team";
-import { managersTeam } from "../selectors";
+import { managersTeam } from "../../services/selectors";
 import r from "../../services/random";
 
 const eventId = "metterer";

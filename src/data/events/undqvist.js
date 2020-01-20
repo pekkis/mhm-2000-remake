@@ -2,7 +2,7 @@ import { Map, List } from "immutable";
 import { call, select } from "redux-saga/effects";
 import { addEvent } from "../../sagas/event";
 import { setBalance } from "../../sagas/manager";
-import { managersDifficulty } from "../selectors";
+import { managersDifficulty } from "../../services/selectors";
 
 /*
 IF banki = 1 THEN RETURN

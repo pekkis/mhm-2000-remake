@@ -8,7 +8,7 @@ import {
   MHMTurnDefinition,
   CompetitionNames,
   MHMCalendar
-} from "../types/base";
+} from "../../types/base";
 
 export const CRISIS_DEADLINE = 52;
 export const TRANSFER_DEADLINE = 30;

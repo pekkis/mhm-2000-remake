@@ -19,8 +19,6 @@ interface Props {
 const Game: FunctionComponent<Props> = props => {
   const { context, pairing, teams, managers } = props;
 
-  console.log(context, "ctx", "pairing");
-
   return (
     <Row>
       <Team>

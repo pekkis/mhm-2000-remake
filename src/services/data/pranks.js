@@ -1,9 +1,9 @@
 import { call } from "redux-saga/effects";
 import { OrderedMap, Map, List } from "immutable";
-import { addNotification } from "../sagas/notification";
-import { addEffect } from "../sagas/team";
-import { addEvent } from "../sagas/event";
-import events from "../data/events";
+import { addNotification } from "../../sagas/notification";
+import { addEffect } from "../../sagas/team";
+import { addEvent } from "../../sagas/event";
+import events from "../../data/events";
 
 const pranks = OrderedMap({
   protest: Map({

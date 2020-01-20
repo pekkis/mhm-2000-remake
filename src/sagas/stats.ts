@@ -15,7 +15,7 @@ import {
   managersMainCompetition,
   competitionPhase,
   competitionGroup
-} from "../data/selectors";
+} from "../services/selectors";
 import {
   CompetitionSeedAction,
   COMPETITION_SEED,
