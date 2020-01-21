@@ -9,9 +9,7 @@ export default function* gamedayPhase() {
   yield take(GAME_ADVANCE_REQUEST);
 
   const calendarEntry: MHMTurnDefinition = yield select(currentCalendarEntry);
-  for (const item of calendarEntry.gamedays) {
-    yield call(gameday, item);
-  }
+  yield call(gameday, calendarEntry.gamedays);
 
   yield call(setPhase, "results");
   yield take(GAME_ADVANCE_REQUEST);

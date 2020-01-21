@@ -1,10 +1,14 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
+import { Turn } from "../../types/base";
 
-const TurnIndicator = props => {
-  const { turn } = props;
+interface Props {
+  turn: Turn;
+}
+
+const TurnIndicator: FunctionComponent<Props> = ({ turn }) => {
   return (
     <span>
-      {turn.get("season")}, {turn.get("round")} / {turn.get("phase")}
+      {turn.season}, {turn.round} / {turn.phase}
     </span>
   );
 };

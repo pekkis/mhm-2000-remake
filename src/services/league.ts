@@ -31,7 +31,7 @@ const changedStats = (
   stats: LeagueTableRow,
   game: ScheduleGame,
   team: number
-) => {
+): LeagueTableRow => {
   if (!game.result) {
     throw new Error("Result is undefined");
   }
@@ -47,13 +47,14 @@ const changedStats = (
   const isLoss = game.result[myKey] < game.result[theirKey];
 
   return {
+    ...stats,
     gamesPlayed: stats.gamesPlayed + 1,
     wins: !isWin ? stats.wins : stats.wins + 1,
     losses: !isLoss ? stats.losses : stats.losses + 1,
     points: changedPoints(stats.points, isWin, isDraw),
     goalsFor: stats.goalsFor + game.result[myKey],
     goalsAgainst: stats.goalsAgainst + game.result[theirKey]
-  } as LeagueTableRow;
+  };
 };
 
 export const groupStats = (
@@ -95,11 +96,11 @@ export const groupStats = (
 };
 
 export const sortLeagueTable = sortWith<LeagueTableRow>([
-  ascend(prop("id")),
-  descend(prop("wins")),
+  descend(prop("points")),
+  descend(r => r.goalsFor - r.goalsAgainst),
   descend(prop("goalsFor")),
-  descend(r => r.goalsFor - r.goalsAgainst), // TODO: probably there is a saner way provided by Ramda...
-  descend(prop("points"))
+  descend(prop("wins")),
+  ascend(prop("id"))
 ]);
 
 const table = (

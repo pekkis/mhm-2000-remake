@@ -159,6 +159,8 @@ const getEventId = (predefined?: string): string | undefined => {
 };
 
 export default function* eventCreationPhase() {
+  return;
+
   yield call(setPhase, "eventCreation");
 
   const managers = yield select(state => state.manager.get("managers"));

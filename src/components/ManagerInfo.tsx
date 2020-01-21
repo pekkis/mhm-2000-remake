@@ -1,10 +1,15 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { amount } from "../services/format";
 import { getEffective } from "../services/effects";
 import Box from "./styled-system/Box";
 import TurnIndicator from "./game/TurnIndicator";
 
 import styled from "@emotion/styled";
+import { activeManager, allTeamsMap, currentTurn } from "../services/selectors";
+import { HumanManager } from "../types/manager";
+import { MapOf, Turn } from "../types/base";
+import { Team } from "../types/team";
+import { useSelector } from "react-redux";
 
 const ManagerName = styled.h2`
   margin: 0;
@@ -31,30 +36,42 @@ const Title = styled.div`
 
 const Value = styled.div``;
 
-const ManagerInfo = props => {
-  const { manager, teams, turn, details } = props;
+interface Props {
+  details?: boolean;
+}
 
-  const team = getEffective(teams.get(manager.get("team")));
+const ManagerInfo: FunctionComponent<Props> = ({ details = false }) => {
+  const manager: HumanManager = useSelector(activeManager);
+  const teams: MapOf<Team> = useSelector(allTeamsMap);
+  const turn: Turn = useSelector(currentTurn);
+
+  if (!manager.team) {
+    throw new Error("Manager has no team!");
+  }
+
+  // const team = getEffective(teams.get(manager.get("team")));
+
+  const team = teams[manager.team];
 
   return (
     <Box p={1} bg="bar">
-      <ManagerName>{manager.get("name")}</ManagerName>
+      <ManagerName>{manager.name}</ManagerName>
 
       {details && (
         <Details>
           <Detail>
             <Title>Voima</Title>
-            <Value>{team.get("strength")}</Value>
+            <Value>{JSON.stringify(team.strength)}</Value>
           </Detail>
 
           <Detail>
             <Title>Moraali</Title>
-            <Value>{team.get("morale")}</Value>
+            <Value>{team.morale}</Value>
           </Detail>
 
           <Detail>
             <Title>Raha</Title>
-            <Value>{amount(manager.get("balance"))}</Value>
+            <Value>{amount(manager.balance)}</Value>
           </Detail>
 
           <Detail>

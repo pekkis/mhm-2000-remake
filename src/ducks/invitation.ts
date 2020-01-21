@@ -9,7 +9,7 @@ import {
   GAME_QUIT_TO_MAIN_MENU,
   GAME_LOAD_STATE
 } from "./game";
-import { assoc, over, lensProp, reject } from "ramda";
+import { assoc, over, lensProp, reject, map, evolve, dec } from "ramda";
 
 export interface InvitationState {
   invitations: Invitation[];
@@ -70,14 +70,21 @@ export default function invitationReducer(state = defaultState, action) {
       return assoc("invitations", [], state);
 
     case GAME_DECREMENT_DURATIONS:
-      return state.update("invitations", invitations => {
-        return invitations.map(i => {
-          if (i.get("participate")) {
+      return over(
+        lensProp("invitations"),
+        map<Invitation, Invitation>(i => {
+          if (i.participate) {
             return i;
           }
-          return i.update("duration", d => d - 1);
-        });
-      });
+          return evolve(
+            {
+              duration: dec
+            },
+            i
+          );
+        }),
+        state
+      );
 
     case GAME_CLEAR_EXPIRED:
       return over(

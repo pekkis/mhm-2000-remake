@@ -16,7 +16,8 @@ import {
   mergeLeft,
   pipe,
   assocPath,
-  reduce
+  reduce,
+  inc
 } from "ramda";
 import {
   GameSeasonStartAction,
@@ -218,20 +219,33 @@ export default function competitionReducer(
     case GAME_MATCH_RESULTS:
       return reduce(
         (a, resultSet) => {
-          return assocPath(
-            [
-              "competitions",
-              resultSet.competition,
-              "phases",
-              resultSet.phase,
-              "groups",
-              resultSet.group,
-              "schedule",
-              resultSet.round
-            ],
-            resultSet.results,
-            a
-          );
+          return pipe<typeof a, typeof a, typeof a>(
+            assocPath(
+              [
+                "competitions",
+                resultSet.competition,
+                "phases",
+                resultSet.phase,
+                "groups",
+                resultSet.group,
+                "schedule",
+                resultSet.round
+              ],
+              resultSet.results
+            ),
+            over(
+              lensPath([
+                "competitions",
+                resultSet.competition,
+                "phases",
+                resultSet.phase,
+                "groups",
+                resultSet.group,
+                "round"
+              ]),
+              inc
+            )
+          )(a);
         },
         state,
         action.payload

@@ -160,7 +160,10 @@ export const teams = indexBy(
         a: -1
       },
       morale: 0,
-      isHumanControlled: false
+      isHumanControlled: false,
+      effects: [],
+      opponentEffects: [],
+      strategy: "puurto"
     })
   )(teamList)
 );

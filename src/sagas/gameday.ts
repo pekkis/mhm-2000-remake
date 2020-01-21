@@ -3,7 +3,7 @@ import competitionData from "../data/competitions";
 import gameService from "../services/game";
 import competitionTypes from "../services/competition-type";
 
-import { call, put, putResolve, select, take } from "redux-saga/effects";
+import { call, put, putResolve, select, take, all } from "redux-saga/effects";
 import { groupEnd } from "./game";
 import { calculateGroupStats } from "./stats";
 import { afterGameday } from "./manager";
@@ -12,7 +12,10 @@ import {
   CompetitionNames,
   Competition,
   CompetitionGroup,
-  MapOf
+  MapOf,
+  Competitions,
+  ForEveryCompetition,
+  MatchResultsSet
 } from "../types/base";
 import { MHMState } from "../ducks";
 import { allTeamsMap } from "../services/selectors";
@@ -21,74 +24,6 @@ import { MatchInput } from "../types/match";
 import { playMatch } from "../services/match";
 import { evolve } from "ramda";
 import { GameMatchResultsAction, GAME_MATCH_RESULTS } from "../ducks/game";
-
-function* playGame(
-  group,
-  pairing,
-  gameParams,
-  overtime,
-  competitionId,
-  phaseId
-) {
-  const teams = yield select(state => state.game.get("teams"));
-
-  const home = teams.get(group.getIn(["teams", pairing.get("home")]));
-  const away = teams.get(group.getIn(["teams", pairing.get("away")]));
-
-  const homeManager = yield select(state =>
-    state.manager.getIn(["managers", home.get("manager")])
-  );
-
-  const awayManager = yield select(state =>
-    state.manager.getIn(["managers", away.get("manager")])
-  );
-
-  const game = Map({
-    ...gameParams,
-    overtime,
-    home,
-    away,
-    homeManager,
-    awayManager,
-    phaseId,
-    competitionId
-  });
-
-  const result = yield call(gameService.simulate, game);
-
-  return [
-    result,
-    Map({
-      home: Map({
-        manager: homeManager && homeManager.get("id"),
-        team: home.get("id")
-      }),
-      away: Map({
-        manager: awayManager && awayManager.get("id"),
-        team: away.get("id")
-      })
-    })
-  ];
-}
-
-function* completeGameday(competition, phase, group, round) {
-  yield call(calculateGroupStats, competition, phase, group);
-  yield call(afterGameday, competition, phase, group, round);
-
-  if (competition === "phl" && phase === 0 && group === 0) {
-    yield call(bettingResults, round);
-  }
-
-  yield putResolve({
-    type: "GAME_GAMEDAY_COMPLETE",
-    payload: {
-      competition,
-      phase,
-      group,
-      round
-    }
-  });
-}
 
 function* playRoundOfMatches(
   competitionId: string,
@@ -142,39 +77,54 @@ function* playRoundOfMatches(
     group: groupId,
     round: roundId,
     results
-  };
+  } as MatchResultsSet;
 }
 
-export function* gameday(competitionId: CompetitionNames) {
-  const competition: Competition = yield select(
-    (state: MHMState) => state.competition.competitions[competitionId]
+export function* gameday(competitionIds: CompetitionNames[]) {
+  const competitions: ForEveryCompetition<Competition> = yield select(
+    (state: MHMState) => state.competition.competitions
   );
 
-  const currentPhase = competition.phases[competition.phase];
+  const results: MatchResultsSet[][] = [];
 
-  const results: any[] = [];
+  for (const competitionId of competitionIds) {
+    const competition = competitions[competitionId];
 
-  for (const [
-    groupId,
-    group
-  ] of (currentPhase.groups as CompetitionGroup[]).entries()) {
-    const groupResults = yield call(
-      playRoundOfMatches,
-      competition.id,
-      competition.phase,
+    const currentPhase = competition.phases[competition.phase];
+
+    for (const [
       groupId,
-      group.round
-    );
+      group
+    ] of (currentPhase.groups as CompetitionGroup[]).entries()) {
+      const groupResults = yield call(
+        playRoundOfMatches,
+        competition.id,
+        competition.phase,
+        groupId,
+        group.round
+      );
 
-    results.push(groupResults);
+      results.push(groupResults);
+    }
   }
 
   const flattened = results.flat();
-
   yield putResolve<GameMatchResultsAction>({
     type: GAME_MATCH_RESULTS,
     payload: flattened
   });
+
+  yield all(
+    flattened.map(resultSet => {
+      return call(
+        completeGameday,
+        resultSet.competition,
+        resultSet.phase,
+        resultSet.group,
+        resultSet.round
+      );
+    })
+  );
 
   console.log("FINAL FLATTENED RESULTS", flattened);
 
@@ -310,4 +260,84 @@ export function* gameday(competitionId: CompetitionNames) {
       yield call(groupEnd, payload, competition.get("phase"), groupIndex);
     }
   }
+}
+
+// End of refattori
+
+function* playGame(
+  group,
+  pairing,
+  gameParams,
+  overtime,
+  competitionId,
+  phaseId
+) {
+  const teams = yield select(state => state.game.get("teams"));
+
+  const home = teams.get(group.getIn(["teams", pairing.get("home")]));
+  const away = teams.get(group.getIn(["teams", pairing.get("away")]));
+
+  const homeManager = yield select(state =>
+    state.manager.getIn(["managers", home.get("manager")])
+  );
+
+  const awayManager = yield select(state =>
+    state.manager.getIn(["managers", away.get("manager")])
+  );
+
+  const game = Map({
+    ...gameParams,
+    overtime,
+    home,
+    away,
+    homeManager,
+    awayManager,
+    phaseId,
+    competitionId
+  });
+
+  const result = yield call(gameService.simulate, game);
+
+  return [
+    result,
+    Map({
+      home: Map({
+        manager: homeManager && homeManager.get("id"),
+        team: home.get("id")
+      }),
+      away: Map({
+        manager: awayManager && awayManager.get("id"),
+        team: away.get("id")
+      })
+    })
+  ];
+}
+
+function* completeGameday(
+  competition: CompetitionNames,
+  phase: number,
+  group: number,
+  round: number
+) {
+  yield call(calculateGroupStats, competition, phase, group);
+
+  return;
+
+  // yield call(afterGameday, competition, phase, group, round);
+
+  /*
+  if (competition === "phl" && phase === 0 && group === 0) {
+    yield call(bettingResults, round);
+  }
+  */
+
+  yield putResolve({
+    type: "GAME_GAMEDAY_COMPLETE",
+    payload: {
+      competition,
+      phase,
+      group,
+      round
+    }
+  });
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import strategies from "../data/strategies";
+import strategies from "../services/strategies";
 import Button from "./form/Button";
 import Box from "./styled-system/Box";
 

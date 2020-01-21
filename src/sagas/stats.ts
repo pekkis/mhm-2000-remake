@@ -58,8 +58,6 @@ function* groupStats(
     competitionGroup(competition, phase, group)
   );
 
-  console.log("GRUPPO", g);
-
   const statsFunc = competitionTypes[g.type].stats;
   const stats = yield call(statsFunc, g);
 
@@ -74,7 +72,11 @@ function* groupStats(
   });
 }
 
-export function* calculateGroupStats(competition, phase, group) {
+export function* calculateGroupStats(
+  competition: CompetitionNames,
+  phase: number,
+  group: number
+) {
   yield call(groupStats, competition, phase, group);
 }
 

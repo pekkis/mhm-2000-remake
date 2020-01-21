@@ -1,11 +1,20 @@
 import React from "react";
 import Table from "./league-table/Table";
-import Header from "./containers/HeaderContainer";
+import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
 import Box from "./styled-system/Box";
+import { useSelector } from "react-redux";
+import {
+  humanManagers,
+  allTeamsMap,
+  weightedCompetitions
+} from "../services/selectors";
+import { CompetitionGroup, RoundRobinCompetitionGroup } from "../types/base";
 
 const LeagueTables = props => {
-  const { managers, teams, competitions } = props;
+  const managers = useSelector(humanManagers);
+  const teams = useSelector(allTeamsMap);
+  const competitions = useSelector(weightedCompetitions);
 
   return (
     <HeaderedPage>
@@ -14,20 +23,19 @@ const LeagueTables = props => {
         <h2>Sarjataulukot</h2>
 
         {competitions
-          .filter(c => c.get("phase") >= 0)
+          .filter(c => c.phase >= 0)
           .map(c => {
-            const phase = c.getIn(["phases", 0]);
-            const groups = phase.get("groups");
+            const phase = c.phases[0];
 
             return (
-              <div key={c.get("id")}>
-                <h3>{c.get("name")}</h3>
-                {groups.map((group, i) => {
+              <div key={c.id}>
+                <h3>{c.name}</h3>
+                {(phase.groups as CompetitionGroup[]).map((group, i) => {
                   return (
                     <div key={i}>
-                      <h4>{group.get("name")}</h4>
+                      <h4>{group.name}</h4>
                       <Table
-                        division={group}
+                        division={group as RoundRobinCompetitionGroup}
                         managers={managers}
                         teams={teams}
                       />
@@ -36,8 +44,7 @@ const LeagueTables = props => {
                 })}
               </div>
             );
-          })
-          .toList()}
+          })}
       </Box>
     </HeaderedPage>
   );

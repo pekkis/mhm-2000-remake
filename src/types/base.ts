@@ -125,7 +125,7 @@ export interface MatchOutput {
 }
 
 export interface MatchResultsSet {
-  competition: number;
+  competition: CompetitionNames;
   phase: number;
   group: number;
   round: number;
@@ -356,3 +356,13 @@ export interface DifficultyLevel {
 export type MapOf<T> = {
   [key: string]: T;
 };
+
+export type SeasonStrategies = "simonov" | "kaikkipeliin" | "puurto";
+
+export interface SeasonStrategy {
+  id: string;
+  name: string;
+  description: string;
+  initialReadiness: () => number;
+  incrementReadiness: (turn: Turn) => number;
+}

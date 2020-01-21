@@ -3,7 +3,7 @@ import { Map, List } from "immutable";
 import teamData from "../services/data/teams";
 
 import { MapOf } from "../types/base";
-import { Team, TeamStrength } from "../types/team";
+import { Team, TeamStrength, TeamEffect } from "../types/team";
 import {
   dissocPath,
   assocPath,
@@ -14,7 +14,9 @@ import {
   mergeLeft,
   pipe,
   evolve,
-  dec
+  dec,
+  add,
+  lensPath
 } from "ramda";
 import {
   GAME_DECREMENT_DURATIONS,
@@ -24,7 +26,8 @@ import {
   GameQuitToMainMenuAction,
   GameSeasonStartAction,
   GAME_SEASON_START,
-  GameCleanupAction
+  GameCleanupAction,
+  GameDecrementDurationsActions
 } from "./game";
 
 export interface TeamState {
@@ -34,6 +37,7 @@ export interface TeamState {
 export const TEAM_ADD_MANAGER = "TEAM_ADD_MANAGER";
 export const TEAM_REMOVE_MANAGER = "TEAM_REMOVE_MANAGER";
 export const TEAM_SET_STRENGTHS = "TEAM_SET_STRENGTHS";
+export const TEAM_INCREMENT_READINESS = "TEAM_INCREMENT_READINESS";
 
 const defaultState: TeamState = {
   teams: teamData
@@ -59,6 +63,14 @@ export interface TeamSetStrengthsAction {
   payload: [string, TeamStrength][];
 }
 
+export interface TeamIncrementReadinessAction {
+  type: typeof TEAM_INCREMENT_READINESS;
+  payload: {
+    team: string;
+    amount: number;
+  }[];
+}
+
 type TeamActions =
   | GameLoadStateAction
   | GameQuitToMainMenuAction
@@ -66,7 +78,9 @@ type TeamActions =
   | TeamAddManagerAction
   | GameSeasonStartAction
   | TeamSetStrengthsAction
-  | GameCleanupAction;
+  | GameCleanupAction
+  | TeamIncrementReadinessAction
+  | GameDecrementDurationsActions;
 
 const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
   switch (action.type) {
@@ -81,7 +95,7 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
             effects: [],
             opponentEffects: [],
             morale: 0,
-            strategy: 2,
+            strategy: "puurto",
             readiness: 0
           })
         ),
@@ -119,6 +133,37 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
             }
           })
         ),
+        state
+      );
+
+    case TEAM_INCREMENT_READINESS:
+      return reduce(
+        (a, increment) =>
+          over(
+            lensPath(["teams", increment.team]),
+            evolve({
+              readiness: add(increment.amount)
+            }),
+            a
+          ),
+        state,
+        action.payload
+      );
+
+    case GAME_DECREMENT_DURATIONS:
+      return over(
+        lensProp("teams"),
+        map<Team, Team>(t => {
+          return evolve(
+            {
+              effects: map<TeamEffect, TeamEffect>(evolve({ duration: dec })),
+              opponentEffects: map<TeamEffect, TeamEffect>(
+                evolve({ duration: dec })
+              )
+            },
+            t
+          );
+        }),
         state
       );
 
@@ -164,12 +209,6 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
         }
       );
 
-    case "TEAM_INCREMENT_READINESS":
-      return state.updateIn(
-        ["teams", payload.team, "readiness"],
-        r => r + payload.amount
-      );
-
     case "TEAM_INCREMENT_STRENGTH":
       return state.updateIn(
         ["teams", payload.team, "strength"],
@@ -193,7 +232,6 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
         opponentEffects => opponentEffects.push(Map(payload.effect))
       );
 
-    case GAME_DECREMENT_DURATIONS:
       return state.update("teams", teams => {
         return teams.map(team => {
           return team

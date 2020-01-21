@@ -32,6 +32,8 @@ const competitionTypeService: ForEvery<
     playMatch: () => true,
     overtime: () => false,
     stats: (group: RoundRobinCompetitionGroup) => {
+      console.log("STATS", group);
+
       return table(group);
     }
   } as CompetitionTypeService<RoundRobinCompetitionGroup, LeagueTable>,

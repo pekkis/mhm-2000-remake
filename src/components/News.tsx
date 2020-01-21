@@ -1,8 +1,8 @@
 import React from "react";
 import EventsList from "./events/Events";
 import Announcements from "./events/Announcements";
-import ManagerInfo from "./containers/ManagerInfoContainer";
-import Header from "./containers/HeaderContainer";
+import ManagerInfo from "./ManagerInfo";
+import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
 import Box from "./styled-system/Box";
 import { List } from "immutable";
@@ -17,7 +17,8 @@ const News = props => {
 
       <Box p={1}>
         <h2>Tapahtumat</h2>
-        <EventsList
+
+        {/*<EventsList
           manager={manager}
           events={events}
           resolveEvent={resolveEvent}
@@ -27,7 +28,7 @@ const News = props => {
             manager.get("id").toString(),
             List()
           )}
-        />
+          />*/}
       </Box>
     </HeaderedPage>
   );

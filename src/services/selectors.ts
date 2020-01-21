@@ -14,7 +14,8 @@ import {
   MHMTurnDefinition,
   CompetitionNames,
   CompetitionPhase,
-  CompetitionGroup
+  CompetitionGroup,
+  Competition
 } from "../types/base";
 import { MHMState } from "../ducks";
 import { Team } from "../types/team";
@@ -28,6 +29,8 @@ export const advanceEnabled = (state: MHMState) => state.ui.advanceEnabled;
 export const allTeams = (state: MHMState) => values(state.team.teams);
 
 export const allTeamsMap = (state: MHMState) => state.team.teams;
+
+export const currentTurn = (state: MHMState) => state.game.turn;
 
 export const humanManagers = (state: MHMState): HumanManager[] => {
   return values(state.manager.managers).filter(isHumanManager);
@@ -125,8 +128,8 @@ export const interestingCompetitions = (manager: string) => (
   return interdasting.map(prop("id"));
 };
 
-export const weightedCompetitions = (state: MHMState) => {
-  const sorter = sortWith([ascend(prop("weight"))]);
+export const weightedCompetitions = (state: MHMState): Competition[] => {
+  const sorter = sortWith<Competition>([ascend(prop("weight"))]);
   return sorter(values(state.competition.competitions));
 };
 

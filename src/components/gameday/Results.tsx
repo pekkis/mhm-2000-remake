@@ -1,7 +1,5 @@
 import React, { FunctionComponent } from "react";
 import styled from "@emotion/styled";
-import TeamName from "../team/TeamName";
-import { List } from "immutable";
 import Game from "./Game";
 import Box from "../styled-system/Box";
 import { HumanManager } from "../../types/manager";

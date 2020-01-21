@@ -1,53 +1,39 @@
 import { put, putResolve, select, call } from "redux-saga/effects";
 
-import strategies from "../../data/strategies";
-import services from "../../data/services";
-import { decrementBalance } from "../manager";
+import strategies from "../../services/strategies";
+import { MHMState } from "../../ducks";
+import { Turn, MapOf } from "../../types/base";
+import { Team } from "../../types/team";
+import { values } from "ramda";
+import {
+  GameDecrementDurationsActions,
+  GAME_DECREMENT_DURATIONS
+} from "../../ducks/game";
+import {
+  TeamIncrementReadinessAction,
+  TEAM_INCREMENT_READINESS
+} from "../../ducks/team";
 
 export default function* calculationsPhase() {
-  const turn = yield select(state => state.game.get("turn"));
+  const turn: Turn = yield select((state: MHMState) => state.game.turn);
 
-  console.log("CALCULATIONS PHASE FOR TURN #", turn.get("round"));
+  const teams: MapOf<Team> = yield select(
+    (state: MHMState) => state.team.teams
+  );
 
-  const teams = yield select(state => state.game.get("teams"));
+  const readinessIncrements = values(teams).map(team => {
+    return {
+      team: team.id,
+      amount: strategies[team.strategy].incrementReadiness(turn)
+    };
+  });
 
-  for (const team of teams) {
-    const readinessIncrementer = strategies.getIn([
-      team.get("strategy"),
-      "incrementReadiness"
-    ]);
+  yield put<TeamIncrementReadinessAction>({
+    type: TEAM_INCREMENT_READINESS,
+    payload: readinessIncrements
+  });
 
-    const amountToIncrement = readinessIncrementer(turn);
-
-    if (amountToIncrement !== 0) {
-      yield put({
-        type: "TEAM_INCREMENT_READINESS",
-        payload: {
-          team: team.get("id"),
-          amount: amountToIncrement
-        }
-      });
-    }
-  }
-
-  const managers = yield select(state => state.manager.get("managers"));
-
-  const basePrices = yield select(state => state.game.get("serviceBasePrices"));
-
-  for (const [managerId, manager] of managers.entries()) {
-    const managersServices = manager
-      .get("services")
-      .filter(s => s)
-      .map((s, k) => services.get(k));
-
-    const serviceCosts = managersServices.reduce((r, service, serviceId) => {
-      console.log(r, service);
-      return r + service.get("price")(basePrices.get(serviceId), manager);
-    }, 0);
-
-    yield call(decrementBalance, managerId, serviceCosts);
-  }
-
-  // TODO: MOVE DIS?
-  yield putResolve({ type: "GAME_DECREMENT_DURATIONS" });
+  yield putResolve<GameDecrementDurationsActions>({
+    type: GAME_DECREMENT_DURATIONS
+  });
 }

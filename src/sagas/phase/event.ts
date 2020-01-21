@@ -3,6 +3,7 @@ import events from "../../data/events";
 import { resolveEvent, processEvents } from "../event";
 
 export default function* eventPhase() {
+  return;
   yield put({
     type: "GAME_SET_PHASE",
     payload: "event"

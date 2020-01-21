@@ -13,7 +13,7 @@ import {
 } from "../services/selectors";
 import { CompetitionGroup, isTournamentCompetitionGroup } from "../types/base";
 
-const GamedayResults: FunctionComponent<Props> = () => {
+const GamedayResults: FunctionComponent = () => {
   const calendarEntry = useSelector(currentCalendarEntry);
   const competitions = useSelector(allCompetitions);
   const managers = useSelector(humanManagers);
@@ -34,7 +34,7 @@ const GamedayResults: FunctionComponent<Props> = () => {
             <div key={competition.id}>
               {(currentPhase.groups as CompetitionGroup[]).map(
                 (group, groupIndex) => {
-                  const currentRound = group.round; // TODO!
+                  const currentRound = group.round - 1;
 
                   return (
                     <div key={groupIndex}>

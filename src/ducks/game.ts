@@ -175,6 +175,15 @@ export interface GameMatchResultsAction {
   payload: MatchResultsSet[];
 }
 
+export interface GameMatchResultsAction {
+  type: typeof GAME_MATCH_RESULTS;
+  payload: MatchResultsSet[];
+}
+
+export interface GameDecrementDurationsActions {
+  type: typeof GAME_DECREMENT_DURATIONS;
+}
+
 export const setPhase = (phase: MHMTurnPhase): GameSetPhaseAction => ({
   type: GAME_SET_PHASE,
   payload: phase
@@ -188,7 +197,8 @@ type GameActions =
   | GameSeasonStartAction
   | GameMatchResultsAction
   | GameSeasonEndAction
-  | GameSetPhaseAction;
+  | GameSetPhaseAction
+  | GameNextTurnAction;
 
 const gameReducer: Reducer<typeof defaultState> = (
   state = defaultState,
@@ -247,24 +257,6 @@ const gameReducer: Reducer<typeof defaultState> = (
         state
       );
 
-    case "GAME_GAME_RESULT":
-      // console.log("pl", payload);
-
-      return state.updateIn(
-        [
-          "competitions",
-          payload.competition,
-          "phases",
-          payload.phase,
-          "groups",
-          payload.group,
-          "schedule",
-          payload.round,
-          payload.pairing
-        ],
-        r => r.set("result", payload.result)
-      );
-
     case "GAME_GAMEDAY_COMPLETE":
       return state.updateIn(
         [
@@ -282,12 +274,6 @@ const gameReducer: Reducer<typeof defaultState> = (
 
     case "GAME_SET_FLAG":
       return state.setIn(["flags", payload.flag], payload.value);
-
-    case "GAME_SET_SERVICE_BASE_PRICE":
-      return state.setIn(
-        ["serviceBasePrices", payload.service],
-        payload.amount
-      );
 
     case "GAME_WORLD_CHAMPIONSHIP_RESULTS":
       return state.set("worldChampionshipResults", payload);
