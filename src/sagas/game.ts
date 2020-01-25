@@ -1,4 +1,4 @@
-import competitionData from "../data/competitions";
+import competitionData from "../services/competitions";
 import {
   GAME_SEASON_START,
   GameSetPhaseAction,

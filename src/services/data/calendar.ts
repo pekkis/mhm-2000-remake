@@ -66,16 +66,37 @@ const regularGameday = createTurnDefinition(
 
 const ehlGameday = createTurnDefinition(ehlPhases, ["ehl"], [], {});
 
+const preSeasonTurn = createTurnDefinition(["action"]);
+
+const trainingGameday = createTurnDefinition(ehlPhases, ["training"]);
+
+const cupGameday = createTurnDefinition(ehlPhases, ["cup"]);
+
+const freeWeekend = createTurnDefinition(["action"], [], [], {
+  title: "Vapaa"
+});
+
 const cal: MHMCalendar = [
   createTurnDefinition(
     ["startOfSeason", "seed"],
     [],
-    map(createSeedDefinition(0), ["phl", "division", "mutasarja", "ehl"]),
+    map(createSeedDefinition(0), [
+      "phl",
+      "division",
+      "mutasarja",
+      "ehl",
+      "training",
+      "cup"
+    ]),
     {}
   ),
-  ...repeat(regularGameday, 4),
-  ehlGameday,
-  ...repeat(regularGameday, 4),
+
+  ...repeat(preSeasonTurn, 6),
+  ...repeat(trainingGameday, 4),
+  ...repeat(regularGameday, 2),
+  cupGameday,
+  regularGameday,
+  cupGameday,
   ehlGameday,
   ...repeat(regularGameday, 2),
   assoc("phases", append("invitationsCreate", defaultPhases), regularGameday),

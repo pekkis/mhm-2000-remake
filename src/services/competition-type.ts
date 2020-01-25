@@ -27,6 +27,11 @@ const competitionTypeService: ForEvery<
     stats: () => {},
     overtime: () => false
   },
+  cup: {
+    playMatch: () => true,
+    stats: () => {},
+    overtime: () => false
+  },
 
   "round-robin": {
     playMatch: () => true,

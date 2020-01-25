@@ -65,6 +65,8 @@ export type Competitions = {
   ehl: Competition;
   tournaments: Competition;
   mutasarja: Competition;
+  cup: Competition;
+  training: Competition;
 };
 
 export type CompetitionNames = keyof Competitions;
@@ -84,7 +86,8 @@ export type CompetitionTypes =
   | "round-robin"
   | "playoffs"
   | "tournament"
-  | "training";
+  | "training"
+  | "cup";
 
 export interface TeamPenalty {
   team: string;
@@ -112,6 +115,7 @@ export interface MatchInput {
     id: CompetitionNames;
     phase: number;
     group: number;
+    round: number;
   };
 
   teams: {
@@ -146,6 +150,10 @@ export interface PlayoffTeamStat {
   losses: number;
 }
 
+export interface CupStats {}
+
+export interface TrainingStats {}
+
 export interface CompetitionGroup {
   type: CompetitionTypes;
   round: number;
@@ -166,6 +174,30 @@ export interface RoundRobinCompetitionGroup extends CompetitionGroup {
   times: number;
   colors: Color[];
   stats: LeagueTable;
+}
+
+export const isTrainingompetitionGroup = (
+  group: CompetitionGroup
+): group is TrainingCompetitionGroup => {
+  return group.type === "training";
+};
+
+export interface TrainingCompetitionGroup extends CompetitionGroup {
+  penalties: TeamPenalty[];
+  type: "training";
+  stats: TrainingStats;
+}
+
+export const isCupCompetitionGroup = (
+  group: CompetitionGroup
+): group is CupCompetitionGroup => {
+  return group.type === "cup";
+};
+
+export interface CupCompetitionGroup extends CompetitionGroup {
+  penalties: TeamPenalty[];
+  type: "cup";
+  stats: CupStats;
 }
 
 export const isTournamentCompetitionGroup = (
@@ -207,6 +239,14 @@ export interface RoundRobinCompetitionPhase extends BaseCompetitionPhase {
   groups: RoundRobinCompetitionGroup[];
 }
 
+export interface CupCompetitionPhase extends BaseCompetitionPhase {
+  groups: CupCompetitionGroup[];
+}
+
+export interface TrainingCompetitionPhase extends BaseCompetitionPhase {
+  groups: TrainingCompetitionGroup[];
+}
+
 export interface PlayoffsCompetitionPhase extends BaseCompetitionPhase {
   groups: PlayoffsCompetitionGroup[];
 }
@@ -218,7 +258,9 @@ export interface TournamentCompetitionPhase extends BaseCompetitionPhase {
 export type CompetitionPhase =
   | RoundRobinCompetitionPhase
   | PlayoffsCompetitionPhase
-  | TournamentCompetitionPhase;
+  | TournamentCompetitionPhase
+  | CupCompetitionPhase
+  | TrainingCompetitionPhase;
 
 export interface Facts {
   isLoss: boolean;

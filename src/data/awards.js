@@ -3,7 +3,7 @@ import {
   competition,
   managerWhoControlsTeam,
   allTeams,
-  pekkalandianTeams,
+  domesticTeams,
   teamCompetesIn,
   teamsStrength,
   teamsPositionInRoundRobin,

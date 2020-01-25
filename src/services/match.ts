@@ -1,10 +1,8 @@
 import { Team } from "../types/team";
-import competitions from "../data/competitions";
-import { Competitions, CompetitionNames } from "../types/base";
-import { mapObjIndexed } from "ramda";
-import { takeMaybe } from "redux-saga/effects";
+import competitions from "./competitions";
+import { mapObjIndexed, evolve, range, inc } from "ramda";
 import random from "./random";
-import { MatchInput, MatchOutput } from "../types/match";
+import { MatchInput, MatchOutput } from "../types/base";
 
 /*
 TODO:
@@ -28,25 +26,95 @@ const moraleModifier = (team: Team, advantage: number) => {
   return advantage + team.morale / 125;
 };
 
-export const playMatch = (match: MatchInput) => {
+interface Matchup {
+  [key: string]: Team;
+}
+
+export const playMatch = (input: MatchInput) => {
   const advantages = {
-    home: competitions[match.competition.id].homeAdvantage(
-      match.competition.phase,
-      match.competition.group
+    home: competitions[input.competition.id].homeAdvantage(
+      input.competition.phase,
+      input.competition.group
     ),
-    away: competitions[match.competition.id].awayAdvantage(
-      match.competition.phase,
-      match.competition.group
+    away: competitions[input.competition.id].awayAdvantage(
+      input.competition.phase,
+      input.competition.group
     )
   };
+
+  const { teams } = input;
 
   console.log("advantages", advantages);
 
   const teamModifiers = [moraleModifier];
 
   const advantagesAfterTeamModifiers = mapObjIndexed((a, which) => {
-    return teamModifiers.reduce((a2, tm) => tm(match.teams[which], a2), a);
+    return teamModifiers.reduce((a2, tm) => tm(teams[which], a2), a);
   }, advantages);
+
+  const effectiveTeams = mapObjIndexed((team, which) => {
+    return evolve(
+      {
+        strength: {
+          g: x => x * advantages[which],
+          d: x => x * advantages[which],
+          a: x => x * advantages[which],
+          pp: x => x * advantages[which],
+          pk: x => x * advantages[which]
+        }
+      },
+      team
+    );
+  }, teams);
+
+  const skills: Matchup = mapObjIndexed((team, which) => {
+    return evolve(
+      {
+        strength: {
+          g: x => x / 30,
+          d: x => x / 60,
+          a: x => x / 120
+        }
+      },
+      team
+    );
+  }, effectiveTeams);
+
+  console.log(teams, effectiveTeams, skills, "PUUPPA");
+
+  const result = range(1, 16).reduce(
+    (a, r) => {
+      return [
+        { attack: "home", defend: "away" },
+        { attack: "away", defend: "home" }
+      ].reduce((a, roles) => {
+        const aRand = skills[roles.attack].strength.a * random.real(0, 1);
+        const dRand = skills[roles.defend].strength.d * random.real(0, 1);
+
+        if (aRand > dRand) {
+          const aRand = skills[roles.attack].strength.a * random.real(0, 1);
+          const gRand =
+            skills[roles.defend].strength.g * random.real(0, 1) +
+            skills[roles.defend].strength.d / 3;
+          if (aRand > gRand) {
+            return evolve(
+              {
+                [roles.attack]: inc
+              },
+              a
+            );
+          }
+        }
+
+        return a;
+      }, a);
+    },
+    {
+      home: 0,
+      away: 0,
+      audience: 3000
+    }
+  );
 
   /*
   const advantagesAfterTeamModifiers = ["home", "away"].reduce((a, which) => {
@@ -59,11 +127,13 @@ export const playMatch = (match: MatchInput) => {
 
   console.log("advantages after team", advantagesAfterTeamModifiers);
 
-  return {
-    audience: 3000,
+  const output: MatchOutput = {
     result: {
-      home: random.integer(0, 12),
-      away: random.integer(0, 12)
+      ...result,
+      audience: 3000,
+      overtime: false
     }
-  } as MatchOutput;
+  };
+
+  return output;
 };

@@ -37,6 +37,24 @@ export interface CompetitionState {
 
 const defaultState: CompetitionState = {
   competitions: {
+    training: {
+      weight: 1000,
+      id: "training",
+      abbr: "har",
+      phase: -1,
+      name: "Harjoitusottelut",
+      teams: [],
+      phases: []
+    },
+    cup: {
+      weight: 1000,
+      id: "cup",
+      abbr: "Cup",
+      phase: -1,
+      name: "Pekkalandian Cup",
+      teams: [],
+      phases: []
+    },
     phl: {
       weight: 500,
       id: "phl",

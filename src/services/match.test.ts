@@ -10,13 +10,20 @@ test("returns a result", () => {
     strength: {
       g: 10,
       d: 60,
-      a: 60
+      a: 120,
+      pp: 50,
+      pk: 40
     },
     isHumanControlled: false,
-    domestic: true,
+    country: "FI",
     id: "jaalosot",
     level: 0,
-    morale: normalizeMorale(3, 20)
+    morale: normalizeMorale(3, 20),
+    strategy: "puurto",
+    effects: [],
+    opponentEffects: [],
+    readiness: 1,
+    intensity: 0
   };
 
   const teamB: Team = {
@@ -25,20 +32,28 @@ test("returns a result", () => {
     strength: {
       g: 10,
       d: 60,
-      a: 60
+      a: 120,
+      pp: 50,
+      pk: 40
     },
     isHumanControlled: false,
-    domestic: true,
+    country: "FI",
     id: "mahtiankat",
     level: 0,
-    morale: normalizeMorale(3, -200)
+    morale: normalizeMorale(3, -200),
+    strategy: "puurto",
+    effects: [],
+    opponentEffects: [],
+    readiness: 1,
+    intensity: 0
   };
 
   const o = playMatch({
     competition: {
       id: "phl",
       phase: 0,
-      group: 0
+      group: 0,
+      round: 8
     },
     teams: {
       home: teamA,

@@ -50,6 +50,7 @@ const changedStats = (
     ...stats,
     gamesPlayed: stats.gamesPlayed + 1,
     wins: !isWin ? stats.wins : stats.wins + 1,
+    draws: !isDraw ? stats.draws : stats.draws + 1,
     losses: !isLoss ? stats.losses : stats.losses + 1,
     points: changedPoints(stats.points, isWin, isDraw),
     goalsFor: stats.goalsFor + game.result[myKey],

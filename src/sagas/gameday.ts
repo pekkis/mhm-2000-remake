@@ -1,5 +1,5 @@
 import { Map } from "immutable";
-import competitionData from "../data/competitions";
+import competitionData from "../services/competitions";
 import gameService from "../services/game";
 import competitionTypes from "../services/competition-type";
 
