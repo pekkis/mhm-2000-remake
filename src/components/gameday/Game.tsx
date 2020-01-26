@@ -40,6 +40,7 @@ const Game: FunctionComponent<Props> = props => {
             <Score>{pairing.result.home}</Score>
             <Separator>-</Separator>
             <Score>{pairing.result.away}</Score>
+            {pairing.result.overtime && <span> ja.</span>}
           </>
         )}
       </Result>

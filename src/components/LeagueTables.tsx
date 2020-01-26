@@ -27,6 +27,10 @@ const LeagueTables = props => {
           .map(c => {
             const phase = c.phases[0];
 
+            if (phase.type !== "round-robin") {
+              return null;
+            }
+
             return (
               <div key={c.id}>
                 <h3>{c.name}</h3>

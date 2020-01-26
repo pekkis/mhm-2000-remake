@@ -66,12 +66,14 @@ const division: CompetitionService = {
       const teams = sortBy(() => r.real(1, 1000), competition.teams);
       const times = 2;
       return {
+        id: 0,
         teams: teams,
         name: "runkosarja",
         type: "round-robin",
         times,
         groups: [
           {
+            id: 0,
             penalties: [],
             times,
             type: "round-robin",
@@ -116,12 +118,14 @@ const division: CompetitionService = {
 
       const winsToAdvance = 3;
 
-      return {
+      const phase: PlayoffsCompetitionPhase = {
+        id: 1,
         name: "neljännesfinaalit",
         type: "playoffs",
         teams,
         groups: [
           {
+            id: 0,
             type: "playoffs",
             teams,
             round: 0,
@@ -130,9 +134,10 @@ const division: CompetitionService = {
             winsToAdvance,
             schedule: playoffScheduler(matchups, winsToAdvance),
             stats: []
-          } as PlayoffsCompetitionGroup
+          }
         ]
-      } as PlayoffsCompetitionPhase;
+      };
+      return phase;
     },
     competitions => {
       const teams = [
@@ -160,22 +165,27 @@ const division: CompetitionService = {
 
       const winsToAdvance = 3;
 
-      return {
+      const phase: PlayoffsCompetitionPhase = {
+        id: 2,
         name: "semifinaalit",
         type: "playoffs",
         teams,
         groups: [
           {
+            id: 0,
             type: "playoffs",
             round: 0,
             name: "semifinals",
             teams,
             matchups,
             winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
+            schedule: playoffScheduler(matchups, winsToAdvance),
+            stats: []
           }
         ]
-      } as PlayoffsCompetitionPhase;
+      };
+
+      return phase;
     },
     competitions => {
       const teams = map(
@@ -189,21 +199,27 @@ const division: CompetitionService = {
       const matchups: Matchups = [[0, 1]];
       const winsToAdvance = 4;
 
-      return {
+      const phase: PlayoffsCompetitionPhase = {
+        id: 3,
         name: "finaalit",
         type: "playoffs",
         teams,
         groups: [
           {
+            id: 0,
             type: "playoffs",
+            name: "Finaalit",
             round: 0,
             teams,
             matchups,
             winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
+            schedule: playoffScheduler(matchups, winsToAdvance),
+            stats: []
           }
         ]
-      } as PlayoffsCompetitionPhase;
+      };
+
+      return phase;
     }
   ]
 };

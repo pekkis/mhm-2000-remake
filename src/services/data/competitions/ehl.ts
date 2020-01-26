@@ -265,7 +265,8 @@ const ehl: CompetitionService = {
 
       const groups: RoundRobinCompetitionGroup[] = map(groupId => {
         const teamSlice = teams.slice(groupId * 4, groupId * 4 + 4);
-        return {
+        const group: RoundRobinCompetitionGroup = {
+          id: groupId,
           type: "round-robin",
           times,
           round: 0,
@@ -275,15 +276,18 @@ const ehl: CompetitionService = {
           colors: ["d", "l", "l", "l"],
           penalties: [],
           stats: []
-        } as RoundRobinCompetitionGroup;
+        };
+        return group;
       }, range(0, 5));
 
-      return {
+      const phase: RoundRobinCompetitionPhase = {
+        id: 0,
         teams,
         name: "runkosarja",
         type: "round-robin",
         groups
-      } as RoundRobinCompetitionPhase;
+      };
+      return phase;
     },
     competitions => {
       const ehlGroups = (competitions.ehl
@@ -297,11 +301,13 @@ const ehl: CompetitionService = {
       const teams = map(prop("id"), [...qualifiedVictors, qualifiedSecond]);
 
       return {
+        id: 0,
         name: "lopputurnaus",
         type: "tournament",
         teams,
         groups: [
           {
+            id: 0,
             type: "tournament",
             penalties: [],
             colors: ["d", "l", "l", "l", "l", "l"],
@@ -310,9 +316,9 @@ const ehl: CompetitionService = {
             name: "lopputurnaus",
             schedule: tournamentScheduler(teams.length),
             stats: []
-          } as TournamentCompetitionGroup
+          }
         ]
-      } as TournamentCompetitionPhase;
+      };
     }
   ]
 };

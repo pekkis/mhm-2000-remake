@@ -2,7 +2,15 @@ import { Team } from "../types/team";
 import competitions from "./competitions";
 import { mapObjIndexed, evolve, range, inc } from "ramda";
 import random from "./random";
-import { MatchInput, MatchOutput } from "../types/base";
+import {
+  MatchInput,
+  MatchOutput,
+  PartialMatchResult,
+  MatchResult,
+  MatchFacts,
+  ScheduleGame
+} from "../types/base";
+import competitionTypeService from "./competition-type";
 
 /*
 TODO:
@@ -30,21 +38,91 @@ interface Matchup {
   [key: string]: Team;
 }
 
+interface AttackRoles {
+  attack: string;
+  defend: string;
+}
+
+const matchAttack = (skills: Matchup) => (
+  a: PartialMatchResult,
+  roles: AttackRoles
+) => {
+  const aRand = skills[roles.attack].strength.a * random.real(0, 1);
+  const dRand = skills[roles.defend].strength.d * random.real(0, 1);
+
+  if (aRand > dRand) {
+    const aRand = skills[roles.attack].strength.a * random.real(0, 1);
+    const gRand =
+      skills[roles.defend].strength.g * random.real(0, 1) +
+      skills[roles.defend].strength.d / 3;
+    if (aRand > gRand) {
+      return evolve(
+        {
+          [roles.attack]: inc
+        },
+        a
+      );
+    }
+  }
+
+  return a;
+};
+
+const matchRound = (skills: Matchup) => (a: PartialMatchResult) => {
+  return [
+    { attack: "home", defend: "away" },
+    { attack: "away", defend: "home" }
+  ].reduce(matchAttack(skills), a);
+};
+
+const generatore = function*() {
+  const roles = [
+    { attack: "home", defend: "away" },
+    { attack: "away", defend: "home" }
+  ];
+  do {
+    for (const role of roles) {
+      yield role;
+    }
+  } while (true);
+};
+
+const continuousOvertime = (skills, result) => {
+  const gen = generatore();
+  let ot;
+  do {
+    const roles = gen.next().value;
+    ot = matchAttack(skills)(result, roles);
+  } while (ot === result);
+
+  return ot;
+};
+
+const fiveMinutesOvertime = (skills, result) => {
+  const gen = generatore();
+  for (let x = 1; x <= 4; x = x + 1) {
+    const roles = gen.next().value;
+    const ot = matchAttack(skills)(result, roles);
+    if (ot !== result) {
+      return ot;
+    }
+  }
+  return result;
+};
+
 export const playMatch = (input: MatchInput) => {
   const advantages = {
     home: competitions[input.competition.id].homeAdvantage(
-      input.competition.phase,
-      input.competition.group
+      input.phase.id,
+      input.group.id
     ),
     away: competitions[input.competition.id].awayAdvantage(
-      input.competition.phase,
-      input.competition.group
+      input.phase.id,
+      input.group.id
     )
   };
 
   const { teams } = input;
-
-  console.log("advantages", advantages);
 
   const teamModifiers = [moraleModifier];
 
@@ -56,11 +134,11 @@ export const playMatch = (input: MatchInput) => {
     return evolve(
       {
         strength: {
-          g: x => x * advantages[which],
-          d: x => x * advantages[which],
-          a: x => x * advantages[which],
-          pp: x => x * advantages[which],
-          pk: x => x * advantages[which]
+          g: x => x * advantagesAfterTeamModifiers[which],
+          d: x => x * advantagesAfterTeamModifiers[which],
+          a: x => x * advantagesAfterTeamModifiers[which],
+          pp: x => x * advantagesAfterTeamModifiers[which],
+          pk: x => x * advantagesAfterTeamModifiers[which]
         }
       },
       team
@@ -80,60 +158,76 @@ export const playMatch = (input: MatchInput) => {
     );
   }, effectiveTeams);
 
-  console.log(teams, effectiveTeams, skills, "PUUPPA");
+  console.log(skills, "SKILLS");
 
-  const result = range(1, 16).reduce(
-    (a, r) => {
-      return [
-        { attack: "home", defend: "away" },
-        { attack: "away", defend: "home" }
-      ].reduce((a, roles) => {
-        const aRand = skills[roles.attack].strength.a * random.real(0, 1);
-        const dRand = skills[roles.defend].strength.d * random.real(0, 1);
+  const result = range(1, 16).reduce(matchRound(skills), {
+    home: 0,
+    away: 0
+  });
 
-        if (aRand > dRand) {
-          const aRand = skills[roles.attack].strength.a * random.real(0, 1);
-          const gRand =
-            skills[roles.defend].strength.g * random.real(0, 1) +
-            skills[roles.defend].strength.d / 3;
-          if (aRand > gRand) {
-            return evolve(
-              {
-                [roles.attack]: inc
-              },
-              a
-            );
-          }
-        }
-
-        return a;
-      }, a);
-    },
-    {
-      home: 0,
-      away: 0,
-      audience: 3000
-    }
+  const needsOverTime = competitionTypeService[input.group.type].overtime(
+    input.group,
+    input.group.round,
+    input.matchup,
+    result
   );
 
-  /*
-  const advantagesAfterTeamModifiers = ["home", "away"].reduce((a, which) => {
-    return teamModifiers.reduce(
-      (a, modifier) => modifier(match.teams[which], a),
-      a[which]
-    );
-  }, advantages);
-  */
+  if (!needsOverTime) {
+    const output: MatchOutput = {
+      result: {
+        ...result,
+        audience: 3000,
+        overtime: false
+      }
+    };
 
-  console.log("advantages after team", advantagesAfterTeamModifiers);
+    return output;
+  }
+
+  const resultAfterOvertime =
+    needsOverTime.type === "continuous"
+      ? continuousOvertime(skills, result)
+      : fiveMinutesOvertime(skills, result);
 
   const output: MatchOutput = {
     result: {
-      ...result,
+      ...resultAfterOvertime,
       audience: 3000,
-      overtime: false
+      overtime: true
     }
   };
 
   return output;
+};
+
+export const resultFacts = (
+  result: MatchResult,
+  key: "home" | "away"
+): MatchFacts => {
+  const theirKey = key === "home" ? "away" : "home";
+
+  const isWin = result[key] > result[theirKey];
+
+  const isDraw = result[key] === result[theirKey];
+
+  const isLoss = result[key] < result[theirKey];
+
+  return {
+    isWin,
+    isDraw,
+    isLoss,
+    goalsFor: result[key],
+    goalsAgainst: result[theirKey]
+  };
+};
+
+export const matchFacts = (game: ScheduleGame, team: number): MatchFacts => {
+  const isHome = team === game.home;
+  const myKey = isHome ? "home" : "away";
+
+  if (!game.result) {
+    throw new Error("Trying to get facts for a game with no result");
+  }
+
+  return resultFacts(game.result, myKey);
 };

@@ -65,11 +65,13 @@ const phl: CompetitionService = {
       const times = 2;
 
       const phase: RoundRobinCompetitionPhase = {
+        id: 0,
         name: "runkosarja",
         type: "round-robin",
         teams,
         groups: [
           {
+            id: 0,
             penalties: [],
             type: "round-robin",
             round: 0,
@@ -116,11 +118,13 @@ const phl: CompetitionService = {
       ];
 
       const phase: PlayoffsCompetitionPhase = {
+        id: 1,
         name: "quarterfinals",
         type: "playoffs",
         teams,
         groups: [
           {
+            id: 0,
             type: "playoffs",
             name: "playoffs",
             round: 0,
@@ -149,21 +153,26 @@ const phl: CompetitionService = {
 
       const winsToAdvance = 3;
 
-      return {
+      const phase: PlayoffsCompetitionPhase = {
+        id: 2,
         name: "semifinals",
         type: "playoffs",
         teams,
         groups: [
           {
+            id: 0,
+            name: "Semifinaalit",
             type: "playoffs",
             round: 0,
             teams,
             matchups,
             winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
+            schedule: playoffScheduler(matchups, winsToAdvance),
+            stats: []
           }
         ]
-      } as PlayoffsCompetitionPhase;
+      };
+      return phase;
     },
     competitions => {
       const teams = map(prop("id"), [
@@ -182,21 +191,26 @@ const phl: CompetitionService = {
 
       const winsToAdvance = 4;
 
-      return {
+      const phase: PlayoffsCompetitionPhase = {
+        id: 3,
         name: "finals",
         type: "playoffs",
         teams,
         groups: [
           {
+            id: 3,
+            name: "Finaalit",
             type: "playoffs",
             teams,
             round: 0,
             matchups,
             winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
+            schedule: playoffScheduler(matchups, winsToAdvance),
+            stats: []
           }
         ]
-      } as PlayoffsCompetitionPhase;
+      };
+      return phase;
     }
   ]
 };

@@ -20,7 +20,7 @@ import {
 import { MHMState } from "../ducks";
 import { allTeamsMap } from "../services/selectors";
 import { Team } from "../types/team";
-import { MatchInput } from "../types/match";
+import { MatchInput } from "../types/base";
 import { playMatch } from "../services/match";
 import { evolve } from "ramda";
 import { GameMatchResultsAction, GAME_MATCH_RESULTS } from "../ducks/game";
@@ -40,7 +40,6 @@ function* playRoundOfMatches(
   const phase = competition.phases[phaseId];
   const group = phase.groups[groupId];
 
-  const overtimeFunc = competitionTypes[group.type].overtime;
   const playMatchFunc = competitionTypes[group.type].playMatch;
 
   const results: any[] = [];
@@ -48,15 +47,19 @@ function* playRoundOfMatches(
   for (const [pairingId, pairing] of group.schedule[roundId].entries()) {
     console.log("P", pairingId, pairing);
 
+    if (!playMatchFunc(group, roundId, pairingId)) {
+      results.push(undefined);
+      continue;
+    }
+
     const matchInput: MatchInput = {
-      competition: {
-        id: competition.id,
-        group: groupId,
-        phase: phaseId
-      },
+      competition,
+      group,
+      phase,
+      matchup: pairingId,
       teams: {
         home: teams[group.teams[pairing.home]],
-        away: teams[group.teams[pairing.home]]
+        away: teams[group.teams[pairing.away]]
       }
     };
 

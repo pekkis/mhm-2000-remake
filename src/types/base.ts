@@ -103,6 +103,8 @@ export interface ScheduleGame {
   result?: MatchResult;
 }
 
+export type PartialMatchResult = Omit<MatchResult, "overtime" | "audience">;
+
 export interface MatchResult {
   audience: number;
   home: number;
@@ -110,14 +112,15 @@ export interface MatchResult {
   overtime: boolean;
 }
 
-export interface MatchInput {
-  competition: {
-    id: CompetitionNames;
-    phase: number;
-    group: number;
-    round: number;
-  };
+export interface MatchOvertimeType {
+  type: "continuous" | "5min";
+}
 
+export interface MatchInput {
+  competition: Competition;
+  phase: CompetitionPhase;
+  group: CompetitionGroup;
+  matchup: number;
   teams: {
     home: Team;
     away: Team;
@@ -136,6 +139,14 @@ export interface MatchResultsSet {
   results: Required<MatchResult>[];
 }
 
+export interface MatchFacts {
+  isWin: boolean;
+  isDraw: boolean;
+  isLoss: boolean;
+  goalsFor: number;
+  goalsAgainst: number;
+}
+
 export type PlayoffsStats = PlayoffStat[];
 
 export interface PlayoffStat {
@@ -150,11 +161,24 @@ export interface PlayoffTeamStat {
   losses: number;
 }
 
-export interface CupStats {}
+export type CupStats = CupStat[];
+
+export interface CupStat {
+  home: CupTeamStat;
+  away: CupTeamStat;
+}
+
+export interface CupTeamStat {
+  index: number;
+  id: string;
+  goalsFor: number;
+  goalsAgainst: number;
+}
 
 export interface TrainingStats {}
 
 export interface CompetitionGroup {
+  id: number;
   type: CompetitionTypes;
   round: number;
   schedule: Schedule;
@@ -196,6 +220,7 @@ export const isCupCompetitionGroup = (
 
 export interface CupCompetitionGroup extends CompetitionGroup {
   penalties: TeamPenalty[];
+  matchups: Matchups;
   type: "cup";
   stats: CupStats;
 }
@@ -229,6 +254,7 @@ export interface PlayoffsCompetitionGroup extends CompetitionGroup {
 type Color = "l" | "d";
 
 interface BaseCompetitionPhase {
+  id: number;
   name: string;
   type: CompetitionTypes;
   teams: string[];

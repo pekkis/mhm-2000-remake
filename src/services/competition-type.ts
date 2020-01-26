@@ -3,18 +3,27 @@ import table from "./league";
 import {
   CompetitionTypes,
   ForEvery,
-  MatchResult,
+  MatchOvertimeType,
   RoundRobinCompetitionGroup,
   LeagueTable,
   TournamentCompetitionGroup,
   PlayoffsCompetitionGroup,
   PlayoffsStats,
-  CompetitionGroup
+  CompetitionGroup,
+  CupCompetitionGroup,
+  CupStats,
+  PartialMatchResult
 } from "../types/base";
+import { cupStats } from "./cup";
 
 interface CompetitionTypeService<G extends CompetitionGroup, S> {
   stats: (group: G) => S;
-  overtime: (result: MatchResult) => boolean;
+  overtime: (
+    group: G,
+    round: number,
+    matchup: number,
+    result: PartialMatchResult
+  ) => MatchOvertimeType | false;
   playMatch: (group: G, round: number, matchup: number) => boolean;
 }
 
@@ -24,21 +33,49 @@ const competitionTypeService: ForEvery<
 > = {
   training: {
     playMatch: () => true,
-    stats: () => {},
+    stats: () => {
+      return {};
+    },
     overtime: () => false
   },
   cup: {
     playMatch: () => true,
-    stats: () => {},
-    overtime: () => false
-  },
+    stats: g => {
+      return cupStats(g);
+    },
+    overtime: (group, round, matchup, result) => {
+      if (round === 0) {
+        return false;
+      }
+
+      const firstMatch = group.schedule[0][matchup];
+      if (!firstMatch.result) {
+        throw new Error("Cup resolution fails");
+      }
+
+      const firstGoals = firstMatch.result.home + result.away;
+      const secondGoals = firstMatch.result.away + result.home;
+
+      if (firstGoals !== secondGoals) {
+        return false;
+      }
+
+      return {
+        type: "continuous"
+      };
+    }
+  } as CompetitionTypeService<CupCompetitionGroup, CupStats>,
 
   "round-robin": {
     playMatch: () => true,
-    overtime: () => false,
-    stats: (group: RoundRobinCompetitionGroup) => {
-      console.log("STATS", group);
+    overtime: (group, round, matchup, result) => {
+      if (result.home !== result.away) {
+        return false;
+      }
 
+      return { type: "5min" };
+    },
+    stats: (group: RoundRobinCompetitionGroup) => {
       return table(group);
     }
   } as CompetitionTypeService<RoundRobinCompetitionGroup, LeagueTable>,
@@ -70,8 +107,13 @@ const competitionTypeService: ForEvery<
 
       return true;
     },
-    overtime: result => {
-      return result.home === result.away;
+    overtime: (group, round, matchup, result) => {
+      if (result.home !== result.away) {
+        return false;
+      }
+      return {
+        type: "continuous"
+      };
     }
   } as CompetitionTypeService<PlayoffsCompetitionGroup, PlayoffsStats>
 };

@@ -68,7 +68,8 @@ const mutasarja: CompetitionService = {
 
       const groups = map(r => {
         const groupTeams = teams.slice(r * 12, r * 12 + 12);
-        return {
+        const group: RoundRobinCompetitionGroup = {
+          id: r,
           penalties: [],
           type: "round-robin",
           times,
@@ -78,16 +79,19 @@ const mutasarja: CompetitionService = {
           teams: groupTeams,
           schedule: rr(groupTeams.length, times),
           colors: ["d", "d", "d", "d", "d", "d", "l", "l", "l", "l", "l", "l"]
-        } as RoundRobinCompetitionGroup;
+        };
+        return group;
       }, range(0, 2));
 
-      return {
+      const phase: RoundRobinCompetitionPhase = {
+        id: 0,
         teams: teams,
         name: "runkosarja",
         type: "round-robin",
-        times,
         groups
-      } as RoundRobinCompetitionPhase;
+      };
+
+      return phase;
     },
     competitions => {
       const teams = map(
@@ -118,11 +122,13 @@ const mutasarja: CompetitionService = {
       const winsToAdvance = 3;
 
       return {
+        id: 1,
         name: "neljännesfinaalit",
         type: "playoffs",
         teams,
         groups: [
           {
+            id: 0,
             type: "playoffs",
             teams,
             round: 0,
@@ -130,9 +136,9 @@ const mutasarja: CompetitionService = {
             matchups,
             winsToAdvance,
             schedule: playoffScheduler(matchups, winsToAdvance)
-          } as PlayoffsCompetitionGroup
+          }
         ]
-      } as PlayoffsCompetitionPhase;
+      };
     },
     competitions => {
       const teams = [
@@ -162,22 +168,26 @@ const mutasarja: CompetitionService = {
 
       const winsToAdvance = 3;
 
-      return {
+      const phase: PlayoffsCompetitionPhase = {
+        id: 2,
         name: "semifinaalit",
         type: "playoffs",
         teams,
         groups: [
           {
+            id: 0,
             type: "playoffs",
             round: 0,
             name: "semifinals",
             teams,
             matchups,
             winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
-          } as PlayoffsCompetitionGroup
+            schedule: playoffScheduler(matchups, winsToAdvance),
+            stats: []
+          }
         ]
-      } as PlayoffsCompetitionPhase;
+      };
+      return phase;
     },
     competitions => {
       const teams = map(
@@ -195,21 +205,27 @@ const mutasarja: CompetitionService = {
 
       const winsToAdvance = 4;
 
-      return {
+      const phase: PlayoffsCompetitionPhase = {
+        id: 3,
         name: "finaalit",
         type: "playoffs",
         teams,
         groups: [
           {
+            name: "Finaalit",
+            id: 0,
             type: "playoffs",
             round: 0,
             teams,
             matchups,
             winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
-          } as PlayoffsCompetitionGroup
+            schedule: playoffScheduler(matchups, winsToAdvance),
+            stats: []
+          }
         ]
-      } as PlayoffsCompetitionPhase;
+      };
+
+      return phase;
     }
   ]
 };

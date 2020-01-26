@@ -70,12 +70,14 @@ const training: CompetitionService = {
   seed: [
     competitions => {
       const phase: TrainingCompetitionPhase = {
+        id: 0,
         type: "training",
         name: "Harjoitusottelut",
         teams: competitions.training.teams,
         groups: [
           {
-            name: "Hharjoitusottelut",
+            id: 0,
+            name: "Harjoitusottelut",
             round: 0,
             type: "training",
             teams: competitions.training.teams,

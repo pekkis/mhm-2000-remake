@@ -9,10 +9,11 @@ import {
   PlayoffsCompetitionPhase,
   PlayoffsCompetitionGroup,
   RoundRobinCompetitionGroup,
-  CupCompetitionPhase
+  CupCompetitionPhase,
+  isCupCompetitionGroup
 } from "../../../types/base";
 
-import cupScheduler from "../../../services/cup";
+import cupScheduler, { cupMatchups, cupWinners } from "../../../services/cup";
 import { Team } from "../../../types/team";
 import { domesticTeams } from "../../selectors";
 import { setCompetitionTeams } from "../../../sagas/competition";
@@ -73,18 +74,24 @@ const cup: CompetitionService = {
     competitions => {
       const competition = competitions.cup;
       const teams = sortBy(() => r.real(1, 1000), competition.teams);
+
+      const matchups = cupMatchups(teams.length);
+
       const phase: CupCompetitionPhase = {
+        id: 0,
         name: "cup",
         type: "cup",
         teams,
         groups: [
           {
+            id: 0,
             penalties: [],
             type: "cup",
             round: 0,
             name: "1. kierros",
+            matchups,
             teams,
-            schedule: cupScheduler(teams.length),
+            schedule: cupScheduler(matchups),
             stats: []
           }
         ]
@@ -92,36 +99,31 @@ const cup: CompetitionService = {
       return phase;
     },
     competitions => {
-      const teams = take(
-        8,
-        map(
-          prop("id"),
-          (competitions.phl.phases[0].groups[0] as RoundRobinCompetitionGroup)
-            .stats
-        )
-      );
+      const competition = competitions.cup;
 
-      const winsToAdvance = 3;
-      const matchups: Matchups = [
-        [0, 7],
-        [1, 6],
-        [2, 5],
-        [3, 4]
-      ];
+      const group = competition.phases[0].groups[0];
 
-      const phase: PlayoffsCompetitionPhase = {
-        name: "quarterfinals",
-        type: "playoffs",
+      if (!isCupCompetitionGroup(group)) {
+        throw new Error("Invalid competition group");
+      }
+
+      const teams = cupWinners(group);
+      const matchups = cupMatchups(teams.length);
+      const phase: CupCompetitionPhase = {
+        id: 1,
+        name: "cup",
+        type: "cup",
         teams,
         groups: [
           {
-            type: "playoffs",
-            name: "playoffs",
+            id: 0,
+            penalties: [],
+            type: "cup",
             round: 0,
-            teams,
-            winsToAdvance,
+            name: "2. kierros",
             matchups,
-            schedule: playoffScheduler(matchups, 3),
+            teams,
+            schedule: cupScheduler(matchups),
             stats: []
           }
         ]
@@ -129,68 +131,68 @@ const cup: CompetitionService = {
       return phase;
     },
     competitions => {
-      const teams = map(
-        prop("id"),
-        victors(
-          competitions.phl.phases[1].groups[0] as PlayoffsCompetitionGroup
-        )
-      );
+      const competition = competitions.cup;
 
-      const matchups: Matchups = [
-        [0, 3],
-        [1, 2]
-      ];
+      const group = competition.phases[1].groups[0];
 
-      const winsToAdvance = 3;
+      if (!isCupCompetitionGroup(group)) {
+        throw new Error("Invalid competition group");
+      }
 
-      return {
-        name: "semifinals",
-        type: "playoffs",
+      const teams = cupWinners(group);
+      const matchups = cupMatchups(teams.length);
+      const phase: CupCompetitionPhase = {
+        id: 2,
+        name: "cup",
+        type: "cup",
         teams,
         groups: [
           {
-            type: "playoffs",
+            id: 0,
+            penalties: [],
+            type: "cup",
             round: 0,
-            teams,
+            name: "3. kierros",
             matchups,
-            winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
+            teams,
+            schedule: cupScheduler(matchups),
+            stats: []
           }
         ]
-      } as PlayoffsCompetitionPhase;
+      };
+      return phase;
     },
     competitions => {
-      const teams = map(prop("id"), [
-        ...victors(
-          competitions.phl.phases[2].groups[0] as PlayoffsCompetitionGroup
-        ),
-        ...eliminated(
-          competitions.phl.phases[2].groups[0] as PlayoffsCompetitionGroup
-        )
-      ]);
+      const competition = competitions.cup;
 
-      const matchups: Matchups = [
-        [0, 1],
-        [2, 3]
-      ];
+      const group = competition.phases[2].groups[0];
 
-      const winsToAdvance = 4;
+      if (!isCupCompetitionGroup(group)) {
+        throw new Error("Invalid competition group");
+      }
 
-      return {
-        name: "finals",
-        type: "playoffs",
+      const teams = cupWinners(group);
+      const matchups = cupMatchups(teams.length);
+      const phase: CupCompetitionPhase = {
+        id: 2,
+        name: "cup",
+        type: "cup",
         teams,
         groups: [
           {
-            type: "playoffs",
-            teams,
+            id: 0,
+            penalties: [],
+            type: "cup",
             round: 0,
+            name: "4. kierros",
             matchups,
-            winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
+            teams,
+            schedule: cupScheduler(matchups),
+            stats: []
           }
         ]
-      } as PlayoffsCompetitionPhase;
+      };
+      return phase;
     }
   ]
 };
