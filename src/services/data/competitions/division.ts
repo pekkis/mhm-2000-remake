@@ -197,7 +197,7 @@ const division: CompetitionService = {
       );
 
       const matchups: Matchups = [[0, 1]];
-      const winsToAdvance = 4;
+      const winsToAdvance = 3;
 
       const phase: PlayoffsCompetitionPhase = {
         id: 3,

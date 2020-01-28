@@ -18,7 +18,7 @@ import {
   TournamentCompetitionGroup,
   Turn
 } from "../../../types/base";
-import { map, range, head, drop, prop } from "ramda";
+import { map, range, head, drop, prop, sortBy } from "ramda";
 import { sortLeagueTable } from "../../league";
 import { MHMState } from "../../../ducks";
 import { domesticTeams, foreignTeams } from "../../selectors";
@@ -261,7 +261,7 @@ const ehl: CompetitionService = {
       const times = 1;
       const ehl = competitions.ehl;
 
-      const teams = ehl.teams;
+      const teams = sortBy(() => random.real(1, 10000), ehl.teams);
 
       const groups: RoundRobinCompetitionGroup[] = map(groupId => {
         const teamSlice = teams.slice(groupId * 4, groupId * 4 + 4);

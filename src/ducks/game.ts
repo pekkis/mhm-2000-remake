@@ -218,8 +218,7 @@ const gameReducer: Reducer<typeof defaultState> = (
       return defaultState;
 
     case GAME_LOAD_STATE:
-      return action.payload.game;
-
+      return { ...action.payload.game, calendar: getCalendar() };
     case GAME_SEASON_START:
       return mergeLeft(
         {

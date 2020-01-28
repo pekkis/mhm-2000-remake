@@ -17,6 +17,7 @@ import {
 } from "../../types/base";
 import { Team } from "../../types/team";
 import { HumanManager } from "../../types/manager";
+import { isCompetitionGroupOver } from "../../services/competitions";
 
 interface Props {
   competitions: ForEveryCompetition<Competition>;
@@ -49,18 +50,22 @@ const Situation: FunctionComponent<Props> = props => {
                     (manager.team && group.teams.includes(manager.team))
                 )
                 .map((group, i) => {
+                  const isOver = isCompetitionGroupOver(group);
+
                   return (
                     <div key={i}>
-                      <div>
-                        <h4>Seuraavat ottelut</h4>
+                      {!isOver && (
+                        <div>
+                          <h4>Seuraavat ottelut</h4>
 
-                        <Games
-                          context={group}
-                          round={group.round}
-                          teams={teams}
-                          managers={[manager]}
-                        />
-                      </div>
+                          <Games
+                            context={group}
+                            round={group.round}
+                            teams={teams}
+                            managers={[manager]}
+                          />
+                        </div>
+                      )}
 
                       <div>
                         {isRoundRobinCompetitionGroup(group) && (

@@ -3,7 +3,8 @@ import {
   Competition,
   CompetitionNames,
   CompetitionPhase,
-  ScheduleGame
+  ScheduleGame,
+  CompetitionGroup
 } from "../types/base";
 import {
   over,
@@ -17,7 +18,8 @@ import {
   pipe,
   assocPath,
   reduce,
-  inc
+  inc,
+  evolve
 } from "ramda";
 import {
   GameSeasonStartAction,
@@ -160,6 +162,7 @@ export const COMPETITION_UPDATE_STATS = "COMPETITION_UPDATE_STATS";
 export const COMPETITION_SET_TEAMS = "COMPETITION_SET_TEAMS";
 export const COMPETITION_START = "COMPETITION_START";
 export const COMPETITION_SEED = "COMPETITION_SEED";
+export const COMPETITION_ADVANCE = "COMPETITION_ADVANCE";
 
 export interface CompetitionAddTeamAction {
   type: typeof COMPETITION_ADD_TEAM;
@@ -174,6 +177,13 @@ export interface CompetitionRemoveTeamAction {
   payload: {
     competition: CompetitionNames;
     team: string;
+  };
+}
+
+export interface CompetitionAdvanceAction {
+  type: typeof COMPETITION_ADVANCE;
+  payload: {
+    competitions: CompetitionNames[];
   };
 }
 
@@ -221,7 +231,8 @@ type CompetitionActions =
   | GameSeasonStartAction
   | GameLoadStateAction
   | GameQuitToMainMenuAction
-  | GameMatchResultsAction;
+  | GameMatchResultsAction
+  | CompetitionAdvanceAction;
 
 export default function competitionReducer(
   state = defaultState,
@@ -234,10 +245,42 @@ export default function competitionReducer(
     case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
+    case COMPETITION_ADVANCE:
+      return reduce(
+        (state, competitionId) => {
+          return over(
+            lensPath(["competitions", competitionId]),
+            (c: Competition) => {
+              return over(
+                lensPath(["phases", c.phase]),
+                (phase: CompetitionPhase) => {
+                  return over(
+                    lensProp("groups"),
+                    map((group: CompetitionGroup) => {
+                      return evolve(
+                        {
+                          round: inc
+                        },
+                        group
+                      );
+                    }),
+                    phase
+                  );
+                },
+                c
+              );
+            },
+            state
+          );
+        },
+        state,
+        action.payload.competitions
+      );
+
     case GAME_MATCH_RESULTS:
       return reduce(
         (a, resultSet) => {
-          return pipe<typeof a, typeof a, typeof a>(
+          return pipe<typeof a, typeof a>(
             assocPath(
               [
                 "competitions",
@@ -250,18 +293,6 @@ export default function competitionReducer(
                 resultSet.round
               ],
               resultSet.results
-            ),
-            over(
-              lensPath([
-                "competitions",
-                resultSet.competition,
-                "phases",
-                resultSet.phase,
-                "groups",
-                resultSet.group,
-                "round"
-              ]),
-              inc
             )
           )(a);
         },

@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 import styled from "@emotion/styled";
 import { MHMNotification } from "../../ducks/notification";
 import { Dispatch } from "redux";
-import { dismissNotification } from "../../sagas/notification";
+import { dismissNotification } from "../../ducks/notification";
 
 interface Props {
   notification: MHMNotification;

@@ -203,7 +203,7 @@ const mutasarja: CompetitionService = {
         [1, 2]
       ];
 
-      const winsToAdvance = 4;
+      const winsToAdvance = 3;
 
       const phase: PlayoffsCompetitionPhase = {
         id: 3,

@@ -1,4 +1,4 @@
-import { gameFacts } from "./game";
+import { matchFacts } from "./match";
 import {
   Matchups,
   Matchup,
@@ -34,9 +34,10 @@ const mapHomeAndAway = (matchup: Matchup, group: PlayoffsCompetitionGroup) => {
       .map(pairings =>
         pairings.filter(p => p.away === teamIndex || p.home === teamIndex)
       )
-      .flat();
+      .flat()
+      .filter(g => g.result);
 
-    const facts = games.map(g => gameFacts(g, teamIndex));
+    const facts = games.map(g => matchFacts(g, teamIndex));
 
     return {
       index: teamIndex,

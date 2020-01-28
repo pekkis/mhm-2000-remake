@@ -108,6 +108,12 @@ const cup: CompetitionService = {
       }
 
       const teams = cupWinners(group);
+
+      console.log("WINNERS", teams);
+      if (teams.length !== group.teams.length / 2) {
+        throw new Error("OH NOES");
+      }
+
       const matchups = cupMatchups(teams.length);
       const phase: CupCompetitionPhase = {
         id: 1,
@@ -174,7 +180,7 @@ const cup: CompetitionService = {
       const teams = cupWinners(group);
       const matchups = cupMatchups(teams.length);
       const phase: CupCompetitionPhase = {
-        id: 2,
+        id: 3,
         name: "cup",
         type: "cup",
         teams,
@@ -185,6 +191,70 @@ const cup: CompetitionService = {
             type: "cup",
             round: 0,
             name: "4. kierros",
+            matchups,
+            teams,
+            schedule: cupScheduler(matchups),
+            stats: []
+          }
+        ]
+      };
+      return phase;
+    },
+    competitions => {
+      const competition = competitions.cup;
+
+      const group = competition.phases[3].groups[0];
+
+      if (!isCupCompetitionGroup(group)) {
+        throw new Error("Invalid competition group");
+      }
+
+      const teams = cupWinners(group);
+      const matchups = cupMatchups(teams.length);
+      const phase: CupCompetitionPhase = {
+        id: 4,
+        name: "cup",
+        type: "cup",
+        teams,
+        groups: [
+          {
+            id: 0,
+            penalties: [],
+            type: "cup",
+            round: 0,
+            name: "5. kierros",
+            matchups,
+            teams,
+            schedule: cupScheduler(matchups),
+            stats: []
+          }
+        ]
+      };
+      return phase;
+    },
+    competitions => {
+      const competition = competitions.cup;
+
+      const group = competition.phases[4].groups[0];
+
+      if (!isCupCompetitionGroup(group)) {
+        throw new Error("Invalid competition group");
+      }
+
+      const teams = cupWinners(group);
+      const matchups = cupMatchups(teams.length);
+      const phase: CupCompetitionPhase = {
+        id: 5,
+        name: "cup",
+        type: "cup",
+        teams,
+        groups: [
+          {
+            id: 0,
+            penalties: [],
+            type: "cup",
+            round: 0,
+            name: "6. kierros",
             matchups,
             teams,
             schedule: cupScheduler(matchups),

@@ -28,6 +28,15 @@ const defaultPhases: MHMTurnPhasesList = [
 
 const ehlPhases: MHMTurnPhasesList = ["action", "gameday", "event", "news"];
 
+const tournamentPhases: MHMTurnPhasesList = [
+  "action",
+  "gameday",
+  "gameday",
+  "gameday",
+  "gameday",
+  "gameday"
+];
+
 const createTurnDefinition = (
   phases: MHMTurnPhasesList,
   gamedays: CompetitionNameList = [],
@@ -66,6 +75,8 @@ const regularGameday = createTurnDefinition(
 
 const ehlGameday = createTurnDefinition(ehlPhases, ["ehl"], [], {});
 
+const ehlFinalsDay = createTurnDefinition(tournamentPhases, ["ehl"], [], {});
+
 const preSeasonTurn = createTurnDefinition(["action"]);
 
 const trainingGameday = createTurnDefinition(ehlPhases, ["training"]);
@@ -73,7 +84,11 @@ const trainingGameday = createTurnDefinition(ehlPhases, ["training"]);
 const cupGameday = createTurnDefinition(ehlPhases, ["cup"]);
 
 const freeWeekend = createTurnDefinition(["action"], [], [], {
-  title: "Vapaa"
+  title: "Vapaa viikonloppu"
+});
+
+const nationalTeamBreak = createTurnDefinition(["action"], [], [], {
+  title: "Vapaa viikonloppu"
 });
 
 const cal: MHMCalendar = [
@@ -90,7 +105,6 @@ const cal: MHMCalendar = [
     ]),
     {}
   ),
-
   ...repeat(preSeasonTurn, 6),
   ...repeat(trainingGameday, 4),
   ...repeat(regularGameday, 2),
@@ -99,40 +113,62 @@ const cal: MHMCalendar = [
   cupGameday,
   createTurnDefinition(["seed"], [], [createSeedDefinition(1, "cup")]),
   ehlGameday,
+  freeWeekend,
+  ...repeat(regularGameday, 2),
+  ehlGameday,
+  ...repeat(regularGameday, 3),
+  ehlGameday,
+  regularGameday,
+  nationalTeamBreak,
+  /*
+  createTurnDefinition(["seed"], [], [createSeedDefinition(0, "tournaments")]),
+  */
+  regularGameday,
   cupGameday,
+  regularGameday,
   cupGameday,
   createTurnDefinition(["seed"], [], [createSeedDefinition(2, "cup")]),
-  cupGameday,
-  cupGameday,
-  createTurnDefinition(["seed"], [], [createSeedDefinition(3, "cup")]),
-  cupGameday,
-  cupGameday,
-  ...repeat(regularGameday, 2),
-  assoc("phases", append("invitationsCreate", defaultPhases), regularGameday),
+  ehlGameday,
+  ...repeat(regularGameday, 3),
+  ehlGameday,
   regularGameday,
-  ehlGameday,
-  ...repeat(regularGameday, 2),
-  assoc(
-    "seed",
-    [createSeedDefinition(0, "tournaments")] as MHMCompetitionSeedDefinition[],
-    regularGameday
-  ),
-  regularGameday,
-  ehlGameday,
-  ...repeat(regularGameday, 4),
-  ehlGameday,
-  ...repeat(regularGameday, 2),
-  // Christmas break (22 games played)
-  createTurnDefinition(defaultPhases, ["tournaments"], [], {
-    title: "Joulutauko"
-  }),
-  // Back to business
+  freeWeekend,
   ...repeat(regularGameday, 2),
   ehlGameday,
   createTurnDefinition(["seed"], [], [createSeedDefinition(1, "ehl")]),
-  ...repeat(regularGameday, 10),
-  ehlGameday, // EHL finals
-  ...repeat(regularGameday, 10),
+  ...repeat(regularGameday, 4),
+  cupGameday,
+  regularGameday,
+  // Christmas break (22 games played)
+
+  createTurnDefinition(defaultPhases, [], [], {
+    title: "Joulutauko"
+  }),
+
+  nationalTeamBreak,
+  regularGameday,
+  cupGameday,
+  createTurnDefinition(["seed"], [], [createSeedDefinition(3, "cup")]),
+  ...repeat(regularGameday, 5),
+  ehlFinalsDay, // EHL FINALS
+  ...repeat(regularGameday, 2),
+  cupGameday,
+  regularGameday,
+  cupGameday,
+  createTurnDefinition(["seed"], [], [createSeedDefinition(4, "cup")]),
+  ...repeat(regularGameday, 2),
+  nationalTeamBreak,
+  ...repeat(regularGameday, 6),
+  cupGameday,
+  regularGameday,
+  cupGameday,
+  createTurnDefinition(["seed"], [], [createSeedDefinition(5, "cup")]),
+  ...repeat(regularGameday, 4),
+
+  /*
+  assoc("phases", append("invitationsCreate", defaultPhases), regularGameday),
+*/
+
   createTurnDefinition(
     ["action", "event", "seed"],
     [],
@@ -159,9 +195,10 @@ const cal: MHMCalendar = [
       title: "Finaalipläjäys"
     }
   ),
-  ...repeat(regularGameday, 7),
+  ...repeat(regularGameday, 5),
+  ...repeat(cupGameday, 2),
   createTurnDefinition(["action", "endOfSeason"], [], [], {
-    title: "Maailmanmestaruuskisat"
+    title: "Kauden loppu"
   })
 ];
 

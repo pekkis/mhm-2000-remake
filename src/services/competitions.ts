@@ -5,7 +5,11 @@ import mutasarja from "./data/competitions/mutasarja";
 import tournaments from "./data/competitions/tournaments";
 import cup from "./data/competitions/cup";
 import training from "./data/competitions/training";
-import { ForEveryCompetition, CompetitionService } from "../types/base";
+import {
+  ForEveryCompetition,
+  CompetitionService,
+  CompetitionGroup
+} from "../types/base";
 
 const competitions: ForEveryCompetition<CompetitionService> = {
   phl,
@@ -18,3 +22,8 @@ const competitions: ForEveryCompetition<CompetitionService> = {
 };
 
 export default competitions;
+
+export const isCompetitionGroupOver = (group: CompetitionGroup) => {
+  console.log(group.name, group.round, group.schedule.length);
+  return group.round === group.schedule.length;
+};

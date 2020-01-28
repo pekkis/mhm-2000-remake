@@ -189,7 +189,7 @@ const phl: CompetitionService = {
         [2, 3]
       ];
 
-      const winsToAdvance = 4;
+      const winsToAdvance = 3;
 
       const phase: PlayoffsCompetitionPhase = {
         id: 3,

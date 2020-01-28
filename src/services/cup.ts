@@ -46,11 +46,12 @@ const mapHomeAndAway = (matchup: Matchup, group: CupCompetitionGroup) => {
     const index = which === "home" ? 0 : 1;
     const teamIndex = matchup[index];
 
-    const games = take(group.round, group.schedule)
+    const games = group.schedule
       .map(pairings =>
         pairings.filter(p => p.away === teamIndex || p.home === teamIndex)
       )
-      .flat();
+      .flat()
+      .filter(g => g.result);
 
     const facts = games.map(g => matchFacts(g, teamIndex));
 

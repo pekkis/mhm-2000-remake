@@ -34,18 +34,16 @@ const GamedayResults: FunctionComponent = () => {
             <div key={competition.id}>
               {(currentPhase.groups as CompetitionGroup[]).map(
                 (group, groupIndex) => {
-                  const currentRound = group.round - 1;
-
                   return (
                     <div key={groupIndex}>
                       <h3>
-                        {competition.name}, {group.name} [{currentRound}]
+                        {competition.name}, {group.name} [{group.round}]
                       </h3>
 
                       <Results
                         teams={teams}
                         context={group}
-                        round={currentRound}
+                        round={group.round}
                         managers={managers}
                       />
 

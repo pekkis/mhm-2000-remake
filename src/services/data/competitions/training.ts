@@ -83,7 +83,7 @@ const training: CompetitionService = {
             teams: competitions.training.teams,
             penalties: [],
             stats: [],
-            schedule: [[], [], [], [], [], []]
+            schedule: [[], [], [], []]
           }
         ]
       };

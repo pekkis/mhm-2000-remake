@@ -1,16 +1,24 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
+import { HumanManager } from "../../types/manager";
+import {
+  MapOf,
+  CompetitionGroup,
+  PlayoffsCompetitionGroup
+} from "../../types/base";
+import { Team } from "../../types/team";
+import TeamName from "../team/TeamName";
 
-const Matchups = props => {
+interface Props {
+  group: PlayoffsCompetitionGroup;
+  teams: MapOf<Team>;
+  managers: HumanManager[];
+  round: number;
+}
+
+const Matchups: FunctionComponent<Props> = props => {
   const { managers, teams, group } = props;
 
-  console.log(group.toJS(), "group");
-
-  const matches = group.get("stats").map(entry => {
-    return entry.set(
-      "managerController",
-      managers.map(p => p.get("team")).includes(entry.get("id"))
-    );
-  });
+  const matches = group.stats;
 
   return (
     <table>
@@ -18,11 +26,16 @@ const Matchups = props => {
         {matches.map((m, i) => {
           return (
             <tr key={i}>
-              <td>{teams.getIn([m.getIn(["home", "id"]), "name"])}</td>
-              <td>-</td>
-              <td>{teams.getIn([m.getIn(["away", "id"]), "name"])}</td>
               <td>
-                {m.getIn(["home", "wins"])}-{m.getIn(["away", "wins"])}
+                <TeamName managers={managers} team={teams[m.home.id]} />
+              </td>
+              <td>-</td>
+              <td>
+                {" "}
+                <TeamName managers={managers} team={teams[m.away.id]} />
+              </td>
+              <td>
+                {m.home.wins}-{m.away.wins}
               </td>
             </tr>
           );

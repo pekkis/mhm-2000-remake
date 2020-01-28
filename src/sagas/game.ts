@@ -70,7 +70,7 @@ import {
   activeManager
 } from "../services/selectors";
 import events from "../data/events";
-import { nth, map, values, toPairs } from "ramda";
+import { nth, map, values, toPairs, range } from "ramda";
 import {
   MHMTurnPhase,
   MHMTurnDefinition,
@@ -177,8 +177,12 @@ export function* gameLoop() {
       yield call(prankPhase);
     }
 
+    // This is a MEGA KLUDGE :D
     if (phases.includes("gameday")) {
-      yield call(gamedayPhase);
+      const numberOfGamedayPhases = phases.filter(p => p === "gameday").length;
+      for (const gd of range(0, numberOfGamedayPhases)) {
+        yield call(gamedayPhase);
+      }
     }
 
     // TODO: maybe create calculatores phase
@@ -363,6 +367,8 @@ export function* setPhase(phase: MHMTurnPhase) {
 }
 
 export function* seedCompetition(competition: CompetitionNames, phase: number) {
+  console.log("SEEDING", competition);
+
   const competitions = yield select(state => state.competition.competitions);
 
   const seeder = competitionData[competition].seed[phase];
@@ -371,6 +377,8 @@ export function* seedCompetition(competition: CompetitionNames, phase: number) {
   }
 
   const seed: CompetitionPhase = yield call(seeder, competitions);
+
+  console.log("SEED2", competition);
 
   yield putResolve<CompetitionSeedAction>({
     type: COMPETITION_SEED,
