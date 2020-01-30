@@ -2,51 +2,24 @@ import {
   GAME_SEASON_START,
   GAME_SEASON_END,
   GAME_QUIT_TO_MAIN_MENU,
-  GAME_LOAD_STATE
+  GAME_LOAD_STATE,
+  GameQuitToMainMenuAction,
+  GameLoadStateAction,
+  GameSeasonEndAction
 } from "./game";
-import { assoc } from "ramda";
-import {
-  ManagerSeasonStats,
-  Streak,
-  ForEveryCompetition,
-  CompetitionStatistics,
-  MapOf
-} from "../types/base";
+import { assoc, over, lensProp, append, pipe, reduce, lensPath } from "ramda";
 import {
   ManagerStatistic,
   TeamStatistic,
   SeasonStatistic
 } from "../types/stats";
 import { initialTeamStats, initialSeasonStats } from "../services/team";
+import { MapOf } from "../types/base";
 
 export const STATS_UPDATE_FROM_FACTS = "STATS_UPDATE_FROM_FACTS";
 export const STATS_SET_SEASON_STAT = "STATS_SET_SEASON_STAT";
 
-export interface SeasonStats {
-  ehlChampion: number;
-  presidentsTrophy: number;
-  medalists: number[];
-  worldChampionships: number[];
-  promoted: number[];
-  relegated: number[];
-  managers: {
-    [key: string]: ManagerSeasonStats;
-  };
-}
-
-const emptySeasonStats: Partial<SeasonStats> = {
-  ehlChampion: undefined,
-  presidentsTrophy: undefined,
-  medalists: undefined,
-  worldChampionships: undefined,
-  promoted: undefined,
-  relegated: undefined,
-  managers: {}
-};
-
 export interface StatsState {
-  currentSeason: Partial<SeasonStats>;
-
   managers: MapOf<ManagerStatistic>;
 
   teams: MapOf<TeamStatistic>;
@@ -55,29 +28,48 @@ export interface StatsState {
 }
 
 const defaultState: StatsState = {
-  currentSeason: emptySeasonStats,
   managers: {},
   teams: initialTeamStats(),
   seasons: initialSeasonStats()
 };
 
-export default function statsReducer(state = defaultState, action): StatsState {
-  const { type, payload } = action;
+type StatsActions =
+  | GameQuitToMainMenuAction
+  | GameLoadStateAction
+  | GameSeasonEndAction;
 
-  switch (type) {
+export default function statsReducer(
+  state = defaultState,
+  action: StatsActions
+): StatsState {
+  switch (action.type) {
     case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
     case GAME_LOAD_STATE:
-      return payload.stats;
+      return action.payload.stats;
 
+    /*
     case GAME_SEASON_START:
       return assoc("currentSeason", emptySeasonStats, state);
+    */
 
     case GAME_SEASON_END:
-      return state.update("seasons", seasons =>
-        seasons.push(state.get("currentSeason"))
-      );
+      return pipe<StatsState, StatsState, StatsState>(
+        over(lensProp("seasons"), append(action.payload.seasonStats)),
+        state =>
+          reduce(
+            (s, ranking) => {
+              return over(
+                lensPath(["teams", ranking.id, "ranking"]),
+                append(ranking.ranking),
+                s
+              );
+            },
+            state,
+            action.payload.rankings
+          )
+      )(state);
 
     case STATS_SET_SEASON_STAT:
       return state.setIn(["currentSeason", ...payload.path], payload.value);

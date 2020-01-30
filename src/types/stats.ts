@@ -16,5 +16,16 @@ export interface TeamStatistic {
 }
 
 export interface SeasonStatistic {
-  medalists: [string, string, string];
+  medalists: string[];
+  presidentsTrophy: string;
+  cupWinner?: string;
+  ehlWinner: string;
+  relegated: {
+    phl: string[];
+    division: string[];
+  };
+  promoted: {
+    division: string[];
+    mutasarja: string[];
+  };
 }

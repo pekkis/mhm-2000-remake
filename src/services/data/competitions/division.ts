@@ -22,7 +22,7 @@ const division: CompetitionService = {
     return 0.85;
   },
 
-  relegateTo: false,
+  relegateTo: "mutasarja",
   promoteTo: "phl",
 
   gameBalance: (phase, facts, manager) => {
@@ -92,8 +92,8 @@ const division: CompetitionService = {
               "l",
               "l",
               "l",
-              "l",
-              "l"
+              "d",
+              "d"
             ],
             stats: []
           } as RoundRobinCompetitionGroup

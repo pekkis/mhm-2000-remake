@@ -89,6 +89,7 @@ import {
   COMPETITION_SEED
 } from "../ducks/competition";
 import { addNotification } from "./notification";
+import { removeTeamFromCompetition, addTeamToCompetition } from "./competition";
 
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 
@@ -310,16 +311,25 @@ export function* seasonStart() {
   console.log("HELLUREI!!!!!!");
 }
 
-export function* promote(competition, team) {
-  const promoteTo = competitionData.getIn([competition, "promoteTo"]);
+export function* promote(competition: CompetitionNames, team: string) {
+  const promoteTo = competitionData[competition].promoteTo;
+  if (!promoteTo) {
+    throw new Error("Invalid promotion");
+  }
+
   yield all([
     call(removeTeamFromCompetition, competition, team),
     call(addTeamToCompetition, promoteTo, team)
   ]);
 }
 
-export function* relegate(competition, team) {
-  const relegateTo = competitionData.getIn([competition, "relegateTo"]);
+export function* relegate(competition: CompetitionNames, team: string) {
+  console.log("RELAGDO", competition, team);
+
+  const relegateTo = competitionData[competition].relegateTo;
+  if (!relegateTo) {
+    throw new Error("Invalid relegation");
+  }
 
   yield all([
     call(removeTeamFromCompetition, competition, team),

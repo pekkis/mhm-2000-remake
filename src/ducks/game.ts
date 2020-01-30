@@ -23,6 +23,7 @@ import {
   inc,
   reduce
 } from "ramda";
+import { SeasonStatistic } from "../types/stats";
 
 export const GAME_QUIT_TO_MAIN_MENU = "GAME_QUIT_TO_MAIN_MENU";
 export const GAME_LOAD_STATE = "GAME_LOAD_STATE";
@@ -159,6 +160,10 @@ export interface GameAdvanceRequestAction {
 
 export interface GameSeasonEndAction {
   type: typeof GAME_SEASON_END;
+  payload: {
+    seasonStats: SeasonStatistic;
+    rankings: { id: string; ranking: number }[];
+  };
 }
 
 export interface GameSetPhaseAction {
@@ -256,26 +261,8 @@ const gameReducer: Reducer<typeof defaultState> = (
         state
       );
 
-    case "GAME_GAMEDAY_COMPLETE":
-      return state.updateIn(
-        [
-          "competitions",
-          payload.competition,
-          "phases",
-          payload.phase,
-          "groups",
-          payload.group
-        ],
-        group => {
-          return group.update("round", r => r + 1);
-        }
-      );
-
     case "GAME_SET_FLAG":
       return state.setIn(["flags", payload.flag], payload.value);
-
-    case "GAME_WORLD_CHAMPIONSHIP_RESULTS":
-      return state.set("worldChampionshipResults", payload);
 
     default:
       return state;

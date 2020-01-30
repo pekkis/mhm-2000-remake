@@ -94,7 +94,8 @@ export const initialTeamStats = () =>
 export const initialSeasonStats = (): SeasonStatistic[] => {
   const teamStats = toPairs(initialTeamStats());
 
-  return range(0, 3).map(season => {
+  /*
+  const seasonRankings = range(0, 3).map(season => {
     const seasonRankings: [string, number][] = map(
       ([id, ts]) => [id, ts.ranking[season]],
       teamStats
@@ -107,9 +108,48 @@ export const initialSeasonStats = (): SeasonStatistic[] => {
     const sorted = sorter(filtered);
 
     const teamIds = map(nth(0), sorted);
-
-    return {
-      medalists: teamIds as [string, string, string]
-    };
   });
+  */
+
+  return [
+    {
+      medalists: [nameToId("jokerit"), nameToId("tps"), nameToId("hpk")],
+      presidentsTrophy: nameToId("jokerit"),
+      ehlWinner: nameToId("jokerit"),
+      relegated: {
+        phl: [],
+        division: []
+      },
+      promoted: {
+        division: [],
+        mutasarja: []
+      }
+    },
+    {
+      medalists: [nameToId("hifk"), nameToId("ilves"), nameToId("jokerit")],
+      presidentsTrophy: nameToId("tps"),
+      ehlWinner: nameToId("feldkirch"),
+      relegated: {
+        phl: [],
+        division: []
+      },
+      promoted: {
+        division: [],
+        mutasarja: []
+      }
+    },
+    {
+      medalists: [nameToId("tps"), nameToId("hifk"), nameToId("hpk")],
+      presidentsTrophy: nameToId("tps"),
+      ehlWinner: nameToId("dynamo"),
+      relegated: {
+        phl: [nameToId("kalpa")],
+        division: []
+      },
+      promoted: {
+        division: [nameToId("pelicans")],
+        mutasarja: []
+      }
+    }
+  ];
 };

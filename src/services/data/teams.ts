@@ -61,7 +61,7 @@ const teamList: TeamData[] = [
   { name: "Gepardit", city: "Klaukkala", level: 22, country: "FI" },
   { name: "KooKoo", city: "Kouvola", level: 24, country: "FI" },
   { name: "HardCore", city: "Loimaa", level: 22, country: "FI" },
-  { name: "Turmio", city: "Kolari", level: 13, country: "FI" },
+  { name: "Turmio", city: "Kolari", level: 35, country: "FI" },
   { name: "KalPa", city: "Kuopio", level: 21, country: "FI" },
 
   { name: "Enkelit", city: "Helvetti", level: 12, country: "FI" },
@@ -174,13 +174,17 @@ export const teams = indexBy(
       strength: {
         g: -1,
         d: -1,
-        a: -1
+        a: -1,
+        pk: -1,
+        pp: -1
       },
       morale: 0,
       isHumanControlled: false,
       effects: [],
       opponentEffects: [],
-      strategy: "puurto"
+      strategy: "puurto",
+      readiness: 0,
+      intensity: 0
     })
   )(teamList)
 );

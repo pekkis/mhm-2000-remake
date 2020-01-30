@@ -31,8 +31,9 @@
       "last 2 firefox versions"
     ],
     "production": [
-      ">0.5%",
-      "not dead",
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 1 safari versions",
       "not ie <= 11",
       "not edge <= 78",
       "not op_mini all",

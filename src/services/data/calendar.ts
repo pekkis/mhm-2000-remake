@@ -188,7 +188,7 @@ const cal: MHMCalendar = [
   ),
   ...repeat(regularGameday, 5),
   createTurnDefinition(
-    ["action", "event", "seed", "gala"],
+    ["action", "event", "seed"],
     [],
     map(createSeedDefinition(3), ["phl", "division", "mutasarja"]),
     {

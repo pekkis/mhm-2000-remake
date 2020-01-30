@@ -8,7 +8,8 @@ import {
   MatchResultsSet,
   CompetitionNames,
   ForEveryCompetition,
-  CompetitionGroup
+  CompetitionGroup,
+  ScheduleGame
 } from "../../types/base";
 import { currentCalendarEntry, allTeamsMap } from "../../services/selectors";
 import competitionData from "../../services/competitions";
@@ -41,13 +42,14 @@ function* playRoundOfMatches(
 
   const playMatchFunc = competitionTypes[group.type].playMatch;
 
-  const results: any[] = [];
+  const results: ScheduleGame[] = [];
 
   for (const [pairingId, pairing] of group.schedule[roundId].entries()) {
     console.log("P", pairingId, pairing);
 
     if (!playMatchFunc(group, roundId, pairingId)) {
-      results.push(undefined);
+      // This is a bit kludgy but my previous optimizations dictate this.
+      results.push(pairing);
       continue;
     }
 
@@ -64,7 +66,7 @@ function* playRoundOfMatches(
 
     const matchOutput = playMatch(matchInput);
 
-    const result = {
+    const result: ScheduleGame = {
       ...pairing,
       ...matchOutput
     };

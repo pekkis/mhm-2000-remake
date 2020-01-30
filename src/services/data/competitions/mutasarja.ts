@@ -135,7 +135,9 @@ const mutasarja: CompetitionService = {
             name: "quarterfinals",
             matchups,
             winsToAdvance,
-            schedule: playoffScheduler(matchups, winsToAdvance)
+            schedule: playoffScheduler(matchups, winsToAdvance),
+            penalties: [],
+            stats: []
           }
         ]
       };
@@ -143,7 +145,7 @@ const mutasarja: CompetitionService = {
     competitions => {
       const teams = [
         ...takeLast(
-          1,
+          2,
           map(
             prop("id"),
             (competitions.division.phases[0] as RoundRobinCompetitionPhase)
