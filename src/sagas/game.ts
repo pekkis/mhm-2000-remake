@@ -46,6 +46,7 @@ import seedPhase from "./phase/seed";
 import endOfSeasonPhase from "./phase/end-of-season";
 import startOfSeasonPhase from "./phase/start-of-season";
 import galaPhase from "./phase/gala";
+import cleanupPhase from "./phase/cleanup";
 import gameStateService from "../services/game-state";
 
 import calculationsPhase from "./phase/calculations";
@@ -70,15 +71,17 @@ import {
   activeManager
 } from "../services/selectors";
 import events from "../data/events";
-import { nth, map, values, toPairs, range } from "ramda";
+import { nth, map, values, toPairs, range, sortWith, ascend } from "ramda";
 import {
   MHMTurnPhase,
   MHMTurnDefinition,
   Turn,
   CompetitionNames,
-  CompetitionPhase
+  CompetitionPhase,
+  MHMTurnPhasesList,
+  ForEvery
 } from "../types/base";
-import { MHMState } from "../ducks";
+import { MHMState, prank } from "../ducks";
 import { Team, TeamStrength } from "../types/team";
 import { teamLevelToStrength } from "../services/team";
 import { TeamSetStrengthsAction, TEAM_SET_STRENGTHS } from "../ducks/team";
@@ -149,6 +152,40 @@ export function* beforeGame(action) {
   return;
 }
 
+interface PhaseDescriptor {
+  weight: number;
+  saga?: () => Generator;
+}
+
+const phaseDescriptors: ForEvery<MHMTurnPhase, PhaseDescriptor> = {
+  action: { weight: 1000, saga: actionPhase },
+  prank: { weight: 2000, saga: prankPhase },
+  gameday: { weight: 3000, saga: gamedayPhase },
+  results: { weight: 3100 },
+  calculations: { weight: 4000, saga: calculationsPhase },
+  eventCreation: { weight: 5000, saga: eventCreationPhase },
+  event: { weight: 6000, saga: eventPhase },
+  news: { weight: 7000, saga: newsPhase },
+  invitationsCreate: { weight: 8000, saga: invitationsCreatePhase },
+  invitationsProcess: { weight: 9000, saga: invitationsProcessPhase },
+  startOfSeason: { weight: 10000, saga: startOfSeasonPhase },
+  seed: { weight: 11000, saga: seedPhase },
+  gala: { weight: 12000, saga: galaPhase },
+
+  endOfSeason: { weight: 13000, saga: endOfSeasonPhase },
+  selectStrategy: { weight: 14000 },
+  championshipBetting: { weight: 14000 },
+  worldChampionships: { weight: 20000 },
+
+  cleanup: {
+    weight: 1000000,
+    saga: cleanupPhase
+  }
+};
+
+const phaseSorter = (pd: ForEvery<MHMTurnPhase, PhaseDescriptor>) =>
+  sortWith([ascend((phase: MHMTurnPhase) => pd[phase].weight)]);
+
 export function* gameLoop() {
   // what is this?
   yield takeEvery("GAME_GAME_BEGIN", beforeGame);
@@ -157,78 +194,15 @@ export function* gameLoop() {
   do {
     const calendarEntry: MHMTurnDefinition = yield select(currentCalendarEntry);
 
-    // const turn = yield select((state: MHMState) => state.game.turn);
-    // const calendar = yield select(state => state.game.get("calendar"));
-    // const roundData = nth(turn.get("round"), calendar);
-    // if (!roundData) {
-    //   throw new Error("Invalid turn data");
-    // }
+    const phases = phaseSorter(phaseDescriptors)(calendarEntry.phases);
 
-    const phases = calendarEntry.phases;
-
-    // console.log(roundData.toJS(), "round data");
-
-    // don't do any calculations for "hidden" turns
-    if (phases.includes("action")) {
-      yield call(actionPhase);
-    }
-
-    // don't do any calculations for "hidden" turns
-    if (phases.includes("prank")) {
-      yield call(prankPhase);
-    }
-
-    // This is a MEGA KLUDGE :D
-    if (phases.includes("gameday")) {
-      const numberOfGamedayPhases = phases.filter(p => p === "gameday").length;
-      for (const gd of range(0, numberOfGamedayPhases)) {
-        yield call(gamedayPhase);
+    for (const phase of phases) {
+      console.log("RUNNING PHASE", phase);
+      const phaseDescriptor = phaseDescriptors[phase];
+      if (phaseDescriptor.saga) {
+        yield phaseDescriptor.saga();
       }
     }
-
-    // TODO: maybe create calculatores phase
-    if (phases.includes("calculations")) {
-      yield call(calculationsPhase);
-    }
-
-    if (phases.includes("eventCreation")) {
-      yield call(eventCreationPhase);
-    }
-
-    if (phases.includes("event")) {
-      yield call(eventPhase);
-    }
-
-    if (phases.includes("news")) {
-      yield call(newsPhase);
-    }
-
-    if (phases.includes("invitationsCreate")) {
-      yield call(invitationsCreatePhase);
-    }
-
-    if (phases.includes("invitationsProcess")) {
-      yield call(invitationsProcessPhase);
-    }
-
-    if (phases.includes("startOfSeason")) {
-      yield call(startOfSeasonPhase);
-    }
-
-    if (phases.includes("seed")) {
-      yield call(seedPhase);
-    }
-
-    if (phases.includes("gala")) {
-      yield call(galaPhase);
-    }
-
-    if (phases.includes("endOfSeason")) {
-      yield call(endOfSeasonPhase);
-    }
-
-    // Todo: this should be in a turn cleanup phase.
-    yield putResolve<GameCleanupAction>({ type: GAME_CLEAR_EXPIRED });
 
     yield call(nextTurn);
   } while (true);
@@ -249,47 +223,13 @@ function* competitionStart(competitionId: string) {
   });
 }
 
-export function* groupEnd(competition, phase, group) {
-  const groupEnder = competitionData.getIn([competition, "groupEnd"]);
-
-  if (groupEnder) {
-    yield call(groupEnder, phase, group);
-  }
-
-  yield put({
-    type: "GAME_GROUP_END",
-    payload: {
-      competition,
-      phase,
-      group
-    }
-  });
-}
-
 export function* seasonStart() {
-  const turn: Turn = yield select((state: MHMState) => state.game.turn);
-
   const teams: Team[] = yield select(allTeams);
-
-  console.log("teams", teams);
 
   const strengths: [string, TeamStrength][] = map(
     team => [team.id, teamLevelToStrength(team.level)],
     teams
   );
-
-  console.log("strenghtetore", strengths);
-
-  // Re-strength European teams.
-
-  /*
-  const reStrengths = teams.slice(24).map(t => {
-    return {
-      id: t.get("id"),
-      strength: teamData.get(t.get("id")).get("strength")()
-    };
-  });
-  */
 
   yield put<TeamSetStrengthsAction>({
     type: TEAM_SET_STRENGTHS,
@@ -297,18 +237,13 @@ export function* seasonStart() {
   });
 
   // Start all competitions.
-  for (const [key, competitionObj] of toPairs(competitionData)) {
-    console.log("HELLU", key);
+  for (const [key] of toPairs(competitionData)) {
     yield competitionStart(key);
   }
-
-  console.log("HELLUREI!!!!!!");
 
   yield putResolve<GameSeasonStartAction>({
     type: GAME_SEASON_START
   });
-
-  console.log("HELLUREI!!!!!!");
 }
 
 export function* promote(competition: CompetitionNames, team: string) {
@@ -324,8 +259,6 @@ export function* promote(competition: CompetitionNames, team: string) {
 }
 
 export function* relegate(competition: CompetitionNames, team: string) {
-  console.log("RELAGDO", competition, team);
-
   const relegateTo = competitionData[competition].relegateTo;
   if (!relegateTo) {
     throw new Error("Invalid relegation");
@@ -337,48 +270,20 @@ export function* relegate(competition: CompetitionNames, team: string) {
   ]);
 }
 
-export function* setFlag(flag, value) {
-  yield put({
-    type: "GAME_SET_FLAG",
-    payload: {
-      flag,
-      value
-    }
-  });
-}
-
-export function* incrementServiceBasePrice(service, amount) {
-  const currentAmount = yield select(state =>
-    state.game.getIn(["serviceBasePrices", service])
-  );
-
-  yield put({
-    type: "GAME_SET_SERVICE_BASE_PRICE",
-    payload: {
-      service,
-      amount: currentAmount + amount
-    }
-  });
-}
-
 function* nextTurn() {
   // TODO: Refactor this to be better (pre and post effect, let the reducers deduce their own logic), maybe merge this logic with cleanup?
 
-  yield put({ type: "NEWS_ANNOUNCEMENTS_CLEAR" });
-  yield put({ type: "EVENT_CLEAR_EVENTS" });
   yield put<GameNextTurnAction>({ type: GAME_NEXT_TURN });
 }
 
-export function* setPhase(phase: MHMTurnPhase) {
+export function* setPhase(phase: MHMTurnPhase, subphase?: string) {
   yield put<GameSetPhaseAction>({
     type: GAME_SET_PHASE,
-    payload: phase
+    payload: { phase, subphase }
   });
 }
 
 export function* seedCompetition(competition: CompetitionNames, phase: number) {
-  console.log("SEEDING", competition);
-
   const competitions = yield select(state => state.competition.competitions);
 
   const seeder = competitionData[competition].seed[phase];
@@ -387,8 +292,6 @@ export function* seedCompetition(competition: CompetitionNames, phase: number) {
   }
 
   const seed: CompetitionPhase = yield call(seeder, competitions);
-
-  console.log("SEED2", competition);
 
   yield putResolve<CompetitionSeedAction>({
     type: COMPETITION_SEED,
@@ -448,4 +351,47 @@ export function* mainMenu() {
     yield take(GAME_QUIT_TO_MAIN_MENU);
     yield cancel(task);
   } while (true);
+}
+
+// Unrefactorade
+
+export function* groupEnd(competition, phase, group) {
+  const groupEnder = competitionData.getIn([competition, "groupEnd"]);
+
+  if (groupEnder) {
+    yield call(groupEnder, phase, group);
+  }
+
+  yield put({
+    type: "GAME_GROUP_END",
+    payload: {
+      competition,
+      phase,
+      group
+    }
+  });
+}
+
+export function* setFlag(flag, value) {
+  yield put({
+    type: "GAME_SET_FLAG",
+    payload: {
+      flag,
+      value
+    }
+  });
+}
+
+export function* incrementServiceBasePrice(service, amount) {
+  const currentAmount = yield select(state =>
+    state.game.getIn(["serviceBasePrices", service])
+  );
+
+  yield put({
+    type: "GAME_SET_SERVICE_BASE_PRICE",
+    payload: {
+      service,
+      amount: currentAmount + amount
+    }
+  });
 }

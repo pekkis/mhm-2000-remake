@@ -1,7 +1,13 @@
 import styled from "@emotion/styled";
 import { css } from "@emotion/core";
 
-const Button = styled.button`
+interface Props {
+  block?: boolean;
+  terse?: boolean;
+  secondary?: boolean;
+}
+
+const Button = styled("button")<Props>`
   border: 1px solid rgb(99, 99, 99);
   border-radius: 5px;
   padding: 1em 1.5em;

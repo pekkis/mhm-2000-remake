@@ -168,7 +168,7 @@ export interface GameSeasonEndAction {
 
 export interface GameSetPhaseAction {
   type: typeof GAME_SET_PHASE;
-  payload: MHMTurnPhase;
+  payload: { phase: MHMTurnPhase; subphase?: string };
 }
 
 export interface GameNextTurnAction {
@@ -189,9 +189,12 @@ export interface GameDecrementDurationsActions {
   type: typeof GAME_DECREMENT_DURATIONS;
 }
 
-export const setPhase = (phase: MHMTurnPhase): GameSetPhaseAction => ({
+export const setPhase = (
+  phase: MHMTurnPhase,
+  subphase?: string
+): GameSetPhaseAction => ({
   type: GAME_SET_PHASE,
-  payload: phase
+  payload: { phase, subphase }
 });
 
 type GameActions =
@@ -249,7 +252,7 @@ const gameReducer: Reducer<typeof defaultState> = (
       );
 
     case GAME_SET_PHASE:
-      return assocPath(["turn", "phase"], action.payload, state);
+      return over(lensProp("turn"), mergeLeft(action.payload), state);
 
     case GAME_NEXT_TURN:
       return evolve(

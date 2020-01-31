@@ -282,7 +282,7 @@ export default function* endOfSeasonPhase() {
     )
   ]);
 
-  const ranking = uniq([
+  const ranking = [
     ...medalists.map(m => m.id),
     nth(1, phlLosers)?.id,
     ...eliminated((phl.phases[1] as PlayoffsCompetitionPhase).groups[0]).map(
@@ -306,22 +306,35 @@ export default function* endOfSeasonPhase() {
       10,
       (division.phases[0] as RoundRobinCompetitionPhase).groups[0].stats
     ).map(t => t.id),
-    ...differenceWith(cmp, divisionLosers, mutasarjaVictors).map(t => t.id),
-    ...differenceWith(cmp, mutasarjaVictors, divisionLosers).map(t => t.id),
-    ...eliminated((mutasarja.phases[3] as PlayoffsCompetitionPhase).groups[0]),
-    ...eliminated((mutasarja.phases[2] as PlayoffsCompetitionPhase).groups[0]),
-    ...eliminated((mutasarja.phases[1] as PlayoffsCompetitionPhase).groups[0]),
+    ...victors((mutasarja.phases[3] as PlayoffsCompetitionPhase).groups[0]).map(
+      t => t.id
+    ),
+    ...eliminated(
+      (mutasarja.phases[3] as PlayoffsCompetitionPhase).groups[0]
+    ).map(t => t.id),
+    ...eliminated(
+      (mutasarja.phases[2] as PlayoffsCompetitionPhase).groups[0]
+    ).map(t => t.id),
+    ...eliminated(
+      (mutasarja.phases[1] as PlayoffsCompetitionPhase).groups[0]
+    ).map(t => t.id),
     ...worstOfTheWorst.map(t => t.id)
-  ]);
+  ];
 
-  if (ranking.length !== 48) {
-    throw new Error("Ranking error");
+  const uniqs = uniq(ranking);
+
+  if (uniqs.length !== ranking.length) {
+    throw new Error("YÄK");
   }
 
   const rankings = ranking.map((id, index) => ({ id, ranking: index + 1 }));
 
   console.log("DA RANKING", ranking);
   console.log("RANKAT RANKINGIT", rankings);
+
+  if (ranking.length !== 48) {
+    throw new Error("Ranking error");
+  }
 
   // TODO FIX TYPING
   yield all([

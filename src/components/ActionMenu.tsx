@@ -36,7 +36,10 @@ const ActionMenu: FunctionComponent = () => {
           {team.morale <= CRISIS_MORALE_MAX && (
             <Calendar when={c => c.crisisMeeting}>
               <li>
-                <Link onClick={() => closeMenu()} to="/kriisipalaveri">
+                <Link
+                  onClick={() => dispatch(closeMenu())}
+                  to="/kriisipalaveri"
+                >
                   Kriisipalaveri
                 </Link>
               </li>
@@ -44,39 +47,45 @@ const ActionMenu: FunctionComponent = () => {
           )}
           <Calendar when={c => c.transferMarket}>
             <li>
-              <Link onClick={() => closeMenu()} to="/pelaajamarkkinat">
+              <Link
+                onClick={() => dispatch(closeMenu())}
+                to="/pelaajamarkkinat"
+              >
                 Pelaajamarkkinat
               </Link>
             </li>
           </Calendar>
           <li>
-            <Link onClick={() => closeMenu()} to="/sarjataulukot">
+            <Link onClick={() => dispatch(closeMenu())} to="/sarjataulukot">
               Sarjataulukot
             </Link>
           </li>
 
           <li>
-            <Link onClick={() => closeMenu()} to="/areena">
+            <Link onClick={() => dispatch(closeMenu())} to="/areena">
               Areena
             </Link>
           </li>
 
           <li>
-            <Link onClick={() => closeMenu()} to="/erikoistoimenpiteet">
+            <Link
+              onClick={() => dispatch(closeMenu())}
+              to="/erikoistoimenpiteet"
+            >
               Erikoistoimenpiteet
             </Link>
           </li>
 
           <Calendar when={c => c.pranks}>
             <li>
-              <Link onClick={() => closeMenu()} to="/jaynat">
+              <Link onClick={() => dispatch(closeMenu())} to="/jaynat">
                 Jäynät
               </Link>
             </li>
           </Calendar>
 
           <li>
-            <Link onClick={() => closeMenu()} to="/tilastot">
+            <Link onClick={() => dispatch(closeMenu())} to="/tilastot">
               Tilastot
             </Link>
           </li>
@@ -89,14 +98,14 @@ const ActionMenu: FunctionComponent = () => {
             }}
           >
             <li>
-              <Link onClick={() => closeMenu()} to="/veikkaus">
+              <Link onClick={() => dispatch(closeMenu())} to="/veikkaus">
                 Veikkaus
               </Link>
             </li>
           </Calendar>
 
           <li>
-            <Link onClick={() => closeMenu()} to="/debug">
+            <Link onClick={() => dispatch(closeMenu())} to="/debug">
               Devausmenukka
             </Link>
           </li>
@@ -108,7 +117,7 @@ const ActionMenu: FunctionComponent = () => {
         type="button"
         onClick={() => {
           dispatch(saveGame());
-          closeMenu();
+          dispatch(closeMenu());
         }}
       >
         Tallenna
@@ -119,7 +128,7 @@ const ActionMenu: FunctionComponent = () => {
         type="button"
         onClick={() => {
           dispatch(quitToMainMenu());
-          closeMenu();
+          dispatch(closeMenu());
         }}
       >
         Lopeta!

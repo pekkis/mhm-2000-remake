@@ -20,11 +20,20 @@ import {
 import { MHMState } from "../ducks";
 import { Team } from "../types/team";
 import { isHumanManager, HumanManager } from "../types/manager";
+import { SeasonStatistic } from "../types/stats";
+
+export const statsForSeason = (seasonId: number) => (
+  state: MHMState
+): SeasonStatistic => {
+  return state.stats.seasons[seasonId];
+};
 
 export const allCompetitions = (state: MHMState) =>
   state.competition.competitions;
 
 export const advanceEnabled = (state: MHMState) => state.ui.advanceEnabled;
+
+export const allManagersMap = (state: MHMState) => state.manager.managers;
 
 export const allTeams = (state: MHMState) => values(state.team.teams);
 

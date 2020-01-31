@@ -21,10 +21,11 @@ import {
 import { map, range, head, drop, prop, sortBy } from "ramda";
 import { sortLeagueTable } from "../../league";
 import { MHMState } from "../../../ducks";
-import { domesticTeams, foreignTeams } from "../../selectors";
+import { domesticTeams, foreignTeams, statsForSeason } from "../../selectors";
 import { Team } from "../../../types/team";
 import random from "../../random";
 import { setCompetitionTeams } from "../../../sagas/competition";
+import { SeasonStatistic } from "../../../types/stats";
 
 const awards = List.of(
   Map({
@@ -153,6 +154,18 @@ const teamsFromCountrySet = (
   return random.sample(filtered, n);
 };
 
+const thirdParticipant = (stats: SeasonStatistic) => {
+  if (!stats.cupWinner) {
+    return stats.medalists[2];
+  }
+
+  if ([stats.medalists[0], stats.medalists[1]].includes(stats.cupWinner)) {
+    return stats.medalists[2];
+  }
+
+  return stats.cupWinner;
+};
+
 const ehl: CompetitionService = {
   relegateTo: false,
   promoteTo: false,
@@ -172,9 +185,15 @@ const ehl: CompetitionService = {
   start: function*() {
     const turn: Turn = yield select((state: MHMState) => state.game.turn);
 
-    const domesticParticipants: [string, string, string] = yield select(
-      (state: MHMState) => state.stats.seasons[turn.season - 1].medalists
+    const stats: SeasonStatistic = yield select(
+      statsForSeason(turn.season - 1)
     );
+
+    const domesticParticipants = [
+      stats.medalists[0],
+      stats.medalists[1],
+      thirdParticipant(stats)
+    ];
 
     const foreign: Team[] = yield select(foreignTeams);
 

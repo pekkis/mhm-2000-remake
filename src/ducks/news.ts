@@ -34,18 +34,6 @@ export interface NewsAnnouncementAddAction {
 
 export interface NewsAnnouncementsClearAction {
   type: typeof NEWS_ANNOUNCEMENTS_CLEAR;
-  payload: {
-    manager: string;
-    announcement: Announcement;
-  };
-}
-
-export interface NewsAnnouncementsClearAction {
-  type: typeof NEWS_ANNOUNCEMENTS_CLEAR;
-  payload: {
-    manager: string;
-    announcement: Announcement;
-  };
 }
 
 export interface NewsNewsPieceAddAction {

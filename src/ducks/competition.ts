@@ -40,7 +40,7 @@ export interface CompetitionState {
 const defaultState: CompetitionState = {
   competitions: {
     training: {
-      weight: 1000,
+      weight: 2000,
       id: "training",
       abbr: "har",
       phase: -1,
@@ -49,7 +49,7 @@ const defaultState: CompetitionState = {
       phases: []
     },
     cup: {
-      weight: 1000,
+      weight: 500,
       id: "cup",
       abbr: "Cup",
       phase: -1,
@@ -58,7 +58,7 @@ const defaultState: CompetitionState = {
       phases: []
     },
     phl: {
-      weight: 500,
+      weight: 100,
       id: "phl",
       abbr: "phl",
       phase: -1,
@@ -81,7 +81,7 @@ const defaultState: CompetitionState = {
     },
     division: {
       abbr: "div",
-      weight: 1000,
+      weight: 200,
       id: "division",
       phase: -1,
       name: "Divisioona",
@@ -103,7 +103,7 @@ const defaultState: CompetitionState = {
     },
     mutasarja: {
       abbr: "mut",
-      weight: 2000,
+      weight: 300,
       id: "mutasarja",
       phase: -1,
       name: "Mutasarja",
@@ -136,7 +136,7 @@ const defaultState: CompetitionState = {
       phases: []
     },
     tournaments: {
-      weight: 2000,
+      weight: 5000,
       id: "tournaments",
       phase: -1,
       name: "Joulutauon turnaukset",
@@ -145,7 +145,7 @@ const defaultState: CompetitionState = {
       teams: []
     },
     ehl: {
-      weight: 2000,
+      weight: 500,
       id: "ehl",
       phase: -1,
       name: "EHL",

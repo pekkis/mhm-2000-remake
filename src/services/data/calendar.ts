@@ -23,10 +23,17 @@ const defaultPhases: MHMTurnPhasesList = [
   "eventCreation",
   "event",
   "news",
-  "seed"
+  "seed",
+  "cleanup"
 ];
 
-const ehlPhases: MHMTurnPhasesList = ["action", "gameday", "event", "news"];
+const ehlPhases: MHMTurnPhasesList = [
+  "action",
+  "gameday",
+  "event",
+  "news",
+  "cleanup"
+];
 
 const tournamentPhases: MHMTurnPhasesList = [
   "action",
@@ -34,7 +41,8 @@ const tournamentPhases: MHMTurnPhasesList = [
   "gameday",
   "gameday",
   "gameday",
-  "gameday"
+  "gameday",
+  "cleanup"
 ];
 
 const createTurnDefinition = (
@@ -77,23 +85,23 @@ const ehlGameday = createTurnDefinition(ehlPhases, ["ehl"], [], {});
 
 const ehlFinalsDay = createTurnDefinition(tournamentPhases, ["ehl"], [], {});
 
-const preSeasonTurn = createTurnDefinition(["action"]);
+const preSeasonTurn = createTurnDefinition(["action", "cleanup"]);
 
 const trainingGameday = createTurnDefinition(ehlPhases, ["training"]);
 
 const cupGameday = createTurnDefinition(ehlPhases, ["cup"]);
 
-const freeWeekend = createTurnDefinition(["action"], [], [], {
+const freeWeekend = createTurnDefinition(["action", "cleanup"], [], [], {
   title: "Vapaa viikonloppu"
 });
 
-const nationalTeamBreak = createTurnDefinition(["action"], [], [], {
+const nationalTeamBreak = createTurnDefinition(["action", "cleanup"], [], [], {
   title: "Vapaa viikonloppu"
 });
 
 const cal: MHMCalendar = [
   createTurnDefinition(
-    ["startOfSeason", "seed"],
+    ["startOfSeason", "seed", "cleanup"],
     [],
     map(createSeedDefinition(0), [
       "phl",
@@ -170,7 +178,7 @@ const cal: MHMCalendar = [
 */
 
   createTurnDefinition(
-    ["action", "event", "seed"],
+    ["action", "event", "seed", "cleanup"],
     [],
     map(createSeedDefinition(1), ["phl", "division", "mutasarja"]),
     {
@@ -179,7 +187,7 @@ const cal: MHMCalendar = [
   ),
   ...repeat(regularGameday, 5),
   createTurnDefinition(
-    ["action", "event", "seed"],
+    ["action", "event", "seed", "cleanup"],
     [],
     map(createSeedDefinition(2), ["phl", "division", "mutasarja"]),
     {
@@ -188,7 +196,7 @@ const cal: MHMCalendar = [
   ),
   ...repeat(regularGameday, 5),
   createTurnDefinition(
-    ["action", "event", "seed"],
+    ["action", "event", "seed", "cleanup"],
     [],
     map(createSeedDefinition(3), ["phl", "division", "mutasarja"]),
     {
@@ -197,7 +205,7 @@ const cal: MHMCalendar = [
   ),
   ...repeat(regularGameday, 5),
   ...repeat(cupGameday, 2),
-  createTurnDefinition(["action", "endOfSeason"], [], [], {
+  createTurnDefinition(["action", "endOfSeason", "cleanup"], [], [], {
     title: "Kauden loppu"
   })
 ];

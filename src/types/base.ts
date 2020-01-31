@@ -31,7 +31,8 @@ export type MHMTurnPhase =
   | "worldChampionships"
   | "seed"
   | "selectStrategy"
-  | "championshipBetting";
+  | "championshipBetting"
+  | "cleanup";
 
 export type MHMTurnPhasesList = MHMTurnPhase[];
 
@@ -305,6 +306,7 @@ export interface Turn {
   season: number;
   round: number;
   phase: MHMTurnPhase | undefined;
+  subphase?: string;
 }
 
 export interface Flags {

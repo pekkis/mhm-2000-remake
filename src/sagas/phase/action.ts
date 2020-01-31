@@ -10,7 +10,7 @@ import {
   select,
   takeLeading
 } from "redux-saga/effects";
-import { gameSave } from "../game";
+import { gameSave, setPhase } from "../game";
 import {
   watchTransferMarket,
   crisisMeeting,
@@ -46,10 +46,7 @@ export default function* actionPhase() {
 
   yield call(setActiveManager, manager.id);
 
-  yield put<GameSetPhaseAction>({
-    type: GAME_SET_PHASE,
-    payload: "action"
-  });
+  yield call(setPhase, "action");
 
   const tasks = yield all([
     takeLeading("GAME_SAVE_REQUEST", gameSave)

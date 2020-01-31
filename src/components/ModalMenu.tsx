@@ -46,7 +46,7 @@ const MenuContents = styled.div`
   }
 `;
 
-const ModalMenu = props => {
+const ModalMenu = () => {
   const dispatch = useDispatch();
   return (
     <MenuContainer
