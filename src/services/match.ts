@@ -158,8 +158,6 @@ export const playMatch = (input: MatchInput) => {
     );
   }, effectiveTeams);
 
-  console.log(skills, "SKILLS");
-
   const result = range(1, 16).reduce(matchRound(skills), {
     home: 0,
     away: 0

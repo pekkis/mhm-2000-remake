@@ -16,7 +16,3 @@ Range(0, range)
     const cint = cinteger(0, max);
     clist = clist.update(cint, l => l + 1);
   });
-
-console.log(list.toJS());
-
-console.log(clist.toJS());

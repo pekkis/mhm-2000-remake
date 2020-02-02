@@ -34,13 +34,9 @@ export function* calculatePhaseStats(
   competition: CompetitionNames,
   phase: number
 ) {
-  console.log("PHASE PARAMETRO", competition, phase);
-
   const p: CompetitionPhase = yield select(
     competitionPhase(competition, phase)
   );
-
-  console.log("PHASE", p);
 
   yield all(
     (p.groups as CompetitionGroup[]).map((_, groupId) =>

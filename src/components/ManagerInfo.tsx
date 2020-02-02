@@ -55,7 +55,9 @@ const ManagerInfo: FunctionComponent<Props> = ({ details = false }) => {
 
   return (
     <Box p={1} bg="bar">
-      <ManagerName>{manager.name}</ManagerName>
+      <ManagerName>
+        {manager.name}, {team.name}
+      </ManagerName>
 
       {details && (
         <Details>

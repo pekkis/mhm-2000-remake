@@ -5,14 +5,14 @@ import { indexBy, prop, pipe, toPairs, map, fromPairs } from "ramda";
 import { AllCountries } from "../../types/country";
 import { nameToId } from "../team";
 
-interface TeamData {
+export interface RawTeamData {
   name: string;
   city: string;
   level: number;
   country: AllCountries;
 }
 
-const teamList: TeamData[] = [
+const teamList: RawTeamData[] = [
   { name: "TPS", city: "Turku", level: 34, country: "FI" },
   { name: "HIFK", city: "Helsinki", level: 31, country: "FI" },
   { name: "HPK", city: "Hämeenlinna", level: 33, country: "FI" },
@@ -165,31 +165,7 @@ const teamList: TeamData[] = [
   { name: "Herning", city: "Herning", level: 24, country: "DK" }
 ];
 
-export const teams = indexBy(
-  prop("id"),
-  mapIndexed(
-    (team: TeamData): Team => ({
-      ...team,
-      id: uuid(),
-      strength: {
-        g: -1,
-        d: -1,
-        a: -1,
-        pk: -1,
-        pp: -1
-      },
-      morale: 0,
-      isHumanControlled: false,
-      effects: [],
-      opponentEffects: [],
-      strategy: "puurto",
-      readiness: 0,
-      intensity: 0
-    })
-  )(teamList)
-);
-
-export default teams;
+export default teamList;
 
 export interface StatsData {
   ranking: [number, number, number];

@@ -1,7 +1,8 @@
 import {
   ForEveryCountry,
   NameList,
-  ForEveryPlayableCountry
+  ForEveryPlayableCountry,
+  Country
 } from "../../types/country";
 
 import fiNames from "./country/players-FI";
@@ -24,13 +25,6 @@ import eeNames from "./country/players-SK";
 import noNames from "./country/players-NO";
 import plNames from "./country/players-PL";
 
-export interface CountryData {
-  iso: string;
-  name: string;
-  special: boolean;
-  strength: () => number;
-}
-
 export const playerNames: ForEveryPlayableCountry<NameList> = {
   FI: fiNames,
   SE: seNames,
@@ -51,7 +45,7 @@ export const playerNames: ForEveryPlayableCountry<NameList> = {
   NO: noNames
 };
 
-const countryData: ForEveryCountry<CountryData> = {
+const countryData: ForEveryCountry<Country> = {
   FI: {
     special: false,
     iso: "FI",

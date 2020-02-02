@@ -44,8 +44,10 @@ export type ForEveryPlayableCountry<T> = ForEvery<PlayableCountries, T>;
 export interface Country {
   iso: string;
   name: string;
-  strength: number;
+  special: boolean;
+  strength: () => number;
 }
+
 /*
 const countries = [
   "FI",

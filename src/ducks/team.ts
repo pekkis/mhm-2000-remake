@@ -1,8 +1,8 @@
 import { Map, List } from "immutable";
 
-import teamData from "../services/data/teams";
+import { teamData } from "../services/team";
 
-import { MapOf } from "../types/base";
+import { MapOf, SeasonStrategy, SeasonStrategies } from "../types/base";
 import { Team, TeamStrength, TeamEffect } from "../types/team";
 import {
   dissocPath,
@@ -38,6 +38,7 @@ export const TEAM_ADD_MANAGER = "TEAM_ADD_MANAGER";
 export const TEAM_REMOVE_MANAGER = "TEAM_REMOVE_MANAGER";
 export const TEAM_SET_STRENGTHS = "TEAM_SET_STRENGTHS";
 export const TEAM_INCREMENT_READINESS = "TEAM_INCREMENT_READINESS";
+export const TEAM_SET_STRATEGY = "TEAM_SET_STRATEGY";
 
 const defaultState: TeamState = {
   teams: teamData
@@ -55,12 +56,21 @@ export interface TeamAddManagerAction {
   payload: {
     team: string;
     manager: string;
+    isHuman: boolean;
   };
 }
 
 export interface TeamSetStrengthsAction {
   type: typeof TEAM_SET_STRENGTHS;
   payload: [string, TeamStrength][];
+}
+
+export interface TeamSetStrategyAction {
+  type: typeof TEAM_SET_STRATEGY;
+  payload: {
+    team: string;
+    strategy: SeasonStrategies;
+  };
 }
 
 export interface TeamIncrementReadinessAction {
@@ -80,7 +90,8 @@ type TeamActions =
   | TeamSetStrengthsAction
   | GameCleanupAction
   | TeamIncrementReadinessAction
-  | GameDecrementDurationsActions;
+  | GameDecrementDurationsActions
+  | TeamSetStrategyAction;
 
 const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
   switch (action.type) {
@@ -95,7 +106,6 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
             effects: [],
             opponentEffects: [],
             morale: 0,
-            strategy: "puurto",
             readiness: 0
           })
         ),
@@ -106,9 +116,12 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
       return dissocPath(["teams", action.payload.team, "manager"], state);
 
     case TEAM_ADD_MANAGER:
-      return assocPath(
-        ["teams", action.payload.team, "manager"],
-        action.payload.manager,
+      return over(
+        lensPath(["teams", action.payload.team]),
+        mergeLeft({
+          manager: action.payload.manager,
+          isHumanControlled: action.payload.isHuman
+        }),
         state
       );
 
@@ -167,6 +180,13 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
         state
       );
 
+    case TEAM_SET_STRATEGY:
+      return assocPath(
+        ["teams", action.payload.team, "strategy"],
+        action.payload.strategy,
+        state
+      );
+
     case "TEAM_INCREMENT_MORALE":
       return state.updateIn(["teams", payload.team, "morale"], m => {
         return Math.min(payload.max, Math.max(payload.min, m + payload.amount));
@@ -177,9 +197,6 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
         ["teams", payload.team, "morale"],
         Math.min(payload.max, Math.max(payload.min, payload.morale))
       );
-
-    case "TEAM_SET_STRATEGY":
-      return state.setIn(["teams", payload.team, "strategy"], payload.strategy);
 
     case "TEAM_SET_READINESS":
       return state.setIn(

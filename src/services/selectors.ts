@@ -18,9 +18,20 @@ import {
   Competition
 } from "../types/base";
 import { MHMState } from "../ducks";
-import { Team } from "../types/team";
-import { isHumanManager, HumanManager } from "../types/manager";
+import {
+  Team,
+  ComputerControlledTeam,
+  HumanControlledTeam
+} from "../types/team";
+import {
+  isHumanManager,
+  HumanManager,
+  Manager,
+  ComputerManager
+} from "../types/manager";
 import { SeasonStatistic } from "../types/stats";
+import { isComputerControlledTeam, isHumanControlledTeam } from "./team";
+import { isComputerManager } from "./manager";
 
 export const statsForSeason = (seasonId: number) => (
   state: MHMState
@@ -37,12 +48,59 @@ export const allManagersMap = (state: MHMState) => state.manager.managers;
 
 export const allTeams = (state: MHMState) => values(state.team.teams);
 
+export const computerManagerByName = (name: string) => (
+  state: MHMState
+): ComputerManager => {
+  const manager = computerManagers(state).find(m => m.name === name);
+  if (!manager) {
+    throw new Error(`Could not find manager by name ${name}`);
+  }
+
+  return manager;
+};
+
+export const teamByName = (name: string) => (state: MHMState): Team => {
+  const team = allTeams(state).find(t => t.name === name);
+  if (!team) {
+    throw new Error(`Could not find team by name ${name}`);
+  }
+
+  return team;
+};
+
+export const allTeamsInCompetitions = (competitionIds: CompetitionNames[]) => (
+  state: MHMState
+): Team[] => {
+  const teams = competitionIds
+    .map(cid => state.competition.competitions[cid].teams)
+    .flat()
+    .map(tid => state.team.teams[tid]);
+
+  return teams;
+};
+
+export const allComputerControlledTeams = (
+  state: MHMState
+): ComputerControlledTeam[] => {
+  return values(state.team.teams).filter(isComputerControlledTeam);
+};
+
+export const allHumanControlledTeams = (
+  state: MHMState
+): HumanControlledTeam[] => {
+  return values(state.team.teams).filter(isHumanControlledTeam);
+};
+
 export const allTeamsMap = (state: MHMState) => state.team.teams;
 
 export const currentTurn = (state: MHMState) => state.game.turn;
 
 export const humanManagers = (state: MHMState): HumanManager[] => {
   return values(state.manager.managers).filter(isHumanManager);
+};
+
+export const computerManagers = (state: MHMState): ComputerManager[] => {
+  return values(state.manager.managers).filter(isComputerManager);
 };
 
 export const activeManager = (state: MHMState): HumanManager => {
@@ -69,8 +127,6 @@ export const competitionPhase = (
   competition: CompetitionNames,
   phase: number
 ) => (state: MHMState): CompetitionPhase => {
-  console.log(state.competition.competitions[competition], "poppelipii");
-
   return state.competition.competitions[competition].phases[phase];
 };
 
@@ -123,6 +179,32 @@ export const managersTeam = (manager: string) => (
   state: MHMState
 ): string | undefined => state.manager.managers[manager].team;
 
+export const managersTeamId = managersTeam;
+
+export const requireManagersTeam = (manager: string) => (
+  state: MHMState
+): string => {
+  const team = state.manager.managers[manager].team;
+  if (!team) {
+    throw new Error(`Manager ${manager} has no team`);
+  }
+
+  return team;
+};
+
+export const requireManagersTeamObj = (manager: string) => (
+  state: MHMState
+): Team => {
+  const teamId = requireManagersTeam(manager)(state);
+
+  const team = state.team.teams[teamId];
+  if (!team) {
+    throw new Error("Invalid managers team");
+  }
+
+  return team;
+};
+
 export const interestingCompetitions = (manager: string) => (
   state: MHMState
 ): CompetitionNames[] => {
@@ -169,8 +251,13 @@ export const teamsManager = team => state =>
     state.game.getIn(["teams", team, "manager"])
   ]);
 
-export const managerObject = manager => state =>
-  state.manager.getIn(["managers", manager]);
+export const managerObject = (id: string) => (state: MHMState): Manager => {
+  const manager = state.manager.managers[id];
+  if (!manager) {
+    throw new Error(`No manager found with id ${id}`);
+  }
+  return manager;
+};
 
 export const managersMainCompetition = manager => state => {
   const competesInPHL = managerCompetesIn(manager, "phl")(state);
@@ -305,10 +392,6 @@ export const managerFlag = (manager, flag) => state =>
 export const managersBalance = manager => state =>
   state.manager.getIn(["managers", manager, "balance"]);
 
-export const managersTeamId = manager => state => {
-  return managersTeam(manager)(state).get("id");
-};
-
 export const managersDifficulty = manager => state =>
   state.manager.getIn(["managers", manager, "difficulty"]);
 
@@ -323,8 +406,6 @@ export const randomRankedTeam = (
   const ret = state.game
     .getIn(["competitions", competitionId, "phases", phaseId, "groups"])
     .flatMap(group => {
-      console.log(group, "g");
-
       return group
         .get("stats")
         .map(s => s.get("id"))

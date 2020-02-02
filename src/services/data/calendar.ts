@@ -1,4 +1,13 @@
-import { pipe, append, curry, map, repeat, flatten, assoc } from "ramda";
+import {
+  pipe,
+  append,
+  curry,
+  map,
+  repeat,
+  flatten,
+  assoc,
+  mergeLeft
+} from "ramda";
 import { mapIndexed } from "ramda-adjunct";
 import {
   MHMTurnPhasesList,
@@ -64,6 +73,12 @@ const createTurnDefinition = (
   };
 };
 
+const augment = (data: Partial<MHMTurnDefinition>) => (
+  turn: MHMTurnDefinition
+): MHMTurnDefinition => {
+  return mergeLeft(data, turn);
+};
+
 const createSeedDefinition = curry(
   (
     phase: number,
@@ -113,7 +128,14 @@ const cal: MHMCalendar = [
     ]),
     {}
   ),
-  ...repeat(preSeasonTurn, 6),
+  augment({
+    ai: { actions: ["selectStrategy"] }
+  })(preSeasonTurn),
+  preSeasonTurn,
+  preSeasonTurn,
+  preSeasonTurn,
+  preSeasonTurn,
+  preSeasonTurn,
   ...repeat(trainingGameday, 4),
   ...repeat(regularGameday, 2),
   cupGameday,

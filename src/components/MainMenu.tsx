@@ -35,10 +35,10 @@ const MainMenu: FunctionComponent = () => {
   return (
     <HeaderedPage>
       <Header menu forward={<Forward />} />
-      {/*<ManagerInfo details />*/}
+      <ManagerInfo details />
 
       <Box p={1}>
-        {/*<Current />*/}
+        <Current />
 
         <Situation
           manager={manager}

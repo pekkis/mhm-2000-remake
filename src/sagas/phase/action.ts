@@ -16,7 +16,8 @@ import {
   crisisMeeting,
   improveArena,
   toggleService,
-  setActiveManager
+  setActiveManager,
+  managerSelectStrategy
 } from "../manager";
 import { orderPrank } from "../prank";
 import { acceptInvitation } from "../invitation";
@@ -24,8 +25,13 @@ import { acceptInvitation } from "../invitation";
 import { INVITATION_ACCEPT_REQUEST } from "../../ducks/invitation";
 import { BETTING_BET_REQUEST } from "../../ducks/betting";
 import { bet } from "../betting";
-import { humanManagers } from "../../services/selectors";
-import { HumanManager } from "../../types/manager";
+import {
+  humanManagers,
+  allComputerControlledTeams,
+  allHumanControlledTeams,
+  allManagersMap
+} from "../../services/selectors";
+import { HumanManager, ComputerManager, Manager } from "../../types/manager";
 import {
   GameSetPhaseAction,
   GAME_SET_PHASE,
@@ -33,22 +39,32 @@ import {
   GAME_ADVANCE_REQUEST,
   GameAdvanceRequestAction
 } from "../../ducks/game";
+import { ComputerControlledTeam, HumanControlledTeam } from "../../types/team";
+import { MapOf } from "../../types/base";
+import { isComputerControlledTeam } from "../../services/team";
+import aiActionPhase from "../ai/phase/action";
+import {
+  MANAGER_SELECT_STRATEGY,
+  ManagerSelectStrategyAction
+} from "../../ducks/manager";
 
 export default function* actionPhase() {
   const managers: HumanManager[] = yield select(humanManagers);
-
-  console.log(managers, "manahers");
 
   const manager = nth(0, managers);
   if (!manager) {
     throw new Error("There is no manager");
   }
-
   yield call(setActiveManager, manager.id);
-
   yield call(setPhase, "action");
 
   const tasks = yield all([
+    takeLeading<ManagerSelectStrategyAction>(MANAGER_SELECT_STRATEGY, function*(
+      a
+    ) {
+      yield call(managerSelectStrategy, a.payload.manager, a.payload.strategy);
+    }),
+
     takeLeading("GAME_SAVE_REQUEST", gameSave)
     /*
     takeEvery("MANAGER_TOGGLE_SERVICE", toggleService)
@@ -71,5 +87,7 @@ export default function* actionPhase() {
   ]);
 
   yield take<GameAdvanceRequestAction>(GAME_ADVANCE_REQUEST);
+  yield call(aiActionPhase);
+
   yield cancel(tasks);
 }

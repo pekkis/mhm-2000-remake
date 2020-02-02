@@ -7,8 +7,6 @@ store.dispatch({
   type: "GAME_START_REQUEST"
 });
 
-// console.log(store);
-
 const state = store.getState();
 
 const home = state.game.getIn(["teams", 1]);
@@ -24,8 +22,4 @@ const game = Map({
   base: () => 20
 });
 
-// console.log(game.toJS());
-
 const result = gameService.simulate(game);
-
-// console.log("result", result.toJS());

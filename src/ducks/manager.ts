@@ -6,7 +6,7 @@ import {
   GameLoadStateAction,
   GameSeasonStartAction
 } from "./game";
-import { MapOf } from "../types/base";
+import { MapOf, SeasonStrategies } from "../types/base";
 import { HumanManager, Manager } from "../types/manager";
 import {
   append,
@@ -27,20 +27,26 @@ import {
   TEAM_REMOVE_MANAGER,
   TEAM_ADD_MANAGER
 } from "./team";
-import { managers } from "../services/data/manager-data";
+import { managers } from "../services/manager";
 
 export const MANAGER_NEXT = "MANAGER_NEXT";
 export const MANAGER_ADD = "MANAGER_ADD";
 export const MANAGER_SET_ACTIVE = "MANAGER_SET_ACTIVE";
+export const MANAGER_SELECT_STRATEGY = "MANAGER_SELECT_STRATEGY";
 
 export interface ManagerAddManagerAction {
   type: typeof MANAGER_ADD;
-  payload: HumanManager;
+  payload: Manager;
 }
 
 export interface ManagerSetActiveAction {
   type: typeof MANAGER_SET_ACTIVE;
   payload: HumanManager;
+}
+
+export interface ManagerSelectStrategyAction {
+  type: typeof MANAGER_SELECT_STRATEGY;
+  payload: { manager: string; strategy: SeasonStrategies };
 }
 
 export interface ManagerState {
@@ -80,9 +86,9 @@ export const buyPlayer = (manager, playerType) => {
   };
 };
 
-export const selectStrategy = (manager, strategy) => {
+export const selectStrategy = (manager: string, strategy: SeasonStrategies) => {
   return {
-    type: "MANAGER_SELECT_STRATEGY",
+    type: MANAGER_SELECT_STRATEGY,
     payload: {
       manager,
       strategy

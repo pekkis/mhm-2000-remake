@@ -2,13 +2,7 @@ import broilerplate, {
   pathsFromRootPath,
   addEntrypoint,
   build,
-  setContext,
-  addPlugin,
-  createPluginDefinition,
-  BroilerplateContext,
-  RuleDefinition,
-  addRule,
-  whenProduction
+  setContext
 } from "@dr-kobros/webpack-broilerplate";
 
 import babel from "@dr-kobros/webpack-broilerplate/dist/features/babel";
@@ -21,11 +15,11 @@ import copyFiles from "@dr-kobros/webpack-broilerplate/dist/features/copyFiles";
 import saneDefaultOptions from "@dr-kobros/webpack-broilerplate/dist/features/saneDefaultOptions";
 import emotion from "@dr-kobros/webpack-broilerplate-emotion";
 
-import { pipe } from "ramda";
+import { pipe, over, lensPath } from "ramda";
 import path from "path";
 import util from "util";
 
-import MiniCssExtractPlugin from "mini-css-extract-plugin";
+// import MiniCssExtractPlugin from "mini-css-extract-plugin";
 
 import pkg from "./package.json";
 
@@ -35,6 +29,7 @@ const bp = broilerplate(mode, pathsFromRootPath(__dirname), {
   debug: true
 });
 
+/*
 const externalCSS = () => (bp: BroilerplateContext): BroilerplateContext => {
   const Plugin = new MiniCssExtractPlugin();
 
@@ -63,6 +58,7 @@ const externalCSS = () => (bp: BroilerplateContext): BroilerplateContext => {
     addRule(ruleset)
   )(bp);
 };
+*/
 
 /*
 const coreJS = () =>
@@ -81,11 +77,19 @@ const bp2 = pipe(
   babel({ browsers: pkg.browserslist[mode] }),
   mjs(),
   // coreJS(),
-  externalCSS(),
+  // externalCSS(),
   emotion()
 )(bp);
 const config = build(bp2);
 
-console.log(util.inspect(config, false, 999));
+const config2 = over(
+  lensPath(["module", "rules", 1, "exclude", 0]),
+  () => {
+    return /node_modules\/(?!react-country-flags)/;
+  },
+  config
+);
 
-export default config;
+console.log(util.inspect(config2, false, 999));
+
+export default config2;

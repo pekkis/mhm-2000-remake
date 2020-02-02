@@ -31,7 +31,8 @@ import {
   fork,
   take,
   cancel,
-  race
+  race,
+  delay
 } from "redux-saga/effects";
 
 import actionPhase from "./phase/action";
@@ -93,6 +94,8 @@ import {
 } from "../ducks/competition";
 import { addNotification } from "./notification";
 import { removeTeamFromCompetition, addTeamToCompetition } from "./competition";
+import { initializeManagers } from "./game-start/game-start";
+import { UISetLoadingAction, UI_SET_LOADING } from "../ducks/ui";
 
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 
@@ -306,8 +309,17 @@ export function* seedCompetition(competition: CompetitionNames, phase: number) {
 export function* gameStart() {
   const action: GameAdvanceAction = yield take(GAME_ADVANCE_REQUEST);
 
+  yield putResolve<UISetLoadingAction>({
+    type: UI_SET_LOADING,
+    payload: true
+  });
+
   // TODO: multiple managers... very soon, actually!
   yield call(addManager, action.payload);
+
+  yield call(initializeManagers);
+
+  yield delay(500);
 
   yield putResolve({
     type: GAME_START

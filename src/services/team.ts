@@ -1,4 +1,11 @@
-import teamData, { rawTeamStats, StatsData, StatsDatas } from "./data/teams";
+import uuid from "uuid";
+import slug from "slug";
+import teamList, {
+  rawTeamStats,
+  StatsData,
+  StatsDatas,
+  RawTeamData
+} from "./data/teams";
 import {
   values,
   find,
@@ -12,16 +19,76 @@ import {
   reverse,
   range,
   filter,
-  nth
+  nth,
+  indexBy,
+  mapObjIndexed
 } from "ramda";
-import { Team, TeamStrength } from "../types/team";
+import { mapIndexed } from "ramda-adjunct";
+import {
+  Team,
+  TeamStrength,
+  HumanControlledTeam,
+  ComputerControlledTeam
+} from "../types/team";
 import levels from "./data/team-levels";
 import { TeamStatistic, Streak, SeasonStatistic } from "../types/stats";
 import TeamStats from "../components/stats/ManagerStats";
 
-const isTeam = (team: Team | undefined): team is Team => {
+export const isTeam = (team: Team | undefined): team is Team => {
   return team !== undefined;
 };
+
+export const isHumanControlledTeam = (
+  team: Team
+): team is HumanControlledTeam => {
+  return team.isHumanControlled;
+};
+
+export const isComputerControlledTeam = (
+  team: Team
+): team is ComputerControlledTeam => {
+  return !team.isHumanControlled;
+};
+
+const createId = (team: RawTeamData) => {
+  return (
+    slug(team.name, { lower: true }) +
+    "-" +
+    uuid()
+      .split("-")
+      .shift()
+  );
+};
+
+export const teamData = indexBy(
+  prop("id"),
+  mapIndexed(
+    (team: RawTeamData): Team => ({
+      ...team,
+      id: createId(team),
+      strength: {
+        g: -1,
+        d: -1,
+        a: -1,
+        pk: -1,
+        pp: -1
+      },
+      morale: 0,
+      isHumanControlled: false,
+      effects: [],
+      opponentEffects: [],
+      readiness: 0,
+      intensity: 0,
+      organization: {
+        benefits: 1,
+        care: 1,
+        coaching: 1,
+        goalieCoaching: 1,
+        juniorAcademy: 1
+      }
+    })
+  )(teamList)
+);
 
 export const nameToId = (name: string) => {
   const found = find(

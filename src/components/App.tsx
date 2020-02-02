@@ -4,6 +4,7 @@ import Game from "./Game";
 import * as Sentry from "@sentry/browser";
 import { useSelector } from "react-redux";
 import { MHMState } from "../ducks";
+import LoadingScreen from "./LoadingScreen";
 
 /*
     Sentry.withScope(scope => {
@@ -16,6 +17,11 @@ import { MHMState } from "../ducks";
 
 const App: FunctionComponent = () => {
   const started = useSelector<MHMState, boolean>(state => state.game.started);
+  const isLoading = useSelector((state: MHMState) => state.ui.isLoading);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   switch (true) {
     case !started:

@@ -30,8 +30,6 @@ const BettingForm: FunctionComponent<Props> = props => {
         amount: "10000"
       }}
       onSubmit={values => {
-        console.log(values);
-
         const coupon = [
           values["0"] as BettingCouponRow,
           values["1"] as BettingCouponRow,

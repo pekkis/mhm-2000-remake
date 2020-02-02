@@ -17,7 +17,8 @@ import {
   managersArena,
   managerHasService,
   teamsMainCompetition,
-  managersCurrentTeam
+  managersCurrentTeam,
+  managerObject
 } from "../services/selectors";
 import { incrementMorale, incrementReadiness, incurPenalty } from "./team";
 import { addNotification } from "./notification";
@@ -25,43 +26,44 @@ import crisis from "../data/crisis";
 import difficultyLevels from "../services/difficulty-levels";
 import arenas from "../data/arenas";
 import { incrementStrength, decrementStrength } from "./team";
+import { createId } from "../services/manager";
 import uuid from "uuid";
 import { Map } from "immutable";
 import r from "../services/random";
 import { addAnnouncement } from "./news";
 import { amount as a } from "../services/format";
 import { ManagerInput } from "../components/start-menu/ManagerForm";
-import { Manager, HumanManager } from "../types/manager";
-import { DifficultyLevels } from "../types/base";
+import {
+  Manager,
+  HumanManager,
+  ComputerManager,
+  isHumanManager
+} from "../types/manager";
+import { DifficultyLevels, SeasonStrategies } from "../types/base";
 import { ManagerAddManagerAction, MANAGER_ADD } from "../ducks/manager";
 import { Team } from "../types/team";
 import {
   TeamRemoveManagerAction,
   TeamAddManagerAction,
   TEAM_REMOVE_MANAGER,
-  TEAM_ADD_MANAGER
+  TEAM_ADD_MANAGER,
+  TeamSetStrategyAction,
+  TEAM_SET_STRATEGY
 } from "../ducks/team";
 
 export function* addManager(details: ManagerInput) {
   // const mainCompetition = yield select(teamsMainCompetition(details.team));
 
   const manager: HumanManager = {
-    id: uuid(),
+    id: createId(details),
     name: details.name,
     difficultyLevel: parseInt(details.difficulty, 10) as DifficultyLevels,
     pranksExecuted: 0,
     balance: 0,
     isHuman: true,
     team: details.team,
-    country: "FI",
-    abilities: {
-      strategy: 0,
-      specialTeams: 0,
-      negotiation: 0,
-      cunning: 0,
-      charisma: 0,
-      luck: 0
-    }
+    country: details.country,
+    abilities: details.abilities
   };
 
   yield putResolve<ManagerAddManagerAction>({
@@ -69,7 +71,7 @@ export function* addManager(details: ManagerInput) {
     payload: manager
   });
 
-  yield call(hireManager, manager.id, details.team);
+  yield call(hireManager, manager, details.team);
 }
 
 export function* setActiveManager(managerId) {
@@ -79,11 +81,31 @@ export function* setActiveManager(managerId) {
   });
 }
 
-export function* hireManager(manager: string, team: string) {
-  console.log("hire manager", manager, team);
+const assertTeam = (manager: Manager): string => {
+  if (!manager.team) {
+    throw new Error("Manager doesn't manage a team");
+  }
+  return manager.team;
+};
 
+export function* managerSelectStrategy(
+  managerId: string,
+  strategy: SeasonStrategies
+) {
+  const manager = yield select(managerObject(managerId));
+  const team = assertTeam(manager);
+  yield put<TeamSetStrategyAction>({
+    type: TEAM_SET_STRATEGY,
+    payload: {
+      team,
+      strategy
+    }
+  });
+}
+
+export function* hireManager(manager: Manager, team: string) {
   const managersTeam: string | undefined = yield select(
-    managersCurrentTeam(manager)
+    managersCurrentTeam(manager.id)
   );
 
   if (managersTeam) {
@@ -99,7 +121,8 @@ export function* hireManager(manager: string, team: string) {
     type: TEAM_ADD_MANAGER,
     payload: {
       team,
-      manager
+      manager: manager.id,
+      isHuman: isHumanManager(manager)
     }
   });
 }

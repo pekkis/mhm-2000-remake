@@ -4,7 +4,7 @@ import MainMenu from "./MainMenu";
 import TransferMarket from "./TransferMarket";
 import LeagueTables from "./LeagueTables";
 import DeveloperMenu from "./DeveloperMenu";
-import SelectStrategy from "./SelectStrategy";
+import StrategyMenu from "./StrategyMenu";
 import Events from "./Events";
 import News from "./News";
 import Gameday from "./Gameday";
@@ -18,6 +18,7 @@ import ModalMenu from "./ModalMenu";
 import ChampionshipBetting from "./ChampionshipBetting";
 import Betting from "./Betting";
 import EndOfSeason from "./EndOfSeason";
+import LoadingScreen from "./LoadingScreen";
 import WorldChampionships from "./WorldChampionships";
 import Stats from "./Stats";
 import Invitations from "./Invitations";
@@ -34,9 +35,6 @@ const Phase: FunctionComponent<Props> = props => {
   const { turn } = props;
 
   switch (true) {
-    case turn.phase === "selectStrategy":
-      return <SelectStrategy />;
-
     case turn.phase === "championshipBetting":
       return <ChampionshipBetting />;
 
@@ -65,6 +63,7 @@ const Phase: FunctionComponent<Props> = props => {
       return (
         <Switch>
           <Route exact path="/" component={MainMenu} />
+          <Route exact path="/strategia" component={StrategyMenu} />
           <Route exact path="/sarjataulukot" component={LeagueTables} />
           <Route exact path="/pelaajamarkkinat" component={TransferMarket} />
           <Route exact path="/kriisipalaveri" component={CrisisActions} />
@@ -79,7 +78,6 @@ const Phase: FunctionComponent<Props> = props => {
       );
 
     default:
-      console.log("turn", turn);
       return <span>laddare...</span>;
   }
 };

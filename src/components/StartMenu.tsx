@@ -8,7 +8,11 @@ import title from "../assets/title.png";
 import { useSelector, useDispatch } from "react-redux";
 import { MHMState } from "../ducks";
 import { startGame, loadGame, advance } from "../ducks/game";
-import { playableCompetitions } from "../services/selectors";
+import {
+  playableCompetitions,
+  allTeams,
+  allTeamsMap
+} from "../services/selectors";
 import { Team } from "../types/team";
 
 const Menu = styled.div``;
@@ -39,12 +43,12 @@ const StartMenu: FunctionComponent = () => {
   { startGame, loadGame }
   */
 
-  const teams = useSelector<MHMState, { [key: string]: Team }>(
-    state => state.team.teams
-  );
+  const teams = useSelector(allTeamsMap);
   const competitions = useSelector(playableCompetitions);
   const starting = useSelector((state: MHMState) => state.game.starting);
   const dispatch = useDispatch();
+
+  const teamStats = useSelector((state: MHMState) => state.stats.teams);
 
   return (
     <main
@@ -83,7 +87,7 @@ const StartMenu: FunctionComponent = () => {
               <Centerer>
                 <ButtonRow>
                   <Button
-                    tabindex="0"
+                    tabIndex={0}
                     onClick={() => {
                       dispatch(startGame());
                     }}
@@ -91,7 +95,7 @@ const StartMenu: FunctionComponent = () => {
                     Uusi peli
                   </Button>
                   <Button
-                    tabindex="0"
+                    tabIndex={0}
                     onClick={() => {
                       dispatch(loadGame());
                     }}
@@ -123,6 +127,7 @@ const StartMenu: FunctionComponent = () => {
           {starting && (
             <Box p={1}>
               <ManagerForm
+                stats={teamStats}
                 teams={teams}
                 competitions={competitions}
                 dispatch={dispatch}
@@ -135,4 +140,4 @@ const StartMenu: FunctionComponent = () => {
   );
 };
 
-export default StartMenu;
+export default React.memo(StartMenu);

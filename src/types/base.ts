@@ -41,8 +41,13 @@ export interface MHMCompetitionSeedDefinition {
   phase: number;
 }
 
+export interface AiTurnInfo {
+  actions: string[];
+}
+
 export interface MHMTurnDefinition {
   round: number;
+  ai?: AiTurnInfo;
   phases: MHMTurnPhasesList;
   gamedays: CompetitionNameList;
   pranks: boolean;
@@ -430,6 +435,7 @@ export type MapOf<T> = {
 export type SeasonStrategies = "simonov" | "kaikkipeliin" | "puurto";
 
 export interface SeasonStrategy {
+  weight: number;
   id: string;
   name: string;
   description: string;

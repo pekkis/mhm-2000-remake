@@ -29,7 +29,7 @@ const DeveloperMenu = () => {
 
         {competitions.map(c => {
           return (
-            <div>
+            <div key={c.id}>
               <h3>{c.name}</h3>
 
               <table>

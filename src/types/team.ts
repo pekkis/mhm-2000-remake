@@ -15,21 +15,39 @@ export interface TeamSpecialOps {
   travel: 0 | 1 | 2 | 3;
 }
 
+export interface TeamOrganization {
+  coaching: number;
+  goalieCoaching: number;
+  juniorAcademy: number;
+  care: number;
+  benefits: number;
+}
+
 export interface Team {
   id: string;
   name: string;
   city: string;
   level: number;
   country: AllCountries;
-  morale: number;
-  manager?: string;
-  strength: TeamStrength;
   isHumanControlled: boolean;
-  strategy: SeasonStrategies;
+  intensity: 0 | 1 | 2;
+  morale: number;
   readiness: number;
+  strength: TeamStrength;
   effects: TeamEffect[];
   opponentEffects: TeamEffect[];
-  intensity: 0 | 1 | 2;
+  manager?: string;
+  strategy?: SeasonStrategies;
+  organization: TeamOrganization;
+}
+
+export interface HumanControlledTeam extends Team {
+  isHumanControlled: true;
+}
+
+export interface ComputerControlledTeam extends Team {
+  isHumanControlled: false;
+  sponsorship?: Sponsorship;
 }
 
 export interface TeamStrength {
@@ -39,3 +57,5 @@ export interface TeamStrength {
   pp: number;
   pk: number;
 }
+
+export interface Sponsorship {}

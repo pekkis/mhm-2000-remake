@@ -1,11 +1,4 @@
-import { map, trim, indexBy, prop } from "ramda";
-import { Manager, ComputerManager } from "../../types/manager";
-import { mapIndexed } from "ramda-adjunct";
-import uuid from "uuid";
-import { countryFromLegacyCountry } from "../country";
-import { MapOf } from "../../types/base";
-
-type ManagerData = [
+export type RawManagerData = [
   string,
   number,
   number,
@@ -13,97 +6,65 @@ type ManagerData = [
   number,
   number,
   number,
-  number
+  number,
+  string
 ];
 
-const managerData: ManagerData[] = [
-  ["Scotty Booman       ", 10, -2, -2, 2, 2, -1, 1],
-  ["Ptr Srszrscen       ", 6, 1, -2, 0, -1, 3, -1],
-  ["Karl Gustaf Bormann ", 3, 0, 1, -1, 3, -2, -1],
-  ["Fjatseslav Vandals  ", 8, -1, -1, 0, 0, 3, -1],
-  ["Seter Ptastny       ", 12, -1, 2, -2, -1, 1, 1],
-  ["Wurst Kaltheim      ", 16, 0, 0, 0, 1, 0, -1],
-  ["Heinrich Heydrich   ", 3, -1, -1, 1, 1, -1, 1],
-  ["Lennart Järvi       ", 7, 2, 2, -2, -1, 0, -1],
-  ["Eriko Nondo         ", 13, -1, -1, -1, 1, 1, 1],
-  ["Dave Queen          ", 9, 2, 2, -2, -2, 2, -2],
-  ["Xavier Rated        ", 20, -2, -2, -1, -1, 3, 3],
-  ["Juri Dorkaeff       ", 15, -1, 0, 0, 3, -1, -1],
-  ["Tex Genderblender   ", 10, 2, -1, 1, 0, -2, 0],
-  ["Blavio Friatore     ", 4, 0, 0, -3, 1, 1, 1],
-  ["Clawsa Sykora       ", 6, 0, 0, 1, -1, 0, 0],
-  ["Reijo Mustikka      ", 1, 0, 0, 0, 0, 0, 0],
-  ["Wech Lalesa         ", 17, 1, 0, 0, 0, 0, -1],
-  ["Per von Bachman     ", 1, -3, -3, -3, 3, 3, 3],
-  ["Nykan Hågren        ", 2, 2, 2, -2, 0, -1, -1],
-  ["Curt Lindman        ", 2, -1, 2, -1, 2, -1, -1],
-  ["Sven Stenvall       ", 2, 0, -1, 0, 1, 0, 0],
-  ["Kauno O. Pirr       ", 1, -1, -1, -1, -1, 2, 2],
-  ["Fent Korsberg       ", 2, 2, 0, 0, -3, 1, 0],
-  ["Marcó Harcimo       ", 1, 0, 0, 3, -2, -3, 2],
-  ["Kari P.A. Sietilä   ", 1, 3, 3, 0, 2, 2, -3],
-  ["Ara Hannuvirta      ", 1, 1, 1, 1, 1, 1, -3],
-  ["SuPo Alhonen        ", 1, 0, 3, -2, -1, 0, 0],
-  ["Juri Simonov Jr.    ", 5, 2, 2, 0, 0, -1, -3],
-  ["Kannu Happanen      ", 1, 0, -2, -2, 2, 2, 0],
-  ["Aimo SA Rummanen    ", 1, 0, 2, 0, -2, 0, 0],
-  ["Hannes De Ansas     ", 1, 1, 1, 0, 0, -3, 1],
-  ["Marty Saariganges   ", 1, 2, -1, 0, 3, -3, -1],
-  ["Juri Simonov        ", 5, 3, 2, 2, 3, 3, -3],
-  ["Carlos Numminen     ", 1, 1, 0, 1, -1, 1, -2],
-  ["Micho Magelä        ", 7, 1, -1, -1, 1, 0, 0],
-  ["Jannu Hortikka      ", 1, 2, 2, 0, 2, -3, -3],
-  ["Franco M. Berg      ", 2, -1, -1, 1, -1, 3, -1],
-  ["Tinjami Uhmanen     ", 1, 2, 1, -3, -2, 3, -1],
-  ["Kai L. Sinisalko    ", 1, -2, -2, 1, 1, 1, 1],
-  ["Tilhelm Well        ", 11, -1, 2, -1, -1, 2, -1],
-  ["Hari Järkäle        ", 1, -2, 0, 2, -1, 1, 0],
-  ["Amok R. Jekäläinen  ", 1, 1, 1, -1, -1, -1, 1],
-  ["Limo Tahtinen       ", 1, 3, -3, 0, 1, 1, -2],
-  ["Mint E. Pattikainen ", 1, -3, 3, -2, 2, -2, 2],
-  ["Jukka Palmu         ", 1, 1, 1, 1, -2, -1, 0],
-  ["Tasili Vihonov      ", 5, 1, 3, -2, 1, -2, -1],
-  ["Pekka Rautakallo    ", 1, -1, -1, 3, -2, 3, -2],
-  ["Werkka Easterlund   ", 1, 1, 1, 1, -1, -1, -1],
-  ["Imsohel Kone        ", 1, -2, -2, 3, 3, -1, -1],
-  ["Um-Bongo Rabban     ", 19, 2, 2, -2, -2, 3, -3],
-  ["Ronadlo             ", 18, 0, 3, -3, -3, 3, 0],
-  ["Ari Keloranta       ", 1, 1, -1, 0, -1, 0, 1],
-  ["Bonatoli Agdanov    ", 5, 3, 0, -1, -1, -1, 0],
-  ["Qimbo Tondvist      ", 1, -1, 0, 0, -1, 1, 1]
+const rawManagerData: RawManagerData[] = [
+  ["Scotty Booman       ", 10, -2, -2, 2, 2, -1, 1, "default"],
+  ["Ptr Srszrscen       ", 6, 1, -2, 0, -1, 3, -1, "default"],
+  ["Karl Gustaf Bormann ", 3, 0, 1, -1, 3, -2, -1, "default"],
+  ["Fjatseslav Vandals  ", 8, -1, -1, 0, 0, 3, -1, "default"],
+  ["Seter Ptastny       ", 12, -1, 2, -2, -1, 1, 1, "default"],
+  ["Wurst Kaltheim      ", 16, 0, 0, 0, 1, 0, -1, "default"],
+  ["Heinrich Heydrich   ", 3, -1, -1, 1, 1, -1, 1, "default"],
+  ["Lennart Järvi       ", 7, 2, 2, -2, -1, 0, -1, "default"],
+  ["Eriko Nondo         ", 13, -1, -1, -1, 1, 1, 1, "default"],
+  ["Dave Queen          ", 9, 2, 2, -2, -2, 2, -2, "default"],
+  ["Xavier Rated        ", 20, -2, -2, -1, -1, 3, 3, "default"],
+  ["Juri Dorkaeff       ", 15, -1, 0, 0, 3, -1, -1, "default"],
+  ["Tex Genderblender   ", 10, 2, -1, 1, 0, -2, 0, "default"],
+  ["Blavio Friatore     ", 4, 0, 0, -3, 1, 1, 1, "default"],
+  ["Clawsa Sykora       ", 6, 0, 0, 1, -1, 0, 0, "default"],
+  ["Reijo Mustikka      ", 1, 0, 0, 0, 0, 0, 0, "default"],
+  ["Wech Lalesa         ", 17, 1, 0, 0, 0, 0, -1, "default"],
+  ["Per von Bachman     ", 1, -3, -3, -3, 3, 3, 3, "default"],
+  ["Nykan Hågren        ", 2, 2, 2, -2, 0, -1, -1, "default"],
+  ["Curt Lindman        ", 2, -1, 2, -1, 2, -1, -1, "default"],
+  ["Sven Stenvall       ", 2, 0, -1, 0, 1, 0, 0, "default"],
+  ["Kauno O. Pirr       ", 1, -1, -1, -1, -1, 2, 2, "default"],
+  ["Fent Korsberg       ", 2, 2, 0, 0, -3, 1, 0, "default"],
+  ["Marcó Harcimo       ", 1, 0, 0, 3, -2, -3, 2, "default"],
+  ["Kari P.A. Sietilä   ", 1, 3, 3, 0, 2, 2, -3, "default"],
+  ["Ara Hannuvirta      ", 1, 1, 1, 1, 1, 1, -3, "default"],
+  ["SuPo Alhonen        ", 1, 0, 3, -2, -1, 0, 0, "default"],
+  ["Juri Simonov Jr.    ", 5, 2, 2, 0, 0, -1, -3, "default"],
+  ["Kannu Happanen      ", 1, 0, -2, -2, 2, 2, 0, "default"],
+  ["Aimo SA Rummanen    ", 1, 0, 2, 0, -2, 0, 0, "default"],
+  ["Hannes De Ansas     ", 1, 1, 1, 0, 0, -3, 1, "default"],
+  ["Marty Saariganges   ", 1, 2, -1, 0, 3, -3, -1, "default"],
+  ["Juri Simonov        ", 5, 3, 2, 2, 3, 3, -3, "juri-simonov"],
+  ["Carlos Numminen     ", 1, 1, 0, 1, -1, 1, -2, "default"],
+  ["Micho Magelä        ", 7, 1, -1, -1, 1, 0, 0, "default"],
+  ["Jannu Hortikka      ", 1, 2, 2, 0, 2, -3, -3, "default"],
+  ["Franco M. Berg      ", 2, -1, -1, 1, -1, 3, -1, "default"],
+  ["Tinjami Uhmanen     ", 1, 2, 1, -3, -2, 3, -1, "default"],
+  ["Kai L. Sinisalko    ", 1, -2, -2, 1, 1, 1, 1, "default"],
+  ["Tilhelm Well        ", 11, -1, 2, -1, -1, 2, -1, "default"],
+  ["Hari Järkäle        ", 1, -2, 0, 2, -1, 1, 0, "default"],
+  ["Amok R. Jekäläinen  ", 1, 1, 1, -1, -1, -1, 1, "default"],
+  ["Limo Tahtinen       ", 1, 3, -3, 0, 1, 1, -2, "default"],
+  ["Mint E. Pattikainen ", 1, -3, 3, -2, 2, -2, 2, "default"],
+  ["Jukka Palmu         ", 1, 1, 1, 1, -2, -1, 0, "default"],
+  ["Tasili Vihonov      ", 5, 1, 3, -2, 1, -2, -1, "default"],
+  ["Pekka Rautakallo    ", 1, -1, -1, 3, -2, 3, -2, "default"],
+  ["Werkka Easterlund   ", 1, 1, 1, 1, -1, -1, -1, "default"],
+  ["Imsohel Kone        ", 1, -2, -2, 3, 3, -1, -1, "default"],
+  ["Um-Bongo Rabban     ", 19, 2, 2, -2, -2, 3, -3, "default"],
+  ["Ronadlo             ", 18, 0, 3, -3, -3, 3, 0, "default"],
+  ["Ari Keloranta       ", 1, 1, -1, 0, -1, 0, 1, "default"],
+  ["Bonatoli Agdanov    ", 5, 3, 0, -1, -1, -1, 0, "default"],
+  ["Qimbo Tondvist      ", 1, -1, 0, 0, -1, 1, 1, "default"]
 ];
 
-const managerList = mapIndexed<ManagerData, ComputerManager>(md => {
-  const [
-    name,
-    countryId,
-    strategy,
-    specialTeams,
-    negotiation,
-    cunning,
-    charisma,
-    luck
-  ] = md;
-
-  const manager: ComputerManager = {
-    id: uuid(),
-    name: trim(name),
-    country: countryFromLegacyCountry(countryId),
-    abilities: {
-      strategy,
-      specialTeams,
-      negotiation,
-      cunning,
-      charisma,
-      luck
-    },
-    isHuman: false
-  };
-
-  return manager;
-}, managerData);
-
-export const managers: MapOf<ComputerManager> = indexBy(
-  prop("id"),
-  managerList
-);
+export default rawManagerData;

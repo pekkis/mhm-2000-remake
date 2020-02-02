@@ -1,7 +1,7 @@
 import countryData, { playerNames } from "./data/countries";
-import { PlayableCountries, AllCountries } from "../types/country";
+import { PlayableCountries, AllCountries, Country } from "../types/country";
 import random from "./random";
-import { flip, invertObj, filter } from "ramda";
+import { flip, invertObj, filter, sortWith, ascend, prop, values } from "ramda";
 
 interface LegacyIdToId {
   [key: number]: AllCountries;
@@ -88,3 +88,9 @@ export const createFirstName = (country: PlayableCountries) => {
 
   return random.pick(initialLetters);
 };
+
+const alphabeticalSorter = sortWith<Country>([ascend(prop("name"))]);
+
+export const alphabeticalCountryList: Country[] = alphabeticalSorter(
+  values(countryData)
+);

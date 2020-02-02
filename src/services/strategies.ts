@@ -1,10 +1,12 @@
 import { SeasonStrategy, SeasonStrategies, ForEvery } from "../types/base";
+import { sortWith, ascend, prop, values } from "ramda";
 
 const strategies: ForEvery<SeasonStrategies, SeasonStrategy> = {
   simonov: {
+    weight: 1000,
     id: "simonov",
     name: "Juri Simonov",
-    description: `Joukkueen huippukunto ajoittuu play-offeihin. Koko kesä treenataan täysillä, ja sarjan alkuvaihessa "pojat" tuppaavat olemaan hiukan väsyneitä. Loppua kohden tahti kuitenkin paranee, ja play-offeissa tahti on hirmuinen!`,
+    description: `Kuuluisan venäläismanageri **Juri Simonovin** aikoinaan kehittämä ovela strategia. Joukkue treenaa rajusti koko kesän ja syksyn, ja peliesitykset kärsivät. Talven mittaan pelaajien uskomaton kuntopohja alkaa kuitenkin kantaa hedelmää, ja keväällä joukkuetta ei pysäytä mikään.`,
     initialReadiness: () => -22,
     incrementReadiness: turn => {
       if (turn.round >= 54) {
@@ -12,11 +14,12 @@ const strategies: ForEvery<SeasonStrategies, SeasonStrategy> = {
       }
       return 1;
     }
-  } as SeasonStrategy,
+  },
   kaikkipeliin: {
+    weight: 2000,
     id: "kaikkipeliin",
     name: "Kaikki peliin!",
-    description: `Kaikki pistetään peliin heti sarjan alusta alkaen! Tahti on kova, mutta "pojat" hiipuvat kevättä kohden melkoisesti...`,
+    description: `Kaikki voimavarat laitetaan peliin heti kauden alusta alkaen! Kaudella 1994-1995 manageri **Per von Bachman** yllätti kaikki putoajaksi tuomitun ryhmänsä kanssa ja ylsi miltei play-offeihin asti fantastisen alkukauden ansiosta.`,
     initialReadiness: () => 24,
     incrementReadiness: turn => {
       if (turn.round >= 54) {
@@ -33,14 +36,19 @@ const strategies: ForEvery<SeasonStrategies, SeasonStrategy> = {
       // TODO: alterations?
       return -1;
     }
-  } as SeasonStrategy,
+  },
   puurto: {
+    weight: 3000,
     id: "puurto",
     name: "Tasainen puurto",
-    description: `Tasainen puurto läpi koko kauden, ei pahempia heilahteluja.`,
+    description: `Tämä strategia perustuu tasaisen kunnon ylläpitämiseen koko pitkän ja puuduttavan kauden ajan. Junnaavilla valmennusmenetelmillä saavutetaan aito **puurtamisen** meininki!`,
     initialReadiness: () => 0,
     incrementReadiness: () => 0
-  } as SeasonStrategy
+  }
 };
+
+const strategySorter = sortWith<SeasonStrategy>([ascend(prop("weight"))]);
+
+export const weightedStrategyList = strategySorter(values(strategies));
 
 export default strategies;
