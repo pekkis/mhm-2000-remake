@@ -10,6 +10,7 @@ import { AllCountries, PlayableCountries } from "../types/country";
 import util from "util";
 import { skillGenerationMap, randoms } from "./data/player-randomization";
 import { min, max } from "ramda";
+import uuid from "uuid";
 
 const legacyPositionMap = {
   1: "g",
@@ -107,6 +108,7 @@ export const createPlayer = (
   pk: number
 ): Player => {
   const player: Player = {
+    id: uuid(),
     firstName: firstName.substr(0, 1),
     lastName,
     skill: normalizeAbility(skill),

@@ -28,10 +28,12 @@ import {
   TEAM_ADD_MANAGER
 } from "./team";
 import { managers } from "../services/manager";
+import { TeamOrganization } from "../types/team";
 
 export const MANAGER_NEXT = "MANAGER_NEXT";
 export const MANAGER_ADD = "MANAGER_ADD";
 export const MANAGER_SET_ACTIVE = "MANAGER_SET_ACTIVE";
+export const MANAGER_BUDGET_ORGANIZATION = "MANAGER_BUDGET_ORGANIZATION";
 export const MANAGER_SELECT_STRATEGY = "MANAGER_SELECT_STRATEGY";
 
 export interface ManagerAddManagerAction {
@@ -47,6 +49,11 @@ export interface ManagerSetActiveAction {
 export interface ManagerSelectStrategyAction {
   type: typeof MANAGER_SELECT_STRATEGY;
   payload: { manager: string; strategy: SeasonStrategies };
+}
+
+export interface ManagerBudgetOrganizationAction {
+  type: typeof MANAGER_BUDGET_ORGANIZATION;
+  payload: { manager: string; budget: TeamOrganization };
 }
 
 export interface ManagerState {
@@ -86,12 +93,28 @@ export const buyPlayer = (manager, playerType) => {
   };
 };
 
-export const selectStrategy = (manager: string, strategy: SeasonStrategies) => {
+export const selectStrategy = (
+  manager: string,
+  strategy: SeasonStrategies
+): ManagerSelectStrategyAction => {
   return {
     type: MANAGER_SELECT_STRATEGY,
     payload: {
       manager,
       strategy
+    }
+  };
+};
+
+export const budgetOrganization = (
+  manager: string,
+  budget: TeamOrganization
+): ManagerBudgetOrganizationAction => {
+  return {
+    type: MANAGER_BUDGET_ORGANIZATION,
+    payload: {
+      manager,
+      budget
     }
   };
 };

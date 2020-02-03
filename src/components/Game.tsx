@@ -26,6 +26,8 @@ import Gala from "./Gala";
 import { useSelector } from "react-redux";
 import { MHMState } from "../ducks";
 import { Turn } from "../types/base";
+import BudgetOrganizationMenu from "./BudgetOrganizationMenu";
+import SponsorsMenu from "./SponsorsMenu";
 
 interface Props {
   turn: Turn;
@@ -65,6 +67,13 @@ const Phase: FunctionComponent<Props> = props => {
           <Route exact path="/" component={MainMenu} />
           <Route exact path="/strategia" component={StrategyMenu} />
           <Route exact path="/sarjataulukot" component={LeagueTables} />
+          <Route
+            exact
+            path="/budjetti/organisaatio"
+            component={BudgetOrganizationMenu}
+          />
+          <Route exact path="/sponsorit" component={SponsorsMenu} />
+
           <Route exact path="/pelaajamarkkinat" component={TransferMarket} />
           <Route exact path="/kriisipalaveri" component={CrisisActions} />
           <Route exact path="/erikoistoimenpiteet" component={Services} />

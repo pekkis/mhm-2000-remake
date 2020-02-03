@@ -8,7 +8,7 @@
     "build": "yarn run build:client",
     "lint": "eslint src",
     "babel-node": "babel-node",
-    "start": "cross-env NODE_ENV=development REACT_APP_SW_DISABLE=1 webpack-dev-server --port 11000 --history-api-fallback --hot",
+    "start": "cross-env NODE_ENV=development REACT_APP_SW_DISABLE=1 webpack-dev-server",
     "test": "jest"
   },
   "repository": {

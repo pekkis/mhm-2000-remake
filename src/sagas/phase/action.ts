@@ -17,7 +17,8 @@ import {
   improveArena,
   toggleService,
   setActiveManager,
-  managerSelectStrategy
+  managerSelectStrategy,
+  budgetOrganization
 } from "../manager";
 import { orderPrank } from "../prank";
 import { acceptInvitation } from "../invitation";
@@ -45,7 +46,9 @@ import { isComputerControlledTeam } from "../../services/team";
 import aiActionPhase from "../ai/phase/action";
 import {
   MANAGER_SELECT_STRATEGY,
-  ManagerSelectStrategyAction
+  ManagerSelectStrategyAction,
+  ManagerBudgetOrganizationAction,
+  MANAGER_BUDGET_ORGANIZATION
 } from "../../ducks/manager";
 
 export default function* actionPhase() {
@@ -64,6 +67,13 @@ export default function* actionPhase() {
     ) {
       yield call(managerSelectStrategy, a.payload.manager, a.payload.strategy);
     }),
+
+    takeLeading<ManagerBudgetOrganizationAction>(
+      MANAGER_BUDGET_ORGANIZATION,
+      function*(a) {
+        yield call(budgetOrganization, a.payload.manager, a.payload.budget);
+      }
+    ),
 
     takeLeading("GAME_SAVE_REQUEST", gameSave)
     /*

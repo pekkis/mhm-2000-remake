@@ -3,7 +3,12 @@ import { Map, List } from "immutable";
 import { teamData } from "../services/team";
 
 import { MapOf, SeasonStrategy, SeasonStrategies } from "../types/base";
-import { Team, TeamStrength, TeamEffect } from "../types/team";
+import {
+  Team,
+  TeamStrength,
+  TeamEffect,
+  TeamOrganization
+} from "../types/team";
 import {
   dissocPath,
   assocPath,
@@ -39,6 +44,7 @@ export const TEAM_REMOVE_MANAGER = "TEAM_REMOVE_MANAGER";
 export const TEAM_SET_STRENGTHS = "TEAM_SET_STRENGTHS";
 export const TEAM_INCREMENT_READINESS = "TEAM_INCREMENT_READINESS";
 export const TEAM_SET_STRATEGY = "TEAM_SET_STRATEGY";
+export const TEAM_SET_ORGANIZATION = "TEAM_SET_ORGANIZATION";
 
 const defaultState: TeamState = {
   teams: teamData
@@ -73,6 +79,14 @@ export interface TeamSetStrategyAction {
   };
 }
 
+export interface TeamSetOrganizationAction {
+  type: typeof TEAM_SET_ORGANIZATION;
+  payload: {
+    team: string;
+    organization: TeamOrganization;
+  };
+}
+
 export interface TeamIncrementReadinessAction {
   type: typeof TEAM_INCREMENT_READINESS;
   payload: {
@@ -91,7 +105,8 @@ type TeamActions =
   | GameCleanupAction
   | TeamIncrementReadinessAction
   | GameDecrementDurationsActions
-  | TeamSetStrategyAction;
+  | TeamSetStrategyAction
+  | TeamSetOrganizationAction;
 
 const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
   switch (action.type) {
@@ -184,6 +199,13 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
       return assocPath(
         ["teams", action.payload.team, "strategy"],
         action.payload.strategy,
+        state
+      );
+
+    case TEAM_SET_ORGANIZATION:
+      return assocPath(
+        ["teams", action.payload.team, "organization"],
+        action.payload.organization,
         state
       );
 

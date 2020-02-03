@@ -90,6 +90,22 @@ const config2 = over(
   config
 );
 
+if (config2.output) {
+  config2.output.publicPath = "/";
+} else {
+  config2.output = {
+    publicPath: "/"
+  };
+}
+
+config2.devServer = {
+  port: 11000,
+  hot: true,
+  index: "index.html",
+  disableHostCheck: true,
+  historyApiFallback: true
+};
+
 console.log(util.inspect(config2, false, 999));
 
 export default config2;

@@ -41,14 +41,16 @@ import {
 } from "../types/manager";
 import { DifficultyLevels, SeasonStrategies } from "../types/base";
 import { ManagerAddManagerAction, MANAGER_ADD } from "../ducks/manager";
-import { Team } from "../types/team";
+import { Team, TeamOrganization } from "../types/team";
 import {
   TeamRemoveManagerAction,
   TeamAddManagerAction,
   TEAM_REMOVE_MANAGER,
   TEAM_ADD_MANAGER,
   TeamSetStrategyAction,
-  TEAM_SET_STRATEGY
+  TEAM_SET_STRATEGY,
+  TeamSetOrganizationAction,
+  TEAM_SET_ORGANIZATION
 } from "../ducks/team";
 
 export function* addManager(details: ManagerInput) {
@@ -87,6 +89,21 @@ const assertTeam = (manager: Manager): string => {
   }
   return manager.team;
 };
+
+export function* budgetOrganization(
+  managerId: string,
+  budget: TeamOrganization
+) {
+  const manager = yield select(managerObject(managerId));
+  const team = assertTeam(manager);
+  yield put<TeamSetOrganizationAction>({
+    type: TEAM_SET_ORGANIZATION,
+    payload: {
+      team,
+      organization: budget
+    }
+  });
+}
 
 export function* managerSelectStrategy(
   managerId: string,

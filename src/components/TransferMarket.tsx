@@ -1,21 +1,39 @@
 import React, { useState } from "react";
-import playerTypes from "../data/transfer-market";
-import Button from "./form/Button";
-import ButtonContainer from "./ui/ButtonContainer";
-import Header from "./containers/HeaderContainer";
+import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
-import Calendar from "./ui/Calendar";
-import { currency } from "../services/format";
-import ManagerInfo from "./containers/ManagerInfoContainer";
+import ManagerInfo from "./ManagerInfo";
 import Box from "./styled-system/Box";
-import Tabs from "./ui/Tabs";
-import Tab from "./ui/Tab";
+import { Player } from "../types/player";
+import { sortWith, ascend, prop, values, take, descend } from "ramda";
+import { useSelector } from "react-redux";
+import { MHMState } from "../ducks";
+import Flag from "react-world-flags";
 
-const TransferMarket = props => {
-  const { manager, buyPlayer, sellPlayer } = props;
+const TransferMarket = () => {
+  const playerMap = useSelector((state: MHMState) => state.player.players);
 
-  const balance = manager.get("balance");
-  const [tab, setTab] = useState(0);
+  const playerList = values(playerMap);
+
+  const filters = [
+    (p: Player) => p.skill <= 12,
+    (p: Player) => p.skill >= 8,
+    (p: Player) => ["FI"].includes(p.country)
+  ];
+
+  const sorter = sortWith<Player>([
+    descend(prop("skill")),
+    ascend(prop("lastName")),
+    ascend(prop("firstName"))
+  ]);
+
+  const filteredPlayers = filters.reduce(
+    (players, filter) => players.filter(filter),
+    playerList
+  );
+
+  const sortedPlayers = sorter(filteredPlayers);
+
+  const page = take(100, sortedPlayers);
 
   return (
     <HeaderedPage>
@@ -26,59 +44,32 @@ const TransferMarket = props => {
       <Box p={1}>
         <h2>Pelaajamarkkinat</h2>
 
-        <Calendar
-          when={c => c.transferMarket}
-          fallback={
-            <p>
-              Valitettavasti siirtoaika on umpeutunut. Tervetuloa takaisin ensi
-              vuonna!
-            </p>
-          }
-        >
-          <Tabs selected={tab} onSelect={setTab}>
-            <Tab title="Osta pelaajia">
-              <ButtonContainer>
-                {playerTypes.map((playerType, index) => {
-                  return (
-                    <Button
-                      key={index}
-                      onClick={() => {
-                        buyPlayer(manager.get("id"), index);
-                      }}
-                      block
-                      disabled={balance < playerType.get("buy")}
-                    >
-                      <div>{playerType.get("description")}</div>
-                      <div>
-                        <strong>{currency(playerType.get("buy"))}</strong>
-                      </div>
-                    </Button>
-                  );
-                })}
-              </ButtonContainer>
-            </Tab>
-            <Tab title="Myy pelaajia">
-              <ButtonContainer>
-                {playerTypes.map((playerType, index) => {
-                  return (
-                    <Button
-                      key={index}
-                      onClick={() => {
-                        sellPlayer(manager.get("id"), index);
-                      }}
-                      block
-                    >
-                      <div>{playerType.get("description")}</div>
-                      <div>
-                        <strong>{currency(playerType.get("sell"))}</strong>
-                      </div>
-                    </Button>
-                  );
-                })}
-              </ButtonContainer>
-            </Tab>
-          </Tabs>
-        </Calendar>
+        <table>
+          <thead>
+            <tr>
+              <th>Nimi</th>
+              <th>Kansallisuus</th>
+              <th>PP</th>
+              <th>T</th>
+            </tr>
+          </thead>
+          <tbody>
+            {page.map(player => {
+              return (
+                <tr key={player.id}>
+                  <td>
+                    {player.lastName}, {player.firstName}.
+                  </td>
+                  <td>
+                    <Flag code={player.country} height={16} /> {player.country}
+                  </td>
+                  <td>{player.position}</td>
+                  <td>{player.skill}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </Box>
     </HeaderedPage>
   );

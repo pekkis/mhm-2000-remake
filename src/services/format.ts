@@ -3,7 +3,7 @@ const decimalFormatter = new Intl.NumberFormat("fi-FI", {
   currency: "EUR"
 });
 
-const currencyFormatter = new Intl.NumberFormat("fi-FI", {
+export const currencyFormatter = new Intl.NumberFormat("fi-FI", {
   style: "currency",
   currency: "EUR"
 });
@@ -13,5 +13,5 @@ export const amount = (amount: number): string => {
 };
 
 export const currency = (amount: number): string => {
-  return `${decimalFormatter.format(amount)} pekkaa`;
+  return currencyFormatter.format(amount);
 };
