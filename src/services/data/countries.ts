@@ -21,7 +21,7 @@ import jpNames from "./country/players-JP";
 import ruNames from "./country/players-RU";
 import skNames from "./country/players-SK";
 
-import eeNames from "./country/players-SK";
+import eeNames from "./country/players-EE";
 import noNames from "./country/players-NO";
 import plNames from "./country/players-PL";
 

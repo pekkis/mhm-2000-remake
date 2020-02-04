@@ -28,6 +28,7 @@ import { MHMState } from "../ducks";
 import { Turn } from "../types/base";
 import BudgetOrganizationMenu from "./BudgetOrganizationMenu";
 import SponsorsMenu from "./SponsorsMenu";
+import ContractNegotiation from "./ContractNegotiation";
 
 interface Props {
   turn: Turn;
@@ -74,7 +75,11 @@ const Phase: FunctionComponent<Props> = props => {
           />
           <Route exact path="/sponsorit" component={SponsorsMenu} />
 
-          <Route exact path="/pelaajamarkkinat" component={TransferMarket} />
+          <Route path="/pelaajamarkkinat" component={TransferMarket} />
+          <Route
+            path="/sopimusneuvottelu/:negotiationId"
+            component={ContractNegotiation}
+          />
           <Route exact path="/kriisipalaveri" component={CrisisActions} />
           <Route exact path="/erikoistoimenpiteet" component={Services} />
           <Route exact path="/areena" component={Arena} />

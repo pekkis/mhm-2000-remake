@@ -50,6 +50,12 @@ import {
   ManagerBudgetOrganizationAction,
   MANAGER_BUDGET_ORGANIZATION
 } from "../../ducks/manager";
+import {
+  PlayerContractInitiateAction,
+  PlayerContractInitiateRequestAction,
+  PLAYER_CONTRACT_INITIATE_REQUEST
+} from "../../ducks/player";
+import { initiateContractNegotiation } from "../player";
 
 export default function* actionPhase() {
   const managers: HumanManager[] = yield select(humanManagers);
@@ -72,6 +78,17 @@ export default function* actionPhase() {
       MANAGER_BUDGET_ORGANIZATION,
       function*(a) {
         yield call(budgetOrganization, a.payload.manager, a.payload.budget);
+      }
+    ),
+
+    takeLeading<PlayerContractInitiateRequestAction>(
+      PLAYER_CONTRACT_INITIATE_REQUEST,
+      function*(a) {
+        yield call(
+          initiateContractNegotiation,
+          a.payload.manager,
+          a.payload.player
+        );
       }
     ),
 

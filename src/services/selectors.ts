@@ -15,7 +15,8 @@ import {
   CompetitionNames,
   CompetitionPhase,
   CompetitionGroup,
-  Competition
+  Competition,
+  Turn
 } from "../types/base";
 import { MHMState } from "../ducks";
 import {
@@ -32,12 +33,18 @@ import {
 import { SeasonStatistic } from "../types/stats";
 import { isComputerControlledTeam, isHumanControlledTeam } from "./team";
 import { isComputerManager } from "./manager";
+import { Player } from "../types/player";
 
 export const statsForSeason = (seasonId: number) => (
   state: MHMState
 ): SeasonStatistic => {
   return state.stats.seasons[seasonId];
 };
+
+export const playerById = (id: string) => (state: MHMState): Player =>
+  state.player.players[id];
+
+export const currentTurn = (state: MHMState): Turn => state.game.turn;
 
 export const allCompetitions = (state: MHMState) =>
   state.competition.competitions;
@@ -92,8 +99,6 @@ export const allHumanControlledTeams = (
 };
 
 export const allTeamsMap = (state: MHMState) => state.team.teams;
-
-export const currentTurn = (state: MHMState) => state.game.turn;
 
 export const humanManagers = (state: MHMState): HumanManager[] => {
   return values(state.manager.managers).filter(isHumanManager);

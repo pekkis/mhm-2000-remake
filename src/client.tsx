@@ -17,6 +17,7 @@ import {
 // import runtime from "@dr-kobros/serviceworker-webpack-plugin/lib/runtime";
 import * as Sentry from "@sentry/browser";
 import rootSaga from "./sagas/root";
+import { BrowserRouter } from "react-router-dom";
 
 if (process.env.NODE_ENV !== "production") {
   const axe = require("react-axe");
@@ -35,11 +36,19 @@ library.add(faSpinner, faBars, faExclamationCircle);
 const store = createStore(getReducers(), getMiddlewares(), getEnhancers());
 
 const sagaMiddleware = getSagaMiddleware();
-sagaMiddleware.run(rootSaga);
 
 // Just a small DRY abstraction here.
 function render(Component: typeof Root, rootElement: HTMLElement) {
-  ReactDOM.render(<Component store={store} />, rootElement);
+  ReactDOM.render(
+    <BrowserRouter>
+      <Component
+        store={store}
+        sagaMiddleware={sagaMiddleware}
+        rootSaga={rootSaga}
+      />
+    </BrowserRouter>,
+    rootElement
+  );
 }
 
 // If we get !undefined state from the server, we hydrate.
