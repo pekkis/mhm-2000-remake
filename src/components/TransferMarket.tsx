@@ -14,10 +14,10 @@ import PlayerInfo from "./transfer-market/PlayerInfo";
 const playersPerPage = 100;
 
 const TransferMarket = () => {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
 
   const playerMap = useSelector((state: MHMState) => state.player.players);
-  const playerList = values(playerMap);
+  const playerList = values(playerMap).filter(p => !p.contract);
 
   const totalPages = Math.ceil(playerList.length / playersPerPage);
 

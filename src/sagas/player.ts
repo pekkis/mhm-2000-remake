@@ -1,18 +1,32 @@
 import { put, call, select } from "redux-saga/effects";
-import { ContractNegotiation } from "../types/player";
+import { ContractNegotiation, Contract } from "../types/player";
 import uuid from "uuid";
 import {
   PlayerContractInitiateAction,
-  PLAYER_CONTRACT_INITIATE
+  PLAYER_CONTRACT_INITIATE,
+  PlayerContractRespondAction,
+  PLAYER_CONTRACT_RESPOND,
+  PLAYER_CONTRACT_SIGN,
+  PlayerContractSignAction,
+  PlayerContractEndAction,
+  PLAYER_CONTRACT_END
 } from "../ducks/player";
 import { routerPush } from "./router";
 
 import {
-  denyBecauseBadOrganization,
-  denyBecauseOfHarassment,
-  acceptGrudgingly,
-  acceptWithCaution,
-  acceptGladly
+  denyProposalBecauseBadOrganization,
+  denyProposalBecauseOfHarassment,
+  acceptProposalGrudgingly,
+  acceptProposalWithCaution,
+  acceptProposalGladly,
+  acceptContractGladly,
+  acceptContractGrudgingly,
+  denyContractBecauseInsulted,
+  denyContractBecauseEndOfPatience,
+  denyContractButContinueNegotiations,
+  informManagerOfNHLAmbitions,
+  readyToNegotiate,
+  commentFreeKickOption
 } from "../services/contract";
 import random from "../services/random";
 import { Turn, MapOf } from "../types/base";
@@ -27,8 +41,14 @@ import { MHMState } from "../ducks";
 import { values } from "ramda";
 import { Team } from "../types/team";
 import { Player } from "../types/player";
+import { Manager } from "../types/manager";
+import {
+  getInterestInNHL,
+  getBaseSalary,
+  getDesiredSalary
+} from "../services/player";
 
-const organizationCheck = (player: Player, team: Team) => {
+const getOrganizationOpionion = (player: Player, team: Team) => {
   const coachingAspect =
     player.position === "g" ? "goalieCoaching" : "coaching";
 
@@ -39,29 +59,44 @@ const organizationCheck = (player: Player, team: Team) => {
 
   const playerOpinion = organizationValue - player.skill;
 
-  if (playerOpinion <= -4) {
+  return playerOpinion;
+};
+
+const organizationCheck = (player: Player, team: Team, manager: Manager) => {
+  const organizationOpinion = getOrganizationOpionion(player, team);
+
+  const patience =
+    85 +
+    Math.min(organizationOpinion, 0) * 10 +
+    manager.abilities.negotiation * 5;
+
+  if (organizationOpinion <= -4) {
     return {
-      respond: random.pick(denyBecauseBadOrganization),
+      patience,
+      respond: random.pick(denyProposalBecauseBadOrganization),
       accept: false
     };
   }
 
-  if (playerOpinion <= -2) {
+  if (organizationOpinion <= -2) {
     return {
-      respond: random.pick(acceptGrudgingly),
+      patience,
+      respond: random.pick(acceptProposalGrudgingly),
       accept: true
     };
   }
 
-  if (playerOpinion < 0) {
+  if (organizationOpinion < 0) {
     return {
-      respond: random.pick(acceptWithCaution),
+      patience,
+      respond: random.pick(acceptProposalWithCaution),
       accept: true
     };
   }
 
   return {
-    respond: random.pick(acceptGladly),
+    patience,
+    respond: random.pick(acceptProposalGladly),
     accept: true
   };
 
@@ -87,12 +122,19 @@ IF a < 0 THEN a = -a ELSE a = 0
 */
 };
 
+type PartialContract = Omit<
+  ContractNegotiation,
+  "respond" | "success" | "ongoing" | "patience"
+>;
+
 const denyNegotiationOffer = (
-  respond: string,
-  contract: Omit<ContractNegotiation, "respond" | "success" | "ongoing">
-) => {
+  respond: string[],
+  patience: number,
+  contract: PartialContract
+): ContractNegotiation => {
   return {
     ...contract,
+    patience,
     respond,
     ongoing: false,
     success: false
@@ -100,11 +142,13 @@ const denyNegotiationOffer = (
 };
 
 const acceptNegotiationOffer = (
-  respond: string,
-  contract: Omit<ContractNegotiation, "respond" | "success" | "ongoing">
-) => {
+  respond: string[],
+  patience: number,
+  contract: PartialContract
+): ContractNegotiation => {
   return {
     ...contract,
+    patience,
     respond,
     ongoing: true,
     success: true
@@ -112,18 +156,26 @@ const acceptNegotiationOffer = (
 };
 
 const initialOffer = (
-  manager,
-  player,
-  turn
-): Omit<ContractNegotiation, "respond" | "success" | "ongoing"> => {
+  manager: Manager,
+  player: Player,
+  team: Team,
+  turn: Turn,
+  context: string
+): PartialContract => {
   return {
     id: uuid(),
-    manager,
-    player,
+    context,
+    open: true,
+    manager: manager.id,
+    proposalsMade: 0,
+    player: player.id,
+    organizationOpinion: getOrganizationOpionion(player, team),
     turn,
     contract: {
       years: 1,
-      salary: 1000,
+      yearsLeft: 1,
+      team: team.id,
+      salary: getBaseSalary(player),
       nhlOption: false,
       freeKickOption: false
     }
@@ -132,11 +184,16 @@ const initialOffer = (
 
 export function* getInitialContractNegotiation(
   managerId: string,
-  playerId: string
+  playerId: string,
+  context: string
 ) {
   const turn: Turn = yield select(currentTurn);
 
-  const raw = initialOffer(managerId, playerId, turn);
+  const manager: Manager = yield select(managerById(managerId));
+  const team = yield select(requireManagersTeamObj(managerId));
+  const player = yield select(playerById(playerId));
+
+  const raw = initialOffer(manager, player, team, turn, context);
 
   const negotiations: MapOf<ContractNegotiation> = yield select(
     (state: MHMState) => state.player.negotiations
@@ -150,30 +207,45 @@ export function* getInitialContractNegotiation(
   );
 
   if (previousNegotiation) {
-    return denyNegotiationOffer(random.pick(denyBecauseOfHarassment), raw);
+    return denyNegotiationOffer(
+      [random.pick(denyProposalBecauseOfHarassment)],
+      0,
+      raw
+    );
   }
 
-  const team = yield select(requireManagersTeamObj(managerId));
-
-  const player = yield select(playerById(playerId));
-
-  const { respond, accept } = organizationCheck(player, team);
+  const { respond, patience, accept } = organizationCheck(
+    player,
+    team,
+    manager
+  );
 
   if (!accept) {
-    return denyNegotiationOffer(respond, raw);
+    return denyNegotiationOffer([respond], patience, raw);
   }
 
-  return acceptNegotiationOffer(respond, raw);
+  const isInterestedInNHL = getInterestInNHL(player) > 0;
+  const responds = isInterestedInNHL
+    ? [
+        respond,
+        random.pick(informManagerOfNHLAmbitions),
+        random.pick(readyToNegotiate)
+      ]
+    : [respond, random.pick(readyToNegotiate)];
+
+  return acceptNegotiationOffer(responds, patience, raw);
 }
 
 export function* initiateContractNegotiation(
   managerId: string,
-  playerId: string
+  playerId: string,
+  context = "playerPage"
 ) {
   const negotiation = yield call(
     getInitialContractNegotiation,
     managerId,
-    playerId
+    playerId,
+    context
   );
 
   yield put<PlayerContractInitiateAction>({
@@ -184,4 +256,173 @@ export function* initiateContractNegotiation(
   });
 
   yield call(routerPush, `/sopimusneuvottelu/${negotiation.id}`);
+}
+
+const acceptContract = (negotiation: ContractNegotiation, respond: string) => {
+  return {
+    ...negotiation,
+    ongoing: false,
+    success: true,
+    proposalsMade: negotiation.proposalsMade + negotiation.proposalsMade + 1,
+    respond: [...negotiation.respond, respond]
+  };
+};
+
+const denyContractAndContinue = (
+  negotiation: ContractNegotiation,
+  patience: number,
+  respond: string[]
+) => {
+  return {
+    ...negotiation,
+    patience,
+    ongoing: true,
+    success: false,
+    proposalsMade: negotiation.proposalsMade + negotiation.proposalsMade + 1,
+    respond: [...negotiation.respond, ...respond]
+  };
+};
+
+const denyContractAndEnd = (
+  negotiation: ContractNegotiation,
+  patience: number,
+  respond: string
+) => {
+  return {
+    ...negotiation,
+    patience,
+    ongoing: false,
+    success: false,
+    proposalsMade: negotiation.proposalsMade + negotiation.proposalsMade + 1,
+    respond: [...negotiation.respond, respond]
+  };
+};
+
+const denyContract = (negotiation: ContractNegotiation, patience: number) => {
+  if (patience < 30) {
+    return denyContractAndEnd(
+      negotiation,
+      patience,
+      random.pick(denyContractBecauseInsulted)
+    );
+  }
+
+  if (patience < 50) {
+    return denyContractAndEnd(
+      negotiation,
+      patience,
+      random.pick(denyContractBecauseEndOfPatience)
+    );
+  }
+
+  const responds = negotiation.contract.freeKickOption
+    ? [
+        random.pick(commentFreeKickOption),
+        random.pick(denyContractButContinueNegotiations)
+      ]
+    : [random.pick(denyContractButContinueNegotiations)];
+
+  return denyContractAndContinue(negotiation, patience, responds);
+};
+
+// sopimus(2) = sopimus(2) - d + INT(mtaito(3, u(pv)) * RND)
+
+export function* contractSign(negotiationId: string) {
+  const negotiation: ContractNegotiation = yield select(
+    (state: MHMState) => state.player.negotiations[negotiationId]
+  );
+
+  yield put<PlayerContractSignAction>({
+    type: PLAYER_CONTRACT_SIGN,
+    payload: {
+      playerId: negotiation.player,
+      contract: negotiation.contract
+    }
+  });
+
+  yield call(contractEndNegotiation, negotiationId);
+}
+
+export function* contractEndNegotiation(negotiationId: string) {
+  console.log("HELLUREI");
+  const negotiation: ContractNegotiation = yield select(
+    (state: MHMState) => state.player.negotiations[negotiationId]
+  );
+
+  console.log("RETURN TO CONTEXT", negotiation.context);
+
+  if (negotiation.context === "transferMarket") {
+    yield call(routerPush, "/pelaajamarkkinat");
+  }
+
+  yield put<PlayerContractEndAction>({
+    type: PLAYER_CONTRACT_END,
+    payload: {
+      negotiationId: negotiation.id
+    }
+  });
+}
+
+export function* contractNegotiationProposal(
+  negotiationId: string,
+  contract: Contract
+) {
+  const oldNegotiation: ContractNegotiation = yield select(
+    (state: MHMState) => state.player.negotiations[negotiationId]
+  );
+
+  const currentNegotiation = {
+    ...oldNegotiation,
+    contract: contract
+  };
+
+  const manager: Manager = yield select(
+    managerById(currentNegotiation.manager)
+  );
+  const team: Team = yield select(requireManagersTeamObj(manager.id));
+  const player: Player = yield select(playerById(currentNegotiation.player));
+
+  const desiredSalary = getDesiredSalary(player, currentNegotiation);
+  console.log(desiredSalary, "DS");
+
+  const difference = contract.salary / desiredSalary;
+  const acceptLimit =
+    manager.abilities.negotiation * 5 +
+    50 -
+    (100 - Math.pow(difference, 3) * 100);
+
+  const acceptRand = random.real(0, 100);
+
+  let nextNegotiation;
+  if (acceptRand < acceptLimit) {
+    const respond =
+      acceptLimit - acceptRand >= 50
+        ? random.pick(acceptContractGladly)
+        : random.pick(acceptContractGrudgingly);
+
+    nextNegotiation = acceptContract(currentNegotiation, respond);
+  } else {
+    let nextPatience;
+    if (acceptLimit < -10) {
+      nextPatience = 0;
+    } else {
+      const patienceDecrement = (currentNegotiation.proposalsMade + 1) * 2;
+      const managerPatienceAlterer =
+        random.real(0, 1) * manager.abilities.negotiation;
+
+      nextPatience =
+        currentNegotiation.patience -
+        patienceDecrement +
+        managerPatienceAlterer;
+    }
+
+    nextNegotiation = denyContract(currentNegotiation, nextPatience);
+  }
+
+  yield put<PlayerContractRespondAction>({
+    type: PLAYER_CONTRACT_RESPOND,
+    payload: {
+      negotiation: nextNegotiation
+    }
+  });
 }

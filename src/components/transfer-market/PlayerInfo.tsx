@@ -20,19 +20,22 @@ const PlayerInfo: FunctionComponent<Props> = ({ player }) => {
         Pelaajamarkkinat > <PlayerName player={player} />
       </h2>
 
-      <Button
-        onClick={() => {
-          dispatch({
-            type: PLAYER_CONTRACT_INITIATE_REQUEST,
-            payload: {
-              manager: manager.id,
-              player: player.id
-            }
-          });
-        }}
-      >
-        Neuvottele!
-      </Button>
+      {!player.contract && (
+        <Button
+          onClick={() => {
+            dispatch({
+              type: PLAYER_CONTRACT_INITIATE_REQUEST,
+              payload: {
+                manager: manager.id,
+                player: player.id,
+                context: "transferMarket"
+              }
+            });
+          }}
+        >
+          Neuvottele!
+        </Button>
+      )}
     </div>
   );
 };

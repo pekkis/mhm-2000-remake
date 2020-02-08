@@ -1,0 +1,10 @@
+# Mappings of legacy data
+
+## Manager skills
+
+- 1: STRATEGIAT
+- 2: ERIKOISTILANTEET
+- 3: NEUVOTTELUTAITO
+- 4: NEUVOKKUUS
+- 5: KARISMA
+- 6: ONNEKKUUS

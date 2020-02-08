@@ -4,10 +4,17 @@ import HeaderedPage from "./ui/HeaderedPage";
 import ManagerInfo from "./ManagerInfo";
 import Box from "./styled-system/Box";
 import { MHMState } from "../ducks";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Button from "./form/Button";
 import Markdown from "./Markdown";
 import { activeManager } from "../services/selectors";
+import ContractForm from "./contract-negotiation/ContractForm";
+import {
+  PlayerContractSignRequestAction,
+  PLAYER_CONTRACT_SIGN_REQUEST,
+  PlayerContractEndRequestAction,
+  PLAYER_CONTRACT_END_REQUEST
+} from "../ducks/player";
 
 interface Props {
   match: {
@@ -18,6 +25,8 @@ interface Props {
 }
 
 const ContractNegotiation: FunctionComponent<Props> = props => {
+  const dispatch = useDispatch();
+
   const negotiation = useSelector(
     (state: MHMState) =>
       state.player.negotiations[props.match.params.negotiationId]
@@ -45,9 +54,43 @@ const ContractNegotiation: FunctionComponent<Props> = props => {
 
         <p>{JSON.stringify(player)}</p>
 
-        <Markdown source={negotiation.respond} />
+        {negotiation.respond.map((r, i) => {
+          return <Markdown key={i} source={r} />;
+        })}
 
-        <Button disabled={!negotiation.ongoing}>Ehdota</Button>
+        <ContractForm dispatch={dispatch} negotiation={negotiation} />
+
+        <Button
+          disabled={!negotiation.open}
+          onClick={() => {
+            dispatch<PlayerContractEndRequestAction>({
+              type: PLAYER_CONTRACT_END_REQUEST,
+              payload: {
+                negotiationId: negotiation.id
+              }
+            });
+          }}
+        >
+          Lopeta neuvottelu allekirjoittamatta sopimusta
+        </Button>
+
+        <Button
+          disabled={
+            negotiation.ongoing === true ||
+            !negotiation.success ||
+            !negotiation.open
+          }
+          onClick={() => {
+            dispatch<PlayerContractSignRequestAction>({
+              type: PLAYER_CONTRACT_SIGN_REQUEST,
+              payload: {
+                negotiationId: negotiation.id
+              }
+            });
+          }}
+        >
+          Allekirjoita sopimus ja lopeta neuvottelu
+        </Button>
       </Box>
     </HeaderedPage>
   );

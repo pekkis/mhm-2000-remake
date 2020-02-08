@@ -229,6 +229,17 @@ export const weightedCompetitions = (state: MHMState): Competition[] => {
   return sorter(values(state.competition.competitions));
 };
 
+export const managerById = (managerId: string) => (
+  state: MHMState
+): Manager => {
+  const manager = state.manager.managers[managerId];
+  if (!manager) {
+    throw new Error(`No manager exists by id ${managerId}`);
+  }
+
+  return manager;
+};
+
 // UNREFACTORED BEGINS
 
 export const totalGamesPlayed = (manager, competition, phase) => state => {
@@ -268,9 +279,6 @@ export const managersMainCompetition = manager => state => {
   const competesInPHL = managerCompetesIn(manager, "phl")(state);
   return competesInPHL ? "phl" : "division";
 };
-
-export const managerById = manager => state =>
-  state.manager.getIn(["managers", manager]);
 
 export const managersCompetitions = manager => state => {
   return state.game.get("competitions").filter(c => {

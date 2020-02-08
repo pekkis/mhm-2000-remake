@@ -53,9 +53,20 @@ import {
 import {
   PlayerContractInitiateAction,
   PlayerContractInitiateRequestAction,
-  PLAYER_CONTRACT_INITIATE_REQUEST
+  PLAYER_CONTRACT_INITIATE_REQUEST,
+  PlayerContractProposeAction,
+  PLAYER_CONTRACT_PROPOSE,
+  PlayerContractSignRequestAction,
+  PLAYER_CONTRACT_SIGN_REQUEST,
+  PlayerContractEndRequestAction,
+  PLAYER_CONTRACT_END_REQUEST
 } from "../../ducks/player";
-import { initiateContractNegotiation } from "../player";
+import {
+  initiateContractNegotiation,
+  contractNegotiationProposal,
+  contractSign,
+  contractEndNegotiation
+} from "../player";
 
 export default function* actionPhase() {
   const managers: HumanManager[] = yield select(humanManagers);
@@ -87,8 +98,33 @@ export default function* actionPhase() {
         yield call(
           initiateContractNegotiation,
           a.payload.manager,
-          a.payload.player
+          a.payload.player,
+          a.payload.context
         );
+      }
+    ),
+
+    takeLeading<PlayerContractProposeAction>(PLAYER_CONTRACT_PROPOSE, function*(
+      a
+    ) {
+      yield call(
+        contractNegotiationProposal,
+        a.payload.negotiationId,
+        a.payload.contract
+      );
+    }),
+
+    takeLeading<PlayerContractSignRequestAction>(
+      PLAYER_CONTRACT_SIGN_REQUEST,
+      function*(a) {
+        yield call(contractSign, a.payload.negotiationId);
+      }
+    ),
+
+    takeLeading<PlayerContractEndRequestAction>(
+      PLAYER_CONTRACT_END_REQUEST,
+      function*(a) {
+        yield call(contractEndNegotiation, a.payload.negotiationId);
       }
     ),
 
