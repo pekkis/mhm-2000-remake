@@ -226,7 +226,7 @@ function* competitionStart(competitionId: string) {
   });
 }
 
-export function* seasonStart() {
+export function* prepareSeason() {
   const teams: Team[] = yield select(allTeams);
 
   const strengths: [string, TeamStrength][] = map(
@@ -308,6 +308,8 @@ export function* seedCompetition(competition: CompetitionNames, phase: number) {
 
 export function* gameStart() {
   const action: GameAdvanceAction = yield take(GAME_ADVANCE_REQUEST);
+
+  yield call(prepareSeason);
 
   yield putResolve<UISetLoadingAction>({
     type: UI_SET_LOADING,

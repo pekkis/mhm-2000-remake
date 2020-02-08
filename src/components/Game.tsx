@@ -29,6 +29,7 @@ import { Turn } from "../types/base";
 import BudgetOrganizationMenu from "./BudgetOrganizationMenu";
 import SponsorsMenu from "./SponsorsMenu";
 import ContractNegotiation from "./ContractNegotiation";
+import SquadMenu from "./SquadMenu";
 
 interface Props {
   turn: Turn;
@@ -76,6 +77,7 @@ const Phase: FunctionComponent<Props> = props => {
           <Route exact path="/sponsorit" component={SponsorsMenu} />
 
           <Route path="/pelaajamarkkinat" component={TransferMarket} />
+          <Route path="/pelaajarinki" component={SquadMenu} />
           <Route
             path="/sopimusneuvottelu/:negotiationId"
             component={ContractNegotiation}

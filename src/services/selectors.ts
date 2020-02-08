@@ -240,6 +240,15 @@ export const managerById = (managerId: string) => (
   return manager;
 };
 
+export const teamById = (teamId: string) => (state: MHMState): Team => {
+  const team = state.team.teams[teamId];
+  if (!team) {
+    throw new Error(`No team exists by id ${teamId}`);
+  }
+
+  return team;
+};
+
 // UNREFACTORED BEGINS
 
 export const totalGamesPlayed = (manager, competition, phase) => state => {

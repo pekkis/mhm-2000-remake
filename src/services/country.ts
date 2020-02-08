@@ -77,11 +77,15 @@ export const legacyCountryFromCountry = (id: string): number =>
 
 export const getData = () => countryData;
 
-export const createLastName = (country: PlayableCountries) => {
+export const createLastName = (country: AllCountries): string => {
+  if (!playerNames[country]) {
+    return "Smithee";
+  }
+
   return random.pick(playerNames[country]);
 };
 
-export const createFirstName = (country: PlayableCountries) => {
+export const createFirstName = (country: AllCountries) => {
   if (country === "FI") {
     return random.pick(initialLetters, 0, 15);
   }

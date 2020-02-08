@@ -12,8 +12,6 @@ import {
 } from "../../ducks/player";
 
 export default function* startOfSeasonPhase() {
-  yield call(seasonStart);
-
   const players = range(0, 1000).map(() => {
     return createRandomPlayer();
   });

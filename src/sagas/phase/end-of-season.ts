@@ -1,5 +1,11 @@
 import { call, all, take, put, select, putResolve } from "redux-saga/effects";
-import { seasonStart, promote, relegate, setPhase } from "../game";
+import {
+  seasonStart,
+  promote,
+  relegate,
+  setPhase,
+  prepareSeason
+} from "../game";
 import { victors, eliminated } from "../../services/playoffs";
 import awards from "../../data/awards";
 import { List } from "immutable";
@@ -354,6 +360,8 @@ export default function* endOfSeasonPhase() {
     })
   ]);
 
+  yield call(prepareSeason);
+
   // yield call(processChampionBets);
   // yield call(setSeasonStat, ["medalists"], medalists);
 
@@ -378,6 +386,4 @@ export default function* endOfSeasonPhase() {
   if (divisionVictor !== phlLoser) {
     yield all([promote("division", divisionVictor), relegate("phl", phlLoser)]);
   }
-
-  yield call(seasonStart);
 }

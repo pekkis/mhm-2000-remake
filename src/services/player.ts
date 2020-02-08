@@ -43,7 +43,7 @@ END IF
 }
 */
 
-export const randomSkill = (country: PlayableCountries) => {
+export const randomSkill = (country: AllCountries) => {
   if (!skillGenerationMap[country]) {
     throw new Error(`Invalid country "${country}"`);
   }
@@ -64,25 +64,35 @@ export const positionFromLegacyPosition = (
   legacyPosition: number
 ): PlayerPosition => legacyPositionMap[legacyPosition];
 
-export const createRandomPlayer = (): Player => {
-  const country = countryFromLegacyCountry(random.pick(randoms.nationality));
-  const firstName = createFirstName(country);
-  const lastName = createLastName(country);
-  const skill = randomSkill(country);
+export const getRandomCountry = () =>
+  countryFromLegacyCountry(random.pick(randoms.nationality));
 
-  const position = positionFromLegacyPosition(random.pick(randoms.positions));
+export const createRandomPlayer = (preset: Partial<Player> = {}): Player => {
+  console.log("PRESET", preset);
 
-  const age = random.pick(randoms.age);
-  const ego = random.pick(randoms.ego);
+  const country = preset.country || getRandomCountry();
+
+  const firstName = preset.firstName || createFirstName(country);
+  const lastName = preset.lastName || createLastName(country);
+  const skill = preset.skill || randomSkill(country);
+
+  const position =
+    preset.position ||
+    positionFromLegacyPosition(random.pick(randoms.positions));
+
+  const age = preset.age || random.pick(randoms.age);
+  const ego = preset.ego || random.pick(randoms.ego);
 
   const leadership =
+    preset.leadership ||
     randoms.leadership[doubleNormalizedInt(randoms.leadership.length)];
 
   const charisma =
+    preset.charisma ||
     randoms.charisma[doubleNormalizedInt(randoms.charisma.length)];
 
-  const pp = random.pick(randoms.specialTeams);
-  const pk = random.pick(randoms.specialTeams);
+  const pp = preset.pp || random.pick(randoms.specialTeams);
+  const pk = preset.pk || random.pick(randoms.specialTeams);
 
   return createPlayer(
     lastName,
@@ -310,3 +320,10 @@ rahna = rahna * (1 + ((-10 + neup.kar) * karlisa))
 END SUB
 */
 };
+
+export const isDefenceman = (player: Player) => player.position === "d";
+
+export const isGoalkeeper = (player: Player) => player.position === "g";
+
+export const isForward = (player: Player) =>
+  ["lw", "c", "rw"].includes(player.position);

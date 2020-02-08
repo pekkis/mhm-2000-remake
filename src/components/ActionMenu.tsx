@@ -54,6 +54,11 @@ const ActionMenu: FunctionComponent = () => {
                 Pelaajamarkkinat
               </Link>
             </li>
+            <li>
+              <Link onClick={() => dispatch(closeMenu())} to="/pelaajarinki">
+                Pelaajarinki
+              </Link>
+            </li>
           </Calendar>
           <li>
             <Link onClick={() => dispatch(closeMenu())} to="/sarjataulukot">

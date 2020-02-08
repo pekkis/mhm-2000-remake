@@ -18,7 +18,8 @@ import {
   managerHasService,
   teamsMainCompetition,
   managersCurrentTeam,
-  managerObject
+  managerObject,
+  teamById
 } from "../services/selectors";
 import { incrementMorale, incrementReadiness, incurPenalty } from "./team";
 import { addNotification } from "./notification";
@@ -52,6 +53,34 @@ import {
   TeamSetOrganizationAction,
   TEAM_SET_ORGANIZATION
 } from "../ducks/team";
+import {
+  repeat,
+  sum,
+  indexBy,
+  range,
+  over,
+  lensProp,
+  evolve,
+  inc,
+  values
+} from "ramda";
+import {
+  createRandomPlayer,
+  getBaseSalary,
+  getRandomCountry,
+  isForward,
+  isDefenceman,
+  normalizeAbility
+} from "../services/player";
+import { PlayerPosition, Player } from "../types/player";
+import {
+  PlayerCreatePlayerAction,
+  PLAYER_CREATE_PLAYER
+} from "../ducks/player";
+import random from "../services/random";
+import { AllCountries } from "../types/country";
+import { PlayerGenerationInfo } from "../services/human-player-initializer";
+import { generatePlayers } from "../services/human-team-initializer";
 
 export function* addManager(details: ManagerInput) {
   // const mainCompetition = yield select(teamsMainCompetition(details.team));
@@ -120,6 +149,17 @@ export function* managerSelectStrategy(
   });
 }
 
+export function* hireHumanManager(manager: HumanManager, team: Team) {
+  console.log(team, "TEAM TO GENERATE");
+
+  const players = generatePlayers(manager, team);
+
+  yield put<PlayerCreatePlayerAction>({
+    type: PLAYER_CREATE_PLAYER,
+    payload: { players }
+  });
+}
+
 export function* hireManager(manager: Manager, team: string) {
   const managersTeam: string | undefined = yield select(
     managersCurrentTeam(manager.id)
@@ -142,6 +182,12 @@ export function* hireManager(manager: Manager, team: string) {
       isHuman: isHumanManager(manager)
     }
   });
+
+  const teamObj: Team = yield select(teamById(team));
+
+  if (isHumanManager(manager)) {
+    yield call(hireHumanManager, manager, teamObj);
+  }
 }
 
 export function* setBalance(managerId, amount) {
