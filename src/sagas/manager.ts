@@ -19,7 +19,10 @@ import {
   teamsMainCompetition,
   managersCurrentTeam,
   managerObject,
-  teamById
+  teamById,
+  managerById,
+  requireManagersTeamObj,
+  teamsContractedPlayers
 } from "../services/selectors";
 import { incrementMorale, incrementReadiness, incurPenalty } from "./team";
 import { addNotification } from "./notification";
@@ -51,7 +54,9 @@ import {
   TeamSetStrategyAction,
   TEAM_SET_STRATEGY,
   TeamSetOrganizationAction,
-  TEAM_SET_ORGANIZATION
+  TEAM_SET_ORGANIZATION,
+  TeamSetLineupAction,
+  TEAM_SET_LINEUP
 } from "../ducks/team";
 import {
   repeat,
@@ -81,6 +86,31 @@ import random from "../services/random";
 import { AllCountries } from "../types/country";
 import { PlayerGenerationInfo } from "../services/human-player-initializer";
 import { generatePlayers } from "../services/human-team-initializer";
+import lineupService from "../services/lineup";
+import { isHumanControlledTeam } from "../services/team";
+
+export function* automateLineup(managerId: string) {
+  const manager: Manager = yield select(managerById(managerId));
+  const team: Team = yield select(requireManagersTeamObj(manager.id));
+
+  if (!isHumanControlledTeam(team)) {
+    throw new Error("Team must be human controlled to automate lineups");
+  }
+
+  const players = yield select(teamsContractedPlayers(team.id));
+
+  const lineup = lineupService.automateLineup(players);
+
+  yield put<TeamSetLineupAction>({
+    type: TEAM_SET_LINEUP,
+    payload: {
+      team: team.id,
+      lineup: lineup
+    }
+  });
+
+  console.log("HELLUREI", lineup);
+}
 
 export function* addManager(details: ManagerInput) {
   // const mainCompetition = yield select(teamsMainCompetition(details.team));

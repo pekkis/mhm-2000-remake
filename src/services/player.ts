@@ -16,6 +16,7 @@ import util from "util";
 import { skillGenerationMap, randoms } from "./data/player-randomization";
 import { min, max } from "ramda";
 import uuid from "uuid";
+import { MapOf } from "../types/base";
 
 const legacyPositionMap = {
   1: "g",
@@ -327,3 +328,73 @@ export const isGoalkeeper = (player: Player) => player.position === "g";
 
 export const isForward = (player: Player) =>
   ["lw", "c", "rw"].includes(player.position);
+
+interface PositionSkillMapperFunc {
+  (skill: number, context: Player): number;
+}
+
+interface PositionSkillMapper {
+  g: PositionSkillMapperFunc;
+  d: PositionSkillMapperFunc;
+  lw: PositionSkillMapperFunc;
+  c: PositionSkillMapperFunc;
+  rw: PositionSkillMapperFunc;
+}
+
+type PositionSkillMappers = MapOf<PositionSkillMapper>;
+
+export const positionsAndEffectiveSkills: PositionSkillMappers = {
+  g: {
+    g: skill => skill,
+    d: () => 1,
+    lw: () => 1,
+    c: () => 1,
+    rw: () => 1
+  },
+  ld: {
+    g: () => 1,
+    d: skill => skill,
+    lw: skill => Math.floor(skill * 0.7),
+    c: skill => Math.floor(skill * 0.7),
+    rw: skill => Math.floor(skill * 0.7)
+  },
+  rd: {
+    g: () => 1,
+    d: skill => skill,
+    lw: skill => Math.floor(skill * 0.7),
+    c: skill => Math.floor(skill * 0.7),
+    rw: skill => Math.floor(skill * 0.7)
+  },
+  lw: {
+    g: () => 1,
+    d: skill => Math.floor(skill * 0.7),
+    lw: skill => skill,
+    c: skill => skill - 1,
+    rw: skill => skill - 1
+  },
+  c: {
+    g: () => 1,
+    d: skill => Math.floor(skill * 0.7),
+    lw: skill => skill - 1,
+    c: skill => skill,
+    rw: skill => skill - 1
+  },
+  rw: {
+    g: () => 1,
+    d: skill => Math.floor(skill * 0.7),
+    lw: skill => skill - 1,
+    c: skill => skill - 1,
+    rw: skill => skill
+  }
+};
+
+export const getEffectiveSkillAs = (position: string, player: Player) => {
+  return positionsAndEffectiveSkills[position][player.position](
+    player.skill,
+    player
+  );
+};
+
+export const getDisplayName = (player: Player): string => {
+  return `${player.lastName}, ${player.firstName}.`;
+};

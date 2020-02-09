@@ -5,11 +5,21 @@ import Box from "./styled-system/Box";
 import TurnIndicator from "./game/TurnIndicator";
 
 import styled from "@emotion/styled";
-import { activeManager, allTeamsMap, currentTurn } from "../services/selectors";
+import {
+  activeManager,
+  allTeamsMap,
+  currentTurn,
+  requireHumanManagersTeamObj,
+  teamsContractedPlayers
+} from "../services/selectors";
 import { HumanManager } from "../types/manager";
 import { MapOf, Turn } from "../types/base";
 import { Team } from "../types/team";
 import { useSelector } from "react-redux";
+import {
+  calculateStrengthFromLineup,
+  getEmptyLineup
+} from "../services/lineup";
 
 const ManagerName = styled.h2`
   margin: 0;
@@ -42,8 +52,10 @@ interface Props {
 
 const ManagerInfo: FunctionComponent<Props> = ({ details = false }) => {
   const manager: HumanManager = useSelector(activeManager);
-  const teams: MapOf<Team> = useSelector(allTeamsMap);
   const turn: Turn = useSelector(currentTurn);
+
+  const team = useSelector(requireHumanManagersTeamObj(manager.id));
+  const players = useSelector(teamsContractedPlayers(team.id));
 
   if (!manager.team) {
     throw new Error("Manager has no team!");
@@ -51,7 +63,10 @@ const ManagerInfo: FunctionComponent<Props> = ({ details = false }) => {
 
   // const team = getEffective(teams.get(manager.get("team")));
 
-  const team = teams[manager.team];
+  const strength = calculateStrengthFromLineup(
+    players,
+    team.lineup || getEmptyLineup()
+  );
 
   return (
     <Box p={1} bg="bar">
@@ -63,7 +78,7 @@ const ManagerInfo: FunctionComponent<Props> = ({ details = false }) => {
         <Details>
           <Detail>
             <Title>Voima</Title>
-            <Value>{JSON.stringify(team.strength)}</Value>
+            <Value>{JSON.stringify(strength)}</Value>
           </Detail>
 
           <Detail>

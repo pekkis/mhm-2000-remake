@@ -35,6 +35,13 @@ import { isComputerControlledTeam, isHumanControlledTeam } from "./team";
 import { isComputerManager } from "./manager";
 import { Player } from "../types/player";
 
+export const teamsContractedPlayers = (teamId: string) => (
+  state: MHMState
+): Player[] => {
+  const playerMap = state.player.players;
+  return values(playerMap).filter(p => p.contract?.team === teamId);
+};
+
 export const statsForSeason = (seasonId: number) => (
   state: MHMState
 ): SeasonStatistic => {
@@ -192,6 +199,23 @@ export const requireManagersTeam = (manager: string) => (
   const team = state.manager.managers[manager].team;
   if (!team) {
     throw new Error(`Manager ${manager} has no team`);
+  }
+
+  return team;
+};
+
+export const requireHumanManagersTeamObj = (manager: string) => (
+  state: MHMState
+): HumanControlledTeam => {
+  const teamId = requireManagersTeam(manager)(state);
+
+  const team = state.team.teams[teamId];
+  if (!team) {
+    throw new Error("Invalid managers team");
+  }
+
+  if (!isHumanControlledTeam(team)) {
+    throw new Error("Must be human controlled");
   }
 
   return team;

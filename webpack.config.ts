@@ -106,6 +106,17 @@ config2.devServer = {
   historyApiFallback: true
 };
 
-console.log(util.inspect(config2, false, 999));
+const config3 = over(
+  lensPath(["module", "rules", 1, "use", 0, "options"]),
+  options => {
+    return {
+      ...options,
+      cacheDirectory: true
+    };
+  },
+  config2
+);
 
-export default config2;
+console.log(util.inspect(config3, false, 999));
+
+export default config3;

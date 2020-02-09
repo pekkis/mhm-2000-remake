@@ -41,8 +41,26 @@ export interface Team {
   organization: TeamOrganization;
 }
 
+export interface ForwardLine {
+  lw?: string;
+  c?: string;
+  rw?: string;
+}
+
+export interface DefenceLine {
+  ld?: string;
+  rd?: string;
+}
+
+export interface Lineup {
+  g?: string;
+  a: [ForwardLine, ForwardLine, ForwardLine, ForwardLine];
+  d: [DefenceLine, DefenceLine, DefenceLine];
+}
+
 export interface HumanControlledTeam extends Team {
   isHumanControlled: true;
+  lineup?: Lineup;
 }
 
 export interface ComputerControlledTeam extends Team {

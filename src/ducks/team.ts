@@ -7,7 +7,8 @@ import {
   Team,
   TeamStrength,
   TeamEffect,
-  TeamOrganization
+  TeamOrganization,
+  Lineup
 } from "../types/team";
 import {
   dissocPath,
@@ -45,10 +46,19 @@ export const TEAM_SET_STRENGTHS = "TEAM_SET_STRENGTHS";
 export const TEAM_INCREMENT_READINESS = "TEAM_INCREMENT_READINESS";
 export const TEAM_SET_STRATEGY = "TEAM_SET_STRATEGY";
 export const TEAM_SET_ORGANIZATION = "TEAM_SET_ORGANIZATION";
+export const TEAM_SET_LINEUP = "TEAM_SET_LINEUP";
 
 const defaultState: TeamState = {
   teams: teamData
 };
+
+export interface TeamSetLineupAction {
+  type: typeof TEAM_SET_LINEUP;
+  payload: {
+    team: string;
+    lineup: Lineup;
+  };
+}
 
 export interface TeamRemoveManagerAction {
   type: typeof TEAM_REMOVE_MANAGER;
@@ -106,7 +116,8 @@ type TeamActions =
   | TeamIncrementReadinessAction
   | GameDecrementDurationsActions
   | TeamSetStrategyAction
-  | TeamSetOrganizationAction;
+  | TeamSetOrganizationAction
+  | TeamSetLineupAction;
 
 const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
   switch (action.type) {
@@ -124,6 +135,13 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
             readiness: 0
           })
         ),
+        state
+      );
+
+    case TEAM_SET_LINEUP:
+      return assocPath(
+        ["teams", action.payload.team, "lineup"],
+        action.payload.lineup,
         state
       );
 

@@ -18,7 +18,8 @@ import {
   toggleService,
   setActiveManager,
   managerSelectStrategy,
-  budgetOrganization
+  budgetOrganization,
+  automateLineup
 } from "../manager";
 import { orderPrank } from "../prank";
 import { acceptInvitation } from "../invitation";
@@ -48,7 +49,9 @@ import {
   MANAGER_SELECT_STRATEGY,
   ManagerSelectStrategyAction,
   ManagerBudgetOrganizationAction,
-  MANAGER_BUDGET_ORGANIZATION
+  MANAGER_BUDGET_ORGANIZATION,
+  ManagerLineupAutomateAction,
+  MANAGER_LINEUP_AUTOMATE
 } from "../../ducks/manager";
 import {
   PlayerContractInitiateAction,
@@ -83,6 +86,12 @@ export default function* actionPhase() {
       a
     ) {
       yield call(managerSelectStrategy, a.payload.manager, a.payload.strategy);
+    }),
+
+    takeLeading<ManagerLineupAutomateAction>(MANAGER_LINEUP_AUTOMATE, function*(
+      a
+    ) {
+      yield call(automateLineup, a.payload.manager);
     }),
 
     takeLeading<ManagerBudgetOrganizationAction>(
