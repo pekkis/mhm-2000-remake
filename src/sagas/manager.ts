@@ -45,7 +45,7 @@ import {
 } from "../types/manager";
 import { DifficultyLevels, SeasonStrategies } from "../types/base";
 import { ManagerAddManagerAction, MANAGER_ADD } from "../ducks/manager";
-import { Team, TeamOrganization } from "../types/team";
+import { Team, TeamOrganization, Lineup } from "../types/team";
 import {
   TeamRemoveManagerAction,
   TeamAddManagerAction,
@@ -99,7 +99,7 @@ export function* automateLineup(managerId: string) {
 
   const players = yield select(teamsContractedPlayers(team.id));
 
-  const lineup = lineupService.automateLineup(players);
+  const lineup: Lineup = lineupService.automateLineup(players);
 
   yield put<TeamSetLineupAction>({
     type: TEAM_SET_LINEUP,
@@ -110,6 +110,23 @@ export function* automateLineup(managerId: string) {
   });
 
   console.log("HELLUREI", lineup);
+}
+
+export function* setLineup(managerId: string, lineup: Lineup) {
+  const manager: Manager = yield select(managerById(managerId));
+  const team: Team = yield select(requireManagersTeamObj(manager.id));
+
+  if (!isHumanControlledTeam(team)) {
+    throw new Error("Team must be human controlled to set lineups");
+  }
+
+  yield put<TeamSetLineupAction>({
+    type: TEAM_SET_LINEUP,
+    payload: {
+      team: team.id,
+      lineup: lineup
+    }
+  });
 }
 
 export function* addManager(details: ManagerInput) {

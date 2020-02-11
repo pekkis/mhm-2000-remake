@@ -10,9 +10,123 @@ import {
   indexBy,
   assocPath,
   range,
-  differenceWith
+  differenceWith,
+  values,
+  path,
+  dissocPath
 } from "ramda";
 import { getEffectiveSkillAs } from "./player";
+
+const flattenLineup = (lineup: Lineup) => {
+  return [lineup.g, ...lineup.d.map(dl => values(dl))].filter(p => p);
+};
+
+const playerIsInLineup = (lineup: Lineup, player: Player) => {
+  const flattened = flattenLineup(lineup);
+  return flattened.includes(player.id);
+};
+
+interface IsAssignableFunc {
+  (lineup: Lineup, player: Player): boolean;
+}
+
+const createForwardLineAssignPossibility = (lineNumber: number) => ({
+  lw: (lineup: Lineup, player: Player): boolean => {
+    if (lineup.a[lineNumber].c === player.id) {
+      return false;
+    }
+
+    if (lineup.a[lineNumber].rw === player.id) {
+      return false;
+    }
+
+    return true;
+  },
+
+  c: (lineup: Lineup, player: Player): boolean => {
+    if (lineup.a[lineNumber].lw === player.id) {
+      return false;
+    }
+
+    if (lineup.a[lineNumber].rw === player.id) {
+      return false;
+    }
+
+    return true;
+  },
+
+  rw: (lineup: Lineup, player: Player): boolean => {
+    if (lineup.a[lineNumber].lw === player.id) {
+      return false;
+    }
+
+    if (lineup.a[lineNumber].c === player.id) {
+      return false;
+    }
+
+    return true;
+  }
+});
+
+const createDefenceLineAssignPossibility = (lineNumber: number) => ({
+  ld: (lineup: Lineup, player: Player): boolean => {
+    if (lineup.d[lineNumber].rd === player.id) {
+      return false;
+    }
+
+    return true;
+  },
+
+  rd: (lineup: Lineup, player: Player): boolean => {
+    if (lineup.d[lineNumber].ld === player.id) {
+      return false;
+    }
+    return true;
+  }
+});
+
+const assignPossibilities = {
+  g: (lineup: Lineup, player: Player) => {
+    return !playerIsInLineup(lineup, player);
+  },
+  d: [
+    createDefenceLineAssignPossibility(0),
+    createDefenceLineAssignPossibility(1),
+    createDefenceLineAssignPossibility(2)
+  ],
+  a: [
+    createForwardLineAssignPossibility(0),
+    createForwardLineAssignPossibility(1),
+    createForwardLineAssignPossibility(2),
+    createForwardLineAssignPossibility(3)
+  ]
+};
+
+export const assignPlayerToLineup = (
+  pathToPosition: (string | number)[],
+  lineup: Lineup,
+  player?: Player
+): Lineup => {
+  const isAssignableFunc: IsAssignableFunc | undefined = path(
+    pathToPosition,
+    assignPossibilities
+  );
+  if (!isAssignableFunc) {
+    throw new Error(`Invalid position path ${pathToPosition.join(";")}`);
+  }
+
+  if (!player) {
+    return dissocPath(pathToPosition, lineup);
+  }
+
+  const isAssignable = isAssignableFunc(lineup, player);
+
+  if (!isAssignable) {
+    throw new Error("Player is not assignable to lineup");
+  }
+
+  return assocPath(pathToPosition, player.id, lineup);
+};
 
 export const createEffectiveSkillSorter = (position: string) => {
   const sorter = sortWith<Player>([
@@ -90,28 +204,6 @@ export const sortPlayersForPositions = (
   );
 };
 
-export const assignPlayerToGoalkeeper = (lineup: Lineup, player?: Player) => {
-  return assocPath(["g"], player?.id, lineup);
-};
-
-export const assignPlayerToDefenceLine = (
-  lineNumber: number,
-  position: string,
-  lineup: Lineup,
-  player?: Player
-) => {
-  return assocPath(["d", lineNumber, position], player?.id, lineup);
-};
-
-export const assignPlayerToForwardLine = (
-  lineNumber: number,
-  position: string,
-  lineup: Lineup,
-  player?: Player
-) => {
-  return assocPath(["a", lineNumber, position], player?.id, lineup);
-};
-
 export const mapHandler = (players: MapOf<Player>) => {
   return (id?: string) => {
     if (!id) {
@@ -163,122 +255,51 @@ export const calculateStrengthFromLineup = (
 
 export const automateLineup = (players: Player[]): Lineup => {
   const initialLineup: Lineup = getEmptyLineup();
-
   const playerMap = indexBy(prop("id"), players);
 
   const goalkeepers = sortPlayersForPosition("g", ["g"], players);
-
-  const [leftDefencemen, rightDefenceMen] = sortPlayersForPositions(
+  const [leftDefencemen, rightDefencemen] = sortPlayersForPositions(
     ["ld", "rd"],
     ["d"],
     players
   );
-
-  // const leftDefencemen = sortPlayersForPosition("ld", ["d"], players);
-  // const rightDefencemen = sortPlayersForPosition("rd", ["d"], players);
   const leftWings = sortPlayersForPosition("lw", ["lw"], players);
   const centers = sortPlayersForPosition("c", ["c"], players);
   const rightWings = sortPlayersForPosition("rw", ["rw"], players);
 
   const getter = mapHandler(playerMap);
 
-  const operations = [
-    (lineup: Lineup) =>
-      assignPlayerToGoalkeeper(lineup, getter(nth(0, goalkeepers))),
-    ...range(0, 3).map(pairing => {
-      return [
-        (lineup: Lineup) =>
-          assignPlayerToDefenceLine(
-            pairing,
-            "ld",
-            lineup,
-            getter(nth(pairing * 2, leftDefencemen))
-          ),
-        (lineup: Lineup) =>
-          assignPlayerToDefenceLine(
-            pairing,
-            "rd",
-            lineup,
-            getter(nth(pairing * 2 + 1, rightDefenceMen))
-          )
-      ];
-    }),
-    ...range(0, 4).map(lineNo => {
-      return [
-        (lineup: Lineup) =>
-          assignPlayerToForwardLine(
-            lineNo,
-            "lw",
-            lineup,
-            getter(nth(lineNo, leftWings))
-          ),
-        (lineup: Lineup) =>
-          assignPlayerToForwardLine(
-            lineNo,
-            "c",
-            lineup,
-            getter(nth(lineNo, centers))
-          ),
-        (lineup: Lineup) =>
-          assignPlayerToForwardLine(
-            lineNo,
-            "rw",
-            lineup,
-            getter(nth(lineNo, rightWings))
-          )
-      ];
-    })
-  ].flat();
+  type Operazion = [(string | number)[], number, string[]];
 
-  console.log(operations, "operatore");
+  // This is like this just because TypeScript wants it to be or it doesn't fucking understand what I'm doing.
+  const operations: Operazion[] = [
+    [["g"], 0, goalkeepers],
+    ...range(0, 3)
+      .map(pairing => {
+        const operations: Operazion[] = [
+          [["d", pairing, "ld"], pairing, leftDefencemen],
+          [["d", pairing, "rd"], pairing, rightDefencemen]
+        ];
+        return operations;
+      })
+      .flat(),
 
+    ...range(0, 4)
+      .map(pairing => {
+        const operations: Operazion[] = [
+          [["a", pairing, "lw"], pairing, leftWings],
+          [["a", pairing, "c"], pairing, centers],
+          [["a", pairing, "rw"], pairing, rightWings]
+        ];
+        return operations;
+      })
+      .flat()
+  ];
   return operations.reduce(
-    (lineup, operation) => operation(lineup),
+    (lineup, [path, bestest, from]) =>
+      assignPlayerToLineup(path, lineup, getter(nth(bestest, from))),
     initialLineup
   );
-
-  /*
-
-  return {
-    g: nth(0, goalkeepers),
-    d: [
-      {
-        ld: nth(0, defencemen),
-        rd: nth(1, defencemen)
-      },
-      {
-        ld: nth(2, defencemen),
-        rd: nth(3, defencemen)
-      },
-      {
-        ld: nth(4, defencemen),
-        rd: nth(5, defencemen)
-      }
-    ],
-    a: [
-      {
-        lw: nth(0, leftWings),
-        c: nth(0, centers),
-        rw: nth(0, rightWings)
-      },
-      {
-        lw: nth(1, leftWings),
-        c: nth(1, centers),
-        rw: nth(1, rightWings)
-      },
-      {
-        lw: nth(2, leftWings),
-        c: nth(2, centers),
-        rw: nth(2, rightWings)
-      },
-      {
-        lw: nth(3, leftWings),
-        c: nth(3, centers),
-        rw: nth(3, rightWings)
-      }
-    ]
-  };
-  */
 };
 
 const lineupService = {

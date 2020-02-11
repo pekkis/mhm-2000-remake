@@ -12,14 +12,11 @@ import {
 } from "redux-saga/effects";
 import { gameSave, setPhase } from "../game";
 import {
-  watchTransferMarket,
-  crisisMeeting,
-  improveArena,
-  toggleService,
   setActiveManager,
   managerSelectStrategy,
   budgetOrganization,
-  automateLineup
+  automateLineup,
+  setLineup
 } from "../manager";
 import { orderPrank } from "../prank";
 import { acceptInvitation } from "../invitation";
@@ -51,7 +48,9 @@ import {
   ManagerBudgetOrganizationAction,
   MANAGER_BUDGET_ORGANIZATION,
   ManagerLineupAutomateAction,
-  MANAGER_LINEUP_AUTOMATE
+  MANAGER_LINEUP_AUTOMATE,
+  ManagerLineupSetAction,
+  MANAGER_LINEUP_SET
 } from "../../ducks/manager";
 import {
   PlayerContractInitiateAction,
@@ -92,6 +91,10 @@ export default function* actionPhase() {
       a
     ) {
       yield call(automateLineup, a.payload.manager);
+    }),
+
+    takeLeading<ManagerLineupSetAction>(MANAGER_LINEUP_SET, function*(a) {
+      yield call(setLineup, a.payload.manager, a.payload.lineup);
     }),
 
     takeLeading<ManagerBudgetOrganizationAction>(

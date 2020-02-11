@@ -28,7 +28,7 @@ import {
   TEAM_ADD_MANAGER
 } from "./team";
 import { managers } from "../services/manager";
-import { TeamOrganization } from "../types/team";
+import { TeamOrganization, Lineup } from "../types/team";
 
 export const MANAGER_NEXT = "MANAGER_NEXT";
 export const MANAGER_ADD = "MANAGER_ADD";
@@ -36,11 +36,20 @@ export const MANAGER_SET_ACTIVE = "MANAGER_SET_ACTIVE";
 export const MANAGER_BUDGET_ORGANIZATION = "MANAGER_BUDGET_ORGANIZATION";
 export const MANAGER_SELECT_STRATEGY = "MANAGER_SELECT_STRATEGY";
 export const MANAGER_LINEUP_AUTOMATE = "MANAGER_LINEUP_AUTOMATE";
+export const MANAGER_LINEUP_SET = "MANAGER_LINEUP_SET";
 
 export interface ManagerLineupAutomateAction {
   type: typeof MANAGER_LINEUP_AUTOMATE;
   payload: {
     manager: string;
+  };
+}
+
+export interface ManagerLineupSetAction {
+  type: typeof MANAGER_LINEUP_SET;
+  payload: {
+    manager: string;
+    lineup: Lineup;
   };
 }
 
