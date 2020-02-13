@@ -1,5 +1,5 @@
 import { Player } from "../types/player";
-import { Lineup, TeamStrength } from "../types/team";
+import { Lineup, TeamStrength, DefenceLine, ForwardLine } from "../types/team";
 import { MapOf } from "../types/base";
 import {
   sortWith,
@@ -13,7 +13,8 @@ import {
   differenceWith,
   values,
   path,
-  dissocPath
+  dissocPath,
+  sum
 } from "ramda";
 import { getEffectiveSkillAs } from "./player";
 
@@ -23,7 +24,7 @@ const flattenLineup = (lineup: Lineup) => {
 
 const playerIsInLineup = (lineup: Lineup, player: Player) => {
   const flattened = flattenLineup(lineup);
-  return flattened.includes(player.id);
+  return flattened.includes(player.id) && lineup.g !== player.id;
 };
 
 interface IsAssignableFunc {
@@ -102,6 +103,23 @@ const assignPossibilities = {
   ]
 };
 
+export const isPlayerAssignableToLineup = (
+  pathToPosition: (string | number)[],
+  lineup: Lineup,
+  player: Player
+): boolean => {
+  const isAssignableFunc: IsAssignableFunc | undefined = path(
+    pathToPosition,
+    assignPossibilities
+  );
+  if (!isAssignableFunc) {
+    throw new Error(`Invalid position path ${pathToPosition.join(";")}`);
+  }
+
+  const isAssignable = isAssignableFunc(lineup, player);
+  return isAssignable;
+};
+
 export const assignPlayerToLineup = (
   pathToPosition: (string | number)[],
   lineup: Lineup,
@@ -114,14 +132,11 @@ export const assignPlayerToLineup = (
   if (!isAssignableFunc) {
     throw new Error(`Invalid position path ${pathToPosition.join(";")}`);
   }
-
   if (!player) {
     return dissocPath(pathToPosition, lineup);
   }
 
-  const isAssignable = isAssignableFunc(lineup, player);
-
-  if (!isAssignable) {
+  if (!isPlayerAssignableToLineup(pathToPosition, lineup, player)) {
     throw new Error("Player is not assignable to lineup");
   }
 
@@ -238,6 +253,77 @@ const getEffectiveSkill = (
   return getEffectiveSkillAs(position, player);
 };
 
+export const isDefenceLineComplete = (line: DefenceLine) => {
+  if (!line.ld || !line.ld) {
+    return false;
+  }
+
+  return true;
+};
+
+export const isForwardLineComplete = (line: ForwardLine) => {
+  if (!line.lw || !line.c || !line.rw) {
+    return false;
+  }
+
+  return true;
+};
+
+export const calculateDefenceStrengthFromLineup = (
+  players: MapOf<Player>,
+  lineup: Lineup
+): number => {
+  return sum(
+    lineup.d.map(line => {
+      if (!isDefenceLineComplete(line)) {
+        return 0;
+      }
+
+      const completeLine = line as Required<DefenceLine>;
+
+      return sum([
+        getEffectiveSkillAs("ld", players[completeLine.ld]),
+        getEffectiveSkillAs("rd", players[completeLine.rd])
+      ]);
+    })
+  );
+};
+
+export const calculateAttackStrengthFromLineup = (
+  players: MapOf<Player>,
+  lineup: Lineup
+): number => {
+  return sum(
+    lineup.a.map(line => {
+      if (!isForwardLineComplete(line)) {
+        return 0;
+      }
+
+      const completeLine = line as Required<ForwardLine>;
+
+      return sum([
+        getEffectiveSkillAs("lw", players[completeLine.lw]),
+        getEffectiveSkillAs("c", players[completeLine.c]),
+        getEffectiveSkillAs("rw", players[completeLine.c])
+      ]);
+    })
+  );
+};
+
+export const calculatePowerPlayStrengthFromLineup = (
+  players: MapOf<Player>,
+  lineup: Lineup
+): number => {
+  return -1;
+};
+
+export const calculatePenaltyKillStrengthFromLineup = (
+  players: MapOf<Player>,
+  lineup: Lineup
+): number => {
+  return -1;
+};
+
 export const calculateStrengthFromLineup = (
   players: Player[],
   lineup: Lineup
@@ -245,11 +331,11 @@ export const calculateStrengthFromLineup = (
   const playerMap = indexBy(prop("id"), players);
 
   return {
-    g: getEffectiveSkill(playerMap, "g", lineup.g),
-    d: 0,
-    a: 0,
-    pp: -1,
-    pk: -1
+    g: lineup.g ? getEffectiveSkill(playerMap, "g", lineup.g) : 0,
+    d: calculateDefenceStrengthFromLineup(playerMap, lineup),
+    a: calculateAttackStrengthFromLineup(playerMap, lineup),
+    pp: calculatePowerPlayStrengthFromLineup(playerMap, lineup),
+    pk: calculatePenaltyKillStrengthFromLineup(playerMap, lineup)
   };
 };
 

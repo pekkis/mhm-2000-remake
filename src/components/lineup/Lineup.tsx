@@ -10,6 +10,9 @@ import {
   MANAGER_LINEUP_SET
 } from "../../ducks/manager";
 import { activeManager } from "../../services/selectors";
+import DefenceLineLineup from "./DefenceLineLineup";
+import { range } from "ramda";
+import ForwardLineLineup from "./ForwardLineLineup";
 
 interface Props {
   players: MapOf<Player>;
@@ -47,21 +50,35 @@ const Lineup: FunctionComponent<Props> = ({
 
   return (
     <div>
-      <PlayerLineup
-        players={players}
-        lineup={lineup}
-        sortToPosition="g"
-        pathToPosition={["g"]}
-        assignToLineup={assignToLineup}
-      />
+      <div>
+        <PlayerLineup
+          players={players}
+          lineup={lineup}
+          sortToPosition="g"
+          pathToPosition={["g"]}
+          assignToLineup={assignToLineup}
+        />
+      </div>
 
-      <PlayerLineup
-        players={players}
-        lineup={lineup}
-        sortToPosition="ld"
-        pathToPosition={["d", 0, "ld"]}
-        assignToLineup={assignToLineup}
-      />
+      {range(0, 3).map(lineNumber => (
+        <DefenceLineLineup
+          key={lineNumber}
+          players={players}
+          lineup={lineup}
+          lineNumber={lineNumber}
+          assignToLineup={assignToLineup}
+        />
+      ))}
+
+      {range(0, 4).map(lineNumber => (
+        <ForwardLineLineup
+          key={lineNumber}
+          players={players}
+          lineup={lineup}
+          lineNumber={lineNumber}
+          assignToLineup={assignToLineup}
+        />
+      ))}
 
       <div>{JSON.stringify(lineup)}</div>
     </div>

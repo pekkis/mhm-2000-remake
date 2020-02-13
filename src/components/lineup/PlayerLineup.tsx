@@ -27,16 +27,14 @@ const PlayerLineup: FunctionComponent<Props> = ({
   const player = path<string | undefined>(pathToPosition, lineup);
 
   return (
-    <div>
-      <PlayerSelect
-        assignToLineup={assignToLineup}
-        sortToPosition={sortToPosition}
-        current={player}
-        players={players}
-        pathToPosition={pathToPosition}
-        lineup={lineup}
-      />
-    </div>
+    <PlayerSelect
+      assignToLineup={assignToLineup}
+      sortToPosition={sortToPosition}
+      current={player}
+      players={players}
+      pathToPosition={pathToPosition}
+      lineup={lineup}
+    />
   );
 };
 

@@ -1,6 +1,9 @@
 import React, { FunctionComponent } from "react";
 import { Player } from "../../types/player";
-import { sortPlayersForPosition } from "../../services/lineup";
+import {
+  sortPlayersForPosition,
+  isPlayerAssignableToLineup
+} from "../../services/lineup";
 import { MapOf } from "../../types/base";
 import { values } from "ramda";
 import { getDisplayName, getEffectiveSkillAs } from "../../services/player";
@@ -20,6 +23,7 @@ interface Props {
 }
 
 const PlayerSelect: FunctionComponent<Props> = ({
+  lineup,
   players,
   sortToPosition,
   pathToPosition,
@@ -33,21 +37,30 @@ const PlayerSelect: FunctionComponent<Props> = ({
     values(players)
   );
 
+  console.log("current", current);
+
   return (
     <select
       value={current}
-      onBlur={e => {
-        console.log("HELLUREI", e.currentTarget.value);
-        assignToLineup(pathToPosition, e.currentTarget.value);
+      onChange={e => {
+        console.log("HELLUREI", e.target.value);
+        assignToLineup(pathToPosition, e.target.value);
       }}
     >
       <option value="">-</option>
       {sortedPlayers
         .map(id => players[id])
         .map(player => {
+          const isAssignable = isPlayerAssignableToLineup(
+            pathToPosition,
+            lineup,
+            player
+          );
+
           return (
-            <option value={player.id} key={player.id}>
-              {getDisplayName(player)} ({getEffectiveSkillAs("g", player)})
+            <option disabled={!isAssignable} value={player.id} key={player.id}>
+              {getDisplayName(player)} ({player.position},
+              {getEffectiveSkillAs(sortToPosition, player)})
             </option>
           );
         })}
