@@ -44,6 +44,10 @@ const PlayerList: FunctionComponent<Props> = ({
             <th>Maa</th>
             <th>PP</th>
             <th>T</th>
+            <th>ldr</th>
+            <th>cha</th>
+            <th>ego</th>
+            <th>spe</th>
           </tr>
         </thead>
         <tbody>
@@ -61,6 +65,10 @@ const PlayerList: FunctionComponent<Props> = ({
                 </td>
                 <td>{player.position}</td>
                 <td>{player.skill}</td>
+                <td>{player.leadership}</td>
+                <td>{player.charisma}</td>
+                <td>{player.ego}</td>
+                <td>{JSON.stringify(player.perks)}</td>
               </tr>
             );
           })}

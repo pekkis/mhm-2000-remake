@@ -2,7 +2,8 @@ import {
   Player,
   PlayerPosition,
   Contract,
-  ContractNegotiation
+  ContractNegotiation,
+  PlayerPerkNames
 } from "../types/player";
 import random, { doubleNormalizedInt } from "./random";
 import {
@@ -14,9 +15,11 @@ import {
 import { AllCountries, PlayableCountries } from "../types/country";
 import util from "util";
 import { skillGenerationMap, randoms } from "./data/player-randomization";
-import { min, max } from "ramda";
+import { min, max, curry } from "ramda";
 import uuid from "uuid";
 import { MapOf } from "../types/base";
+import { Manager } from "../types/manager";
+import { playerPerksMap } from "./player-perks";
 
 const legacyPositionMap = {
   1: "g",
@@ -68,6 +71,37 @@ export const positionFromLegacyPosition = (
 export const getRandomCountry = () =>
   countryFromLegacyCountry(random.pick(randoms.nationality));
 
+export const createRandomPlayerPerks = (
+  skill: number,
+  age: number
+): PlayerPerkNames[] => {
+  if (skill <= 6) {
+    return [];
+  }
+
+  const rnd = random.integer(1, 100);
+
+  if (rnd < 11) {
+    return ["surfer"];
+  }
+
+  if (rnd < 16) {
+    return ["enforcer"];
+  }
+
+  if (rnd < 19) {
+    return ["tikitalk"];
+  }
+
+  if (rnd < 22) {
+    if (age >= 30) {
+      return ["leader"];
+    }
+  }
+
+  return [];
+};
+
 export const createRandomPlayer = (preset: Partial<Player> = {}): Player => {
   console.log("PRESET", preset);
 
@@ -95,6 +129,8 @@ export const createRandomPlayer = (preset: Partial<Player> = {}): Player => {
   const pp = preset.pp || random.pick(randoms.specialTeams);
   const pk = preset.pk || random.pick(randoms.specialTeams);
 
+  const perks = createRandomPlayerPerks(skill, age);
+
   return createPlayer(
     lastName,
     firstName,
@@ -106,7 +142,8 @@ export const createRandomPlayer = (preset: Partial<Player> = {}): Player => {
     leadership,
     charisma,
     pp,
-    pk
+    pk,
+    perks
   );
 };
 
@@ -121,7 +158,8 @@ export const createPlayer = (
   leadership: number,
   charisma: number,
   pp: number,
-  pk: number
+  pk: number,
+  perks: PlayerPerkNames[] = []
 ): Player => {
   const player: Player = {
     id: uuid(),
@@ -135,9 +173,16 @@ export const createPlayer = (
     leadership: normalizeAbility(leadership),
     charisma: normalizeAbility(charisma),
     pp: normalizeModifier(pp),
-    pk: normalizeModifier(pk)
+    pk: normalizeModifier(pk),
+    perks,
+    energy: 0,
+    effects: []
   };
-  return player;
+
+  return perks.reduce((p: Player, perk: PlayerPerkNames) => {
+    const perkAdder = playerPerksMap[perk].addToPlayer;
+    return perkAdder(p);
+  }, player);
 };
 
 /*
@@ -388,12 +433,24 @@ export const positionsAndEffectiveSkills: PositionSkillMappers = {
   }
 };
 
-export const getEffectiveSkillAs = (position: string, player: Player) => {
+export const getKnownSkill = (manager: Manager) => (player: Player): number => {
+  return player.skill;
+};
+
+export const getNominalSkill = (player: Player) => {
+  return player.skill;
+};
+
+export const getActualSkill = (player: Player) => {
+  return player.skill;
+};
+
+export const getEffectiveSkillAs = curry((position: string, player: Player) => {
   return positionsAndEffectiveSkills[position][player.position](
-    player.skill,
+    getNominalSkill(player),
     player
   );
-};
+});
 
 export const getDisplayName = (player: Player): string => {
   return `${player.lastName}, ${player.firstName}.`;

@@ -28,6 +28,44 @@ export interface ContractNegotiation {
   context: string;
 }
 
+export interface PlayerPerkService {
+  label: string;
+  addToPlayer: (player: Player) => Player;
+}
+
+export type PlayerPerkNames =
+  | "leader"
+  | "tikitalk"
+  | "weirdo"
+  | "fatso"
+  | "enforcer"
+  | "samba"
+  | "haminator"
+  | "surfer"
+  | "unpredictable"
+  | "pappaBetalar"
+  | "dynamicDuo"
+  | "agitator"
+  | "zombie";
+
+export interface Injury {
+  duration: number;
+}
+
+export interface Suspension {
+  duration: number;
+}
+
+export interface Absence {
+  duration: number;
+  type: string;
+}
+
+export interface PlayerEffect {
+  type: string;
+  duration: number;
+}
+
 export interface Player {
   id: string;
   lastName: string;
@@ -42,4 +80,10 @@ export interface Player {
   pk: number;
   pp: number;
   contract?: Contract;
+  perks: PlayerPerkNames[];
+  energy: number;
+  injury?: Injury;
+  absence?: Absence;
+  suspension?: Suspension;
+  effects: PlayerEffect[];
 }
