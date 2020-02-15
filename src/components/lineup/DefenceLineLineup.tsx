@@ -3,6 +3,7 @@ import { Player } from "../../types/player";
 import { MapOf } from "../../types/base";
 import { Lineup } from "../../types/team";
 import PlayerLineup from "./PlayerLineup";
+import { SkillGetter } from "../../services/player";
 
 interface Props {
   lineNumber: number;
@@ -12,17 +13,20 @@ interface Props {
     pathToPosition: (string | number)[],
     playerId: string
   ) => void;
+  skillGetter: SkillGetter;
 }
 
 const DefenceLineLineup: FunctionComponent<Props> = ({
   players,
   lineNumber,
   lineup,
-  assignToLineup
+  assignToLineup,
+  skillGetter
 }) => {
   return (
     <div>
       <PlayerLineup
+        skillGetter={skillGetter}
         players={players}
         lineup={lineup}
         sortToPosition="ld"
@@ -30,6 +34,7 @@ const DefenceLineLineup: FunctionComponent<Props> = ({
         assignToLineup={assignToLineup}
       />
       <PlayerLineup
+        skillGetter={skillGetter}
         players={players}
         lineup={lineup}
         sortToPosition="rd"

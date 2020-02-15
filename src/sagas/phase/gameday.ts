@@ -11,7 +11,11 @@ import {
   CompetitionGroup,
   ScheduleGame
 } from "../../types/base";
-import { currentCalendarEntry, allTeamsMap } from "../../services/selectors";
+import {
+  currentCalendarEntry,
+  allTeamsMap,
+  allManagersMap
+} from "../../services/selectors";
 import competitionData from "../../services/competitions";
 import competitionTypes from "../../services/competition-type";
 import { groupEnd } from "../game";
@@ -24,6 +28,7 @@ import {
   CompetitionAdvanceAction,
   COMPETITION_ADVANCE
 } from "../../ducks/competition";
+import { Manager } from "../../types/manager";
 
 function* playRoundOfMatches(
   competitionId: string,
@@ -36,6 +41,8 @@ function* playRoundOfMatches(
   );
 
   const teams: MapOf<Team> = yield select(allTeamsMap);
+
+  const managers: MapOf<Manager> = yield select(allManagersMap);
 
   const phase = competition.phases[phaseId];
   const group = phase.groups[groupId];
@@ -53,18 +60,21 @@ function* playRoundOfMatches(
       continue;
     }
 
+    const homeTeam = teams[group.teams[pairing.home]];
+    const awayTeam = teams[group.teams[pairing.away]];
+
     const matchInput: MatchInput = {
       competition,
       group,
       phase,
       matchup: pairingId,
       teams: {
-        home: teams[group.teams[pairing.home]],
-        away: teams[group.teams[pairing.away]]
+        home: homeTeam,
+        away: awayTeam
       }
     };
 
-    const matchOutput = playMatch(matchInput);
+    const matchOutput = yield call(playMatch, matchInput);
 
     const result: ScheduleGame = {
       ...pairing,

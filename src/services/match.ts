@@ -1,6 +1,6 @@
-import { Team } from "../types/team";
+import { Team, TeamStrength } from "../types/team";
 import competitions from "./competitions";
-import { mapObjIndexed, evolve, range, inc } from "ramda";
+import { mapObjIndexed, evolve, range, inc, values } from "ramda";
 import random from "./random";
 import {
   MatchInput,
@@ -8,9 +8,17 @@ import {
   PartialMatchResult,
   MatchResult,
   MatchFacts,
-  ScheduleGame
+  ScheduleGame,
+  MapOf
 } from "../types/base";
 import competitionTypeService from "./competition-type";
+import { isHumanManager } from "../types/manager";
+import { calculateStrengthFromLineup } from "./lineup";
+import { getActualSkill } from "./player";
+import { MHMState } from "../ducks";
+import { select } from "redux-saga/effects";
+import { Player } from "../types/player";
+import { isHumanControlledTeam } from "./team";
 
 /*
 TODO:
@@ -35,7 +43,7 @@ const moraleModifier = (team: Team, advantage: number) => {
 };
 
 interface Matchup {
-  [key: string]: Team;
+  [key: string]: TeamStrength;
 }
 
 interface AttackRoles {
@@ -47,14 +55,13 @@ const matchAttack = (skills: Matchup) => (
   a: PartialMatchResult,
   roles: AttackRoles
 ) => {
-  const aRand = skills[roles.attack].strength.a * random.real(0, 1);
-  const dRand = skills[roles.defend].strength.d * random.real(0, 1);
+  const aRand = skills[roles.attack].a * random.real(0, 1);
+  const dRand = skills[roles.defend].d * random.real(0, 1);
 
   if (aRand > dRand) {
-    const aRand = skills[roles.attack].strength.a * random.real(0, 1);
+    const aRand = skills[roles.attack].a * random.real(0, 1);
     const gRand =
-      skills[roles.defend].strength.g * random.real(0, 1) +
-      skills[roles.defend].strength.d / 3;
+      skills[roles.defend].g * random.real(0, 1) + skills[roles.defend].d / 3;
     if (aRand > gRand) {
       return evolve(
         {
@@ -87,7 +94,7 @@ const generatore = function*() {
   } while (true);
 };
 
-const continuousOvertime = (skills, result) => {
+const continuousOvertime = (skills: Matchup, result) => {
   const gen = generatore();
   let ot;
   do {
@@ -98,7 +105,7 @@ const continuousOvertime = (skills, result) => {
   return ot;
 };
 
-const fiveMinutesOvertime = (skills, result) => {
+const fiveMinutesOvertime = (skills: Matchup, result) => {
   const gen = generatore();
   for (let x = 1; x <= 4; x = x + 1) {
     const roles = gen.next().value;
@@ -110,7 +117,11 @@ const fiveMinutesOvertime = (skills, result) => {
   return result;
 };
 
-export const playMatch = (input: MatchInput) => {
+export const playMatch = function*(input: MatchInput) {
+  const players: MapOf<Player> = yield select(
+    (state: MHMState) => state.player.players
+  );
+
   const advantages = {
     home: competitions[input.competition.id].homeAdvantage(
       input.phase.id,
@@ -124,39 +135,51 @@ export const playMatch = (input: MatchInput) => {
 
   const { teams } = input;
 
+  // TODO: forfeit game if invalid lineup
+
+  const strengths = mapObjIndexed((team: Team) => {
+    if (isHumanControlledTeam(team)) {
+      return calculateStrengthFromLineup(
+        getActualSkill,
+        values(players),
+        team.lineup
+      );
+    }
+    // TODO: Calculate computer teams' effects
+    return team.strength;
+  }, teams);
+
+  console.log("strenghts", strengths);
+
   const teamModifiers = [moraleModifier];
 
   const advantagesAfterTeamModifiers = mapObjIndexed((a, which) => {
     return teamModifiers.reduce((a2, tm) => tm(teams[which], a2), a);
   }, advantages);
 
-  const effectiveTeams = mapObjIndexed((team, which) => {
+  const effectiveStrengths = mapObjIndexed((strength, which) => {
     return evolve(
       {
-        strength: {
-          g: x => x * advantagesAfterTeamModifiers[which],
-          d: x => x * advantagesAfterTeamModifiers[which],
-          a: x => x * advantagesAfterTeamModifiers[which],
-          pp: x => x * advantagesAfterTeamModifiers[which],
-          pk: x => x * advantagesAfterTeamModifiers[which]
-        }
+        g: x => x * advantagesAfterTeamModifiers[which],
+        d: x => x * advantagesAfterTeamModifiers[which],
+        a: x => x * advantagesAfterTeamModifiers[which],
+        pp: x => x * advantagesAfterTeamModifiers[which],
+        pk: x => x * advantagesAfterTeamModifiers[which]
       },
-      team
+      strength
     );
-  }, teams);
+  }, strengths);
 
-  const skills: Matchup = mapObjIndexed((team, which) => {
+  const skills: Matchup = mapObjIndexed((strength, which) => {
     return evolve(
       {
-        strength: {
-          g: x => x / 30,
-          d: x => x / 60,
-          a: x => x / 120
-        }
+        g: x => x / 30,
+        d: x => x / 60,
+        a: x => x / 120
       },
-      team
+      strength
     );
-  }, effectiveTeams);
+  }, effectiveStrengths);
 
   const result = range(1, 16).reduce(matchRound(skills), {
     home: 0,

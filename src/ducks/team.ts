@@ -36,6 +36,8 @@ import {
   GameDecrementDurationsActions
 } from "./game";
 
+import strategyHandlers, { strategies } from "../services/strategies";
+
 export interface TeamState {
   teams: MapOf<Team>;
 }
@@ -86,6 +88,7 @@ export interface TeamSetStrategyAction {
   payload: {
     team: string;
     strategy: SeasonStrategies;
+    readiness: number;
   };
 }
 
@@ -214,11 +217,16 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
       );
 
     case TEAM_SET_STRATEGY:
-      return assocPath(
-        ["teams", action.payload.team, "strategy"],
-        action.payload.strategy,
-        state
-      );
+      return pipe<TeamState, TeamState, TeamState>(
+        assocPath(
+          ["teams", action.payload.team, "strategy"],
+          action.payload.strategy
+        ),
+        assocPath(
+          ["teams", action.payload.team, "readiness"],
+          action.payload.readiness
+        )
+      )(state);
 
     case TEAM_SET_ORGANIZATION:
       return assocPath(

@@ -16,7 +16,7 @@ import {
   dissocPath,
   sum
 } from "ramda";
-import { getEffectiveSkillAs } from "./player";
+import { getEffectiveSkillAs, SkillGetter } from "./player";
 
 const flattenLineup = (lineup: Lineup) => {
   return [lineup.g, ...lineup.d.map(dl => values(dl))].filter(p => p);
@@ -143,10 +143,13 @@ export const assignPlayerToLineup = (
   return assocPath(pathToPosition, player.id, lineup);
 };
 
-export const createEffectiveSkillSorter = (position: string) => {
+export const createEffectiveSkillSorter = (
+  skillGetter: SkillGetter,
+  position: string
+) => {
   const sorter = sortWith<Player>([
     descend(p => {
-      return getEffectiveSkillAs(position, p);
+      return getEffectiveSkillAs(skillGetter, position, p);
     }),
     ascend(prop("age"))
   ]);
@@ -155,11 +158,12 @@ export const createEffectiveSkillSorter = (position: string) => {
 };
 
 export const sortPlayersForPosition = (
+  skillGetter: SkillGetter,
   position: string,
   allowPositions: string[],
   players: Player[]
 ) => {
-  const sorter = createEffectiveSkillSorter(position);
+  const sorter = createEffectiveSkillSorter(skillGetter, position);
 
   return sorter(players)
     .filter(p => allowPositions.includes(p.position))
@@ -167,6 +171,7 @@ export const sortPlayersForPosition = (
 };
 
 const sorterGenerator = function*(
+  skillGetter: SkillGetter,
   positions: string[],
   allowPositions: string[],
   initialPlayers: Player[]
@@ -177,7 +182,9 @@ const sorterGenerator = function*(
     allowPositions.includes(p.position)
   );
 
-  const sorters = positions.map(pos => createEffectiveSkillSorter(pos));
+  const sorters = positions.map(pos =>
+    createEffectiveSkillSorter(skillGetter, pos)
+  );
 
   do {
     for (const [i, position] of positions.entries()) {
@@ -205,12 +212,18 @@ const sorterGenerator = function*(
 };
 
 export const sortPlayersForPositions = (
+  skillGetter: SkillGetter,
   positions: string[],
   allowPositions: string[],
   players: Player[]
 ) => {
   const generated: { position: string; player: Player }[] = [];
-  for (const player of sorterGenerator(positions, allowPositions, players)) {
+  for (const player of sorterGenerator(
+    skillGetter,
+    positions,
+    allowPositions,
+    players
+  )) {
     generated.push(player);
   }
 
@@ -237,20 +250,21 @@ export const getEmptyLineup = (): Lineup => {
 };
 
 const getEffectiveSkill = (
+  skillGetter: SkillGetter,
   players: MapOf<Player>,
   position: string,
   playerId?: string
 ) => {
   if (!playerId) {
-    return -1;
+    return 0;
   }
 
   const player = players[playerId];
   if (!player) {
-    return -1;
+    return 0;
   }
 
-  return getEffectiveSkillAs(position, player);
+  return getEffectiveSkillAs(skillGetter, position, player);
 };
 
 export const isDefenceLineComplete = (line: DefenceLine) => {
@@ -270,6 +284,7 @@ export const isForwardLineComplete = (line: ForwardLine) => {
 };
 
 export const calculateDefenceStrengthFromLineup = (
+  skillGetter: SkillGetter,
   players: MapOf<Player>,
   lineup: Lineup
 ): number => {
@@ -282,14 +297,15 @@ export const calculateDefenceStrengthFromLineup = (
       const completeLine = line as Required<DefenceLine>;
 
       return sum([
-        getEffectiveSkillAs("ld", players[completeLine.ld]),
-        getEffectiveSkillAs("rd", players[completeLine.rd])
+        getEffectiveSkillAs(skillGetter, "ld", players[completeLine.ld]),
+        getEffectiveSkillAs(skillGetter, "rd", players[completeLine.rd])
       ]);
     })
   );
 };
 
 export const calculateAttackStrengthFromLineup = (
+  skillGetter: SkillGetter,
   players: MapOf<Player>,
   lineup: Lineup
 ): number => {
@@ -302,15 +318,16 @@ export const calculateAttackStrengthFromLineup = (
       const completeLine = line as Required<ForwardLine>;
 
       return sum([
-        getEffectiveSkillAs("lw", players[completeLine.lw]),
-        getEffectiveSkillAs("c", players[completeLine.c]),
-        getEffectiveSkillAs("rw", players[completeLine.c])
+        getEffectiveSkillAs(skillGetter, "lw", players[completeLine.lw]),
+        getEffectiveSkillAs(skillGetter, "c", players[completeLine.c]),
+        getEffectiveSkillAs(skillGetter, "rw", players[completeLine.c])
       ]);
     })
   );
 };
 
 export const calculatePowerPlayStrengthFromLineup = (
+  skillGetter: SkillGetter,
   players: MapOf<Player>,
   lineup: Lineup
 ): number => {
@@ -318,6 +335,7 @@ export const calculatePowerPlayStrengthFromLineup = (
 };
 
 export const calculatePenaltyKillStrengthFromLineup = (
+  skillGetter: SkillGetter,
   players: MapOf<Player>,
   lineup: Lineup
 ): number => {
@@ -325,17 +343,22 @@ export const calculatePenaltyKillStrengthFromLineup = (
 };
 
 export const calculateStrengthFromLineup = (
+  skillGetter: SkillGetter,
   players: Player[],
-  lineup: Lineup
+  lineup: Lineup = getEmptyLineup()
 ): TeamStrength => {
+  console.log(skillGetter, players, lineup, "höpö höpö");
+
   const playerMap = indexBy(prop("id"), players);
 
+  console.log("player map", playerMap);
+
   return {
-    g: lineup.g ? getEffectiveSkill(playerMap, "g", lineup.g) : 0,
-    d: calculateDefenceStrengthFromLineup(playerMap, lineup),
-    a: calculateAttackStrengthFromLineup(playerMap, lineup),
-    pp: calculatePowerPlayStrengthFromLineup(playerMap, lineup),
-    pk: calculatePenaltyKillStrengthFromLineup(playerMap, lineup)
+    g: lineup.g ? getEffectiveSkill(skillGetter, playerMap, "g", lineup.g) : 0,
+    d: calculateDefenceStrengthFromLineup(skillGetter, playerMap, lineup),
+    a: calculateAttackStrengthFromLineup(skillGetter, playerMap, lineup),
+    pp: calculatePowerPlayStrengthFromLineup(skillGetter, playerMap, lineup),
+    pk: calculatePenaltyKillStrengthFromLineup(skillGetter, playerMap, lineup)
   };
 };
 
@@ -343,15 +366,18 @@ export const automateLineup = (players: Player[]): Lineup => {
   const initialLineup: Lineup = getEmptyLineup();
   const playerMap = indexBy(prop("id"), players);
 
-  const goalkeepers = sortPlayersForPosition("g", ["g"], players);
+  const skillGetter = (player: Player) => player.skill;
+
+  const goalkeepers = sortPlayersForPosition(skillGetter, "g", ["g"], players);
   const [leftDefencemen, rightDefencemen] = sortPlayersForPositions(
+    skillGetter,
     ["ld", "rd"],
     ["d"],
     players
   );
-  const leftWings = sortPlayersForPosition("lw", ["lw"], players);
-  const centers = sortPlayersForPosition("c", ["c"], players);
-  const rightWings = sortPlayersForPosition("rw", ["rw"], players);
+  const leftWings = sortPlayersForPosition(skillGetter, "lw", ["lw"], players);
+  const centers = sortPlayersForPosition(skillGetter, "c", ["c"], players);
+  const rightWings = sortPlayersForPosition(skillGetter, "rw", ["rw"], players);
 
   const getter = mapHandler(playerMap);
 

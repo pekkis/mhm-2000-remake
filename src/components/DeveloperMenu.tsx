@@ -40,6 +40,7 @@ const DeveloperMenu = () => {
                     <th>Taso</th>
                     <th>Voima</th>
                     <th>Strategia</th>
+                    <th>Valmius</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -53,6 +54,7 @@ const DeveloperMenu = () => {
                           <td>{team.level}</td>
                           <td>{JSON.stringify(team.strength)}</td>
                           <td>{team.strategy}</td>
+                          <td>{team.readiness}</td>
                         </tr>
                       );
                     })}

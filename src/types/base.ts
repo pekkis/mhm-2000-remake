@@ -439,6 +439,6 @@ export interface SeasonStrategy {
   id: string;
   name: string;
   description: string;
-  initialReadiness: () => number;
+  initialReadiness: (manager: Manager) => number;
   incrementReadiness: (turn: Turn) => number;
 }

@@ -28,11 +28,6 @@ export interface ContractNegotiation {
   context: string;
 }
 
-export interface PlayerPerkService {
-  label: string;
-  addToPlayer: (player: Player) => Player;
-}
-
 export type PlayerPerkNames =
   | "leader"
   | "tikitalk"
@@ -64,6 +59,21 @@ export interface Absence {
 export interface PlayerEffect {
   type: string;
   duration: number;
+  payload?: unknown;
+}
+
+export interface ZombiePlayerEffect extends PlayerEffect {
+  type: "zombie";
+}
+
+export interface AttributePlayerEffect extends PlayerEffect {
+  type: "attribute";
+  payload: { attribute: string; amount: number }[];
+}
+
+export interface PlayerPerk {
+  type: PlayerPerkNames;
+  public: boolean;
 }
 
 export interface Player {
@@ -80,8 +90,8 @@ export interface Player {
   pk: number;
   pp: number;
   contract?: Contract;
-  perks: PlayerPerkNames[];
-  energy: number;
+  perks: PlayerPerk[];
+  condition: number;
   injury?: Injury;
   absence?: Absence;
   suspension?: Suspension;

@@ -6,7 +6,11 @@ import {
 } from "../../services/lineup";
 import { MapOf } from "../../types/base";
 import { values } from "ramda";
-import { getDisplayName, getEffectiveSkillAs } from "../../services/player";
+import {
+  getDisplayName,
+  getEffectiveSkillAs,
+  SkillGetter
+} from "../../services/player";
 import { Lineup } from "../../types/team";
 
 interface Props {
@@ -20,6 +24,7 @@ interface Props {
     pathToPosition: (string | number)[],
     playerId: string
   ) => void;
+  skillGetter: SkillGetter;
 }
 
 const PlayerSelect: FunctionComponent<Props> = ({
@@ -29,9 +34,11 @@ const PlayerSelect: FunctionComponent<Props> = ({
   pathToPosition,
   assignToLineup,
   current,
-  allowPositions = ["g", "d", "lw", "c", "rw"]
+  allowPositions = ["g", "d", "lw", "c", "rw"],
+  skillGetter
 }) => {
   const sortedPlayers = sortPlayersForPosition(
+    skillGetter,
     sortToPosition,
     allowPositions,
     values(players)
@@ -60,7 +67,7 @@ const PlayerSelect: FunctionComponent<Props> = ({
           return (
             <option disabled={!isAssignable} value={player.id} key={player.id}>
               {getDisplayName(player)} ({player.position},
-              {getEffectiveSkillAs(sortToPosition, player)})
+              {getEffectiveSkillAs(skillGetter, sortToPosition, player)})
             </option>
           );
         })}

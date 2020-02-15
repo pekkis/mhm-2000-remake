@@ -20,6 +20,7 @@ import {
   calculateStrengthFromLineup,
   getEmptyLineup
 } from "../services/lineup";
+import { getNominalSkill } from "../services/player";
 
 const ManagerName = styled.h2`
   margin: 0;
@@ -64,6 +65,7 @@ const ManagerInfo: FunctionComponent<Props> = ({ details = false }) => {
   // const team = getEffective(teams.get(manager.get("team")));
 
   const strength = calculateStrengthFromLineup(
+    getNominalSkill,
     players,
     team.lineup || getEmptyLineup()
   );

@@ -22,6 +22,12 @@ export default function* calculationsPhase() {
   );
 
   const readinessIncrements = values(teams).map(team => {
+    if (!team.strategy) {
+      throw new Error(
+        `Team ${team.id} has no strategy. It should not happen?!?`
+      );
+    }
+
     return {
       team: team.id,
       amount: strategies[team.strategy].incrementReadiness(turn)

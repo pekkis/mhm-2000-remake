@@ -88,6 +88,7 @@ import { PlayerGenerationInfo } from "../services/human-player-initializer";
 import { generatePlayers } from "../services/human-team-initializer";
 import lineupService from "../services/lineup";
 import { isHumanControlledTeam } from "../services/team";
+import strategyHandlers from "../services/strategies";
 
 export function* automateLineup(managerId: string) {
   const manager: Manager = yield select(managerById(managerId));
@@ -187,11 +188,25 @@ export function* managerSelectStrategy(
 ) {
   const manager = yield select(managerObject(managerId));
   const team = assertTeam(manager);
+
+  const strategyHandler = strategyHandlers[strategy];
+  const readiness = strategyHandler.initialReadiness(manager);
+
+  /*
+  FOR xx = 1 TO 48
+IF valm(xx) = 1 THEN tre(xx) = .945 ELSE IF valm(xx) = 2 THEN tre(xx) = 1.055 ELSE tre(xx) = 1
+IF valm(xx) <> 3 THEN
+tre(xx) = tre(xx) + (mtaito(1, man(xx)) * .007)
+END IF
+NEXT xx
+*/
+
   yield put<TeamSetStrategyAction>({
     type: TEAM_SET_STRATEGY,
     payload: {
       team,
-      strategy
+      strategy,
+      readiness
     }
   });
 }

@@ -13,15 +13,18 @@ import { activeManager } from "../../services/selectors";
 import DefenceLineLineup from "./DefenceLineLineup";
 import { range } from "ramda";
 import ForwardLineLineup from "./ForwardLineLineup";
+import { SkillGetter } from "../../services/player";
 
 interface Props {
   players: MapOf<Player>;
   lineup?: LineupType;
+  skillGetter: SkillGetter;
 }
 
 const Lineup: FunctionComponent<Props> = ({
   players,
-  lineup = getEmptyLineup()
+  lineup = getEmptyLineup(),
+  skillGetter
 }) => {
   const dispatch = useDispatch();
   const manager = useSelector(activeManager);
@@ -52,6 +55,7 @@ const Lineup: FunctionComponent<Props> = ({
     <div>
       <div>
         <PlayerLineup
+          skillGetter={skillGetter}
           players={players}
           lineup={lineup}
           sortToPosition="g"
@@ -62,6 +66,7 @@ const Lineup: FunctionComponent<Props> = ({
 
       {range(0, 3).map(lineNumber => (
         <DefenceLineLineup
+          skillGetter={skillGetter}
           key={lineNumber}
           players={players}
           lineup={lineup}
@@ -72,6 +77,7 @@ const Lineup: FunctionComponent<Props> = ({
 
       {range(0, 4).map(lineNumber => (
         <ForwardLineLineup
+          skillGetter={skillGetter}
           key={lineNumber}
           players={players}
           lineup={lineup}

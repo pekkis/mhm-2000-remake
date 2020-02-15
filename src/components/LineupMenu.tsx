@@ -29,6 +29,7 @@ import Flag from "react-world-flags";
 import { MANAGER_LINEUP_AUTOMATE } from "../ducks/manager";
 import Lineup from "./lineup/Lineup";
 import { isHumanControlledTeam } from "../services/team";
+import { getKnownSkill } from "../services/player";
 
 const positionSorts = {
   g: 1000,
@@ -44,6 +45,8 @@ const LineupMenu = () => {
   const manager = useSelector(activeManager);
   const team = useSelector(requireHumanManagersTeamObj(manager.id));
   const players = useSelector(teamsContractedPlayers(team.id));
+
+  const skillGetter = getKnownSkill(manager);
 
   const sorter = sortWith<Player>([
     ascend(p => positionSorts[p.position]),
@@ -76,7 +79,11 @@ const LineupMenu = () => {
           Automagisoi
         </button>
 
-        <Lineup players={playerMap} lineup={team.lineup} />
+        <Lineup
+          players={playerMap}
+          lineup={team.lineup}
+          skillGetter={skillGetter}
+        />
 
         <table>
           <thead>
@@ -86,6 +93,7 @@ const LineupMenu = () => {
               <th>Maa</th>
               <th>PP</th>
               <th>T</th>
+              <th>kunto</th>
             </tr>
           </thead>
           <tbody>
@@ -101,6 +109,7 @@ const LineupMenu = () => {
                   </td>
                   <td>{player.position}</td>
                   <td>{player.skill}</td>
+                  <td>{player.condition}</td>
                 </tr>
               );
             })}

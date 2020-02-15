@@ -16,6 +16,7 @@ import {
   requireManagersTeamObj
 } from "../services/selectors";
 import Flag from "react-world-flags";
+import { getKnownSkill } from "../services/player";
 
 const positionSorts = {
   g: 1000,
@@ -41,6 +42,8 @@ const SquadMenu = () => {
 
   const sortedPlayers = sorter(players);
 
+  const skillGetter = getKnownSkill(manager);
+
   return (
     <HeaderedPage>
       <Header back />
@@ -58,6 +61,8 @@ const SquadMenu = () => {
               <th>Maa</th>
               <th>PP</th>
               <th>T</th>
+              <th>kunto</th>
+              <th>perks</th>
             </tr>
           </thead>
           <tbody>
@@ -72,7 +77,11 @@ const SquadMenu = () => {
                     <Flag code={player.country} height={16} /> {player.country}
                   </td>
                   <td>{player.position}</td>
-                  <td>{player.skill}</td>
+                  <td>
+                    {player.skill} <em>({skillGetter(player)})</em>
+                  </td>
+                  <td>{player.condition}</td>
+                  <td>{JSON.stringify(player.perks)}</td>
                 </tr>
               );
             })}

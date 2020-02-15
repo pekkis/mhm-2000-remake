@@ -3,7 +3,9 @@ import {
   PlayerPosition,
   Contract,
   ContractNegotiation,
-  PlayerPerkNames
+  PlayerPerkNames,
+  PlayerEffect,
+  PlayerPerk
 } from "../types/player";
 import random, { doubleNormalizedInt } from "./random";
 import {
@@ -15,11 +17,12 @@ import {
 import { AllCountries, PlayableCountries } from "../types/country";
 import util from "util";
 import { skillGenerationMap, randoms } from "./data/player-randomization";
-import { min, max, curry } from "ramda";
+import { min, max, curry, evolve, append, sortWith, ascend } from "ramda";
 import uuid from "uuid";
 import { MapOf } from "../types/base";
 import { Manager } from "../types/manager";
 import { playerPerksMap } from "./player-perks";
+import { playerEffectHandlers } from "./player-effects";
 
 const legacyPositionMap = {
   1: "g",
@@ -64,6 +67,33 @@ export const normalizeModifier = (modifier: number): number => {
   return max(-3, min(modifier, 3));
 };
 
+export const normalizeCondition = (age: number, condition: number) => {
+  const maxCondition = [5, 5, 5, 4, 4, 4, 4, 3, 3, 3, 3, 3, 2, 2, 2, 1];
+  const ageIndex = age - 18;
+  const inRangeIndex = Math.max(Math.min(ageIndex, maxCondition.length - 1), 0);
+  return Math.max(-7, Math.min(maxCondition[inRangeIndex], condition));
+};
+
+export const conditionSkillModifier = (condition: number, skill: number) => {
+  if (condition >= 0) {
+    return skill;
+  }
+
+  if (condition === -1) {
+    return Math.floor(0.9 * skill);
+  }
+
+  if (condition === -2) {
+    return Math.floor(0.7 * skill);
+  }
+
+  if (condition === -3) {
+    return Math.floor(0.5 * skill);
+  }
+
+  return Math.floor(0.3 * skill);
+};
+
 export const positionFromLegacyPosition = (
   legacyPosition: number
 ): PlayerPosition => legacyPositionMap[legacyPosition];
@@ -74,7 +104,7 @@ export const getRandomCountry = () =>
 export const createRandomPlayerPerks = (
   skill: number,
   age: number
-): PlayerPerkNames[] => {
+): PlayerPerk[] => {
   if (skill <= 6) {
     return [];
   }
@@ -82,20 +112,20 @@ export const createRandomPlayerPerks = (
   const rnd = random.integer(1, 100);
 
   if (rnd < 11) {
-    return ["surfer"];
+    return [{ type: "surfer", public: false }];
   }
 
   if (rnd < 16) {
-    return ["enforcer"];
+    return [{ type: "enforcer", public: true }];
   }
 
   if (rnd < 19) {
-    return ["tikitalk"];
+    return [{ type: "tikitalk", public: true }];
   }
 
   if (rnd < 22) {
     if (age >= 30) {
-      return ["leader"];
+      return [{ type: "leader", public: true }];
     }
   }
 
@@ -103,8 +133,6 @@ export const createRandomPlayerPerks = (
 };
 
 export const createRandomPlayer = (preset: Partial<Player> = {}): Player => {
-  console.log("PRESET", preset);
-
   const country = preset.country || getRandomCountry();
 
   const firstName = preset.firstName || createFirstName(country);
@@ -159,7 +187,7 @@ export const createPlayer = (
   charisma: number,
   pp: number,
   pk: number,
-  perks: PlayerPerkNames[] = []
+  perks: PlayerPerk[] = []
 ): Player => {
   const player: Player = {
     id: uuid(),
@@ -175,12 +203,12 @@ export const createPlayer = (
     pp: normalizeModifier(pp),
     pk: normalizeModifier(pk),
     perks,
-    energy: 0,
+    condition: 0, //normalizeCondition(age, random.integer(-6, 5)),
     effects: []
   };
 
-  return perks.reduce((p: Player, perk: PlayerPerkNames) => {
-    const perkAdder = playerPerksMap[perk].addToPlayer;
+  return perks.reduce((p: Player, perk: PlayerPerk) => {
+    const perkAdder = playerPerksMap[perk.type].addToPlayer;
     return perkAdder(p);
   }, player);
 };
@@ -433,25 +461,110 @@ export const positionsAndEffectiveSkills: PositionSkillMappers = {
   }
 };
 
-export const getKnownSkill = (manager: Manager) => (player: Player): number => {
-  return player.skill;
-};
+export interface SkillGetter {
+  (player: Player): number;
+}
 
-export const getNominalSkill = (player: Player) => {
-  return player.skill;
-};
+export const getKnownSkill = (manager: Manager): SkillGetter => (
+  player: Player
+): number => {
+  // TODO: Known / unknown perks
+  const perkifiedPlayer = applyPerks(player.perks, player);
+  const appliedPlayer = applyEffects(perkifiedPlayer);
+  const baseSkill = appliedPlayer.skill;
 
-export const getActualSkill = (player: Player) => {
-  return player.skill;
-};
-
-export const getEffectiveSkillAs = curry((position: string, player: Player) => {
-  return positionsAndEffectiveSkills[position][player.position](
-    getNominalSkill(player),
-    player
+  const skillModifiedByCondition = conditionSkillModifier(
+    player.condition,
+    baseSkill
   );
-});
+
+  return normalizeAbility(skillModifiedByCondition);
+};
+
+export const getNominalSkill: SkillGetter = (player: Player) => {
+  const perkifiedPlayer = applyPerks(player.perks, player);
+  const appliedPlayer = applyEffects(perkifiedPlayer);
+  const baseSkill = appliedPlayer.skill;
+  const skillModifiedByCondition = conditionSkillModifier(
+    player.condition,
+    baseSkill
+  );
+
+  return normalizeAbility(skillModifiedByCondition);
+};
+
+export const getActualSkill: SkillGetter = (player: Player) => {
+  const perkifiedPlayer = applyPerks(player.perks, player);
+  const appliedPlayer = applyEffects(perkifiedPlayer);
+  const baseSkill = appliedPlayer.skill;
+  const skillModifiedByCondition = conditionSkillModifier(
+    player.condition,
+    baseSkill
+  );
+
+  return normalizeAbility(skillModifiedByCondition);
+};
+
+export const getEffectiveSkillAs = curry(
+  (skillGetter: SkillGetter, position: string, player: Player) => {
+    const calculatedSkill = positionsAndEffectiveSkills[position][
+      player.position
+    ](skillGetter(player), player);
+
+    return normalizeAbility(calculatedSkill);
+  }
+);
 
 export const getDisplayName = (player: Player): string => {
   return `${player.lastName}, ${player.firstName}.`;
+};
+
+export const addEffectToPlayer = (
+  effect: PlayerEffect,
+  player: Player
+): Player => {
+  return evolve(
+    {
+      effects: effects => append(effect, effects)
+    },
+    player
+  );
+};
+
+const playerPerkSorter = sortWith<PlayerPerk>([
+  ascend(perk => {
+    const perkHandler = playerPerksMap[perk.type];
+    if (!perkHandler) {
+      throw new Error("Invalid perk to sort");
+    }
+    return perkHandler.weight;
+  })
+]);
+
+export const applyPerks = (perks: PlayerPerk[], player: Player): Player => {
+  const sortedPerks = playerPerkSorter(perks);
+
+  return sortedPerks.reduce((player: Player, perk: PlayerPerk) => {
+    const perkHandler = playerPerksMap[perk.type];
+    return perkHandler.applyEffect(player);
+  }, player);
+};
+
+const playerEffectSorter = sortWith<PlayerEffect>([
+  ascend(effect => {
+    const effectHandler = playerEffectHandlers[effect.type];
+    if (!effectHandler) {
+      throw new Error("Invalid effect to sort");
+    }
+    return effectHandler.weight;
+  })
+]);
+
+export const applyEffects = (player: Player): Player => {
+  const sortedEffects = playerEffectSorter(player.effects);
+
+  return sortedEffects.reduce((player: Player, effect: PlayerEffect) => {
+    const effectHandler = playerEffectHandlers[effect.type];
+    return effectHandler.applyEffect(effect, player);
+  }, player);
 };
