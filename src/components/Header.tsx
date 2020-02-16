@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { advance } from "../ducks/game";
 import { advanceEnabled } from "../services/selectors";
+import Forward from "./context-sensitive/Forward";
 
 const Container = styled.header`
   background-color: rgb(133, 133, 133);
@@ -37,14 +38,9 @@ const Container = styled.header`
 interface Props {
   menu?: boolean;
   back?: boolean;
-  forward?: string | ReactElement;
 }
 
-const Header: FunctionComponent<Props> = ({
-  menu = false,
-  forward = "Eteenpäin!",
-  back = false
-}) => {
+const Header: FunctionComponent<Props> = ({ menu = false, back = false }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -70,14 +66,7 @@ const Header: FunctionComponent<Props> = ({
             </div>
           )}
           <div className="advance">
-            <Button
-              terse
-              block
-              disabled={!isAdvanceEnabled}
-              onClick={() => dispatch(advance())}
-            >
-              {forward}
-            </Button>
+            <Forward />
           </div>
         </>
       )}

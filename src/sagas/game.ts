@@ -75,7 +75,7 @@ import events from "../data/events";
 import { nth, map, values, toPairs, range, sortWith, ascend } from "ramda";
 import {
   MHMTurnPhase,
-  MHMTurnDefinition,
+  CalendarEntry,
   Turn,
   CompetitionNames,
   CompetitionPhase,
@@ -195,7 +195,7 @@ export function* gameLoop() {
   yield fork(stats);
 
   do {
-    const calendarEntry: MHMTurnDefinition = yield select(currentCalendarEntry);
+    const calendarEntry: CalendarEntry = yield select(currentCalendarEntry);
 
     const phases = phaseSorter(phaseDescriptors)(calendarEntry.phases);
 

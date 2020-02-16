@@ -1,10 +1,6 @@
 import { select, call, put } from "redux-saga/effects";
 
-import {
-  MapOf,
-  MHMTurnDefinition,
-  SeasonStrategies
-} from "../../../types/base";
+import { MapOf, CalendarEntry, SeasonStrategies } from "../../../types/base";
 import { Manager, ComputerManager } from "../../../types/manager";
 import {
   HumanControlledTeam,
@@ -68,7 +64,7 @@ export default function* aiActionPhase() {
       manager.ai
     );
 
-    const currentEntry: MHMTurnDefinition = yield select(currentCalendarEntry);
+    const currentEntry: CalendarEntry = yield select(currentCalendarEntry);
 
     const doActions = currentEntry?.ai?.actions || [];
 

@@ -28,7 +28,7 @@ export const strategyHandlers: ForEvery<SeasonStrategies, SeasonStrategy> = {
     id: "puurto",
     name: "Tasainen puurto",
     description: `Tämä strategia perustuu tasaisen kunnon ylläpitämiseen koko pitkän ja puuduttavan kauden ajan. Junnaavilla valmennusmenetelmillä saavutetaan aito **puurtamisen** meininki!`,
-    initialReadiness: () => 0,
+    initialReadiness: () => 1,
     incrementReadiness: () => 0
   }
 };

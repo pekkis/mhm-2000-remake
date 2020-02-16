@@ -1,12 +1,12 @@
 import { select, call } from "redux-saga/effects";
 import { seedCompetition, setPhase } from "../game";
-import { MHMTurnDefinition } from "../../types/base";
+import { CalendarEntry } from "../../types/base";
 import { currentCalendarEntry } from "../../services/selectors";
 
 export default function* seedPhase() {
   yield setPhase("seed");
 
-  const calendarEntry: MHMTurnDefinition = yield select(currentCalendarEntry);
+  const calendarEntry: CalendarEntry = yield select(currentCalendarEntry);
   if (!calendarEntry) {
     throw new Error("Invalid calendar round");
   }

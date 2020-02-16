@@ -6,17 +6,19 @@ import {
   ascend,
   values,
   prop,
-  toPairs
+  toPairs,
+  path
 } from "ramda";
 import r from "./random";
 import { victors } from "./playoffs";
 import {
-  MHMTurnDefinition,
+  CalendarEntry,
   CompetitionNames,
   CompetitionPhase,
   CompetitionGroup,
   Competition,
-  Turn
+  Turn,
+  MatchDescriptor
 } from "../types/base";
 import { MHMState } from "../ducks";
 import {
@@ -34,6 +36,58 @@ import { SeasonStatistic } from "../types/stats";
 import { isComputerControlledTeam, isHumanControlledTeam } from "./team";
 import { isComputerManager } from "./manager";
 import { Player } from "../types/player";
+
+export const calendarEntryByTurn = (turn: Turn) => (
+  state: MHMState
+): CalendarEntry => {
+  const calendar = state.game.calendar;
+  const calendarEntry = nth(turn.round, calendar);
+  if (!calendarEntry) {
+    throw new Error("Invalid calendar entry");
+  }
+  return calendarEntry;
+};
+
+export const teamsMatchOfTurn = (teamId: string, turn: Turn) => (
+  state: MHMState
+): MatchDescriptor | undefined => {
+  const allMatches = allMatchesOfTurn(turn)(state);
+
+  return allMatches.find(
+    descriptor => descriptor.home === teamId || descriptor.away === teamId
+  );
+};
+
+export const allMatchesOfTurn = (turn: Turn) => (
+  state: MHMState
+): MatchDescriptor[] => {
+  const calendarEntry = calendarEntryByTurn(turn)(state);
+
+  const competitions = allCompetitions(state);
+
+  const matches = calendarEntry.gamedays.map(cn => {
+    const competition = competitions[cn];
+    const phase = competition.phases[competition.phase];
+    return (phase.groups as CompetitionGroup[]).map(group => {
+      return group.schedule[group.round].map(pairing => {
+        return {
+          home: group.teams[pairing.home],
+          away: group.teams[pairing.away],
+          competition: competition.id,
+          phase: phase.id,
+          group: group.id
+        };
+      });
+    });
+  });
+
+  return matches.flat(2);
+};
+
+export const currentCalendarEntry = (state: MHMState): CalendarEntry => {
+  const turn = state.game.turn;
+  return calendarEntryByTurn(turn)(state);
+};
 
 export const teamsContractedPlayers = (teamId: string) => (
   state: MHMState
@@ -171,16 +225,6 @@ export const playableCompetitions = (state: MHMState) =>
     c => ["phl", "division", "mutasarja"].includes(c.id),
     state.competition.competitions
   );
-
-export const currentCalendarEntry = (state: MHMState): MHMTurnDefinition => {
-  const round = state.game.turn.round;
-  const calendar = state.game.calendar;
-  const calendarEntry = nth(round, calendar);
-  if (!calendarEntry) {
-    throw new Error("Invalid calendar entry");
-  }
-  return calendarEntry;
-};
 
 export const sortedTeamList = (state: MHMState): Team[] => {
   const sorter = sortWith<Team>([ascend(prop("name")), ascend(prop("id"))]);

@@ -1,7 +1,7 @@
 import { select, call, take, put, putResolve, all } from "redux-saga/effects";
 import { setPhase, GAME_ADVANCE_REQUEST } from "../game";
 import {
-  MHMTurnDefinition,
+  CalendarEntry,
   Competition,
   MapOf,
   MatchInput,
@@ -187,7 +187,7 @@ export default function* gamedayPhase() {
   yield call(setPhase, "gameday");
   yield take(GAME_ADVANCE_REQUEST);
 
-  const calendarEntry: MHMTurnDefinition = yield select(currentCalendarEntry);
+  const calendarEntry: CalendarEntry = yield select(currentCalendarEntry);
 
   yield call(beforeGameday, calendarEntry.gamedays);
   yield call(gameday, calendarEntry.gamedays);

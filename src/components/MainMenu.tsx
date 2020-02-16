@@ -34,7 +34,7 @@ const MainMenu: FunctionComponent = () => {
 
   return (
     <HeaderedPage>
-      <Header menu forward={<Forward />} />
+      <Header menu />
       <ManagerInfo details />
 
       <Box p={1}>

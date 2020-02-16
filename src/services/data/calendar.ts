@@ -14,7 +14,7 @@ import {
   CompetitionNameList,
   MHMCompetitionSeedDefinition,
   MHMTurnExtraOptions,
-  MHMTurnDefinition,
+  CalendarEntry,
   CompetitionNames,
   MHMCalendar
 } from "../../types/base";
@@ -39,6 +39,7 @@ const defaultPhases: MHMTurnPhasesList = [
 const ehlPhases: MHMTurnPhasesList = [
   "action",
   "gameday",
+  "calculations",
   "event",
   "news",
   "cleanup"
@@ -51,6 +52,7 @@ const tournamentPhases: MHMTurnPhasesList = [
   "gameday",
   "gameday",
   "gameday",
+  "calculations",
   "cleanup"
 ];
 
@@ -59,7 +61,7 @@ const createTurnDefinition = (
   gamedays: CompetitionNameList = [],
   seed: MHMCompetitionSeedDefinition[] = [],
   extra: Partial<MHMTurnExtraOptions> = {}
-): MHMTurnDefinition => {
+): CalendarEntry => {
   return {
     round: -1,
     phases,
@@ -69,13 +71,14 @@ const createTurnDefinition = (
     createRandomEvent: false,
     transferMarket: false,
     crisisMeeting: false,
+    tags: [],
     ...extra
   };
 };
 
-const augment = (data: Partial<MHMTurnDefinition>) => (
-  turn: MHMTurnDefinition
-): MHMTurnDefinition => {
+const augment = (data: Partial<CalendarEntry>) => (
+  turn: CalendarEntry
+): CalendarEntry => {
   return mergeLeft(data, turn);
 };
 
@@ -93,26 +96,51 @@ const regularGameday = createTurnDefinition(
   defaultPhases,
   ["phl", "division", "mutasarja"],
   [],
-  {}
+  {
+    tags: ["incrementReadiness"]
+  }
+);
+
+const regularPlayoffGameday = createTurnDefinition(
+  defaultPhases,
+  ["phl", "division", "mutasarja"],
+  [],
+  {
+    tags: []
+  }
 );
 
 const ehlGameday = createTurnDefinition(ehlPhases, ["ehl"], [], {});
 
 const ehlFinalsDay = createTurnDefinition(tournamentPhases, ["ehl"], [], {});
 
-const preSeasonTurn = createTurnDefinition(["action", "cleanup"]);
+const preSeasonTurn = createTurnDefinition([
+  "action",
+  "calculations",
+  "cleanup"
+]);
 
 const trainingGameday = createTurnDefinition(ehlPhases, ["training"]);
 
 const cupGameday = createTurnDefinition(ehlPhases, ["cup"]);
 
-const freeWeekend = createTurnDefinition(["action", "cleanup"], [], [], {
-  title: "Vapaa viikonloppu"
-});
+const freeWeekend = createTurnDefinition(
+  ["action", "calculations", "cleanup"],
+  [],
+  [],
+  {
+    title: "Vapaa viikonloppu"
+  }
+);
 
-const nationalTeamBreak = createTurnDefinition(["action", "cleanup"], [], [], {
-  title: "Vapaa viikonloppu"
-});
+const nationalTeamBreak = createTurnDefinition(
+  ["action", "calculations", "cleanup"],
+  [],
+  [],
+  {
+    title: "Vapaa viikonloppu"
+  }
+);
 
 const cal: MHMCalendar = [
   createTurnDefinition(
@@ -195,10 +223,6 @@ const cal: MHMCalendar = [
   createTurnDefinition(["seed"], [], [createSeedDefinition(5, "cup")]),
   ...repeat(regularGameday, 4),
 
-  /*
-  assoc("phases", append("invitationsCreate", defaultPhases), regularGameday),
-*/
-
   createTurnDefinition(
     ["action", "event", "seed", "cleanup"],
     [],
@@ -207,7 +231,7 @@ const cal: MHMCalendar = [
       title: "Playoff-pläjäys"
     }
   ),
-  ...repeat(regularGameday, 5),
+  ...repeat(regularPlayoffGameday, 5),
   createTurnDefinition(
     ["action", "event", "seed", "cleanup"],
     [],
@@ -216,7 +240,7 @@ const cal: MHMCalendar = [
       title: "Semifinaalipläjäys"
     }
   ),
-  ...repeat(regularGameday, 5),
+  ...repeat(regularPlayoffGameday, 5),
   createTurnDefinition(
     ["action", "event", "seed", "cleanup"],
     [],
@@ -225,7 +249,7 @@ const cal: MHMCalendar = [
       title: "Finaalipläjäys"
     }
   ),
-  ...repeat(regularGameday, 5),
+  ...repeat(regularPlayoffGameday, 5),
   ...repeat(cupGameday, 2),
   createTurnDefinition(["action", "endOfSeason", "cleanup"], [], [], {
     title: "Kauden loppu"
@@ -234,7 +258,7 @@ const cal: MHMCalendar = [
 
 const cal2 = pipe(
   mapIndexed(
-    (calendar: MHMTurnDefinition, index: number): MHMTurnDefinition => {
+    (calendar: CalendarEntry, index: number): CalendarEntry => {
       return {
         ...calendar,
         round: index,

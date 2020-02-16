@@ -1,7 +1,7 @@
 import React, { FunctionComponent, ReactNode } from "react";
 import {
   MHMCalendar,
-  MHMTurnDefinition,
+  CalendarEntry,
   ForEveryCompetition,
   Competition
 } from "../../types/base";
@@ -11,7 +11,7 @@ import { MHMState } from "../../ducks";
 
 interface Props {
   when: (
-    turn: MHMTurnDefinition,
+    turn: CalendarEntry,
     calendar: MHMCalendar,
     competitions: ForEveryCompetition<Competition>
   ) => boolean;

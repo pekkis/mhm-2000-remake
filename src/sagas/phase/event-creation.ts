@@ -4,7 +4,7 @@ import { cinteger } from "../../services/random";
 import { OrderedMap, List } from "immutable";
 import { setPhase } from "../game";
 import { currentCalendarEntry } from "../../services/selectors";
-import { MHMTurnDefinition } from "../../types/base";
+import { CalendarEntry } from "../../types/base";
 
 const eventsMap = OrderedMap<number, string>(
   List.of(
@@ -164,7 +164,7 @@ export default function* eventCreationPhase() {
   yield call(setPhase, "eventCreation");
 
   const managers = yield select(state => state.manager.get("managers"));
-  const calendarEntry: MHMTurnDefinition = yield select(currentCalendarEntry);
+  const calendarEntry: CalendarEntry = yield select(currentCalendarEntry);
   if (!calendarEntry.createRandomEvent) {
     return;
   }

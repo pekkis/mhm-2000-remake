@@ -45,7 +45,7 @@ export interface AiTurnInfo {
   actions: string[];
 }
 
-export interface MHMTurnDefinition {
+export interface CalendarEntry {
   round: number;
   ai?: AiTurnInfo;
   phases: MHMTurnPhasesList;
@@ -56,14 +56,15 @@ export interface MHMTurnDefinition {
   transferMarket: boolean;
   seed: MHMCompetitionSeedDefinition[];
   title?: string;
+  tags: string[];
 }
 
 export type MHMTurnExtraOptions = Omit<
-  MHMTurnDefinition,
+  CalendarEntry,
   "phases" | "gamedays" | "seed"
 >;
 
-export type MHMCalendar = MHMTurnDefinition[];
+export type MHMCalendar = CalendarEntry[];
 
 export type Competitions = {
   phl: Competition;
@@ -143,6 +144,14 @@ export interface MatchResultsSet {
   group: number;
   round: number;
   results: Required<MatchResult>[];
+}
+
+export interface MatchDescriptor {
+  home: string;
+  away: string;
+  competition: CompetitionNames;
+  phase: number;
+  group: number;
 }
 
 export interface MatchFacts {

@@ -170,6 +170,21 @@ export const playMatch = function*(input: MatchInput) {
     );
   }, strengths);
 
+  const strengthsAferReadiness = mapObjIndexed((strength, which) => {
+    return evolve(
+      {
+        g: x => x * teams[which].readiness,
+        d: x => x * teams[which].readiness,
+        a: x => x * teams[which].readiness,
+        pp: x => x * teams[which].readiness,
+        pk: x => x * teams[which].readiness
+      },
+      strength
+    );
+  }, effectiveStrengths);
+
+  console.log("READINESS CHANGES", effectiveStrengths, strengthsAferReadiness);
+
   const skills: Matchup = mapObjIndexed((strength, which) => {
     return evolve(
       {
@@ -179,7 +194,7 @@ export const playMatch = function*(input: MatchInput) {
       },
       strength
     );
-  }, effectiveStrengths);
+  }, strengthsAferReadiness);
 
   const result = range(1, 16).reduce(matchRound(skills), {
     home: 0,
