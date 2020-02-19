@@ -36,6 +36,7 @@ import {
   TeamIncrementMoraleAction,
   TEAM_INCREMENT_MORALE
 } from "../../ducks/team";
+import { prop } from "ramda";
 
 function* playRoundOfMatches(
   competitionId: string,
@@ -189,6 +190,7 @@ function* afterGameday(competitionIds: CompetitionNames[]) {
   );
 
   const moraleIncrements = allResults
+    .filter(md => md.result)
     .map(md => {
       return ["home", "away"].map(which => {
         const facts = matchFacts(md, which as "home" | "away");
