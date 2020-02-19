@@ -43,10 +43,6 @@ const division: CompetitionService = {
     return defaultMoraleBoost(facts);
   },
 
-  readinessBoost: (phase, facts, manager) => {
-    return 0;
-  },
-
   parameters: {
     gameday: phase => ({
       advantage: {

@@ -50,10 +50,6 @@ const training: CompetitionService = {
     return 0;
   },
 
-  readinessBoost: (phase, facts, manager) => {
-    return 0;
-  },
-
   parameters: {
     gameday: phase => ({
       advantage: {

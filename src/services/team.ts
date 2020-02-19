@@ -220,3 +220,7 @@ export const initialSeasonStats = (): SeasonStatistic[] => {
     }
   ];
 };
+
+export const normalizeMorale = (morale: number) => {
+  return Math.max(-10, Math.min(10, morale));
+};

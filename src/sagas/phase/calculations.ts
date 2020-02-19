@@ -2,7 +2,7 @@ import { put, putResolve, select, call } from "redux-saga/effects";
 
 import strategies from "../../services/strategies";
 import { MHMState } from "../../ducks";
-import { Turn, MapOf, CalendarEntry } from "../../types/base";
+import { Turn, MapOf, CalendarEntry, MatchDescriptor } from "../../types/base";
 import { Team } from "../../types/team";
 import { values } from "ramda";
 import {
@@ -13,10 +13,14 @@ import {
   TeamIncrementReadinessAction,
   TEAM_INCREMENT_READINESS
 } from "../../ducks/team";
-import { currentCalendarEntry } from "../../services/selectors";
+import {
+  currentCalendarEntry,
+  allMatchesOfTurn,
+  currentTurn
+} from "../../services/selectors";
 
 export default function* calculationsPhase() {
-  const turn: Turn = yield select((state: MHMState) => state.game.turn);
+  const turn: Turn = yield select(currentTurn);
 
   const calendarEntry: CalendarEntry = yield select(currentCalendarEntry);
 

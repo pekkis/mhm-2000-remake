@@ -11,7 +11,7 @@ import {
   CompetitionGroup
 } from "../types/base";
 
-const competitions: ForEveryCompetition<CompetitionService> = {
+export const competitionMap: ForEveryCompetition<CompetitionService> = {
   phl,
   division,
   mutasarja,
@@ -21,7 +21,7 @@ const competitions: ForEveryCompetition<CompetitionService> = {
   training
 };
 
-export default competitions;
+export default competitionMap;
 
 export const isCompetitionGroupOver = (group: CompetitionGroup) => {
   console.log(group.name, group.round, group.schedule.length);

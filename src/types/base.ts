@@ -147,11 +147,14 @@ export interface MatchResultsSet {
 }
 
 export interface MatchDescriptor {
-  home: string;
-  away: string;
+  home: number;
+  away: number;
+  homeIndex: string;
+  awayIndex: string;
   competition: CompetitionNames;
   phase: number;
   group: number;
+  result?: MatchResult;
 }
 
 export interface MatchFacts {
@@ -341,8 +344,7 @@ export interface CompetitionService {
   awayAdvantage: (phase: number, group: number) => number;
 
   gameBalance: (phase: number, facts: Facts, manager: Manager) => number;
-  moraleBoost: (phase: number, facts: Facts, manager: Manager) => number;
-  readinessBoost: (phase: number, facts: Facts, manager: Manager) => number;
+  moraleBoost: (phase: number, facts: Facts) => number;
 
   start?: () => Generator<any, any, any>;
   groupEnd?: (phase: number, group: number) => Generator<any, void, any>;

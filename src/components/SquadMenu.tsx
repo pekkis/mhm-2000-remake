@@ -46,7 +46,7 @@ const SquadMenu = () => {
 
   return (
     <HeaderedPage>
-      <Header back />
+      <Header back menu />
 
       <ManagerInfo details />
 

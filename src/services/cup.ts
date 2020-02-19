@@ -18,7 +18,7 @@ import {
   filter
 } from "ramda";
 import random from "./random";
-import { matchFacts } from "./match";
+import { matchFacts, matchFactsByIndex } from "./match";
 
 const cupScheduler = (matchups: Matchups): Schedule => {
   return [
@@ -53,7 +53,7 @@ const mapHomeAndAway = (matchup: Matchup, group: CupCompetitionGroup) => {
       .flat()
       .filter(g => g.result);
 
-    const facts = games.map(g => matchFacts(g, teamIndex));
+    const facts = games.map(matchFactsByIndex(teamIndex));
 
     const stat: CupTeamStat = {
       index: teamIndex,

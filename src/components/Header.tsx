@@ -40,14 +40,29 @@ interface Props {
   back?: boolean;
 }
 
-const Header: FunctionComponent<Props> = ({ menu = false, back = false }) => {
+const Header: FunctionComponent<Props> = ({ menu = true, back = false }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const isAdvanceEnabled = useSelector(advanceEnabled);
+  /*
+  const manager = useSelector(activeManager);
+
+  const turn = useSelector(currentTurn);
+  const team = useSelector(requireHumanManagersTeamObj(manager.id));
+  const teams = useSelector(allTeamsMap);
+  const teamsMatch = useSelector(teamsMatchOfTurn(team.id, turn));
+  */
 
   return (
     <Container>
+      {menu && (
+        <div className="secondary">
+          <Button secondary onClick={() => dispatch(toggleMenu())}>
+            <FontAwesomeIcon icon={["fa", "bars"]} />
+          </Button>
+        </div>
+      )}
+
       {back && (
         <div className="advance">
           <Button block onClick={() => history.push("/")}>
@@ -58,13 +73,6 @@ const Header: FunctionComponent<Props> = ({ menu = false, back = false }) => {
 
       {!back && (
         <>
-          {menu && (
-            <div className="secondary">
-              <Button secondary onClick={() => dispatch(toggleMenu())}>
-                <FontAwesomeIcon icon={["fa", "bars"]} />
-              </Button>
-            </div>
-          )}
           <div className="advance">
             <Forward />
           </div>

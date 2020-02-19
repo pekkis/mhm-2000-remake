@@ -9,26 +9,33 @@ import {
   CompetitionNames,
   ForEveryCompetition,
   CompetitionGroup,
-  ScheduleGame
+  ScheduleGame,
+  MatchDescriptor
 } from "../../types/base";
 import {
   currentCalendarEntry,
   allTeamsMap,
-  allManagersMap
+  allManagersMap,
+  allMatchesOfTurn,
+  allMatchesOfCompetitions
 } from "../../services/selectors";
-import competitionData from "../../services/competitions";
+import competitionData, { competitionMap } from "../../services/competitions";
 import competitionTypes from "../../services/competition-type";
 import { groupEnd } from "../game";
 import { calculateGroupStats } from "../stats";
 import { MHMState } from "../../ducks";
 import { Team } from "../../types/team";
-import { playMatch } from "../../services/match";
+import { playMatch, matchFacts } from "../../services/match";
 import { GameMatchResultsAction, GAME_MATCH_RESULTS } from "../../ducks/game";
 import {
   CompetitionAdvanceAction,
   COMPETITION_ADVANCE
 } from "../../ducks/competition";
 import { Manager } from "../../types/manager";
+import {
+  TeamIncrementMoraleAction,
+  TEAM_INCREMENT_MORALE
+} from "../../ducks/team";
 
 function* playRoundOfMatches(
   competitionId: string,
@@ -177,6 +184,31 @@ function* beforeGameday(competitionIds: CompetitionNames[]) {
 }
 
 function* afterGameday(competitionIds: CompetitionNames[]) {
+  const allResults: MatchDescriptor[] = yield select(
+    allMatchesOfCompetitions(competitionIds)
+  );
+
+  const moraleIncrements = allResults
+    .map(md => {
+      return ["home", "away"].map(which => {
+        const facts = matchFacts(md, which as "home" | "away");
+        return {
+          team: which === "home" ? md.homeIndex : md.awayIndex,
+          amount: competitionMap[md.competition].moraleBoost(md.phase, facts)
+        };
+      });
+    })
+    .flat()
+    .filter(mc => mc.amount !== 0);
+
+  console.log("ALL MATCHES AND RESULTS", allResults);
+  console.log("MORALE INCREMENTS", moraleIncrements);
+
+  yield putResolve<TeamIncrementMoraleAction>({
+    type: TEAM_INCREMENT_MORALE,
+    payload: moraleIncrements
+  });
+
   yield putResolve<CompetitionAdvanceAction>({
     type: COMPETITION_ADVANCE,
     payload: { competitions: competitionIds }

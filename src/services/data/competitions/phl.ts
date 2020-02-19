@@ -38,10 +38,6 @@ const phl: CompetitionService = {
     return defaultMoraleBoost(facts);
   },
 
-  readinessBoost: (phase, facts, manager) => {
-    return 0;
-  },
-
   relegateTo: "division",
   promoteTo: false,
 

@@ -36,6 +36,7 @@ import { SeasonStatistic } from "../types/stats";
 import { isComputerControlledTeam, isHumanControlledTeam } from "./team";
 import { isComputerManager } from "./manager";
 import { Player } from "../types/player";
+import calendar from "./data/calendar";
 
 export const calendarEntryByTurn = (turn: Turn) => (
   state: MHMState
@@ -54,8 +55,35 @@ export const teamsMatchOfTurn = (teamId: string, turn: Turn) => (
   const allMatches = allMatchesOfTurn(turn)(state);
 
   return allMatches.find(
-    descriptor => descriptor.home === teamId || descriptor.away === teamId
+    descriptor =>
+      descriptor.homeIndex === teamId || descriptor.awayIndex === teamId
   );
+};
+
+export const allMatchesOfCompetitions = (
+  competitionIds: CompetitionNames[]
+) => (state: MHMState): MatchDescriptor[] => {
+  const competitions = allCompetitions(state);
+  const matches = competitionIds.map(cn => {
+    const competition = competitions[cn];
+    const phase = competition.phases[competition.phase];
+    return (phase.groups as CompetitionGroup[]).map(group => {
+      return group.schedule[group.round].map(pairing => {
+        return {
+          home: pairing.home,
+          away: pairing.away,
+          homeIndex: group.teams[pairing.home],
+          awayIndex: group.teams[pairing.away],
+          competition: competition.id,
+          phase: phase.id,
+          group: group.id,
+          result: pairing.result
+        };
+      });
+    });
+  });
+
+  return matches.flat(2);
 };
 
 export const allMatchesOfTurn = (turn: Turn) => (
@@ -63,25 +91,7 @@ export const allMatchesOfTurn = (turn: Turn) => (
 ): MatchDescriptor[] => {
   const calendarEntry = calendarEntryByTurn(turn)(state);
 
-  const competitions = allCompetitions(state);
-
-  const matches = calendarEntry.gamedays.map(cn => {
-    const competition = competitions[cn];
-    const phase = competition.phases[competition.phase];
-    return (phase.groups as CompetitionGroup[]).map(group => {
-      return group.schedule[group.round].map(pairing => {
-        return {
-          home: group.teams[pairing.home],
-          away: group.teams[pairing.away],
-          competition: competition.id,
-          phase: phase.id,
-          group: group.id
-        };
-      });
-    });
-  });
-
-  return matches.flat(2);
+  return allMatchesOfCompetitions(calendarEntry.gamedays)(state);
 };
 
 export const currentCalendarEntry = (state: MHMState): CalendarEntry => {

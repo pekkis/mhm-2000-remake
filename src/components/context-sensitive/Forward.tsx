@@ -1,38 +1,17 @@
 import React, { FunctionComponent } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { MHMState } from "../../ducks";
-import {
-  currentCalendarEntry,
-  allMatchesOfTurn,
-  currentTurn,
-  activeManager,
-  requireHumanManagersTeamObj,
-  teamsMatchOfTurn,
-  allTeamsMap,
-  advanceEnabled
-} from "../../services/selectors";
+import { currentCalendarEntry, advanceEnabled } from "../../services/selectors";
 import Button from "../form/Button";
 import { advance } from "../../ducks/game";
 
-const Forward: FunctionComponent = () => {
+const ButtonContent = () => {
+  const calendarEntry = useSelector(currentCalendarEntry);
+  const gamedays = calendarEntry.gamedays;
   const competitions = useSelector(
     (state: MHMState) => state.competition.competitions
   );
-  const dispatch = useDispatch();
-  const turn = useSelector(currentTurn);
-  const calendarEntry = useSelector(currentCalendarEntry);
-  const manager = useSelector(activeManager);
-  const team = useSelector(requireHumanManagersTeamObj(manager.id));
-  const teams = useSelector(allTeamsMap);
-  const isAdvanceEnabled = useSelector(advanceEnabled);
 
-  const teamsMatch = useSelector(teamsMatchOfTurn(team.id, turn));
-
-  console.log("YOUR MATCH", teamsMatch);
-
-  const gamedays = calendarEntry.gamedays;
-
-  /*
   if (gamedays.length > 0) {
     return (
       <div>
@@ -45,23 +24,25 @@ const Forward: FunctionComponent = () => {
       </div>
     );
   }
-  */
 
-  // return <div>{calendarEntry.title || "Eteenpäin!"}</div>;
+  return <div>{calendarEntry.title || "Eteenpäin!"}</div>;
+};
+
+const Forward: FunctionComponent = () => {
+  const dispatch = useDispatch();
+  const isAdvanceEnabled = useSelector(advanceEnabled);
 
   return (
-    <div>
-      {teamsMatch && <div>{JSON.stringify(teamsMatch)}</div>}
-
-      <Button
-        terse
-        block
-        disabled={!isAdvanceEnabled}
-        onClick={() => dispatch(advance())}
-      >
-        <div>{calendarEntry.title || "Eteenpäin!"}</div>
-      </Button>
-    </div>
+    <Button
+      block
+      terse
+      disabled={!isAdvanceEnabled}
+      onClick={() => {
+        dispatch(advance());
+      }}
+    >
+      <ButtonContent />
+    </Button>
   );
 };
 

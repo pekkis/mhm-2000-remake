@@ -1,6 +1,6 @@
 import { Map, List } from "immutable";
 
-import { teamData } from "../services/team";
+import { teamData, normalizeMorale } from "../services/team";
 
 import { MapOf, SeasonStrategy, SeasonStrategies } from "../types/base";
 import {
@@ -49,6 +49,7 @@ export const TEAM_INCREMENT_READINESS = "TEAM_INCREMENT_READINESS";
 export const TEAM_SET_STRATEGY = "TEAM_SET_STRATEGY";
 export const TEAM_SET_ORGANIZATION = "TEAM_SET_ORGANIZATION";
 export const TEAM_SET_LINEUP = "TEAM_SET_LINEUP";
+export const TEAM_INCREMENT_MORALE = "TEAM_INCREMENT_MORALE";
 
 const defaultState: TeamState = {
   teams: teamData
@@ -108,6 +109,14 @@ export interface TeamIncrementReadinessAction {
   }[];
 }
 
+export interface TeamIncrementMoraleAction {
+  type: typeof TEAM_INCREMENT_MORALE;
+  payload: {
+    team: string;
+    amount: number;
+  }[];
+}
+
 type TeamActions =
   | GameLoadStateAction
   | GameQuitToMainMenuAction
@@ -120,7 +129,8 @@ type TeamActions =
   | GameDecrementDurationsActions
   | TeamSetStrategyAction
   | TeamSetOrganizationAction
-  | TeamSetLineupAction;
+  | TeamSetLineupAction
+  | TeamIncrementMoraleAction;
 
 const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
   switch (action.type) {
@@ -192,6 +202,20 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
             lensPath(["teams", increment.team]),
             evolve({
               readiness: add(increment.amount)
+            }),
+            a
+          ),
+        state,
+        action.payload
+      );
+
+    case TEAM_INCREMENT_MORALE:
+      return reduce(
+        (a, increment) =>
+          over(
+            lensPath(["teams", increment.team]),
+            evolve({
+              morale: value => normalizeMorale(value + increment.amount)
             }),
             a
           ),

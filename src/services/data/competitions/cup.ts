@@ -46,12 +46,8 @@ const cup: CompetitionService = {
     return 10000 + 3000 * arenaLevel + manager.extra;
   },
 
-  moraleBoost: (phase, facts, manager) => {
+  moraleBoost: (phase, facts) => {
     return defaultMoraleBoost(facts);
-  },
-
-  readinessBoost: (phase, facts, manager) => {
-    return 0;
   },
 
   relegateTo: false,

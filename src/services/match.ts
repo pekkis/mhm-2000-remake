@@ -1,6 +1,6 @@
 import { Team, TeamStrength } from "../types/team";
 import competitions from "./competitions";
-import { mapObjIndexed, evolve, range, inc, values } from "ramda";
+import { mapObjIndexed, evolve, range, inc, values, curry } from "ramda";
 import random from "./random";
 import {
   MatchInput,
@@ -9,7 +9,10 @@ import {
   MatchResult,
   MatchFacts,
   ScheduleGame,
-  MapOf
+  MapOf,
+  CompetitionGroup,
+  MatchDescriptor,
+  Competition
 } from "../types/base";
 import competitionTypeService from "./competition-type";
 import { isHumanManager } from "../types/manager";
@@ -257,13 +260,21 @@ export const resultFacts = (
   };
 };
 
-export const matchFacts = (game: ScheduleGame, team: number): MatchFacts => {
-  const isHome = team === game.home;
-  const myKey = isHome ? "home" : "away";
-
+export const matchFacts = (
+  game: ScheduleGame,
+  team: "home" | "away"
+): MatchFacts => {
   if (!game.result) {
     throw new Error("Trying to get facts for a game with no result");
   }
 
-  return resultFacts(game.result, myKey);
+  return resultFacts(game.result, team);
 };
+
+export const matchFactsByIndex = curry(
+  (teamIndex: number, game: ScheduleGame): MatchFacts => {
+    const isHome = teamIndex === game.home;
+    const myKey = isHome ? "home" : "away";
+    return matchFacts(game, myKey);
+  }
+);
