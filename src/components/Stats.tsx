@@ -4,7 +4,7 @@ import ManagerInfo from "./containers/ManagerInfoContainer";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import Tabs from "./ui/Tabs";
 import Tab from "./ui/Tab";
 

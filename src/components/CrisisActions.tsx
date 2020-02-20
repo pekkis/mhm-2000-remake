@@ -5,7 +5,7 @@ import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 import ManagerInfo from "./containers/ManagerInfoContainer";
 import Calendar from "./ui/Calendar";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 
 import crisis from "../data/crisis";
 import { currency as c } from "../services/format";

@@ -50,6 +50,7 @@ export const TEAM_SET_STRATEGY = "TEAM_SET_STRATEGY";
 export const TEAM_SET_ORGANIZATION = "TEAM_SET_ORGANIZATION";
 export const TEAM_SET_LINEUP = "TEAM_SET_LINEUP";
 export const TEAM_INCREMENT_MORALE = "TEAM_INCREMENT_MORALE";
+export const TEAM_SET_INTENSITY = "TEAM_SET_INTENSITY";
 
 const defaultState: TeamState = {
   teams: teamData
@@ -60,6 +61,14 @@ export interface TeamSetLineupAction {
   payload: {
     team: string;
     lineup: Lineup;
+  };
+}
+
+export interface TeamSetIntensityAction {
+  type: typeof TEAM_SET_INTENSITY;
+  payload: {
+    team: string;
+    intensity: number;
   };
 }
 
@@ -130,7 +139,8 @@ type TeamActions =
   | TeamSetStrategyAction
   | TeamSetOrganizationAction
   | TeamSetLineupAction
-  | TeamIncrementMoraleAction;
+  | TeamIncrementMoraleAction
+  | TeamSetIntensityAction;
 
 const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
   switch (action.type) {
@@ -148,6 +158,13 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
             readiness: 0
           })
         ),
+        state
+      );
+
+    case TEAM_SET_INTENSITY:
+      return assocPath(
+        ["teams", action.payload.team, "intensity"],
+        action.payload.intensity,
         state
       );
 

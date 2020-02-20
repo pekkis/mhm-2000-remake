@@ -5,7 +5,7 @@ import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 import BettingForm from "./betting/BettingForm";
 
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 
 const Betting = props => {
   const { teams, competition, bet, manager, turn } = props;

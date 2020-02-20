@@ -8,7 +8,7 @@ import arenas from "../data/arenas";
 import styled from "@emotion/styled";
 import { css } from "@emotion/core";
 import { currency } from "../services/format";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 
 const ArenaHierarchy = styled.div``;
 

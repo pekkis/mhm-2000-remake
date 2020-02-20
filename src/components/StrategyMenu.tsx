@@ -1,7 +1,7 @@
 import React from "react";
 import strategies, { weightedStrategyList } from "../services/strategies";
 import Button from "./form/Button";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import { useDispatch, useSelector } from "react-redux";
 import {
   activeManager,

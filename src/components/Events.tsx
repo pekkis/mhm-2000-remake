@@ -3,7 +3,7 @@ import EventsList from "./events/Events";
 import ManagerInfo from "./containers/ManagerInfoContainer";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 
 const Events = props => {
   const { manager, resolveEvent, events } = props;

@@ -3,7 +3,7 @@ import Table from "./league-table/Table";
 import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
 import Games from "./gameday/Games";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import { CompetitionGroup, isTournamentCompetitionGroup } from "../types/base";
 import { useSelector } from "react-redux";
 import {

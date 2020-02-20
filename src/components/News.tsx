@@ -4,7 +4,7 @@ import Announcements from "./events/Announcements";
 import ManagerInfo from "./ManagerInfo";
 import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import { List } from "immutable";
 
 const News = props => {

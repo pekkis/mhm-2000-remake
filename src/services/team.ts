@@ -77,8 +77,8 @@ export const teamData = indexBy(
       isHumanControlled: false,
       effects: [],
       opponentEffects: [],
-      readiness: 0,
-      intensity: 0,
+      readiness: 1,
+      intensity: 1,
       organization: {
         benefits: 1,
         care: 1,

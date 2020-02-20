@@ -7,8 +7,7 @@ import { TypographyStyle } from "react-typography";
 import ErrorBoundary from "react-error-boundary";
 import ErrorView from "./components/error/Error";
 import { Global } from "@emotion/core";
-
-import { ThemeProvider } from "emotion-theming";
+import { ThemeProvider } from "theme-ui";
 import theme from "./themes/white";
 import { SagaMiddleware, Saga } from "redux-saga";
 import { Store } from "redux";
@@ -38,11 +37,6 @@ const Root: FunctionComponent<Props> = props => {
           <>
             <Global
               styles={theme => ({
-                html: {
-                  backgroundColor: theme.colors.white,
-                  color: theme.colors.black
-                },
-
                 body: {
                   padding: 0
                 },

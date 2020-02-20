@@ -5,7 +5,7 @@ import HeaderedPage from "./ui/HeaderedPage";
 import Header from "./Header";
 import ManagerInfo from "./ManagerInfo";
 import OrganizationBudgetForm from "./budget/OrganizationBudgetForm";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 
 const BudgetOrganizationMenu = () => {
   const dispatch = useDispatch();

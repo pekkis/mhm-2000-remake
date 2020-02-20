@@ -16,7 +16,8 @@ import {
   managerSelectStrategy,
   budgetOrganization,
   automateLineup,
-  setLineup
+  setLineup,
+  selectIntensity
 } from "../manager";
 import { orderPrank } from "../prank";
 import { acceptInvitation } from "../invitation";
@@ -50,7 +51,9 @@ import {
   ManagerLineupAutomateAction,
   MANAGER_LINEUP_AUTOMATE,
   ManagerLineupSetAction,
-  MANAGER_LINEUP_SET
+  MANAGER_LINEUP_SET,
+  ManagerSelectIntensityAction,
+  MANAGER_SELECT_INTENSITY
 } from "../../ducks/manager";
 import {
   PlayerContractInitiateAction,
@@ -137,6 +140,13 @@ export default function* actionPhase() {
       PLAYER_CONTRACT_END_REQUEST,
       function*(a) {
         yield call(contractEndNegotiation, a.payload.negotiationId);
+      }
+    ),
+
+    takeLeading<ManagerSelectIntensityAction>(
+      MANAGER_SELECT_INTENSITY,
+      function*(a) {
+        yield call(selectIntensity, a.payload.manager, a.payload.intensity);
       }
     ),
 

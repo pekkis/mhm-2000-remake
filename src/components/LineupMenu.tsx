@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
 import ManagerInfo from "./ManagerInfo";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import { Player } from "../types/player";
 import {
   sortWith,

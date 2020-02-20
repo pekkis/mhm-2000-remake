@@ -1,6 +1,6 @@
 import React from "react";
 import { Map } from "immutable";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 
 const humanReadables = Map([
   ["loss", "tappiota"],

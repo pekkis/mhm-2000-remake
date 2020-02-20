@@ -1,42 +1,31 @@
-import {
-  pipe,
-  nth,
-  filter,
-  sortWith,
-  ascend,
-  values,
-  prop,
-  toPairs,
-  path
-} from "ramda";
-import r from "./random";
-import { victors } from "./playoffs";
-import {
-  CalendarEntry,
-  CompetitionNames,
-  CompetitionPhase,
-  CompetitionGroup,
-  Competition,
-  Turn,
-  MatchDescriptor
-} from "../types/base";
+import { ascend, filter, nth, pipe, prop, sortWith, values } from "ramda";
 import { MHMState } from "../ducks";
 import {
-  Team,
-  ComputerControlledTeam,
-  HumanControlledTeam
-} from "../types/team";
+  CalendarEntry,
+  Competition,
+  CompetitionGroup,
+  CompetitionNames,
+  CompetitionPhase,
+  MatchDescriptor,
+  Turn
+} from "../types/base";
 import {
-  isHumanManager,
+  ComputerManager,
   HumanManager,
-  Manager,
-  ComputerManager
+  isHumanManager,
+  Manager
 } from "../types/manager";
-import { SeasonStatistic } from "../types/stats";
-import { isComputerControlledTeam, isHumanControlledTeam } from "./team";
-import { isComputerManager } from "./manager";
 import { Player } from "../types/player";
-import calendar from "./data/calendar";
+import { SeasonStatistic } from "../types/stats";
+import {
+  ComputerControlledTeam,
+  HumanControlledTeam,
+  Team
+} from "../types/team";
+import { isComputerManager } from "./manager";
+import { victors } from "./playoffs";
+import r from "./random";
+import { isComputerControlledTeam, isHumanControlledTeam } from "./team";
 
 export const calendarEntryByTurn = (turn: Turn) => (
   state: MHMState
@@ -56,7 +45,7 @@ export const teamsMatchOfTurn = (teamId: string, turn: Turn) => (
 
   return allMatches.find(
     descriptor =>
-      descriptor.homeIndex === teamId || descriptor.awayIndex === teamId
+      descriptor.index.home === teamId || descriptor.index.away === teamId
   );
 };
 
@@ -72,8 +61,10 @@ export const allMatchesOfCompetitions = (
         return {
           home: pairing.home,
           away: pairing.away,
-          homeIndex: group.teams[pairing.home],
-          awayIndex: group.teams[pairing.away],
+          index: {
+            home: group.teams[pairing.home],
+            away: group.teams[pairing.away]
+          },
           competition: competition.id,
           phase: phase.id,
           group: group.id,

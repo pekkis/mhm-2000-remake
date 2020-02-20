@@ -1,31 +1,28 @@
-import { Map, List } from "immutable";
-import { select, call, all } from "redux-saga/effects";
-import rr from "../../round-robin";
-import tournamentScheduler from "../../tournament";
-import table from "../../league";
-import { defaultMoraleBoost } from "../../morale";
-import { addAnnouncement } from "../../../sagas/news";
-import { amount as a } from "../../format";
-import { incrementStrength, incrementReadiness } from "../../../sagas/team";
+import { List, Map } from "immutable";
+import { drop, head, map, prop, range, sortBy } from "ramda";
+import { all, call, select } from "redux-saga/effects";
+import { MHMState } from "../../../ducks";
+import { setCompetitionTeams } from "../../../sagas/competition";
 import { incrementBalance } from "../../../sagas/manager";
+import { addAnnouncement } from "../../../sagas/news";
 import { setSeasonStat } from "../../../sagas/stats";
+import { incrementReadiness, incrementStrength } from "../../../sagas/team";
 import {
   CompetitionService,
+  LeagueTableRow,
   RoundRobinCompetitionGroup,
   RoundRobinCompetitionPhase,
-  LeagueTableRow,
-  TournamentCompetitionPhase,
-  TournamentCompetitionGroup,
   Turn
 } from "../../../types/base";
-import { map, range, head, drop, prop, sortBy } from "ramda";
-import { sortLeagueTable } from "../../league";
-import { MHMState } from "../../../ducks";
-import { domesticTeams, foreignTeams, statsForSeason } from "../../selectors";
-import { Team } from "../../../types/team";
-import random from "../../random";
-import { setCompetitionTeams } from "../../../sagas/competition";
 import { SeasonStatistic } from "../../../types/stats";
+import { Team } from "../../../types/team";
+import { amount as a } from "../../format";
+import table, { sortLeagueTable } from "../../league";
+import { defaultMoraleBoost } from "../../morale";
+import random from "../../random";
+import rr from "../../round-robin";
+import { foreignTeams, statsForSeason } from "../../selectors";
+import tournamentScheduler from "../../tournament";
 
 const awards = List.of(
   Map({
@@ -167,6 +164,14 @@ const thirdParticipant = (stats: SeasonStatistic) => {
 };
 
 const ehl: CompetitionService = {
+  canChooseIntensity: phase => {
+    if (phase === 0) {
+      return true;
+    }
+
+    return false;
+  },
+
   relegateTo: false,
   promoteTo: false,
 

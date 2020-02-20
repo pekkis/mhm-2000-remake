@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { amount } from "../services/format";
 import { getEffective } from "../services/effects";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import TurnIndicator from "./game/TurnIndicator";
 
 import styled from "@emotion/styled";

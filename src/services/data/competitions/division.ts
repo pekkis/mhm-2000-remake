@@ -1,19 +1,19 @@
-import rr from "../../round-robin";
-import playoffScheduler, { victors } from "../../playoffs";
-import { defaultMoraleBoost } from "../../morale";
-import r from "../../random";
+import { map, prop, sortBy, take, takeLast } from "ramda";
 import {
   CompetitionService,
-  RoundRobinCompetitionGroup,
-  RoundRobinCompetitionPhase,
   Matchups,
   PlayoffsCompetitionPhase,
-  PlayoffsCompetitionGroup,
-  LeagueTable
+  RoundRobinCompetitionGroup,
+  RoundRobinCompetitionPhase
 } from "../../../types/base";
-import { sortBy, map, prop, take, takeLast } from "ramda";
+import { defaultMoraleBoost } from "../../morale";
+import playoffScheduler, { victors } from "../../playoffs";
+import r from "../../random";
+import rr from "../../round-robin";
 
 const division: CompetitionService = {
+  canChooseIntensity: () => true,
+
   homeAdvantage: (phase, group) => {
     return 1;
   },

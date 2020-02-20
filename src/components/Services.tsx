@@ -5,7 +5,7 @@ import ManagerInfo from "./containers/ManagerInfoContainer";
 import styled from "@emotion/styled";
 import Toggle from "react-toggle";
 import Markdown from "react-markdown";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 
 import services from "../data/services";
 

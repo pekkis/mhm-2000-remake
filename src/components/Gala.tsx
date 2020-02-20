@@ -10,7 +10,7 @@ import Button from "./form/Button";
 
 import BettingForm from "./championship-betting/BettingForm";
 
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 
 const Gala = props => {
   const { teams, competitions, advance, betChampion, manager, news } = props;

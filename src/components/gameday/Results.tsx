@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import styled from "@emotion/styled";
 import Game from "./Game";
-import Box from "../styled-system/Box";
+import { Box } from "theme-ui";
 import { HumanManager } from "../../types/manager";
 import { MapOf, CompetitionGroup } from "../../types/base";
 import { Team } from "../../types/team";

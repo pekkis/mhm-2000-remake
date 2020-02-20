@@ -56,7 +56,9 @@ import {
   TeamSetOrganizationAction,
   TEAM_SET_ORGANIZATION,
   TeamSetLineupAction,
-  TEAM_SET_LINEUP
+  TEAM_SET_LINEUP,
+  TeamSetIntensityAction,
+  TEAM_SET_INTENSITY
 } from "../ducks/team";
 import {
   repeat,
@@ -178,6 +180,19 @@ export function* budgetOrganization(
     payload: {
       team,
       organization: budget
+    }
+  });
+}
+
+export function* selectIntensity(managerId: string, intensity: number) {
+  const manager = yield select(managerObject(managerId));
+  const team = assertTeam(manager);
+
+  yield put<TeamSetIntensityAction>({
+    type: TEAM_SET_INTENSITY,
+    payload: {
+      team,
+      intensity
     }
   });
 }

@@ -2,7 +2,7 @@ import React from "react";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 import ManagerInfo from "./containers/ManagerInfoContainer";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import tournamentList from "../data/tournaments";
 import Markdown from "react-markdown";
 import Button from "./form/Button";

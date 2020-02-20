@@ -2,7 +2,7 @@ import React from "react";
 import Table from "./league-table/Table";
 import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import { useSelector } from "react-redux";
 import {
   humanManagers,

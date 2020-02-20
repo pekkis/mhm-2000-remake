@@ -3,7 +3,7 @@ import Table from "./league-table/Table";
 import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
 import Results from "./gameday/Results";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import { useSelector } from "react-redux";
 import {
   currentCalendarEntry,

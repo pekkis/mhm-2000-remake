@@ -6,7 +6,7 @@ import HeaderedPage from "./ui/HeaderedPage";
 import SelectVictim from "./pranks/SelectVictim";
 import SelectType from "./pranks/SelectType";
 import ConfirmPrank from "./pranks/ConfirmPrank";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import Calendar from "./ui/Calendar";
 
 import difficultyLevels from "../services/difficulty-levels";

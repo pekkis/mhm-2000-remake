@@ -1,28 +1,15 @@
-import { Map, List } from "immutable";
-import { select, call, all, putResolve } from "redux-saga/effects";
-import tournamentScheduler from "../../tournament";
-import r from "../../random";
-import { foreignTeams, allTeams } from "../../selectors";
-
-import tournamentList from "../../../data/tournaments";
+import { pluck } from "ramda";
+import { select } from "redux-saga/effects";
 import { setCompetitionTeams } from "../../../sagas/competition";
-import { incrementReadiness } from "../../../sagas/team";
-import { addAnnouncement } from "../../../sagas/news";
-import { incrementBalance } from "../../../sagas/manager";
-import { amount as a } from "../../format";
 import {
   CompetitionService,
-  TournamentCompetitionPhase,
-  Managers,
-  Invitation,
-  TournamentCompetitionGroup,
   TrainingCompetitionPhase
 } from "../../../types/base";
-import { MHMState, competition } from "../../../ducks";
-import { prop, difference, append, pluck } from "ramda";
 import { Team } from "../../../types/team";
+import { allTeams } from "../../selectors";
 
 const training: CompetitionService = {
+  canChooseIntensity: () => false,
   relegateTo: false,
   promoteTo: false,
 

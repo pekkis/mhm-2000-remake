@@ -1,42 +1,37 @@
-import { select, call, take, put, putResolve, all } from "redux-saga/effects";
-import { setPhase, GAME_ADVANCE_REQUEST } from "../game";
-import {
-  CalendarEntry,
-  Competition,
-  MapOf,
-  MatchInput,
-  MatchResultsSet,
-  CompetitionNames,
-  ForEveryCompetition,
-  CompetitionGroup,
-  ScheduleGame,
-  MatchDescriptor
-} from "../../types/base";
-import {
-  currentCalendarEntry,
-  allTeamsMap,
-  allManagersMap,
-  allMatchesOfTurn,
-  allMatchesOfCompetitions
-} from "../../services/selectors";
-import competitionData, { competitionMap } from "../../services/competitions";
-import competitionTypes from "../../services/competition-type";
-import { groupEnd } from "../game";
-import { calculateGroupStats } from "../stats";
+import { all, call, putResolve, select, take } from "redux-saga/effects";
 import { MHMState } from "../../ducks";
-import { Team } from "../../types/team";
-import { playMatch, matchFacts } from "../../services/match";
-import { GameMatchResultsAction, GAME_MATCH_RESULTS } from "../../ducks/game";
 import {
   CompetitionAdvanceAction,
   COMPETITION_ADVANCE
 } from "../../ducks/competition";
-import { Manager } from "../../types/manager";
+import { GameMatchResultsAction, GAME_MATCH_RESULTS } from "../../ducks/game";
 import {
   TeamIncrementMoraleAction,
   TEAM_INCREMENT_MORALE
 } from "../../ducks/team";
-import { prop } from "ramda";
+import competitionTypes from "../../services/competition-type";
+import { competitionMap } from "../../services/competitions";
+import { matchFacts, playMatch } from "../../services/match";
+import {
+  allMatchesOfCompetitions,
+  allTeamsMap,
+  currentCalendarEntry
+} from "../../services/selectors";
+import {
+  CalendarEntry,
+  Competition,
+  CompetitionGroup,
+  CompetitionNames,
+  ForEveryCompetition,
+  MapOf,
+  MatchDescriptor,
+  MatchInput,
+  MatchResultsSet,
+  ScheduleGame
+} from "../../types/base";
+import { Team } from "../../types/team";
+import { GAME_ADVANCE_REQUEST, setPhase } from "../game";
+import { calculateGroupStats } from "../stats";
 
 function* playRoundOfMatches(
   competitionId: string,
@@ -49,8 +44,6 @@ function* playRoundOfMatches(
   );
 
   const teams: MapOf<Team> = yield select(allTeamsMap);
-
-  const managers: MapOf<Manager> = yield select(allManagersMap);
 
   const phase = competition.phases[phaseId];
   const group = phase.groups[groupId];
@@ -195,7 +188,7 @@ function* afterGameday(competitionIds: CompetitionNames[]) {
       return ["home", "away"].map(which => {
         const facts = matchFacts(md, which as "home" | "away");
         return {
-          team: which === "home" ? md.homeIndex : md.awayIndex,
+          team: md.index[which],
           amount: competitionMap[md.competition].moraleBoost(md.phase, facts)
         };
       });

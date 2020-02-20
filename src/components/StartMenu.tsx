@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useCallback } from "react";
 import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import ManagerForm from "./start-menu/ManagerForm";
 import styled from "@emotion/styled";
 import title from "../assets/title.png";

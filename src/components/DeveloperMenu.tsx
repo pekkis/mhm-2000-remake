@@ -2,7 +2,7 @@ import React from "react";
 import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
 import { getEffective } from "../services/effects";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import { useSelector } from "react-redux";
 import { MHMState, competition } from "../ducks";
 import {

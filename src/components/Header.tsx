@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { advance } from "../ducks/game";
 import { advanceEnabled } from "../services/selectors";
-import Forward from "./context-sensitive/Forward";
+import Forward from "./fixed-bar/Forward";
 
 const Container = styled.header`
   background-color: rgb(133, 133, 133);
@@ -58,7 +58,7 @@ const Header: FunctionComponent<Props> = ({ menu = true, back = false }) => {
       {menu && (
         <div className="secondary">
           <Button secondary onClick={() => dispatch(toggleMenu())}>
-            <FontAwesomeIcon icon={["fa", "bars"]} />
+            <FontAwesomeIcon icon={["fas", "bars"]} />
           </Button>
         </div>
       )}

@@ -3,7 +3,7 @@ import React from "react";
 import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 
 /*
 IF tuurix(tux) > 15 THEN COLOR 13, 0: PRINT lw(tux); " pelasi koko turnauksen ajan todella suurella syd„mell„!": franko = franko + 1

@@ -1,24 +1,20 @@
-import playoffScheduler, { victors, eliminated } from "../../playoffs";
-import { defaultMoraleBoost } from "../../morale";
-import r from "../../random";
-import { sortBy, take, map, prop, pluck } from "ramda";
+import { pluck, sortBy } from "ramda";
 import { select } from "redux-saga/effects";
+import { setCompetitionTeams } from "../../../sagas/competition";
+import cupScheduler, { cupMatchups, cupWinners } from "../../../services/cup";
 import {
   CompetitionService,
-  Matchups,
-  PlayoffsCompetitionPhase,
-  PlayoffsCompetitionGroup,
-  RoundRobinCompetitionGroup,
   CupCompetitionPhase,
   isCupCompetitionGroup
 } from "../../../types/base";
-
-import cupScheduler, { cupMatchups, cupWinners } from "../../../services/cup";
 import { Team } from "../../../types/team";
+import { defaultMoraleBoost } from "../../morale";
+import r from "../../random";
 import { domesticTeams } from "../../selectors";
-import { setCompetitionTeams } from "../../../sagas/competition";
 
 const cup: CompetitionService = {
+  canChooseIntensity: () => true,
+
   start: function*() {
     const teams: Team[] = yield select(domesticTeams);
     const teamIds = pluck("id", teams);

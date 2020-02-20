@@ -149,8 +149,10 @@ export interface MatchResultsSet {
 export interface MatchDescriptor {
   home: number;
   away: number;
-  homeIndex: string;
-  awayIndex: string;
+  index: {
+    home: string;
+    away: string;
+  };
   competition: CompetitionNames;
   phase: number;
   group: number;
@@ -340,6 +342,8 @@ export interface ServiceBasePrices {
 }
 
 export interface CompetitionService {
+  canChooseIntensity: (phase: number, group: number) => boolean;
+
   homeAdvantage: (phase: number, group: number) => number;
   awayAdvantage: (phase: number, group: number) => number;
 

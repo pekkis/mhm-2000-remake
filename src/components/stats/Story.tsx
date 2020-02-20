@@ -4,7 +4,7 @@ import Achievements from "./Achievements";
 import ResponsiveTable from "../responsive-table/ResponsiveTable";
 import Table from "../responsive-table/Table";
 import Td from "../responsive-table/Td";
-import Box from "../styled-system/Box";
+import { Box } from "theme-ui";
 
 const Story = props => {
   const { season, story, teams, competitions } = props;

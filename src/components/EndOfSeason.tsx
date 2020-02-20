@@ -7,7 +7,7 @@ import Season from "./data/Season";
 import Announcements from "./events/Announcements";
 import { List } from "immutable";
 
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 
 const EndOfSeason = props => {
   const { manager, news, turn, announcements } = props;

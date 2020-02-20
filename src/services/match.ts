@@ -22,28 +22,16 @@ import { MHMState } from "../ducks";
 import { select } from "redux-saga/effects";
 import { Player } from "../types/player";
 import { isHumanControlledTeam } from "./team";
+import { moraleModifier, intensityModifier } from "./match/team-modifiers";
 
 /*
 TODO:
-- intensiteetti
 - kannatusryhmät
 - intensiteetti tuurilla kehnompi
 - treeni (hyvin huonosti ok)
 - jäynät
 - spessueffut (voodoomies? )
 */
-
-const moraleModifier = (team: Team, advantage: number) => {
-  if (team.morale === 0) {
-    return advantage;
-  }
-
-  if (team.morale > 0) {
-    return advantage + team.morale / 155;
-  }
-
-  return advantage + team.morale / 125;
-};
 
 interface Matchup {
   [key: string]: TeamStrength;
@@ -154,11 +142,13 @@ export const playMatch = function*(input: MatchInput) {
 
   console.log("strenghts", strengths);
 
-  const teamModifiers = [moraleModifier];
+  const teamModifiers = [moraleModifier, intensityModifier];
 
   const advantagesAfterTeamModifiers = mapObjIndexed((a, which) => {
     return teamModifiers.reduce((a2, tm) => tm(teams[which], a2), a);
   }, advantages);
+
+  console.log(advantagesAfterTeamModifiers, "Advantage after team modifiers");
 
   const effectiveStrengths = mapObjIndexed((strength, which) => {
     return evolve(

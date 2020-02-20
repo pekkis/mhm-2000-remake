@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
 import ManagerInfo from "./ManagerInfo";
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import { MHMState } from "../ducks";
 import { useSelector, useDispatch } from "react-redux";
 import Button from "./form/Button";

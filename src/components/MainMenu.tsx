@@ -5,10 +5,10 @@ import Situation from "./context-sensitive/Situation";
 import ManagerInfo from "./ManagerInfo";
 import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
-import Forward from "./context-sensitive/Forward";
+import Forward from "./fixed-bar/Forward";
 import Current from "./context-sensitive/Current";
 
-import Box from "./styled-system/Box";
+import { Box } from "theme-ui";
 import { useSelector, useDispatch } from "react-redux";
 import { MHMState } from "../ducks";
 import { HumanManager } from "../types/manager";
@@ -17,6 +17,10 @@ import {
   interestingCompetitions,
   weightedCompetitions
 } from "../services/selectors";
+import FixedBar from "./fixed-bar/FixedBar";
+import MenuButton from "./fixed-bar/MenuButton";
+import ButtonRow from "./fixed-bar/ButtonRow";
+import PrimaryButton from "./fixed-bar/PrimaryButton";
 
 const MainMenu: FunctionComponent = () => {
   const manager = useSelector<MHMState, HumanManager>(activeManager);
@@ -34,7 +38,15 @@ const MainMenu: FunctionComponent = () => {
 
   return (
     <HeaderedPage>
-      <Header menu />
+      <FixedBar>
+        <ButtonRow>
+          <MenuButton />
+          <PrimaryButton>
+            <Forward />
+          </PrimaryButton>
+        </ButtonRow>
+      </FixedBar>
+
       <ManagerInfo details />
 
       <Box p={1}>
