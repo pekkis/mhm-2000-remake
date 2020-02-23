@@ -96,6 +96,7 @@ import { addNotification } from "./notification";
 import { removeTeamFromCompetition, addTeamToCompetition } from "./competition";
 import { initializeManagers } from "./game-start/game-start";
 import { UISetLoadingAction, UI_SET_LOADING } from "../ducks/ui";
+import { createSponsorshipProposals } from "./sponsor";
 
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 
@@ -229,11 +230,11 @@ function* competitionStart(competitionId: string) {
 export function* prepareSeason() {
   const teams: Team[] = yield select(allTeams);
 
+  // Initialize team strengths
   const strengths: [string, TeamStrength][] = map(
     team => [team.id, teamLevelToStrength(team.level)],
     teams
   );
-
   yield put<TeamSetStrengthsAction>({
     type: TEAM_SET_STRENGTHS,
     payload: strengths
@@ -243,6 +244,9 @@ export function* prepareSeason() {
   for (const [key] of toPairs(competitionData)) {
     yield competitionStart(key);
   }
+
+  // Initialize sponsorship proposals
+  yield call(createSponsorshipProposals);
 
   yield putResolve<GameSeasonStartAction>({
     type: GAME_SEASON_START
@@ -309,8 +313,6 @@ export function* seedCompetition(competition: CompetitionNames, phase: number) {
 export function* gameStart() {
   const action: GameAdvanceAction = yield take(GAME_ADVANCE_REQUEST);
 
-  yield call(prepareSeason);
-
   yield putResolve<UISetLoadingAction>({
     type: UI_SET_LOADING,
     payload: true
@@ -320,6 +322,8 @@ export function* gameStart() {
   yield call(addManager, action.payload);
 
   yield call(initializeManagers);
+
+  yield call(prepareSeason);
 
   yield delay(500);
 

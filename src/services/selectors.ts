@@ -1,4 +1,16 @@
-import { ascend, filter, nth, pipe, prop, sortWith, values } from "ramda";
+import R, {
+  ascend,
+  filter,
+  nth,
+  pipe,
+  prop,
+  sortWith,
+  values,
+  takeLast,
+  sum,
+  map,
+  includes
+} from "ramda";
 import { MHMState } from "../ducks";
 import {
   CalendarEntry,
@@ -26,6 +38,27 @@ import { isComputerManager } from "./manager";
 import { victors } from "./playoffs";
 import r from "./random";
 import { isComputerControlledTeam, isHumanControlledTeam } from "./team";
+
+export const selectAllTeamsCompetitions = (team: string) => (
+  state: MHMState
+): CompetitionNames[] => {
+  return values(state.competition.competitions)
+    .filter(c => c.teams.includes(team))
+    .map(prop("id"));
+};
+
+export const teamsAverageRankingFromLastYears = (
+  team: string,
+  years: number
+) => (state: MHMState): number => {
+  const rankings = takeLast(years, state.stats.teams[team].ranking);
+
+  if (rankings.length !== years) {
+    throw new Error("Invalid rankings");
+  }
+
+  return sum(rankings) / years;
+};
 
 export const calendarEntryByTurn = (turn: Turn) => (
   state: MHMState
@@ -444,12 +477,6 @@ export const teamCompetesIn = (team, competition) => state => {
   return pipe(teamsCompetitions(team), competitions =>
     competitions.map(c => c.get("id")).includes(competition)
   )(state);
-};
-
-export const teamsCompetitions = team => state => {
-  return state.game.get("competitions").filter(c => {
-    return c.get("teams", List()).includes(team);
-  });
 };
 
 export const teamHasActiveEffects = team => state => {

@@ -1,4 +1,4 @@
-import { DifficultyLevelMap } from "../types/base";
+import { DifficultyLevelNames, ForEvery, DifficultyLevel } from "../types/base";
 
 /*
   "Tämä aloittelijoille ja helpon menestyksen ystäville tarkoitettu taso tekee menestymisestä helppoa: sponsorit antavat kottikärryittäin rahaa, tietokoneen managerit rakastavat sinua ja kaikki on halpaa!",
@@ -16,9 +16,23 @@ import { DifficultyLevelMap } from "../types/base";
 7,-15
 */
 
-const difficultyLevels: DifficultyLevelMap = {
+export const difficultyLevelMap: ForEvery<
+  DifficultyLevelNames,
+  DifficultyLevel
+> = {
   1: {
     value: 1,
+    sponsorshipModifier: () => 200 / 100,
+    injuryChance: () => 4 + 1 * 2,
+    organizationPrices: () => {
+      return {
+        coaching: [-1000, -2000, -3000, -4000, -7000],
+        goalieCoaching: [-1000, -2000, -3000, -4000, -7000],
+        juniorAcademy: [-1000, -2000, -3000, -4000, -7000],
+        care: [-1000, -2000, -3000, -4000, -7000],
+        benefits: [0, -50, -100, -200, -400]
+      };
+    },
     name: "Nörttivatsa",
     description:
       "Tämä aloittelijoille ja helpon menestyksen ystäville tarkoitettu taso tekee menestymisestä helppoa: sponsorit antavat kottikärryittäin rahaa, tietokoneen managerit rakastavat sinua ja kaikki on halpaa!",
@@ -38,6 +52,17 @@ const difficultyLevels: DifficultyLevelMap = {
   },
   2: {
     value: 2,
+    sponsorshipModifier: () => 140 / 100,
+    injuryChance: () => 4 + 2 * 2,
+    organizationPrices: () => {
+      return {
+        coaching: [-1000, -2000, -4000, -7000, -11000],
+        goalieCoaching: [-1000, -2000, -4000, -7000, -11000],
+        juniorAcademy: [-1000, -2000, -4000, -7000, -11000],
+        care: [-1000, -2000, -4000, -7000, -11000],
+        benefits: [0, -100, -200, -500, -1000]
+      };
+    },
     name: "Maitovatsa",
     description:
       "Kynsiä ei tarvitse pureskella tätä vaikeustasoa käyttäessä. Pokaaleja ei kanneta sinulle hopeatarjottimella, vaan joudut itse hakemaan tarjottimen metrin päästä.",
@@ -58,6 +83,18 @@ const difficultyLevels: DifficultyLevelMap = {
 
   3: {
     value: 3,
+    injuryChance: () => 4 + 3 * 2,
+    sponsorshipModifier: () => 120 / 100,
+    organizationPrices: () => {
+      return {
+        coaching: [-1000, -2000, -4000, -7000, -11000],
+        goalieCoaching: [-1000, -2000, -4000, -7000, -11000],
+        juniorAcademy: [-1000, -2000, -4000, -7000, -11000],
+        care: [-1000, -2000, -4000, -7000, -11000],
+        benefits: [0, -100, -200, -500, -1000]
+      };
+    },
+
     name: "Kahvivatsa",
     description:
       "MHM 2000:n perustaso tarjoaa keskitasoista haastetta kaikin puolin: menestyksen eteen saa nähdä jo vähän vaivaakin.",
@@ -78,6 +115,18 @@ const difficultyLevels: DifficultyLevelMap = {
   },
 
   4: {
+    sponsorshipModifier: () => 100 / 100,
+    injuryChance: () => 4 + 4 * 2,
+    organizationPrices: () => {
+      return {
+        coaching: [-1000, -2000, -4000, -7000, -11000],
+        goalieCoaching: [-1000, -2000, -4000, -7000, -11000],
+        juniorAcademy: [-1000, -2000, -4000, -7000, -11000],
+        care: [-1000, -2000, -4000, -7000, -11000],
+        benefits: [0, -100, -200, -500, -1000]
+      };
+    },
+
     value: 4,
     name: "Haavavatsa",
     description:
@@ -97,6 +146,17 @@ const difficultyLevels: DifficultyLevelMap = {
     }
   },
   5: {
+    sponsorshipModifier: () => 90 / 100,
+    injuryChance: () => 4 + 5 * 2,
+    organizationPrices: () => {
+      return {
+        coaching: [-1000, -2000, -5000, -9000, -18000],
+        goalieCoaching: [-1000, -2000, -5000, -9000, -18000],
+        juniorAcademy: [-1000, -2000, -5000, -9000, -18000],
+        care: [-1000, -2000, -5000, -9000, -18000],
+        benefits: [0, -200, -400, -700, -1200]
+      };
+    },
     value: 5,
     name: "Katarrivatsa",
     description:
@@ -117,4 +177,4 @@ const difficultyLevels: DifficultyLevelMap = {
   }
 };
 
-export default difficultyLevels;
+export default difficultyLevelMap;

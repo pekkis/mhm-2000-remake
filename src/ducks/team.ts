@@ -1,45 +1,44 @@
-import { Map, List } from "immutable";
-
-import { teamData, normalizeMorale } from "../services/team";
-
-import { MapOf, SeasonStrategy, SeasonStrategies } from "../types/base";
+import { List, Map } from "immutable";
 import {
-  Team,
-  TeamStrength,
-  TeamEffect,
-  TeamOrganization,
-  Lineup
-} from "../types/team";
-import {
-  dissocPath,
+  add,
   assocPath,
-  reduce,
-  over,
+  dec,
+  dissocPath,
+  evolve,
+  lensPath,
   lensProp,
   map,
   mergeLeft,
+  over,
   pipe,
-  evolve,
-  dec,
-  add,
-  lensPath
+  reduce
 } from "ramda";
+import { normalizeMorale, teamData } from "../services/team";
+import { MapOf, SeasonStrategies } from "../types/base";
 import {
-  GAME_DECREMENT_DURATIONS,
-  GAME_CLEAR_EXPIRED,
-  GAME_LOAD_STATE,
+  ComputerControlledTeam,
+  HumanControlledTeam,
+  Lineup,
+  Team,
+  TeamEffect,
+  TeamOrganization,
+  TeamStrength
+} from "../types/team";
+import {
+  GameCleanupAction,
+  GameDecrementDurationsActions,
   GameLoadStateAction,
   GameQuitToMainMenuAction,
   GameSeasonStartAction,
-  GAME_SEASON_START,
-  GameCleanupAction,
-  GameDecrementDurationsActions
+  GAME_CLEAR_EXPIRED,
+  GAME_DECREMENT_DURATIONS,
+  GAME_LOAD_STATE,
+  GAME_QUIT_TO_MAIN_MENU,
+  GAME_SEASON_START
 } from "./game";
 
-import strategyHandlers, { strategies } from "../services/strategies";
-
 export interface TeamState {
-  teams: MapOf<Team>;
+  teams: MapOf<HumanControlledTeam | ComputerControlledTeam>;
 }
 
 export const TEAM_ADD_MANAGER = "TEAM_ADD_MANAGER";
@@ -146,6 +145,9 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
   switch (action.type) {
     case GAME_LOAD_STATE:
       return action.payload.team;
+
+    case GAME_QUIT_TO_MAIN_MENU:
+      return defaultState;
 
     case GAME_SEASON_START:
       return over(
@@ -276,11 +278,6 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
         state
       );
 
-    case "TEAM_INCREMENT_MORALE":
-      return state.updateIn(["teams", payload.team, "morale"], m => {
-        return Math.min(payload.max, Math.max(payload.min, m + payload.amount));
-      });
-
     case "TEAM_SET_MORALE":
       return state.setIn(
         ["teams", payload.team, "morale"],
@@ -314,15 +311,6 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
           );
         }
       );
-
-    case "TEAM_INCREMENT_STRENGTH":
-      return state.updateIn(
-        ["teams", payload.team, "strength"],
-        m => m + payload.amount
-      );
-
-    case "TEAM_SET_STRENGTH":
-      return state.setIn(["teams", payload.team, "strength"], payload.amount);
 
     case "TEAM_RENAME":
       return state.setIn(["teams", payload.team, "name"], payload.name);

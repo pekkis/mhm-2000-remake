@@ -1,5 +1,6 @@
 import { AllCountries } from "./country";
 import { SeasonStrategies } from "./base";
+import { Arena } from "./arena";
 
 export const TEAM_HUMAN_CONTROLLED = "H";
 export const TEAM_COMPUTER_CONTROLLED = "C";
@@ -39,6 +40,7 @@ export interface Team {
   manager?: string;
   strategy?: SeasonStrategies;
   organization: TeamOrganization;
+  arena: Arena;
 }
 
 export interface ForwardLine {

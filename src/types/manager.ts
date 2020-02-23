@@ -1,5 +1,5 @@
 import { AllCountries } from "./country";
-import { DifficultyLevels } from "./base";
+import { DifficultyLevelNames } from "./base";
 
 /*
 STRATEGIAT
@@ -40,7 +40,7 @@ export interface ComputerManager extends Manager {
 
 export interface HumanManager extends Manager {
   isHuman: true;
-  difficultyLevel: DifficultyLevels;
+  difficultyLevel: DifficultyLevelNames;
   pranksExecuted: number;
   balance: number;
 }

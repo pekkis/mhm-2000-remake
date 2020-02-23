@@ -1,33 +1,16 @@
+import { Field, Form, Formik } from "formik";
 import React, { FunctionComponent } from "react";
-import { Formik, Field, Form } from "formik";
-import Button from "../form/Button";
-import Input from "../form/Input";
-import Select from "../form/Select";
-import Fieldset from "../form/Fieldset";
-import Label from "../form/Label";
-import LabelDiv from "../form/LabelDiv";
-import UIField from "../form/Field";
-import difficultyLevelMap from "../../services/difficulty-levels";
-import { map, values as rValues, values, sum } from "ramda";
-import { Competition, ForEveryCompetition, MapOf } from "../../types/base";
-import { Team, TeamOrganization } from "../../types/team";
-import { teamListByIds, nameToId } from "../../services/team";
-import * as Yup from "yup";
 import { Dispatch } from "redux";
-import { advance } from "../../ducks/game";
-import {
-  previousExperience,
-  weightedManagerAbilityList
-} from "../../services/manager";
-import { TeamStatistic } from "../../types/stats";
-import { AllCountries } from "../../types/country";
-import { alphabeticalCountryList } from "../../services/country";
-import { ManagerAbilities, HumanManager } from "../../types/manager";
-import { number } from "prop-types";
-import Markdown from "../Markdown";
-import { weightedOrganizationLevelList } from "../../services/organization";
-import Currency from "../ui/Currency";
+import * as Yup from "yup";
 import { budgetOrganization } from "../../ducks/manager";
+import { weightedOrganizationLevelList } from "../../services/organization";
+import { HumanManager } from "../../types/manager";
+import { Team, TeamOrganization } from "../../types/team";
+import Button from "../form/Button";
+import UIField from "../form/Field";
+import LabelDiv from "../form/LabelDiv";
+import Markdown from "../Markdown";
+import Currency from "../ui/Currency";
 
 const organizationBudgetSchema = Yup.object().shape({
   coaching: Yup.number().required(),

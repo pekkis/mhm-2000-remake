@@ -16,6 +16,7 @@ import {
   assocPath,
   lensPath
 } from "ramda";
+import { addToMapFromList } from "./operations";
 
 export interface PlayerState {
   players: MapOf<Player>;
@@ -148,8 +149,7 @@ export default function playerReducer(
       );
 
     case PLAYER_CREATE_PLAYER:
-      const playerMap = indexBy(prop("id"), action.payload.players);
-      return over(lensProp("players"), mergeLeft(playerMap), state);
+      return addToMapFromList(["players"], action.payload.players, state);
 
     default:
       return state;

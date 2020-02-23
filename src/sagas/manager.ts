@@ -43,7 +43,7 @@ import {
   ComputerManager,
   isHumanManager
 } from "../types/manager";
-import { DifficultyLevels, SeasonStrategies } from "../types/base";
+import { DifficultyLevelNames, SeasonStrategies } from "../types/base";
 import { ManagerAddManagerAction, MANAGER_ADD } from "../ducks/manager";
 import { Team, TeamOrganization, Lineup } from "../types/team";
 import {
@@ -138,7 +138,7 @@ export function* addManager(details: ManagerInput) {
   const manager: HumanManager = {
     id: createId(details),
     name: details.name,
-    difficultyLevel: parseInt(details.difficulty, 10) as DifficultyLevels,
+    difficultyLevel: parseInt(details.difficulty, 10) as DifficultyLevelNames,
     pranksExecuted: 0,
     balance: 0,
     isHuman: true,

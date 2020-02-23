@@ -425,15 +425,15 @@ export interface MHMEvent {
   id: string;
 }
 
-export interface DifficultyLevelMap {
-  1: DifficultyLevel;
-  2: DifficultyLevel;
-  3: DifficultyLevel;
-  4: DifficultyLevel;
-  5: DifficultyLevel;
-}
+export type DifficultyLevelNames = 1 | 2 | 3 | 4 | 5;
 
-export type DifficultyLevels = keyof DifficultyLevelMap;
+export interface OrganizationPrices {
+  coaching: number[];
+  goalieCoaching: number[];
+  juniorAcademy: number[];
+  care: number[];
+  benefits: number[];
+}
 
 export interface DifficultyLevel {
   name: string;
@@ -441,6 +441,9 @@ export interface DifficultyLevel {
   value: number;
   moraleMin: number;
   moraleMax: number;
+  sponsorshipModifier: () => number;
+  organizationPrices: () => OrganizationPrices;
+  injuryChance: () => number;
 }
 
 export type MapOf<T> = {

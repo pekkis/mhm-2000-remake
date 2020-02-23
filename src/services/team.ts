@@ -159,25 +159,6 @@ export const initialTeamStats = () =>
   )(rawTeamStats);
 
 export const initialSeasonStats = (): SeasonStatistic[] => {
-  const teamStats = toPairs(initialTeamStats());
-
-  /*
-  const seasonRankings = range(0, 3).map(season => {
-    const seasonRankings: [string, number][] = map(
-      ([id, ts]) => [id, ts.ranking[season]],
-      teamStats
-    );
-
-    const filtered = filter(([id, ranking]) => ranking <= 3, seasonRankings);
-
-    const sorter = sortWith([ascend(nth(1))]);
-
-    const sorted = sorter(filtered);
-
-    const teamIds = map(nth(0), sorted);
-  });
-  */
-
   return [
     {
       medalists: [nameToId("jokerit"), nameToId("tps"), nameToId("hpk")],

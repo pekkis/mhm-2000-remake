@@ -12,6 +12,7 @@ import { StatsState } from "./stats";
 import { CompetitionState } from "./competition";
 import { TeamState } from "./team";
 import { PlayerState } from "./player";
+import { SponsorState } from "./sponsor";
 
 export { default as game } from "./game";
 export { default as manager } from "./manager";
@@ -27,6 +28,7 @@ export { default as country } from "./country";
 export { default as competition } from "./competition";
 export { default as team } from "./team";
 export { default as player } from "./player";
+export { default as sponsor } from "./sponsor";
 
 export interface MHMState {
   competition: CompetitionState;
@@ -43,4 +45,5 @@ export interface MHMState {
   stats: StatsState;
   team: TeamState;
   player: PlayerState;
+  sponsor: SponsorState;
 }
