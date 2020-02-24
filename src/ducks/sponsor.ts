@@ -33,13 +33,13 @@ type SponsorActions =
 const sponsorReducer = (
   state: SponsorState = defaultState,
   action: SponsorActions
-) => {
+): SponsorState => {
   switch (action.type) {
     case GAME_QUIT_TO_MAIN_MENU:
       return defaultState;
 
     case GAME_LOAD_STATE:
-      return action.payload.team;
+      return action.payload.sponsor;
 
     case SPONSOR_CREATE_PROPOSALS:
       return addToMapFromList(["proposals"], action.payload.proposals, state);

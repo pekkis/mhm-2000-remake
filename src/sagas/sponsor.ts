@@ -32,13 +32,11 @@ const createClausules = (
         return p;
       }
 
-      const amount = ps.getAmount(p);
-
       const randomAttitude = getRandomAttitude(p);
 
       const clausule: SponsorshipClausule = {
         type: ps.id,
-        amount: randomAttitude * amount
+        multiplier: randomAttitude
       };
 
       return {
@@ -73,9 +71,10 @@ function* createSponsorshipProposalsForManager(manager: HumanManager) {
   const attitudeBonus = getArenaModifier(team.arena);
 
   return range(0, 3).map(
-    (): SponsorshipProposal => {
+    (r): SponsorshipProposal => {
       const proposal: SponsorshipProposal = {
         id: uuid(),
+        weight: r * 1000,
         sponsorName: getRandomSponsorName(),
         baseAmount,
         attitudeBonus,
@@ -84,8 +83,8 @@ function* createSponsorshipProposalsForManager(manager: HumanManager) {
         clausules: [],
         requirements: {
           basic: 1,
-          cup: 1,
-          ehl: 1
+          cup: 2,
+          ehl: 0
         },
         open: true
       };

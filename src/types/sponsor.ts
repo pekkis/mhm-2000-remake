@@ -4,6 +4,7 @@ export interface SponsorshipDeal {}
 
 export interface SponsorshipProposal {
   id: string;
+  weight: number;
   sponsorName: string;
   team: string;
   competitions: CompetitionNames[];
@@ -11,14 +12,21 @@ export interface SponsorshipProposal {
   attitudeBonus: number;
   clausules: SponsorshipClausule[];
   requirements: {
-    basic: 1 | 2 | 3 | 4;
-    cup: 1 | 2 | 3;
-    ehl: 1 | 2;
+    basic: 0 | 1 | 2 | 3;
+    cup: 0 | 1 | 2;
+    ehl: 0 | 1;
   };
   open: boolean;
 }
 
 export interface SponsorshipClausule {
   type: string;
-  amount: number;
+  multiplier: number;
+  amount?: number;
+}
+
+export interface SponsorshipRequirementOptions {
+  basic: number[];
+  cup: number[];
+  ehl: number[];
 }
