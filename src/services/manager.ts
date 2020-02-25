@@ -7,10 +7,11 @@ import {
 } from "../types/manager";
 import rawManagerData, { RawManagerData } from "./data/manager-data";
 import { countryFromLegacyCountry } from "./country";
-import { trim, indexBy, prop, sortWith, ascend, values } from "ramda";
+import { trim, indexBy, prop, sortWith, ascend, values, curry } from "ramda";
 import { mapIndexed } from "ramda-adjunct";
 import uuid from "uuid";
 import slug from "slug";
+import random from "./random";
 
 export const isHumanManager = (manager: Manager): manager is HumanManager => {
   return manager.isHuman;
@@ -180,4 +181,38 @@ export const managerAbilities: ForEvery<
 
 export const weightedManagerAbilityList = managerAbilitySorter(
   values(managerAbilities)
+);
+
+/*
+FUNCTION tarko% (t0%, t1%, t2%, t3%)
+
+IF INT(100 * RND) + 1 < t3% + (mtaito(t1%, man(t0%)) * t2%) THEN
+tarko = 1
+ELSE
+tarko = 0
+END IF
+
+END FUNCTION
+*/
+
+export const abilityCheck = curry(
+  (
+    ability: keyof ManagerAbilities,
+    multiplier: number,
+    reference: number,
+    manager: Manager
+  ): boolean => {
+    console.log("Skill Chexor", ability, multiplier, reference, manager);
+
+    const randomValue = random.integer(1, 100);
+    const abilityValue = reference + manager.abilities[ability] * multiplier;
+
+    console.log("SKILL CHECK", randomValue, abilityValue);
+
+    if (randomValue < abilityValue) {
+      return true;
+    }
+
+    return false;
+  }
 );

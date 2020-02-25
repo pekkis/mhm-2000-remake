@@ -5,7 +5,7 @@ import HeaderedPage from "./ui/HeaderedPage";
 import Header from "./Header";
 import ManagerInfo from "./ManagerInfo";
 import { MHMState } from "../ducks";
-import { values, sortWith, ascend, prop } from "ramda";
+import { values, sortWith, ascend, prop, sortBy, descend } from "ramda";
 import { SponsorshipProposal } from "../types/sponsor";
 import {
   sponsorshipClausuleMap,
@@ -14,6 +14,20 @@ import {
 import Currency from "./ui/Currency";
 import { Box } from "theme-ui";
 import SelectRequirements from "./sponsors-menu/SelectRequirements";
+import {
+  ManagerSponsorNegotiateAction,
+  MANAGER_SPONSOR_NEGOTIATE,
+  MANAGER_SPONSOR_ACCEPT,
+  ManagerSponsorAcceptAction
+} from "../ducks/manager";
+import Button from "./form/Button";
+
+const clausuleSorter = sortWith<{
+  type: string;
+  amount: number;
+  times: number;
+  totalAmount: number;
+}>([descend(prop("totalAmount"))]);
 
 const SponsorsMenu = () => {
   const dispatch = useDispatch();
@@ -31,6 +45,8 @@ const SponsorsMenu = () => {
   const proposals = sortWith<SponsorshipProposal>([ascend(prop("weight"))])(
     managersProposals
   );
+
+  const openProposals = proposals.filter(p => p.open).length;
 
   console.log("proposals", proposals);
 
@@ -51,10 +67,13 @@ const SponsorsMenu = () => {
       return {
         type: clausule.type,
         amount,
-        times
+        times,
+        totalAmount: amount * times
       };
     })
     .filter(descriptor => descriptor.amount !== 0);
+
+  const sortedDescriptors = clausuleSorter(clausuleDescriptors);
 
   return (
     <HeaderedPage>
@@ -63,39 +82,88 @@ const SponsorsMenu = () => {
 
       <Box p={1}>
         <h2>
-          <button onClick={() => setProposalId(proposalId - 1)}>-</button>
+          <button
+            disabled={proposalId === 0}
+            onClick={() => setProposalId(proposalId - 1)}
+          >
+            -
+          </button>
           {proposal.sponsorName}
-          <button onClick={() => setProposalId(proposalId + 1)}>+</button>
+          <button
+            disabled={proposalId === proposals.length - 1}
+            onClick={() => setProposalId(proposalId + 1)}
+          >
+            +
+          </button>
         </h2>
-
-        <table>
-          {clausuleDescriptors.map(descriptor => {
-            return (
-              <tr>
-                <td>{sponsorshipClausuleMap[descriptor.type].title}</td>
-                <td>
-                  {<Currency value={descriptor.amount} />}
-                  {descriptor.times > 1 && (
-                    <div>
-                      <small>
-                        yhteensä{" "}
-                        <Currency
-                          value={descriptor.amount * descriptor.times}
-                        />
-                      </small>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </table>
 
         <SelectRequirements
           manager={manager}
           proposal={proposal}
           options={getRequirementOptions(proposal)}
         />
+
+        <h3>Sopimuksen ehdot</h3>
+
+        <table>
+          <tbody>
+            {sortedDescriptors.map((descriptor, i) => {
+              return (
+                <tr key={i}>
+                  <td>{sponsorshipClausuleMap[descriptor.type].title}</td>
+                  <td>
+                    {<Currency value={descriptor.amount} />}
+                    {descriptor.times > 1 && (
+                      <div>
+                        <small>
+                          yhteensä{" "}
+                          <Currency
+                            value={descriptor.amount * descriptor.times}
+                          />
+                        </small>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        <div>
+          <Button
+            disabled={openProposals === 1 || !proposal.open}
+            onClick={() => {
+              dispatch<ManagerSponsorNegotiateAction>({
+                type: MANAGER_SPONSOR_NEGOTIATE,
+                payload: {
+                  manager: manager.id,
+                  proposalId: proposal.id
+                }
+              });
+            }}
+          >
+            Neuvottele
+          </Button>
+        </div>
+
+        <div>
+          <Button
+            secondary
+            disabled={!proposal.open}
+            onClick={() => {
+              dispatch<ManagerSponsorAcceptAction>({
+                type: MANAGER_SPONSOR_ACCEPT,
+                payload: {
+                  manager: manager.id,
+                  proposalId: proposal.id
+                }
+              });
+            }}
+          >
+            Hyväksy
+          </Button>
+        </div>
       </Box>
     </HeaderedPage>
   );

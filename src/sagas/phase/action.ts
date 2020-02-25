@@ -1,76 +1,61 @@
 import { nth } from "ramda";
 import {
-  call,
-  fork,
   all,
-  take,
-  takeEvery,
+  call,
   cancel,
-  put,
   select,
+  take,
   takeLeading
 } from "redux-saga/effects";
-import { gameSave, setPhase } from "../game";
 import {
-  setActiveManager,
-  managerSelectStrategy,
-  budgetOrganization,
-  automateLineup,
-  setLineup,
-  selectIntensity
-} from "../manager";
-import { orderPrank } from "../prank";
-import { acceptInvitation } from "../invitation";
-
-import { INVITATION_ACCEPT_REQUEST } from "../../ducks/invitation";
-import { BETTING_BET_REQUEST } from "../../ducks/betting";
-import { bet } from "../betting";
-import {
-  humanManagers,
-  allComputerControlledTeams,
-  allHumanControlledTeams,
-  allManagersMap
-} from "../../services/selectors";
-import { HumanManager, ComputerManager, Manager } from "../../types/manager";
-import {
-  GameSetPhaseAction,
-  GAME_SET_PHASE,
-  GameAdvanceAction,
-  GAME_ADVANCE_REQUEST,
-  GameAdvanceRequestAction
+  GameAdvanceRequestAction,
+  GAME_ADVANCE_REQUEST
 } from "../../ducks/game";
-import { ComputerControlledTeam, HumanControlledTeam } from "../../types/team";
-import { MapOf } from "../../types/base";
-import { isComputerControlledTeam } from "../../services/team";
-import aiActionPhase from "../ai/phase/action";
 import {
-  MANAGER_SELECT_STRATEGY,
-  ManagerSelectStrategyAction,
   ManagerBudgetOrganizationAction,
-  MANAGER_BUDGET_ORGANIZATION,
   ManagerLineupAutomateAction,
-  MANAGER_LINEUP_AUTOMATE,
   ManagerLineupSetAction,
-  MANAGER_LINEUP_SET,
   ManagerSelectIntensityAction,
-  MANAGER_SELECT_INTENSITY
+  ManagerSelectStrategyAction,
+  ManagerSponsorNegotiateAction,
+  ManagerSponsorSetRequirementAction,
+  MANAGER_BUDGET_ORGANIZATION,
+  MANAGER_LINEUP_AUTOMATE,
+  MANAGER_LINEUP_SET,
+  MANAGER_SELECT_INTENSITY,
+  MANAGER_SELECT_STRATEGY,
+  MANAGER_SPONSOR_NEGOTIATE,
+  MANAGER_SPONSOR_SET_REQUIREMENT
 } from "../../ducks/manager";
 import {
-  PlayerContractInitiateAction,
-  PlayerContractInitiateRequestAction,
-  PLAYER_CONTRACT_INITIATE_REQUEST,
-  PlayerContractProposeAction,
-  PLAYER_CONTRACT_PROPOSE,
-  PlayerContractSignRequestAction,
-  PLAYER_CONTRACT_SIGN_REQUEST,
   PlayerContractEndRequestAction,
-  PLAYER_CONTRACT_END_REQUEST
+  PlayerContractInitiateRequestAction,
+  PlayerContractProposeAction,
+  PlayerContractSignRequestAction,
+  PLAYER_CONTRACT_END_REQUEST,
+  PLAYER_CONTRACT_INITIATE_REQUEST,
+  PLAYER_CONTRACT_PROPOSE,
+  PLAYER_CONTRACT_SIGN_REQUEST
 } from "../../ducks/player";
+import { humanManagers } from "../../services/selectors";
+import { HumanManager } from "../../types/manager";
+import aiActionPhase from "../ai/phase/action";
+import { gameSave, setPhase } from "../game";
 import {
-  initiateContractNegotiation,
+  automateLineup,
+  budgetOrganization,
+  managerSelectStrategy,
+  selectIntensity,
+  setActiveManager,
+  setLineup,
+  setSponsorshipProposalRequirement,
+  negotiateSponsorshipProposal
+} from "../manager";
+import {
+  contractEndNegotiation,
   contractNegotiationProposal,
   contractSign,
-  contractEndNegotiation
+  initiateContractNegotiation
 } from "../player";
 
 export default function* actionPhase() {
@@ -147,6 +132,30 @@ export default function* actionPhase() {
       MANAGER_SELECT_INTENSITY,
       function*(a) {
         yield call(selectIntensity, a.payload.manager, a.payload.intensity);
+      }
+    ),
+
+    takeLeading<ManagerSponsorSetRequirementAction>(
+      MANAGER_SPONSOR_SET_REQUIREMENT,
+      function*(a) {
+        yield call(
+          setSponsorshipProposalRequirement,
+          a.payload.manager,
+          a.payload.proposalId,
+          a.payload.requirement,
+          a.payload.value
+        );
+      }
+    ),
+
+    takeLeading<ManagerSponsorNegotiateAction>(
+      MANAGER_SPONSOR_NEGOTIATE,
+      function*(a) {
+        yield call(
+          negotiateSponsorshipProposal,
+          a.payload.manager,
+          a.payload.proposalId
+        );
       }
     ),
 

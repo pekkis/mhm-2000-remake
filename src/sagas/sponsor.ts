@@ -51,7 +51,6 @@ const createClausules = (
 };
 
 function* createSponsorshipProposalsForManager(manager: HumanManager) {
-  console.log("CREATING SPONSORSHIP PROPOSALS FOR", manager.name);
   const team: Team = yield select(requireHumanManagersTeamObj(manager.id));
 
   const averageRankingFromLast3Years: number = yield select(
@@ -82,11 +81,13 @@ function* createSponsorshipProposalsForManager(manager: HumanManager) {
         competitions,
         clausules: [],
         requirements: {
-          basic: 1,
-          cup: 2,
+          basic: 0,
+          cup: 0,
           ehl: 0
         },
-        open: true
+        open: true,
+        requirementsOpen: true,
+        timesNegotiated: 0
       };
 
       return createClausules(proposal);
@@ -95,7 +96,6 @@ function* createSponsorshipProposalsForManager(manager: HumanManager) {
 }
 
 export function* createSponsorshipProposals() {
-  console.log("CREATING SPONSORSHIP PROPOSALS");
   const managers = yield select(humanManagers);
 
   for (const manager of managers) {

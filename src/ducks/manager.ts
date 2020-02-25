@@ -38,6 +38,10 @@ export const MANAGER_SELECT_STRATEGY = "MANAGER_SELECT_STRATEGY";
 export const MANAGER_LINEUP_AUTOMATE = "MANAGER_LINEUP_AUTOMATE";
 export const MANAGER_LINEUP_SET = "MANAGER_LINEUP_SET";
 export const MANAGER_SELECT_INTENSITY = "MANAGER_SELECT_INTENSITY";
+export const MANAGER_SPONSOR_SET_REQUIREMENT =
+  "MANAGER_SPONSOR_SET_REQUIREMENT";
+export const MANAGER_SPONSOR_NEGOTIATE = "MANAGER_SPONSOR_NEGOTIATE";
+export const MANAGER_SPONSOR_ACCEPT = "MANAGER_SPONSOR_ACCEPT";
 
 export interface ManagerSelectIntensityAction {
   type: typeof MANAGER_SELECT_INTENSITY;
@@ -80,6 +84,32 @@ export interface ManagerSelectStrategyAction {
 export interface ManagerBudgetOrganizationAction {
   type: typeof MANAGER_BUDGET_ORGANIZATION;
   payload: { manager: string; budget: TeamOrganization };
+}
+
+export interface ManagerSponsorSetRequirementAction {
+  type: typeof MANAGER_SPONSOR_SET_REQUIREMENT;
+  payload: {
+    manager: string;
+    proposalId: string;
+    requirement: "basic" | "cup" | "ehl";
+    value: number;
+  };
+}
+
+export interface ManagerSponsorNegotiateAction {
+  type: typeof MANAGER_SPONSOR_NEGOTIATE;
+  payload: {
+    manager: string;
+    proposalId: string;
+  };
+}
+
+export interface ManagerSponsorAcceptAction {
+  type: typeof MANAGER_SPONSOR_ACCEPT;
+  payload: {
+    manager: string;
+    proposalId: string;
+  };
 }
 
 export interface ManagerState {

@@ -30,13 +30,45 @@ interface SponsorshipClausuleService {
 }
 
 export const getRequirementOptions = (proposal: SponsorshipProposal) => {
-  return {
-    basic: proposal.competitions.includes("phl") ? [0, 1, 2, 3] : [0, 1, 2],
-    cup: [0, 1, 2],
-    ehl: proposal.competitions.includes("phl") ? [0, 1, 2] : [0]
-  };
+  return [
+    {
+      key: "basic",
+      label: "kotimaa",
+      options: proposal.competitions.includes("phl")
+        ? [
+            { key: 0, label: "ei tavoitteita" },
+            { key: 1, label: "play-offit" },
+            { key: 2, label: "semifinaalit" },
+            { key: 3, label: "mestaruus" }
+          ]
+        : [
+            { key: 0, label: "ei tavoitteita" },
+            { key: 1, label: "play-offit" },
+            { key: 2, label: "sarjanousu" }
+          ]
+    },
+    {
+      key: "cup",
+      label: "cup",
+      options: [
+        { key: 0, label: "ei tavoitteita" },
+        { key: 1, label: "2. kierros" },
+        { key: 2, label: "voitto" }
+      ]
+    },
+    {
+      key: "ehl",
+      label: "EHL",
+      options: proposal.competitions.includes("phl")
+        ? [
+            { key: 0, label: "ei tavoitetta" },
+            { key: 1, label: "lopputurnaus" },
+            { key: 2, label: "voitto" }
+          ]
+        : []
+    }
+  ];
 };
-
 const getAmountFromModifiers = curry(
   (requirementType, multiplierData, proposal: SponsorshipProposal): number => {
     const [multiplier, clausuleType] = multiplierData[
@@ -264,9 +296,7 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
     legacyId: 13,
     title: "Play-offeista ulos jääminen",
     getTimes: () => 1,
-    willSponsorOffer: (proposal: SponsorshipProposal) => {
-      return proposal.competitions.includes("phl");
-    },
+    willSponsorOffer: (proposal: SponsorshipProposal) => true,
     getAmount: proposal => {
       if (proposal.competitions.includes("phl")) {
         return getAmountFromModifiers(
@@ -390,7 +420,7 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
     getAmount: getAmountFromModifiers("basic", [
       [0, "roundlyPayment"],
       [0, "roundlyPayment"],
-      [0.75, "promotion"]
+      [-0.75, "promotion"]
     ])
   },
   roundlyPayment: {

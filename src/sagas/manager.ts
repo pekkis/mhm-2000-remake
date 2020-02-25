@@ -22,7 +22,8 @@ import {
   teamById,
   managerById,
   requireManagersTeamObj,
-  teamsContractedPlayers
+  teamsContractedPlayers,
+  sponsorshipProposalById
 } from "../services/selectors";
 import { incrementMorale, incrementReadiness, incurPenalty } from "./team";
 import { addNotification } from "./notification";
@@ -30,7 +31,7 @@ import crisis from "../data/crisis";
 import difficultyLevels from "../services/difficulty-levels";
 import arenas from "../data/arenas";
 import { incrementStrength, decrementStrength } from "./team";
-import { createId } from "../services/manager";
+import { createId, abilityCheck } from "../services/manager";
 import uuid from "uuid";
 import { Map } from "immutable";
 import r from "../services/random";
@@ -69,7 +70,9 @@ import {
   lensProp,
   evolve,
   inc,
-  values
+  values,
+  assocPath,
+  assoc
 } from "ramda";
 import {
   createRandomPlayer,
@@ -91,6 +94,11 @@ import { generatePlayers } from "../services/human-team-initializer";
 import lineupService from "../services/lineup";
 import { isHumanControlledTeam } from "../services/team";
 import strategyHandlers from "../services/strategies";
+import { SponsorshipProposal } from "../types/sponsor";
+import {
+  SponsorUpdateProposalAction,
+  SPONSOR_UPDATE_PROPOSAL
+} from "../ducks/sponsor";
 
 export function* automateLineup(managerId: string) {
   const manager: Manager = yield select(managerById(managerId));
@@ -266,6 +274,115 @@ export function* hireManager(manager: Manager, team: string) {
     yield call(hireHumanManager, manager, teamObj);
   }
 }
+
+export function* setSponsorshipProposalRequirement(
+  managerId: string,
+  proposalId: string,
+  requirement: "basic" | "cup" | "ehl",
+  value: number
+) {
+  const manager: Manager = yield select(managerById(managerId));
+  const proposal: SponsorshipProposal = yield select(
+    sponsorshipProposalById(proposalId)
+  );
+
+  if (!proposal.requirementsOpen) {
+    return;
+  }
+
+  const newProposal = assocPath(["requirements", requirement], value, proposal);
+
+  proposal.requirements[requirement] = value;
+
+  if (proposal.team !== manager.team) {
+    throw new Error("not managers proposal");
+  }
+
+  yield put<SponsorUpdateProposalAction>({
+    type: SPONSOR_UPDATE_PROPOSAL,
+    payload: {
+      id: proposalId,
+      proposal: newProposal
+    }
+  });
+}
+
+const negotiateProposal = (
+  manager: Manager,
+  proposal: SponsorshipProposal
+): SponsorshipProposal => {
+  const nextProposal = assoc("requirementsOpen", false, proposal);
+
+  const success = abilityCheck(
+    "negotiation",
+    5,
+    97 - proposal.timesNegotiated * 5,
+    manager
+  );
+
+  if (!success) {
+    return assoc("open", false, nextProposal);
+  }
+
+  return evolve(
+    {
+      timesNegotiated: val => val + 1
+    },
+    nextProposal
+  );
+};
+
+export function* negotiateSponsorshipProposal(
+  managerId: string,
+  proposalId: string
+) {
+  const manager: Manager = yield select(managerById(managerId));
+  const proposal: SponsorshipProposal = yield select(
+    sponsorshipProposalById(proposalId)
+  );
+
+  if (proposal.team !== manager.team) {
+    throw new Error("not managers proposal");
+  }
+
+  if (!proposal.open) {
+    return;
+  }
+
+  const nextProposal = negotiateProposal(manager, proposal);
+
+  /*
+  IF spn(curso) <> -1 AND temp% <> 2 THEN
+
+IF tarko(u(pv), 3, 5, 97 - (spn(curso) * 5)) = 0 THEN
+spn(curso) = -1
+sph(curso) = 0
+
+FOR qwe = 1 TO 20
+spr(curso, qwe) = 0
+NEXT qwe
+END IF
+
+IF spn(curso) <> -1 THEN
+spn(curso) = spn(curso) + 1
+
+FOR qwe = 1 TO 20
+IF spr(curso, qwe) > 0 THEN
+IF tarko(u(pv), 3, 0, 50) = 1 THEN spr(curso, qwe) = spr(curso, qwe) + (.015 + .01 * RND) * spr(curso, qwe)
+END IF
+NEXT qwe
+*/
+
+  yield put<SponsorUpdateProposalAction>({
+    type: SPONSOR_UPDATE_PROPOSAL,
+    payload: {
+      id: proposalId,
+      proposal: nextProposal
+    }
+  });
+}
+
+/* non refattori */
 
 export function* setBalance(managerId, amount) {
   return yield put({

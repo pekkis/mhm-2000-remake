@@ -1,6 +1,10 @@
 import { CompetitionNames } from "./base";
 
-export interface SponsorshipDeal {}
+export interface SponsorshipDeal {
+  id: string;
+  sponsorName: string;
+  clausules: SponsorshipClausule;
+}
 
 export interface SponsorshipProposal {
   id: string;
@@ -12,11 +16,13 @@ export interface SponsorshipProposal {
   attitudeBonus: number;
   clausules: SponsorshipClausule[];
   requirements: {
-    basic: 0 | 1 | 2 | 3;
-    cup: 0 | 1 | 2;
-    ehl: 0 | 1;
+    basic: number;
+    cup: number;
+    ehl: number;
   };
+  requirementsOpen: boolean;
   open: boolean;
+  timesNegotiated: number;
 }
 
 export interface SponsorshipClausule {
@@ -25,8 +31,11 @@ export interface SponsorshipClausule {
   amount?: number;
 }
 
-export interface SponsorshipRequirementOptions {
-  basic: number[];
-  cup: number[];
-  ehl: number[];
+export interface SponsorshipRequirementOption {
+  key: string;
+  label: string;
+  options: {
+    key: number;
+    label: string;
+  }[];
 }

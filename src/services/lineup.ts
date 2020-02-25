@@ -347,11 +347,7 @@ export const calculateStrengthFromLineup = (
   players: Player[],
   lineup: Lineup = getEmptyLineup()
 ): TeamStrength => {
-  console.log(skillGetter, players, lineup, "höpö höpö");
-
   const playerMap = indexBy(prop("id"), players);
-
-  console.log("player map", playerMap);
 
   return {
     g: lineup.g ? getEffectiveSkill(skillGetter, playerMap, "g", lineup.g) : 0,

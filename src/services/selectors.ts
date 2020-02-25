@@ -38,6 +38,18 @@ import { isComputerManager } from "./manager";
 import { victors } from "./playoffs";
 import r from "./random";
 import { isComputerControlledTeam, isHumanControlledTeam } from "./team";
+import { SponsorshipProposal } from "../types/sponsor";
+
+export const sponsorshipProposalById = (proposalId: string) => (
+  state: MHMState
+): SponsorshipProposal => {
+  const proposal = state.sponsor.proposals[proposalId];
+  if (!proposal) {
+    throw new Error(`No sponsorship proposal exists by id ${proposalId}`);
+  }
+
+  return proposal;
+};
 
 export const selectAllTeamsCompetitions = (team: string) => (
   state: MHMState

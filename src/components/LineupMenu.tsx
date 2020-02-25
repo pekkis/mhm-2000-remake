@@ -1,35 +1,20 @@
-import React, { useState } from "react";
-import Header from "./Header";
-import HeaderedPage from "./ui/HeaderedPage";
-import ManagerInfo from "./ManagerInfo";
+import { ascend, descend, indexBy, prop, sortWith } from "ramda";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Flag from "react-world-flags";
 import { Box } from "theme-ui";
-import { Player } from "../types/player";
-import {
-  sortWith,
-  ascend,
-  prop,
-  values,
-  take,
-  descend,
-  range,
-  indexBy
-} from "ramda";
-import { useSelector, useDispatch } from "react-redux";
-import { MHMState } from "../ducks";
-import PlayerList from "./transfer-market/PlayerList";
-import { Route, Switch } from "react-router";
-import PlayerInfo from "./transfer-market/PlayerInfo";
+import { MANAGER_LINEUP_AUTOMATE } from "../ducks/manager";
+import { getKnownSkill } from "../services/player";
 import {
   activeManager,
-  requireManagersTeam,
   requireHumanManagersTeamObj,
   teamsContractedPlayers
 } from "../services/selectors";
-import Flag from "react-world-flags";
-import { MANAGER_LINEUP_AUTOMATE } from "../ducks/manager";
+import { Player } from "../types/player";
+import Header from "./Header";
 import Lineup from "./lineup/Lineup";
-import { isHumanControlledTeam } from "../services/team";
-import { getKnownSkill } from "../services/player";
+import ManagerInfo from "./ManagerInfo";
+import HeaderedPage from "./ui/HeaderedPage";
 
 const positionSorts = {
   g: 1000,

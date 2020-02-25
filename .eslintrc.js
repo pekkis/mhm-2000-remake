@@ -14,6 +14,7 @@ module.exports = {
   plugins: ["@typescript-eslint", "emotion", "jsx-a11y"],
   parser: "@typescript-eslint/parser",
   rules: {
-    "@typescript-eslint/explicit-function-return-type": 0
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "jsx-a11y/no-onchange": 0
   }
 };
