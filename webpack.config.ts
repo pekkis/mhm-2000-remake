@@ -15,13 +15,30 @@ import copyFiles from "@dr-kobros/webpack-broilerplate/dist/features/copyFiles";
 import saneDefaultOptions from "@dr-kobros/webpack-broilerplate/dist/features/saneDefaultOptions";
 import emotion from "@dr-kobros/webpack-broilerplate-emotion";
 
-import { pipe, over, lensPath } from "ramda";
+import { pipe, over, lensPath, append } from "ramda";
 import path from "path";
 import util from "util";
 
 // import MiniCssExtractPlugin from "mini-css-extract-plugin";
 
 import pkg from "./package.json";
+import { Configuration } from "webpack-dev-server";
+
+import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
+
+const addBundleAnalyzer = (config: Configuration, mode: string) => {
+  const options: BundleAnalyzerPlugin.Options =
+    mode === "development"
+      ? {}
+      : {
+          analyzerMode: "disabled",
+          generateStatsFile: true,
+          statsFilename: "stats.json"
+        };
+
+  const p = new BundleAnalyzerPlugin(options);
+  return over(lensPath(["plugins"]), append(p), config);
+};
 
 const mode =
   process.env.NODE_ENV === "development" ? "development" : "production";
@@ -117,6 +134,8 @@ const config3 = over(
   config2
 );
 
-console.log(util.inspect(config3, false, 999));
+const withBundleAnalyzer = addBundleAnalyzer(config3, mode);
 
-export default config3;
+console.log(util.inspect(withBundleAnalyzer, false, 999));
+
+export default withBundleAnalyzer;

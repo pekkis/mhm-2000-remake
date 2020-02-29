@@ -15,7 +15,7 @@ import {
   requireManagersTeam,
   requireManagersTeamObj
 } from "../services/selectors";
-import Flag from "react-world-flags";
+import Flag from "./ui/Flag";
 import { getKnownSkill } from "../services/player";
 
 const positionSorts = {

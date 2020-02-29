@@ -1,51 +1,35 @@
-import { call, all, take, put, select, putResolve } from "redux-saga/effects";
 import {
-  seasonStart,
-  promote,
-  relegate,
-  setPhase,
-  prepareSeason
-} from "../game";
-import { victors, eliminated } from "../../services/playoffs";
-import awards from "../../data/awards";
-import { List } from "immutable";
-import { cinteger } from "../../services/random";
-
-import { setSeasonStat, createSeasonStories } from "../stats";
-import { processChampionBets } from "../betting";
-import { competition, allTeams } from "../../services/selectors";
-import { setCountryStrength, Country } from "../../ducks/country";
-import { MHMState } from "../../ducks";
-import {
-  pipe,
-  map,
-  sort,
   descend,
-  prop,
-  nth,
-  takeLast,
-  difference,
   differenceWith,
+  map,
+  nth,
+  pipe,
   slice,
-  take as rTake,
+  sort,
+  takeLast,
   uniq
 } from "ramda";
-import { Team } from "../../types/team";
+import { all, call, put, putResolve, select, take } from "redux-saga/effects";
+import { MHMState } from "../../ducks";
+import { Country, setCountryStrength } from "../../ducks/country";
+import { GameSeasonEndAction, GAME_SEASON_END } from "../../ducks/game";
+import { cupWinners } from "../../services/cup";
+import { sortLeagueTable } from "../../services/league";
+import { eliminated, victors } from "../../services/playoffs";
+import { cinteger } from "../../services/random";
+import { allTeams, competition } from "../../services/selectors";
 import {
   Competition,
-  RoundRobinCompetitionPhase,
-  PlayoffsCompetitionPhase,
-  PlayoffStat,
-  PlayoffTeamStat,
-  TournamentCompetitionPhase,
   CupCompetitionPhase,
-  RoundRobinCompetitionGroup
+  PlayoffsCompetitionPhase,
+  PlayoffTeamStat,
+  RoundRobinCompetitionGroup,
+  RoundRobinCompetitionPhase,
+  TournamentCompetitionPhase
 } from "../../types/base";
-import { cupWinners } from "../../services/cup";
 import { SeasonStatistic } from "../../types/stats";
-import { sortLeagueTable } from "../../services/league";
-import { GameSeasonEndAction, GAME_SEASON_END } from "../../ducks/game";
-import { string } from "random-js";
+import { prepareSeason, promote, relegate, setPhase } from "../game";
+import { createSeasonStories, setSeasonStat } from "../stats";
 
 const getLuck = () => {
   const isLucky = cinteger(1, 10);

@@ -1,6 +1,6 @@
 import { mapIndexed } from "ramda-adjunct";
 import { Team } from "../../types/team";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import { indexBy, prop, pipe, toPairs, map, fromPairs } from "ramda";
 import { AllCountries } from "../../types/country";
 import { nameToId } from "../team";

@@ -1,6 +1,6 @@
 import { put, select } from "redux-saga/effects";
 
-import events from "../data/events";
+// import events from "../data/events";
 
 export function* resolveEvent(action) {
   const { event, value } = action.payload;

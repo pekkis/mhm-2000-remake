@@ -1,7 +1,9 @@
-import { Map } from "immutable";
+// import { Map } from "immutable";
 
+/*
 const namedEffects = Map({
   rally: (morale, extra) => extra.get("rallyMorale")
-});
+})
+*/
 
-export default namedEffects;
+export default {};

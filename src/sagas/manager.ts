@@ -1,104 +1,76 @@
+import { assoc, assocPath, evolve, inc } from "ramda";
 import {
-  takeEvery,
-  select,
+  all,
+  call,
   put,
   putResolve,
-  call,
-  all
+  select,
+  takeEvery
 } from "redux-saga/effects";
-import { gameFacts } from "../services/game";
-import competitionList from "../services/competitions";
-// import playerTypes from "../data/transfer-market";
-import {
-  managersTeam,
-  managersTeamId,
-  managersDifficulty,
-  managerCompetesIn,
-  managersArena,
-  managerHasService,
-  teamsMainCompetition,
-  managersCurrentTeam,
-  managerObject,
-  teamById,
-  managerById,
-  requireManagersTeamObj,
-  teamsContractedPlayers,
-  sponsorshipProposalById
-} from "../services/selectors";
-import { incrementMorale, incrementReadiness, incurPenalty } from "./team";
-import { addNotification } from "./notification";
-import crisis from "../data/crisis";
-import difficultyLevels from "../services/difficulty-levels";
-import arenas from "../data/arenas";
-import { incrementStrength, decrementStrength } from "./team";
-import { createId, abilityCheck } from "../services/manager";
-import uuid from "uuid";
-import { Map } from "immutable";
-import r from "../services/random";
-import { addAnnouncement } from "./news";
-import { amount as a } from "../services/format";
 import { ManagerInput } from "../components/start-menu/ManagerForm";
-import {
-  Manager,
-  HumanManager,
-  ComputerManager,
-  isHumanManager
-} from "../types/manager";
-import { DifficultyLevelNames, SeasonStrategies } from "../types/base";
+// import arenas from "../data/arenas";
+// import crisis from "../data/crisis";
 import { ManagerAddManagerAction, MANAGER_ADD } from "../ducks/manager";
-import { Team, TeamOrganization, Lineup } from "../types/team";
-import {
-  TeamRemoveManagerAction,
-  TeamAddManagerAction,
-  TEAM_REMOVE_MANAGER,
-  TEAM_ADD_MANAGER,
-  TeamSetStrategyAction,
-  TEAM_SET_STRATEGY,
-  TeamSetOrganizationAction,
-  TEAM_SET_ORGANIZATION,
-  TeamSetLineupAction,
-  TEAM_SET_LINEUP,
-  TeamSetIntensityAction,
-  TEAM_SET_INTENSITY
-} from "../ducks/team";
-import {
-  repeat,
-  sum,
-  indexBy,
-  range,
-  over,
-  lensProp,
-  evolve,
-  inc,
-  values,
-  assocPath,
-  assoc
-} from "ramda";
-import {
-  createRandomPlayer,
-  getBaseSalary,
-  getRandomCountry,
-  isForward,
-  isDefenceman,
-  normalizeAbility
-} from "../services/player";
-import { PlayerPosition, Player } from "../types/player";
 import {
   PlayerCreatePlayerAction,
   PLAYER_CREATE_PLAYER
 } from "../ducks/player";
-import random from "../services/random";
-import { AllCountries } from "../types/country";
-import { PlayerGenerationInfo } from "../services/human-player-initializer";
-import { generatePlayers } from "../services/human-team-initializer";
-import lineupService from "../services/lineup";
-import { isHumanControlledTeam } from "../services/team";
-import strategyHandlers from "../services/strategies";
-import { SponsorshipProposal } from "../types/sponsor";
 import {
   SponsorUpdateProposalAction,
   SPONSOR_UPDATE_PROPOSAL
 } from "../ducks/sponsor";
+import {
+  TeamAddManagerAction,
+  TeamRemoveManagerAction,
+  TeamSetIntensityAction,
+  TeamSetLineupAction,
+  TeamSetOrganizationAction,
+  TeamSetStrategyAction,
+  TEAM_ADD_MANAGER,
+  TEAM_REMOVE_MANAGER,
+  TEAM_SET_INTENSITY,
+  TEAM_SET_LINEUP,
+  TEAM_SET_ORGANIZATION,
+  TEAM_SET_STRATEGY
+} from "../ducks/team";
+import competitionList from "../services/competitions";
+import difficultyLevels from "../services/difficulty-levels";
+import { amount as a } from "../services/format";
+import { generatePlayers } from "../services/human-team-initializer";
+import lineupService from "../services/lineup";
+import { abilityCheck, createId } from "../services/manager";
+import r from "../services/random";
+// import playerTypes from "../data/transfer-market";
+import {
+  managerById,
+  managerCompetesIn,
+  managerHasService,
+  managerObject,
+  managersArena,
+  managersCurrentTeam,
+  managersDifficulty,
+  managersTeam,
+  managersTeamId,
+  requireManagersTeamObj,
+  sponsorshipProposalById,
+  teamById,
+  teamsContractedPlayers
+} from "../services/selectors";
+import strategyHandlers from "../services/strategies";
+import { isHumanControlledTeam } from "../services/team";
+import { DifficultyLevelNames, SeasonStrategies } from "../types/base";
+import { HumanManager, isHumanManager, Manager } from "../types/manager";
+import { SponsorshipProposal } from "../types/sponsor";
+import { Lineup, Team, TeamOrganization } from "../types/team";
+import { addAnnouncement } from "./news";
+import { addNotification } from "./notification";
+import {
+  decrementStrength,
+  incrementMorale,
+  incrementReadiness,
+  incrementStrength,
+  incurPenalty
+} from "./team";
 
 export function* automateLineup(managerId: string) {
   const manager: Manager = yield select(managerById(managerId));
@@ -326,7 +298,7 @@ const negotiateProposal = (
 
   return evolve(
     {
-      timesNegotiated: val => val + 1
+      timesNegotiated: inc
     },
     nextProposal
   );

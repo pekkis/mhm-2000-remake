@@ -4,7 +4,7 @@ import HeaderedPage from "./ui/HeaderedPage";
 import ManagerInfo from "./containers/ManagerInfoContainer";
 import ButtonRow from "./form/ButtonRow";
 import Button from "./form/Button";
-import arenas from "../data/arenas";
+// import arenas from "../data/arenas";
 import styled from "@emotion/styled";
 import { css } from "@emotion/core";
 import { currency } from "../services/format";

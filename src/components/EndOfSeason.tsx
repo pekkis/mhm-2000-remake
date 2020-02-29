@@ -5,7 +5,6 @@ import Header from "./containers/HeaderContainer";
 import HeaderedPage from "./ui/HeaderedPage";
 import Season from "./data/Season";
 import Announcements from "./events/Announcements";
-import { List } from "immutable";
 
 import { Box } from "theme-ui";
 

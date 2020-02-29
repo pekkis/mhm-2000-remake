@@ -18,7 +18,7 @@ import { AllCountries, PlayableCountries } from "../types/country";
 import util from "util";
 import { skillGenerationMap, randoms } from "./data/player-randomization";
 import { min, max, curry, evolve, append, sortWith, ascend } from "ramda";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import { MapOf } from "../types/base";
 import { Manager } from "../types/manager";
 import { playerPerksMap } from "./player-perks";

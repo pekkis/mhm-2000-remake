@@ -1,4 +1,4 @@
-import isString from "lodash/isString";
+import type from "ramda";
 import namedEffects from "../data/named-effects";
 
 const affect = (target, source, field) => {
@@ -9,7 +9,7 @@ const affect = (target, source, field) => {
     const parameter = effect.get("parameter");
 
     const amount = effect.get("amount");
-    if (isString(amount)) {
+    if (type(amount) === "string") {
       console.log("PUUPPA FACKIN DOORE", amount);
       const namedEffect = namedEffects.get(amount);
       if (!namedEffect) {

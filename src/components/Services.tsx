@@ -7,7 +7,7 @@ import Toggle from "react-toggle";
 import Markdown from "react-markdown";
 import { Box } from "theme-ui";
 
-import services from "../data/services";
+// import services from "../data/services";
 
 const ServicesList = styled.div`
   margin: 1em 0;

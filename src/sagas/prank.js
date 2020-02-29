@@ -1,5 +1,4 @@
 import { put, call, select } from "redux-saga/effects";
-import { Map } from "immutable";
 
 import prankTypes from "../services/data/pranks";
 import { managerCompetesIn } from "../services/selectors";

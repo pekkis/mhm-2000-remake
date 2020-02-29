@@ -1,12 +1,10 @@
 import { call } from "redux-saga/effects";
-import { OrderedMap, Map, List } from "immutable";
 import { addNotification } from "../../sagas/notification";
 import { addEffect } from "../../sagas/team";
 import { addEvent } from "../../sagas/event";
-import events from "../../data/events";
 
-const pranks = OrderedMap({
-  protest: Map({
+const pranks = {
+  protest: {
     name: "Protesti",
     price: competitions => {
       return 0;
@@ -24,8 +22,8 @@ const pranks = OrderedMap({
       const protestEvent = events.get("protest");
       yield call(protestEvent.create, prank.toJS());
     }
-  }),
-  playerHooking: Map({
+  },
+  playerHooking: {
     name: "Huumausaineiden myynti pelaajille",
     price: competition => {
       return 150000;
@@ -43,8 +41,8 @@ const pranks = OrderedMap({
       const event = events.get("sellNarcotics");
       yield call(event.create, prank.toJS());
     }
-  }),
-  fixedMatch: Map({
+  },
+  fixedMatch: {
     name: "Vastustajan lahjonta",
     price: competition => {
       if (competition === "phl") {
@@ -63,8 +61,8 @@ const pranks = OrderedMap({
     execute: function*(prank) {
       yield addEffect(prank.get("victim"), ["strength"], -10000, 1);
     }
-  }),
-  bazookaStrike: Map({
+  },
+  bazookaStrike: {
     name: "Sinkoisku joukkueen matkabussiin",
     price: competition => {
       return 3000000;
@@ -80,7 +78,7 @@ const pranks = OrderedMap({
       const event = events.get("bazookaStrike");
       yield call(event.create, prank.toJS());
     }
-  })
-});
+  }
+};
 
 export default pranks;

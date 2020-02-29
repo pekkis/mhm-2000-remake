@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { Player } from "../../types/player";
 import { range } from "ramda";
-import Flag from "react-world-flags";
+import Flag from "../ui/Flag";
 import { Link } from "react-router-dom";
 
 interface Props {

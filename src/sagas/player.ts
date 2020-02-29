@@ -1,6 +1,6 @@
 import { put, call, select } from "redux-saga/effects";
 import { ContractNegotiation, Contract } from "../types/player";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import {
   PlayerContractInitiateAction,
   PLAYER_CONTRACT_INITIATE,

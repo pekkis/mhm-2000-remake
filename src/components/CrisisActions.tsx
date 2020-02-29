@@ -7,11 +7,11 @@ import ManagerInfo from "./containers/ManagerInfoContainer";
 import Calendar from "./ui/Calendar";
 import { Box } from "theme-ui";
 
-import crisis from "../data/crisis";
+// import crisis from "../data/crisis";
 import { currency as c } from "../services/format";
 import { getEffective } from "../services/effects";
 
-const TransferMarket = props => {
+const CrisisActions = props => {
   const { manager, teams, competitions, crisisMeeting } = props;
 
   const balance = manager.get("balance");
@@ -60,4 +60,4 @@ const TransferMarket = props => {
   );
 };
 
-export default TransferMarket;
+export default CrisisActions;

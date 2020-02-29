@@ -1,33 +1,29 @@
 import {
-  takeEvery,
   all,
-  select,
-  putResolve,
   call,
-  put
+  put,
+  putResolve,
+  select,
+  takeEvery
 } from "redux-saga/effects";
-import competitionTypes from "../services/competition-type";
-import { resultFacts } from "../services/game";
-import { List, Map } from "immutable";
-
-import { STATS_UPDATE_FROM_FACTS, STATS_SET_SEASON_STAT } from "../ducks/stats";
-import {
-  managersMainCompetition,
-  competitionPhase,
-  competitionGroup
-} from "../services/selectors";
 import {
   CompetitionSeedAction,
-  COMPETITION_SEED,
   CompetitionUpdateStatsAction,
+  COMPETITION_SEED,
   COMPETITION_UPDATE_STATS
 } from "../ducks/competition";
+import { STATS_SET_SEASON_STAT, STATS_UPDATE_FROM_FACTS } from "../ducks/stats";
+import competitionTypes from "../services/competition-type";
+// import { resultFacts } from "../services/game";
 import {
+  competitionGroup,
+  competitionPhase,
+  managersMainCompetition
+} from "../services/selectors";
+import {
+  CompetitionGroup,
   CompetitionNames,
-  CompetitionPhase,
-  PlayoffsCompetitionGroup,
-  RoundRobinCompetitionGroup,
-  CompetitionGroup
+  CompetitionPhase
 } from "../types/base";
 
 export function* calculatePhaseStats(

@@ -1,5 +1,5 @@
-import uuid from "uuid";
-import slug from "slug";
+import { v4 as uuid } from "uuid";
+import slug from "slugify";
 import teamList, {
   rawTeamStats,
   StatsData,

@@ -6,7 +6,7 @@ import {
   GameQuitToMainMenuAction,
   GAME_LOAD_STATE
 } from "./game";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 
 export const PRANK_ORDER = "PRANK_ORDER";
 export const PRANK_ADD = "PRANK_ADD";

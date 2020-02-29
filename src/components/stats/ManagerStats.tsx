@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { List, Map } from "immutable";
 
 import Tabs from "../ui/Tabs";
 import Tab from "../ui/Tab";

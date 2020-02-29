@@ -1,5 +1,4 @@
 import { Effect } from "redux-saga/effects";
-import { List } from "immutable";
 import { Team } from "./team";
 import { Manager } from "./manager";
 
@@ -10,7 +9,7 @@ export type MHMEventGenerator = Generator<Effect, void, unknown>;
 export interface MHMEventHandler {
   type: MHMEventTypes;
   create: (data: any) => MHMEventGenerator;
-  render: (data: any) => List<string>;
+  render: (data: any) => string[];
   process: (data: any) => MHMEventGenerator;
 }
 

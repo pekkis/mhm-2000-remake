@@ -12,7 +12,6 @@ import { addAnnouncement } from "./news";
 import { amount as a } from "../services/format";
 import { addNotification } from "./notification";
 import { resultFacts } from "../services/game";
-import { List } from "immutable";
 import { MHMState } from "../ducks";
 import { ChampionshipBet } from "../ducks/betting";
 

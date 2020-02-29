@@ -1,7 +1,7 @@
 import { ascend, descend, indexBy, prop, sortWith } from "ramda";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Flag from "react-world-flags";
+import Flag from "./ui/Flag";
 import { Box } from "theme-ui";
 import { MANAGER_LINEUP_AUTOMATE } from "../ducks/manager";
 import { getKnownSkill } from "../services/player";

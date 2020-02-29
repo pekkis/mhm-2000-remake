@@ -1,11 +1,10 @@
 import { select, call } from "redux-saga/effects";
-import events from "../../data/events";
 import { cinteger } from "../../services/random";
-import { OrderedMap, List } from "immutable";
 import { setPhase } from "../game";
 import { currentCalendarEntry } from "../../services/selectors";
 import { CalendarEntry } from "../../types/base";
 
+/*
 const eventsMap = OrderedMap<number, string>(
   List.of(
     [1, "jaralahti"],
@@ -144,6 +143,7 @@ const eventsMap = OrderedMap<number, string>(
     [234, "incredibleFeeling"]
   )
 );
+*/
 
 const getEventId = (predefined?: string): string | undefined => {
   const eventNumber = predefined

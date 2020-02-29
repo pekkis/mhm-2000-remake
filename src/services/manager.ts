@@ -9,8 +9,8 @@ import rawManagerData, { RawManagerData } from "./data/manager-data";
 import { countryFromLegacyCountry } from "./country";
 import { trim, indexBy, prop, sortWith, ascend, values, curry } from "ramda";
 import { mapIndexed } from "ramda-adjunct";
-import uuid from "uuid";
-import slug from "slug";
+import { v4 as uuid } from "uuid";
+import slug from "slugify";
 import random from "./random";
 
 export const isHumanManager = (manager: Manager): manager is HumanManager => {

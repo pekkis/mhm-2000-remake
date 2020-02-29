@@ -2,7 +2,6 @@ import React, { FunctionComponent } from "react";
 import Table from "../league-table/Table";
 import ResponsiveTable from "../responsive-table/ResponsiveTable";
 import Matchups from "../playoffs/Matchups";
-import { List } from "immutable";
 import Games from "../gameday/Games";
 import Streaks from "../containers/StreaksContainer";
 import {

@@ -15,7 +15,7 @@ import {
   faExclamationCircle
 } from "@fortawesome/free-solid-svg-icons";
 // import runtime from "@dr-kobros/serviceworker-webpack-plugin/lib/runtime";
-import * as Sentry from "@sentry/browser";
+// import * as Sentry from "@sentry/browser";
 import rootSaga from "./sagas/root";
 import { BrowserRouter } from "react-router-dom";
 

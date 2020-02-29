@@ -1,102 +1,78 @@
-import competitionData from "../services/competitions";
-import {
-  GAME_SEASON_START,
-  GameSetPhaseAction,
-  GAME_LOAD_STATE,
-  GameLoadStateAction,
-  GameLoadedAction,
-  GAME_LOADED,
-  GameAdvanceAction,
-  GameStartAction,
-  GAME_START,
-  GAME_SET_PHASE,
-  GAME_LOAD_REQUEST,
-  GAME_START_REQUEST,
-  GAME_QUIT_TO_MAIN_MENU,
-  GameSeasonStartAction,
-  GameCleanupAction,
-  GAME_CLEAR_EXPIRED,
-  GameNextTurnAction,
-  GAME_NEXT_TURN,
-  GameSaveRequestAction
-} from "../ducks/game";
-
+import { ascend, map, sortWith, toPairs } from "ramda";
 import {
   all,
   call,
+  cancel,
+  delay,
+  fork,
   put,
   putResolve,
-  select,
-  takeEvery,
-  fork,
-  take,
-  cancel,
   race,
-  delay
+  select,
+  take,
+  takeEvery
 } from "redux-saga/effects";
-
+import {
+  CompetitionSeedAction,
+  CompetitionStartAction,
+  COMPETITION_SEED,
+  COMPETITION_START
+} from "../ducks/competition";
+import {
+  GameAdvanceAction,
+  GameLoadedAction,
+  GameLoadStateAction,
+  GameNextTurnAction,
+  GameSeasonStartAction,
+  GameSetPhaseAction,
+  GAME_LOADED,
+  GAME_LOAD_REQUEST,
+  GAME_LOAD_STATE,
+  GAME_NEXT_TURN,
+  GAME_QUIT_TO_MAIN_MENU,
+  GAME_SEASON_START,
+  GAME_SET_PHASE,
+  GAME_START,
+  GAME_START_REQUEST
+} from "../ducks/game";
+import { TeamSetStrengthsAction, TEAM_SET_STRENGTHS } from "../ducks/team";
+import { UISetLoadingAction, UI_SET_LOADING } from "../ducks/ui";
+import competitionData from "../services/competitions";
+import gameStateService from "../services/game-state";
+import {
+  activeManager,
+  allTeams,
+  currentCalendarEntry
+} from "../services/selectors";
+import { teamLevelToStrength } from "../services/team";
+import {
+  CalendarEntry,
+  CompetitionNames,
+  CompetitionPhase,
+  ForEvery,
+  MHMTurnPhase
+} from "../types/base";
+import { Team, TeamStrength } from "../types/team";
+import { addTeamToCompetition, removeTeamFromCompetition } from "./competition";
+import { initializeManagers } from "./game-start/game-start";
+import { addManager } from "./manager";
+import { addNotification } from "./notification";
 import actionPhase from "./phase/action";
-import eventCreationPhase from "./phase/event-creation";
+import calculationsPhase from "./phase/calculations";
+import cleanupPhase from "./phase/cleanup";
+import endOfSeasonPhase from "./phase/end-of-season";
 import eventPhase from "./phase/event";
-import newsPhase from "./phase/news";
-import prankPhase from "./phase/prank";
+import eventCreationPhase from "./phase/event-creation";
+import galaPhase from "./phase/gala";
 import gamedayPhase from "./phase/gameday";
 import invitationsCreatePhase from "./phase/invitations-create";
 import invitationsProcessPhase from "./phase/invitations-process";
+import newsPhase from "./phase/news";
+import prankPhase from "./phase/prank";
 import seedPhase from "./phase/seed";
-import endOfSeasonPhase from "./phase/end-of-season";
 import startOfSeasonPhase from "./phase/start-of-season";
-import galaPhase from "./phase/gala";
-import cleanupPhase from "./phase/cleanup";
-import gameStateService from "../services/game-state";
-
-import calculationsPhase from "./phase/calculations";
-import difficultyLevels from "../services/difficulty-levels";
-
-import {
-  setExtra,
-  decrementBalance,
-  incrementInsuranceExtra,
-  addManager
-} from "./manager";
-import { stats } from "./stats";
-import {
-  allTeams,
-  managersTeam,
-  managersDifficulty,
-  managersMainCompetition,
-  managerHasService,
-  managersArena,
-  currentCalendarEntry,
-  humanManagers,
-  activeManager
-} from "../services/selectors";
-import events from "../data/events";
-import { nth, map, values, toPairs, range, sortWith, ascend } from "ramda";
-import {
-  MHMTurnPhase,
-  CalendarEntry,
-  Turn,
-  CompetitionNames,
-  CompetitionPhase,
-  MHMTurnPhasesList,
-  ForEvery
-} from "../types/base";
-import { MHMState, prank } from "../ducks";
-import { Team, TeamStrength } from "../types/team";
-import { teamLevelToStrength } from "../services/team";
-import { TeamSetStrengthsAction, TEAM_SET_STRENGTHS } from "../ducks/team";
-import {
-  CompetitionStartAction,
-  COMPETITION_START,
-  CompetitionSeedAction,
-  COMPETITION_SEED
-} from "../ducks/competition";
-import { addNotification } from "./notification";
-import { removeTeamFromCompetition, addTeamToCompetition } from "./competition";
-import { initializeManagers } from "./game-start/game-start";
-import { UISetLoadingAction, UI_SET_LOADING } from "../ducks/ui";
 import { createSponsorshipProposals } from "./sponsor";
+import { stats } from "./stats";
 
 export const GAME_ADVANCE_REQUEST = "GAME_ADVANCE_REQUEST";
 

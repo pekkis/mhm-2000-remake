@@ -1,6 +1,6 @@
 import { append, range } from "ramda";
 import { call, put, select } from "redux-saga/effects";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import {
   SponsorCreateProposalsAction,
   SPONSOR_CREATE_PROPOSALS

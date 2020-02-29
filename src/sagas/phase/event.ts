@@ -1,5 +1,4 @@
 import { select, call, put, take, takeEvery, cancel } from "redux-saga/effects";
-import events from "../../data/events";
 import { resolveEvent, processEvents } from "../event";
 
 export default function* eventPhase() {

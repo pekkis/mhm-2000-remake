@@ -1,4 +1,3 @@
-import { List, Map } from "immutable";
 import { drop, head, map, prop, range, sortBy } from "ramda";
 import { all, call, select } from "redux-saga/effects";
 import { MHMState } from "../../../ducks";
@@ -24,6 +23,7 @@ import rr from "../../round-robin";
 import { foreignTeams, statsForSeason } from "../../selectors";
 import tournamentScheduler from "../../tournament";
 
+/*
 const awards = List.of(
   Map({
     amount: 2000000,

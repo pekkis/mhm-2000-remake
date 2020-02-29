@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { Formik } from "formik";
 import { amount as a } from "../../services/format";
-import odds from "../../data/championship-betting";
+// import odds from "../../data/championship-betting";
 import Button from "../form/Button";
 import { betChampion } from "../../ducks/betting";
 

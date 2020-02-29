@@ -5,7 +5,6 @@ import ManagerInfo from "./ManagerInfo";
 import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
 import { Box } from "theme-ui";
-import { List } from "immutable";
 
 const News = props => {
   const { manager, resolveEvent, events, announcements } = props;

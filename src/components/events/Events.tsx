@@ -1,6 +1,6 @@
 import React from "react";
 import Markdown from "react-markdown";
-import eventList from "../../data/events";
+// import eventList from "../../data/events";
 
 const Events = props => {
   const { events, manager, resolveEvent } = props;

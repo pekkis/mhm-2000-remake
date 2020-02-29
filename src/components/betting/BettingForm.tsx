@@ -3,7 +3,6 @@ import { Formik } from "formik";
 import { amount as a } from "../../services/format";
 import Button from "../form/Button";
 import TeamName from "../team/TeamName";
-import { Seq, List } from "immutable";
 import { bet, BettingCouponRow } from "../../ducks/betting";
 
 interface Props {
