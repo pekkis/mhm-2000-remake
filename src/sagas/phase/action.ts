@@ -25,7 +25,9 @@ import {
   MANAGER_SELECT_INTENSITY,
   MANAGER_SELECT_STRATEGY,
   MANAGER_SPONSOR_NEGOTIATE,
-  MANAGER_SPONSOR_SET_REQUIREMENT
+  MANAGER_SPONSOR_SET_REQUIREMENT,
+  ManagerSponsorAcceptAction,
+  MANAGER_SPONSOR_ACCEPT
 } from "../../ducks/manager";
 import {
   PlayerContractEndRequestAction,
@@ -49,7 +51,8 @@ import {
   setActiveManager,
   setLineup,
   setSponsorshipProposalRequirement,
-  negotiateSponsorshipProposal
+  negotiateSponsorshipProposal,
+  acceptSponsorshipProposal
 } from "../manager";
 import {
   contractEndNegotiation,
@@ -158,6 +161,16 @@ export default function* actionPhase() {
         );
       }
     ),
+
+    takeLeading<ManagerSponsorAcceptAction>(MANAGER_SPONSOR_ACCEPT, function*(
+      a
+    ) {
+      yield call(
+        acceptSponsorshipProposal,
+        a.payload.manager,
+        a.payload.proposalId
+      );
+    }),
 
     takeLeading("GAME_SAVE_REQUEST", gameSave)
     /*

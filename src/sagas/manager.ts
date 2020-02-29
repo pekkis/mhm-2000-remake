@@ -1,4 +1,4 @@
-import { assoc, assocPath, evolve, inc } from "ramda";
+import { assoc, assocPath, evolve, inc, map } from "ramda";
 import {
   all,
   call,
@@ -17,7 +17,9 @@ import {
 } from "../ducks/player";
 import {
   SponsorUpdateProposalAction,
-  SPONSOR_UPDATE_PROPOSAL
+  SPONSOR_UPDATE_PROPOSAL,
+  SponsorCreateDealAction,
+  SPONSOR_CREATE_DEAL
 } from "../ducks/sponsor";
 import {
   TeamAddManagerAction,
@@ -31,7 +33,9 @@ import {
   TEAM_SET_INTENSITY,
   TEAM_SET_LINEUP,
   TEAM_SET_ORGANIZATION,
-  TEAM_SET_STRATEGY
+  TEAM_SET_STRATEGY,
+  TEAM_SET_FLAG,
+  TeamSetFlagAction
 } from "../ducks/team";
 import competitionList from "../services/competitions";
 import difficultyLevels from "../services/difficulty-levels";
@@ -60,7 +64,11 @@ import strategyHandlers from "../services/strategies";
 import { isHumanControlledTeam } from "../services/team";
 import { DifficultyLevelNames, SeasonStrategies } from "../types/base";
 import { HumanManager, isHumanManager, Manager } from "../types/manager";
-import { SponsorshipProposal } from "../types/sponsor";
+import {
+  SponsorshipProposal,
+  SponsorshipProposalClausule,
+  SponsorshipDeal
+} from "../types/sponsor";
 import { Lineup, Team, TeamOrganization } from "../types/team";
 import { addAnnouncement } from "./news";
 import { addNotification } from "./notification";
@@ -71,6 +79,8 @@ import {
   incrementStrength,
   incurPenalty
 } from "./team";
+import random from "../services/random";
+import { sponsorshipClausuleMap } from "../services/sponsors";
 
 export function* automateLineup(managerId: string) {
   const manager: Manager = yield select(managerById(managerId));
@@ -298,7 +308,21 @@ const negotiateProposal = (
 
   return evolve(
     {
-      timesNegotiated: inc
+      timesNegotiated: inc,
+      clausules: map((clausule: SponsorshipProposalClausule) => {
+        const willRaise = abilityCheck("negotiation", 0, 50, manager);
+
+        if (!willRaise) {
+          return clausule;
+        }
+
+        const addition = random.real(0.015, 0.016);
+
+        return sponsorshipClausuleMap[clausule.type].successfulNegotiation(
+          addition,
+          clausule
+        );
+      })
     },
     nextProposal
   );
@@ -352,6 +376,50 @@ NEXT qwe
       proposal: nextProposal
     }
   });
+}
+
+export function* acceptSponsorshipProposal(
+  managerId: string,
+  proposalId: string
+) {
+  const manager: Manager = yield select(managerById(managerId));
+  const proposal: SponsorshipProposal = yield select(
+    sponsorshipProposalById(proposalId)
+  );
+
+  if (proposal.team !== manager.team) {
+    throw new Error("not managers proposal");
+  }
+
+  if (!proposal.open) {
+    return;
+  }
+
+  const deal: SponsorshipDeal = {
+    id: proposal.id,
+    sponsorName: proposal.sponsorName,
+    team: proposal.team,
+    clausules: map((clausule: SponsorshipProposalClausule) => {
+      return {
+        type: clausule.type,
+        amount: sponsorshipClausuleMap[clausule.type].getAmount(proposal)
+      };
+    }, proposal.clausules).filter(c => c.amount !== 0)
+  };
+
+  yield all([
+    put<SponsorCreateDealAction>({
+      type: SPONSOR_CREATE_DEAL,
+      payload: { deal }
+    }),
+    put<TeamSetFlagAction>({
+      type: TEAM_SET_FLAG,
+      payload: {
+        flag: "sponsor",
+        value: true
+      }
+    })
+  ]);
 }
 
 /* non refattori */

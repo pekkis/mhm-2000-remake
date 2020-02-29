@@ -7,7 +7,15 @@ import {
   GAME_QUIT_TO_MAIN_MENU
 } from "./game";
 import { addToMapFromList } from "./operations";
-import { over, mergeLeft, lensPath, assocPath } from "ramda";
+import {
+  over,
+  mergeLeft,
+  lensPath,
+  assocPath,
+  evolve,
+  assoc,
+  filter
+} from "ramda";
 
 export interface SponsorState {
   deals: MapOf<SponsorshipDeal>;
@@ -75,9 +83,14 @@ const sponsorReducer = (
       );
 
     case SPONSOR_CREATE_DEAL:
-      return assocPath(
-        ["deals", action.payload.deal.id],
-        action.payload.deal,
+      return evolve(
+        {
+          deals: assoc(action.payload.deal.id, action.payload.deal),
+          proposals: filter(
+            (proposal: SponsorshipProposal) =>
+              proposal.team !== action.payload.deal.team
+          )
+        },
         state
       );
 

@@ -1,38 +1,28 @@
-import { v4 as uuid } from "uuid";
-import slug from "slugify";
-import teamList, {
-  rawTeamStats,
-  StatsData,
-  StatsDatas,
-  RawTeamData
-} from "./data/teams";
 import {
-  values,
-  find,
-  map,
-  prop,
-  pipe,
-  sortWith,
   ascend,
-  toPairs,
+  find,
   fromPairs,
-  reverse,
-  range,
-  filter,
-  nth,
   indexBy,
-  mapObjIndexed
+  map,
+  pipe,
+  prop,
+  reverse,
+  sortWith,
+  toPairs,
+  values
 } from "ramda";
 import { mapIndexed } from "ramda-adjunct";
+import slug from "slugify";
+import { v4 as uuid } from "uuid";
+import { SeasonStatistic, Streak, TeamStatistic } from "../types/stats";
 import {
-  Team,
-  TeamStrength,
+  ComputerControlledTeam,
   HumanControlledTeam,
-  ComputerControlledTeam
+  Team,
+  TeamStrength
 } from "../types/team";
 import levels from "./data/team-levels";
-import { TeamStatistic, Streak, SeasonStatistic } from "../types/stats";
-import TeamStats from "../components/stats/ManagerStats";
+import teamList, { RawTeamData, rawTeamStats, StatsDatas } from "./data/teams";
 
 export const isTeam = (team: Team | undefined): team is Team => {
   return team !== undefined;
@@ -73,6 +63,7 @@ export const teamData = indexBy(
         pk: -1,
         pp: -1
       },
+
       morale: 0,
       isHumanControlled: false,
       effects: [],
@@ -85,6 +76,11 @@ export const teamData = indexBy(
         coaching: 1,
         goalieCoaching: 1,
         juniorAcademy: 1
+      },
+      flags: {
+        sponsor: false,
+        budget: false,
+        strategy: false
       }
     })
   )(teamList)

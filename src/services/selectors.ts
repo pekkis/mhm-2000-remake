@@ -40,6 +40,13 @@ import r from "./random";
 import { isComputerControlledTeam, isHumanControlledTeam } from "./team";
 import { SponsorshipProposal } from "../types/sponsor";
 
+export const selectTeamFlag = (teamId: string, flag: string) => (
+  state: MHMState
+): boolean | undefined => {
+  const team = teamById(teamId)(state);
+  return team.flags[flag];
+};
+
 export const sponsorshipProposalById = (proposalId: string) => (
   state: MHMState
 ): SponsorshipProposal => {

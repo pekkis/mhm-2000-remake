@@ -41,6 +41,11 @@ export interface Team {
   strategy?: SeasonStrategies;
   organization: TeamOrganization;
   arena: Arena;
+  flags: {
+    strategy: boolean;
+    sponsor: boolean;
+    budget: boolean;
+  };
 }
 
 export interface ForwardLine {

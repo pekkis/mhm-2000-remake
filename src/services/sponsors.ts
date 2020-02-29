@@ -1,10 +1,36 @@
 import { sponsorNames } from "./data/sponsors";
 import random from "./random";
-import { SponsorshipClausule, SponsorshipProposal } from "../types/sponsor";
+import {
+  SponsorshipProposalClausule,
+  SponsorshipProposal
+} from "../types/sponsor";
 import { MapOf } from "../types/base";
-import { sortWith, ascend, prop, values, curry } from "ramda";
+import {
+  sortWith,
+  ascend,
+  prop,
+  values,
+  curry,
+  add,
+  subtract,
+  evolve
+} from "ramda";
 import { Arena } from "../types/arena";
 import { number } from "prop-types";
+
+const createSuccessfulNegotiation = (
+  func: (a: number, b: number) => number
+) => (
+  change: number,
+  clausule: SponsorshipProposalClausule
+): SponsorshipProposalClausule => {
+  return evolve(
+    {
+      multiplier: current => func(current, change)
+    },
+    clausule
+  );
+};
 
 /*
 seks: [
@@ -20,6 +46,11 @@ interface SponsorshipClausuleService {
   legacyId: number;
   title: string;
   weight: number;
+
+  successfulNegotiation: (
+    change: number,
+    clausule: SponsorshipProposalClausule
+  ) => SponsorshipProposalClausule;
 
   willSponsorOffer: (proposal: SponsorshipProposal) => boolean;
 
@@ -96,7 +127,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [5, "roundlyPayment"],
       [8, "roundlyPayment"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(add)
   },
   secondPlace: {
     weight: 1000,
@@ -112,7 +144,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [4.5, "roundlyPayment"],
       [7, "roundlyPayment"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(add)
   },
   bronzeMedal: {
     weight: 1000,
@@ -128,7 +161,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [4, "roundlyPayment"],
       [6, "roundlyPayment"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(add)
   },
   fourthPlace: {
     weight: 1000,
@@ -144,7 +178,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [3.5, "roundlyPayment"],
       [0, "roundlyPayment"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(add)
   },
   playoffs: {
     weight: 1000,
@@ -178,7 +213,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
         ],
         proposal
       );
-    }
+    },
+    successfulNegotiation: createSuccessfulNegotiation(add)
   },
   cupWin: {
     weight: 1000,
@@ -193,7 +229,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [0, "roundlyPayment"],
       [2.5, "roundlyPayment"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(add)
   },
   cupAdvancement: {
     weight: 1000,
@@ -208,7 +245,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [1.25, "roundlyPayment"],
       [1.5, "roundlyPayment"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(add)
   },
   ehlWin: {
     weight: 1000,
@@ -223,7 +261,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [0, "roundlyPayment"],
       [8, "roundlyPayment"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(add)
   },
   ehlPhaseTwo: {
     weight: 1000,
@@ -238,7 +277,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [3.5, "roundlyPayment"],
       [0, "roundlyPayment"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(add)
   },
   promotion: {
     weight: 1000,
@@ -256,7 +296,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [1.5, "roundlyPayment"],
       [8, "roundlyPayment"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(add)
   },
   missMedal: {
     weight: 1000,
@@ -272,7 +313,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [0, "roundlyPayment"],
       [-1, "roundlyPayment"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(subtract)
   },
   missSemiFinals: {
     weight: 1000,
@@ -288,7 +330,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [-0.8, "roundlyPayment"],
       [0.2, "missMedal"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(subtract)
   },
   missPlayoffs: {
     weight: 1000,
@@ -320,7 +363,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
         ],
         proposal
       );
-    }
+    },
+    successfulNegotiation: createSuccessfulNegotiation(subtract)
   },
   missSafetyFromRelegation: {
     weight: 1000,
@@ -339,7 +383,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0.3, "missPlayoffs"],
       [0.2, "missSemifinals"],
       [0.16, "missMedal"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(subtract)
   },
   relegation: {
     weight: 1000,
@@ -358,7 +403,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0.4, "missPlayoffs"],
       [0.1, "missSemifinals"],
       [0.14, "missMedal"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(subtract)
   },
   missCupSemiFinals: {
     weight: 1000,
@@ -373,7 +419,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [0, "roundlyPayment"],
       [-6, "cupWin"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(subtract)
   },
   missCup2ndRound: {
     weight: 1000,
@@ -388,7 +435,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [-1.5, "cupAdvancement"],
       [-2, "cupAdvancement"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(subtract)
   },
   missEhlPhaseTwo: {
     weight: 1000,
@@ -403,7 +451,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [-0.9, "ehlPhaseTwo"],
       [-0.9, "ehlWin"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(subtract)
   },
   missPromotion: {
     weight: 1000,
@@ -421,7 +470,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
       [0, "roundlyPayment"],
       [0, "roundlyPayment"],
       [-0.75, "promotion"]
-    ])
+    ]),
+    successfulNegotiation: createSuccessfulNegotiation(subtract)
   },
   roundlyPayment: {
     weight: 1000,
@@ -432,7 +482,8 @@ export const sponsorshipClausuleMap: MapOf<SponsorshipClausuleService> = {
     willSponsorOffer: () => true,
     getAmount: (proposal: SponsorshipProposal) => {
       return proposal.baseAmount;
-    }
+    },
+    successfulNegotiation: createSuccessfulNegotiation(add)
   }
 };
 

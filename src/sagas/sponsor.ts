@@ -20,7 +20,10 @@ import {
 } from "../services/sponsors";
 import { CompetitionNames } from "../types/base";
 import { HumanManager } from "../types/manager";
-import { SponsorshipProposal, SponsorshipClausule } from "../types/sponsor";
+import {
+  SponsorshipProposal,
+  SponsorshipProposalClausule
+} from "../types/sponsor";
 import { Team } from "../types/team";
 
 const createClausules = (
@@ -34,7 +37,7 @@ const createClausules = (
 
       const randomAttitude = getRandomAttitude(p);
 
-      const clausule: SponsorshipClausule = {
+      const clausule: SponsorshipProposalClausule = {
         type: ps.id,
         multiplier: randomAttitude
       };

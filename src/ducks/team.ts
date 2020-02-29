@@ -49,10 +49,19 @@ export const TEAM_SET_ORGANIZATION = "TEAM_SET_ORGANIZATION";
 export const TEAM_SET_LINEUP = "TEAM_SET_LINEUP";
 export const TEAM_INCREMENT_MORALE = "TEAM_INCREMENT_MORALE";
 export const TEAM_SET_INTENSITY = "TEAM_SET_INTENSITY";
+export const TEAM_SET_FLAG = "TEAM_SET_FLAG";
 
 const defaultState: TeamState = {
   teams: teamData
 };
+
+export interface TeamSetFlagAction {
+  type: typeof TEAM_SET_FLAG;
+  payload: {
+    flag: string;
+    value: boolean;
+  };
+}
 
 export interface TeamSetLineupAction {
   type: typeof TEAM_SET_LINEUP;
@@ -152,11 +161,16 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
       return over(
         lensProp("teams"),
         map(
-          mergeLeft({
-            effects: [],
-            opponentEffects: [],
-            morale: 0,
-            readiness: 0
+          evolve({
+            effects: () => [],
+            opponentEffects: () => [],
+            morale: () => 0,
+            readiness: () => 0,
+            flags: {
+              strategy: () => false,
+              sponsor: () => false,
+              budget: () => false
+            }
           })
         ),
         state
@@ -259,21 +273,27 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
       );
 
     case TEAM_SET_STRATEGY:
-      return pipe<TeamState, TeamState, TeamState>(
-        assocPath(
-          ["teams", action.payload.team, "strategy"],
-          action.payload.strategy
-        ),
-        assocPath(
-          ["teams", action.payload.team, "readiness"],
-          action.payload.readiness
-        )
-      )(state);
+      return over(
+        lensPath(["teams", action.payload.team]),
+        evolve({
+          strategy: () => action.payload.strategy,
+          readiness: () => action.payload.readiness,
+          flags: {
+            strategy: () => true
+          }
+        }),
+        state
+      );
 
     case TEAM_SET_ORGANIZATION:
-      return assocPath(
-        ["teams", action.payload.team, "organization"],
-        action.payload.organization,
+      return over(
+        lensPath(["teams", action.payload.team]),
+        evolve({
+          organization: () => action.payload.organization,
+          flags: {
+            budget: () => true
+          }
+        }),
         state
       );
 

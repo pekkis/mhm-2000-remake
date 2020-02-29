@@ -1,9 +1,15 @@
 import { CompetitionNames } from "./base";
 
+export interface SponsorshipDealClausule {
+  type: string;
+  amount: number;
+}
+
 export interface SponsorshipDeal {
   id: string;
   sponsorName: string;
-  clausules: SponsorshipClausule;
+  team: string;
+  clausules: SponsorshipDealClausule[];
 }
 
 export interface SponsorshipProposal {
@@ -14,7 +20,7 @@ export interface SponsorshipProposal {
   competitions: CompetitionNames[];
   baseAmount: number;
   attitudeBonus: number;
-  clausules: SponsorshipClausule[];
+  clausules: SponsorshipProposalClausule[];
   requirements: {
     basic: number;
     cup: number;
@@ -25,7 +31,7 @@ export interface SponsorshipProposal {
   timesNegotiated: number;
 }
 
-export interface SponsorshipClausule {
+export interface SponsorshipProposalClausule {
   type: string;
   multiplier: number;
   amount?: number;
