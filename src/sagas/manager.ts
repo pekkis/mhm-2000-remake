@@ -67,7 +67,8 @@ import { HumanManager, isHumanManager, Manager } from "../types/manager";
 import {
   SponsorshipProposal,
   SponsorshipProposalClausule,
-  SponsorshipDeal
+  SponsorshipDeal,
+  SponsorshipDealClausule
 } from "../types/sponsor";
 import { Lineup, Team, TeamOrganization } from "../types/team";
 import { addAnnouncement } from "./news";
@@ -81,6 +82,7 @@ import {
 } from "./team";
 import random from "../services/random";
 import { sponsorshipClausuleMap } from "../services/sponsors";
+import { team } from "../ducks";
 
 export function* automateLineup(managerId: string) {
   const manager: Manager = yield select(managerById(managerId));
@@ -399,25 +401,32 @@ export function* acceptSponsorshipProposal(
     id: proposal.id,
     sponsorName: proposal.sponsorName,
     team: proposal.team,
-    clausules: map((clausule: SponsorshipProposalClausule) => {
-      return {
-        type: clausule.type,
-        amount: sponsorshipClausuleMap[clausule.type].getAmount(proposal)
-      };
-    }, proposal.clausules).filter(c => c.amount !== 0)
+    weight: 1000,
+    clausules: map(
+      (clausule: SponsorshipProposalClausule): SponsorshipDealClausule => {
+        return {
+          type: clausule.type,
+          amount: sponsorshipClausuleMap[clausule.type].getAmount(proposal),
+          times: sponsorshipClausuleMap[clausule.type].getTimes(),
+          timesPaid: 0
+        };
+      },
+      proposal.clausules
+    ).filter(c => c.amount !== 0)
   };
 
   yield all([
-    put<SponsorCreateDealAction>({
-      type: SPONSOR_CREATE_DEAL,
-      payload: { deal }
-    }),
     put<TeamSetFlagAction>({
       type: TEAM_SET_FLAG,
       payload: {
+        team: deal.team,
         flag: "sponsor",
         value: true
       }
+    }),
+    put<SponsorCreateDealAction>({
+      type: SPONSOR_CREATE_DEAL,
+      payload: { deal }
     })
   ]);
 }

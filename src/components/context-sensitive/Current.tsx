@@ -52,7 +52,7 @@ const Current = () => {
           match={teamsMatch}
         />
       )}
-      <Box my={1} bg="grey" p={1}>
+      <Box my={1} bg="muted" p={1}>
         <h2>Akuutit asiat</h2>
 
         <CurrentEntry>

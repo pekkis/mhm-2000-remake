@@ -49,7 +49,7 @@ const MainMenu: FunctionComponent = () => {
 
       <ManagerInfo details />
 
-      <Box p={1}>
+      <Box p={[1, 3]}>
         <Current />
 
         <Situation

@@ -3,12 +3,15 @@ import { CompetitionNames } from "./base";
 export interface SponsorshipDealClausule {
   type: string;
   amount: number;
+  times: number;
+  timesPaid: number;
 }
 
 export interface SponsorshipDeal {
   id: string;
   sponsorName: string;
   team: string;
+  weight: number;
   clausules: SponsorshipDealClausule[];
 }
 

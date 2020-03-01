@@ -22,6 +22,7 @@ import {
   ManagerSponsorNegotiateAction,
   MANAGER_SPONSOR_NEGOTIATE
 } from "../../ducks/manager";
+import TitledSelector from "../ui/TitledSelector";
 
 interface Props {
   manager: HumanManager;
@@ -48,6 +49,10 @@ const SponsorNegotiation: FunctionComponent<Props> = ({ manager, team }) => {
   const proposals = sortWith<SponsorshipProposal>([ascend(prop("weight"))])(
     managersProposals
   );
+
+  if (!proposals.length) {
+    return <span>oh noes</span>;
+  }
 
   const openProposals = proposals.filter(p => p.open).length;
 
@@ -79,22 +84,14 @@ const SponsorNegotiation: FunctionComponent<Props> = ({ manager, team }) => {
       <Header back />
       <ManagerInfo details />
 
-      <Box p={1}>
-        <h2>
-          <button
-            disabled={proposalId === 0}
-            onClick={() => setProposalId(proposalId - 1)}
-          >
-            -
-          </button>
-          {proposal.sponsorName}
-          <button
-            disabled={proposalId === proposals.length - 1}
-            onClick={() => setProposalId(proposalId + 1)}
-          >
-            +
-          </button>
-        </h2>
+      <Box p={2}>
+        <TitledSelector
+          current={proposalId}
+          max={proposals.length - 1}
+          titleGetter={(p: SponsorshipProposal) => p.sponsorName}
+          setIndex={setProposalId}
+          obj={proposal}
+        />
 
         <SelectRequirements
           manager={manager}

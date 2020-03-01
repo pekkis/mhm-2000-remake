@@ -58,6 +58,7 @@ const defaultState: TeamState = {
 export interface TeamSetFlagAction {
   type: typeof TEAM_SET_FLAG;
   payload: {
+    team: string;
     flag: string;
     value: boolean;
   };
@@ -147,7 +148,8 @@ type TeamActions =
   | TeamSetOrganizationAction
   | TeamSetLineupAction
   | TeamIncrementMoraleAction
-  | TeamSetIntensityAction;
+  | TeamSetIntensityAction
+  | TeamSetFlagAction;
 
 const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
   switch (action.type) {
@@ -173,6 +175,13 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
             }
           })
         ),
+        state
+      );
+
+    case TEAM_SET_FLAG:
+      return assocPath(
+        ["teams", action.payload.team, "flags", action.payload.flag],
+        action.payload.value,
         state
       );
 
