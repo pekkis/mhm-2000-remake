@@ -10,10 +10,11 @@ import {
   mergeLeft,
   over,
   pipe,
-  reduce
+  reduce,
+  append
 } from "ramda";
 import { normalizeMorale, teamData } from "../services/team";
-import { MapOf, SeasonStrategies } from "../types/base";
+import { MapOf, SeasonStrategies, FinancialTransaction } from "../types/base";
 import {
   ComputerControlledTeam,
   HumanControlledTeam,
@@ -35,9 +36,11 @@ import {
   GAME_QUIT_TO_MAIN_MENU,
   GAME_SEASON_START
 } from "./game";
+import { string } from "random-js";
 
 export interface TeamState {
   teams: MapOf<HumanControlledTeam | ComputerControlledTeam>;
+  accounting: MapOf<FinancialTransaction[]>;
 }
 
 export const TEAM_ADD_MANAGER = "TEAM_ADD_MANAGER";
@@ -50,10 +53,17 @@ export const TEAM_SET_LINEUP = "TEAM_SET_LINEUP";
 export const TEAM_INCREMENT_MORALE = "TEAM_INCREMENT_MORALE";
 export const TEAM_SET_INTENSITY = "TEAM_SET_INTENSITY";
 export const TEAM_SET_FLAG = "TEAM_SET_FLAG";
+export const TEAM_FINANCIAL_TRANSACTION = "TEAM_FINANCIAL_TRANSACTION";
 
 const defaultState: TeamState = {
+  accounting: {},
   teams: teamData
 };
+
+export interface TeamFinancialTransactionAction {
+  type: typeof TEAM_FINANCIAL_TRANSACTION;
+  payload: FinancialTransaction[];
+}
 
 export interface TeamSetFlagAction {
   type: typeof TEAM_SET_FLAG;
@@ -149,7 +159,8 @@ type TeamActions =
   | TeamSetLineupAction
   | TeamIncrementMoraleAction
   | TeamSetIntensityAction
-  | TeamSetFlagAction;
+  | TeamSetFlagAction
+  | TeamFinancialTransactionAction;
 
 const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
   switch (action.type) {
@@ -246,6 +257,29 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
             }),
             a
           ),
+        state,
+        action.payload
+      );
+
+    case TEAM_FINANCIAL_TRANSACTION:
+      return reduce(
+        (a, transaction) => {
+          const balanceIncremented = over(
+            lensPath(["teams", transaction.team]),
+            evolve({
+              balance: add(transaction.amount)
+            }),
+            a
+          );
+
+          const transactionAdded = over(
+            lensPath(["accounting", transaction.team]),
+            append(transaction),
+            balanceIncremented
+          );
+
+          return transactionAdded;
+        },
         state,
         action.payload
       );

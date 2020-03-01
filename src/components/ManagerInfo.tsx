@@ -6,11 +6,11 @@ import TurnIndicator from "./game/TurnIndicator";
 
 import styled from "@emotion/styled";
 import {
-  activeManager,
+  selectActiveManager,
   allTeamsMap,
-  currentTurn,
+  selectCurrentTurn,
   requireHumanManagersTeamObj,
-  teamsContractedPlayers
+  selectTeamsContractedPlayers
 } from "../services/selectors";
 import { HumanManager } from "../types/manager";
 import { MapOf, Turn } from "../types/base";
@@ -21,6 +21,7 @@ import {
   getEmptyLineup
 } from "../services/lineup";
 import { getNominalSkill } from "../services/player";
+import Currency from "./ui/Currency";
 
 const ManagerName = styled.h2`
   margin: 0;
@@ -52,11 +53,11 @@ interface Props {
 }
 
 const ManagerInfo: FunctionComponent<Props> = ({ details = false }) => {
-  const manager: HumanManager = useSelector(activeManager);
-  const turn: Turn = useSelector(currentTurn);
+  const manager: HumanManager = useSelector(selectActiveManager);
+  const turn: Turn = useSelector(selectCurrentTurn);
 
   const team = useSelector(requireHumanManagersTeamObj(manager.id));
-  const players = useSelector(teamsContractedPlayers(team.id));
+  const players = useSelector(selectTeamsContractedPlayers(team.id));
 
   if (!manager.team) {
     throw new Error("Manager has no team!");
@@ -71,7 +72,7 @@ const ManagerInfo: FunctionComponent<Props> = ({ details = false }) => {
   );
 
   return (
-    <Box p={1} bg="bar">
+    <Box p={[2, 3]} bg="muted">
       <ManagerName>
         {manager.name}, {team.name}
       </ManagerName>
@@ -90,7 +91,9 @@ const ManagerInfo: FunctionComponent<Props> = ({ details = false }) => {
 
           <Detail>
             <Title>Raha</Title>
-            <Value>{amount(manager.balance)}</Value>
+            <Value>
+              <Currency value={team.balance} />
+            </Value>
           </Detail>
 
           <Detail>

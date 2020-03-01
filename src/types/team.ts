@@ -33,12 +33,13 @@ export interface Team {
   isHumanControlled: boolean;
   intensity: 0 | 1 | 2;
   morale: number;
+  balance: number;
   readiness: number;
   strength: TeamStrength;
   effects: TeamEffect[];
   opponentEffects: TeamEffect[];
   manager?: string;
-  strategy?: SeasonStrategies;
+  strategy: SeasonStrategies;
   organization: TeamOrganization;
   arena: Arena;
   flags: {

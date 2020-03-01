@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import {
-  activeManager,
+  selectActiveManager,
   requireManagersTeamObj,
   selectTeamFlag
 } from "../services/selectors";
@@ -9,7 +9,7 @@ import SponsorInformation from "./sponsors-menu/SponsorInformation";
 import SponsorNegotiation from "./sponsors-menu/SponsorNegotiation";
 
 const SponsorsMenu = () => {
-  const manager = useSelector(activeManager);
+  const manager = useSelector(selectActiveManager);
   const team = useSelector(requireManagersTeamObj(manager.id));
 
   const hasNegotiated: boolean | undefined = useSelector(

@@ -7,13 +7,14 @@ import { nth } from "ramda";
 import { MHMState } from "../../ducks";
 import { useSelector } from "react-redux";
 import {
-  activeManager,
+  selectActiveManager,
   requireManagersTeam,
   allTeamsMap,
   managersTeam,
-  currentTurn,
+  selectCurrentTurn,
   requireHumanManagersTeamObj,
-  teamsMatchOfTurn
+  teamsMatchOfTurn,
+  selectTeamFlag
 } from "../../services/selectors";
 import { MapOf } from "../../types/base";
 import { Team } from "../../types/team";
@@ -26,7 +27,7 @@ const CurrentEntry = styled.div`
 `;
 
 const Current = () => {
-  const manager = useSelector(activeManager);
+  const manager = useSelector(selectActiveManager);
   if (!manager.team) {
     throw new Error("No team");
   }
@@ -37,10 +38,20 @@ const Current = () => {
     )
   );
 
-  const turn = useSelector(currentTurn);
+  const turn = useSelector(selectCurrentTurn);
   const team = useSelector(requireHumanManagersTeamObj(manager.id));
   const teams = useSelector(allTeamsMap);
   const teamsMatch = useSelector(teamsMatchOfTurn(team.id, turn));
+
+  const isStrategySet: boolean = useSelector(
+    selectTeamFlag(team.id, "strategy")
+  );
+
+  const isSponsorNegotiated: boolean = useSelector(
+    selectTeamFlag(team.id, "sponsor")
+  );
+
+  const isBudgeted: boolean = useSelector(selectTeamFlag(team.id, "budget"));
 
   return (
     <div>
@@ -55,23 +66,27 @@ const Current = () => {
       <Box my={1} bg="muted" p={1}>
         <h2>Akuutit asiat</h2>
 
-        <CurrentEntry>
-          <FontAwesomeIcon icon={["fas", "exclamation-circle"]} />
-          Et ole vielä{" "}
-          <Link to="/budjetti/organisaatio">
-            budjetoinut organisaatiota
-          </Link>{" "}
-          alkavalle kaudelle.
-        </CurrentEntry>
+        {!isBudgeted && (
+          <CurrentEntry>
+            <FontAwesomeIcon icon={["fas", "exclamation-circle"]} />
+            Et ole vielä{" "}
+            <Link to="/budjetti/organisaatio">
+              budjetoinut organisaatiota
+            </Link>{" "}
+            alkavalle kaudelle.
+          </CurrentEntry>
+        )}
 
-        <CurrentEntry>
-          <FontAwesomeIcon icon={["fas", "exclamation-circle"]} />
-          Et ole vielä{" "}
-          <Link to="/sponsorit">neuvotellut sponsorisopimuksia</Link> alkavalle
-          kaudelle.
-        </CurrentEntry>
+        {!isSponsorNegotiated && (
+          <CurrentEntry>
+            <FontAwesomeIcon icon={["fas", "exclamation-circle"]} />
+            Et ole vielä{" "}
+            <Link to="/sponsorit">neuvotellut sponsorisopimuksia</Link>{" "}
+            alkavalle kaudelle.
+          </CurrentEntry>
+        )}
 
-        {!team.strategy && (
+        {!isStrategySet && (
           <CurrentEntry>
             <FontAwesomeIcon icon={["fas", "exclamation-circle"]} />
             Et ole vielä <Link to="/strategia">valinnut strategiaa</Link>{" "}

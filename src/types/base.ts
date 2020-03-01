@@ -459,3 +459,19 @@ export interface SeasonStrategy {
   initialReadiness: (manager: Manager) => number;
   incrementReadiness: (turn: Turn) => number;
 }
+
+export type FinancialTransactionCategory =
+  | "other"
+  | "salary"
+  | "sponsorship"
+  | "attendance"
+  | "reward";
+
+export interface FinancialTransaction {
+  team: string;
+  season: number;
+  round: number;
+  amount: number;
+  category: FinancialTransactionCategory;
+  reference?: string;
+}

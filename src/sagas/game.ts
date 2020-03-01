@@ -40,7 +40,7 @@ import { UISetLoadingAction, UI_SET_LOADING } from "../ducks/ui";
 import competitionData from "../services/competitions";
 import gameStateService from "../services/game-state";
 import {
-  activeManager,
+  selectActiveManager,
   allTeams,
   currentCalendarEntry
 } from "../services/selectors";
@@ -203,7 +203,7 @@ function* competitionStart(competitionId: string) {
   });
 }
 
-export function* prepareSeason() {
+export function* initializeStrengths() {
   const teams: Team[] = yield select(allTeams);
 
   // Initialize team strengths
@@ -215,7 +215,10 @@ export function* prepareSeason() {
     type: TEAM_SET_STRENGTHS,
     payload: strengths
   });
+}
 
+export function* prepareSeason() {
+  yield call(initializeStrengths);
   // Start all competitions.
   for (const [key] of toPairs(competitionData)) {
     yield competitionStart(key);
@@ -294,9 +297,11 @@ export function* gameStart() {
     payload: true
   });
 
+  // TODO: this is a kludge for the first season...
+  yield call(initializeStrengths);
+
   // TODO: multiple managers... very soon, actually!
   yield call(addManager, action.payload);
-
   yield call(initializeManagers);
 
   yield call(prepareSeason);
@@ -309,7 +314,7 @@ export function* gameStart() {
 }
 
 export function* gameSave() {
-  const manager = yield select(activeManager);
+  const manager = yield select(selectActiveManager);
   const state = yield select(state => state);
   yield call(gameStateService.saveGame, state);
   yield call(addNotification, manager.id, "Peli tallennettiin.");

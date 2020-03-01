@@ -3,7 +3,7 @@ import { Player } from "../../types/player";
 import PlayerName from "../ui/PlayerName";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../form/Button";
-import { activeManager } from "../../services/selectors";
+import { selectActiveManager } from "../../services/selectors";
 import { PLAYER_CONTRACT_INITIATE_REQUEST } from "../../ducks/player";
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 
 const PlayerInfo: FunctionComponent<Props> = ({ player }) => {
   const dispatch = useDispatch();
-  const manager = useSelector(activeManager);
+  const manager = useSelector(selectActiveManager);
 
   return (
     <div>

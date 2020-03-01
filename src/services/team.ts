@@ -69,6 +69,8 @@ export const teamData = indexBy(
       effects: [],
       opponentEffects: [],
       readiness: 1,
+      balance: 100000000,
+      strategy: "puurto",
       intensity: 1,
       organization: {
         benefits: 1,

@@ -7,7 +7,7 @@ import { MHMState } from "../ducks";
 import { useSelector, useDispatch } from "react-redux";
 import Button from "./form/Button";
 import Markdown from "./Markdown";
-import { activeManager } from "../services/selectors";
+import { selectActiveManager } from "../services/selectors";
 import ContractForm from "./contract-negotiation/ContractForm";
 import {
   PlayerContractSignRequestAction,
@@ -36,7 +36,7 @@ const ContractNegotiation: FunctionComponent<Props> = props => {
     (state: MHMState) => state.player.players[negotiation.player]
   );
 
-  const manager = useSelector(activeManager);
+  const manager = useSelector(selectActiveManager);
 
   if (manager.id !== negotiation.manager) {
     throw new Error("OH NOES");

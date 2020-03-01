@@ -5,9 +5,29 @@ import ManagerInfo from "./ManagerInfo";
 import Header from "./Header";
 import HeaderedPage from "./ui/HeaderedPage";
 import { Box } from "theme-ui";
+import { HumanManager } from "../types/manager";
+import { Team } from "../types/team";
+import { useSelector } from "react-redux";
+import {
+  selectActiveManager,
+  requireHumanManagersTeamObj,
+  selectCurrentTurn
+} from "../services/selectors";
+import { MHMState } from "../ducks";
+import FinancialReport from "./accounting/FinancialReport";
 
-const News = props => {
-  const { manager, resolveEvent, events, announcements } = props;
+const News = () => {
+  const manager = useSelector(selectActiveManager);
+  const team = useSelector(requireHumanManagersTeamObj(manager.id));
+  const turn = useSelector(selectCurrentTurn);
+
+  const allTransactions = useSelector(
+    (state: MHMState) => state.team.accounting[team.id] || []
+  );
+
+  const transactions = allTransactions.filter(
+    t => t.round === turn.round && t.season === turn.season
+  );
 
   return (
     <HeaderedPage>
@@ -28,6 +48,10 @@ const News = props => {
             List()
           )}
           />*/}
+
+        <h2>Talousraportti</h2>
+
+        <FinancialReport transactions={transactions} />
       </Box>
     </HeaderedPage>
   );

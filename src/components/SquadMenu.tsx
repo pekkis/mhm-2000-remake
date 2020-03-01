@@ -11,7 +11,7 @@ import PlayerList from "./transfer-market/PlayerList";
 import { Route, Switch } from "react-router";
 import PlayerInfo from "./transfer-market/PlayerInfo";
 import {
-  activeManager,
+  selectActiveManager,
   requireManagersTeam,
   requireManagersTeamObj
 } from "../services/selectors";
@@ -27,7 +27,7 @@ const positionSorts = {
 };
 
 const SquadMenu = () => {
-  const manager = useSelector(activeManager);
+  const manager = useSelector(selectActiveManager);
   const team = useSelector(requireManagersTeamObj(manager.id));
 
   const playerMap = useSelector((state: MHMState) => state.player.players);
@@ -63,6 +63,7 @@ const SquadMenu = () => {
               <th>T</th>
               <th>kunto</th>
               <th>perks</th>
+              <th>sop</th>
             </tr>
           </thead>
           <tbody>
@@ -82,6 +83,7 @@ const SquadMenu = () => {
                   </td>
                   <td>{player.condition}</td>
                   <td>{JSON.stringify(player.perks)}</td>
+                  <td>{JSON.stringify(player.contract)}</td>
                 </tr>
               );
             })}

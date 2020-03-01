@@ -31,7 +31,7 @@ import {
 import random from "../services/random";
 import { Turn, MapOf } from "../types/base";
 import {
-  currentTurn,
+  selectCurrentTurn,
   managerById,
   managersTeam,
   playerById,
@@ -187,7 +187,7 @@ export function* getInitialContractNegotiation(
   playerId: string,
   context: string
 ) {
-  const turn: Turn = yield select(currentTurn);
+  const turn: Turn = yield select(selectCurrentTurn);
 
   const manager: Manager = yield select(managerById(managerId));
   const team = yield select(requireManagersTeamObj(managerId));

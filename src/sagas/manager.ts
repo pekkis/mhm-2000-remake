@@ -58,7 +58,7 @@ import {
   requireManagersTeamObj,
   sponsorshipProposalById,
   teamById,
-  teamsContractedPlayers
+  selectTeamsContractedPlayers
 } from "../services/selectors";
 import strategyHandlers from "../services/strategies";
 import { isHumanControlledTeam } from "../services/team";
@@ -92,7 +92,7 @@ export function* automateLineup(managerId: string) {
     throw new Error("Team must be human controlled to automate lineups");
   }
 
-  const players = yield select(teamsContractedPlayers(team.id));
+  const players = yield select(selectTeamsContractedPlayers(team.id));
 
   const lineup: Lineup = lineupService.automateLineup(players);
 
@@ -406,7 +406,9 @@ export function* acceptSponsorshipProposal(
       (clausule: SponsorshipProposalClausule): SponsorshipDealClausule => {
         return {
           type: clausule.type,
-          amount: sponsorshipClausuleMap[clausule.type].getAmount(proposal),
+          amount:
+            sponsorshipClausuleMap[clausule.type].getAmount(proposal) *
+            clausule.multiplier,
           times: sponsorshipClausuleMap[clausule.type].getTimes(),
           timesPaid: 0
         };

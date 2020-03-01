@@ -1,6 +1,10 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { activeManager, requireManagersTeamObj } from "../services/selectors";
+import {
+  selectActiveManager,
+  requireManagersTeamObj,
+  selectTeamFlag
+} from "../services/selectors";
 import HeaderedPage from "./ui/HeaderedPage";
 import Header from "./Header";
 import ManagerInfo from "./ManagerInfo";
@@ -9,8 +13,10 @@ import { Box } from "theme-ui";
 
 const BudgetOrganizationMenu = () => {
   const dispatch = useDispatch();
-  const manager = useSelector(activeManager);
+  const manager = useSelector(selectActiveManager);
   const team = useSelector(requireManagersTeamObj(manager.id));
+
+  const isBudgeted: boolean = useSelector(selectTeamFlag(team.id, "budget"));
 
   return (
     <HeaderedPage>
@@ -23,6 +29,7 @@ const BudgetOrganizationMenu = () => {
           team={team}
           manager={manager}
           dispatch={dispatch}
+          editable={!isBudgeted}
         />
       </Box>
     </HeaderedPage>

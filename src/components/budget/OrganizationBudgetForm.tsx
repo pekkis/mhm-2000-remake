@@ -24,11 +24,15 @@ interface Props {
   manager: HumanManager;
   team: Team;
   dispatch: Dispatch;
+  editable: boolean;
 }
 
-const OrganizationBudgetForm: FunctionComponent<Props> = props => {
-  const { manager, team, dispatch } = props;
-
+const OrganizationBudgetForm: FunctionComponent<Props> = ({
+  manager,
+  team,
+  dispatch,
+  editable
+}) => {
   return (
     <div>
       <Formik
@@ -48,6 +52,7 @@ const OrganizationBudgetForm: FunctionComponent<Props> = props => {
                   <UIField key={aspect.id}>
                     <LabelDiv>{aspect.name}</LabelDiv>
                     <Field
+                      disabled={!editable}
                       name={aspect.id}
                       component="input"
                       type="range"
@@ -67,11 +72,13 @@ const OrganizationBudgetForm: FunctionComponent<Props> = props => {
                 );
               })}
 
-              <UIField>
-                <Button disabled={!isValid} block type="submit">
-                  Budjetoi
-                </Button>
-              </UIField>
+              {editable && (
+                <UIField>
+                  <Button disabled={!isValid} block type="submit">
+                    Budjetoi
+                  </Button>
+                </UIField>
+              )}
             </Form>
           );
         }}

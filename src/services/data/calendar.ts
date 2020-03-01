@@ -97,7 +97,7 @@ const regularGameday = createTurnDefinition(
   ["phl", "division", "mutasarja"],
   [],
   {
-    tags: ["incrementReadiness"]
+    tags: ["incrementReadiness", "sponsorRoundlyPayment", "paySalaries"]
   }
 );
 

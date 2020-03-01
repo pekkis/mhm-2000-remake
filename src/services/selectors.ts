@@ -9,7 +9,8 @@ import R, {
   takeLast,
   sum,
   map,
-  includes
+  includes,
+  type
 } from "ramda";
 import { MHMState } from "../ducks";
 import {
@@ -42,9 +43,15 @@ import { SponsorshipProposal } from "../types/sponsor";
 
 export const selectTeamFlag = (teamId: string, flag: string) => (
   state: MHMState
-): boolean | undefined => {
+): boolean => {
   const team = teamById(teamId)(state);
-  return team.flags[flag];
+  const flagValue = team.flags[flag];
+
+  if (type(flagValue) === "Undefined") {
+    throw new Error(`Invalid flag ${flag}`);
+  }
+
+  return flagValue;
 };
 
 export const sponsorshipProposalById = (proposalId: string) => (
@@ -142,11 +149,24 @@ export const currentCalendarEntry = (state: MHMState): CalendarEntry => {
   return calendarEntryByTurn(turn)(state);
 };
 
-export const teamsContractedPlayers = (teamId: string) => (
-  state: MHMState
-): Player[] => {
+export const selectTeamsContractedPlayers = (
+  teamId: string,
+  requireEffective = false
+) => (state: MHMState): Player[] => {
   const playerMap = state.player.players;
-  return values(playerMap).filter(p => p.contract?.team === teamId);
+  const inSquad = values(playerMap).filter(p => p.contract?.team === teamId);
+
+  if (!requireEffective) {
+    return inSquad;
+  }
+
+  return inSquad.filter(p => {
+    if (!p.contract) {
+      return false;
+    }
+
+    return p.contract.yearsLeft > 0;
+  });
 };
 
 export const statsForSeason = (seasonId: number) => (
@@ -158,7 +178,7 @@ export const statsForSeason = (seasonId: number) => (
 export const playerById = (id: string) => (state: MHMState): Player =>
   state.player.players[id];
 
-export const currentTurn = (state: MHMState): Turn => state.game.turn;
+export const selectCurrentTurn = (state: MHMState): Turn => state.game.turn;
 
 export const allCompetitions = (state: MHMState) =>
   state.competition.competitions;
@@ -222,7 +242,7 @@ export const computerManagers = (state: MHMState): ComputerManager[] => {
   return values(state.manager.managers).filter(isComputerManager);
 };
 
-export const activeManager = (state: MHMState): HumanManager => {
+export const selectActiveManager = (state: MHMState): HumanManager => {
   if (!state.manager.active) {
     throw new Error("No active manager");
   }

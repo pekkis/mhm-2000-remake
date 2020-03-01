@@ -6,9 +6,9 @@ import { Box } from "theme-ui";
 import { MANAGER_LINEUP_AUTOMATE } from "../ducks/manager";
 import { getKnownSkill } from "../services/player";
 import {
-  activeManager,
+  selectActiveManager,
   requireHumanManagersTeamObj,
-  teamsContractedPlayers
+  selectTeamsContractedPlayers
 } from "../services/selectors";
 import { Player } from "../types/player";
 import Header from "./Header";
@@ -27,9 +27,9 @@ const positionSorts = {
 const LineupMenu = () => {
   const dispatch = useDispatch();
 
-  const manager = useSelector(activeManager);
+  const manager = useSelector(selectActiveManager);
   const team = useSelector(requireHumanManagersTeamObj(manager.id));
-  const players = useSelector(teamsContractedPlayers(team.id));
+  const players = useSelector(selectTeamsContractedPlayers(team.id, false));
 
   const skillGetter = getKnownSkill(manager);
 

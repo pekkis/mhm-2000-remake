@@ -9,7 +9,7 @@ import {
   ManagerLineupSetAction,
   MANAGER_LINEUP_SET
 } from "../../ducks/manager";
-import { activeManager } from "../../services/selectors";
+import { selectActiveManager } from "../../services/selectors";
 import DefenceLineLineup from "./DefenceLineLineup";
 import { range } from "ramda";
 import ForwardLineLineup from "./ForwardLineLineup";
@@ -27,7 +27,7 @@ const Lineup: FunctionComponent<Props> = ({
   skillGetter
 }) => {
   const dispatch = useDispatch();
-  const manager = useSelector(activeManager);
+  const manager = useSelector(selectActiveManager);
 
   const assignToLineup = (
     pathToPosition: (string | number)[],

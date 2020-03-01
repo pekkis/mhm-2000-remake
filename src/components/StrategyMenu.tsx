@@ -4,9 +4,10 @@ import Button from "./form/Button";
 import { Box } from "theme-ui";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  activeManager,
+  selectActiveManager,
   managersTeam,
-  requireManagersTeamObj
+  requireManagersTeamObj,
+  selectTeamFlag
 } from "../services/selectors";
 import { SeasonStrategies } from "../types/base";
 import { selectStrategy } from "../ducks/manager";
@@ -17,15 +18,17 @@ import Markdown from "./Markdown";
 
 const SelectStrategy = () => {
   const dispatch = useDispatch();
-  const manager = useSelector(activeManager);
+  const manager = useSelector(selectActiveManager);
   const team = useSelector(requireManagersTeamObj(manager.id));
+
+  const isStrategySet = useSelector(selectTeamFlag(team.id, "strategy"));
 
   return (
     <HeaderedPage>
       <Header back />
       <ManagerInfo details />
 
-      {!team.strategy && (
+      {!isStrategySet && (
         <Box p={1}>
           <h2>Valitse valmennusstrategia alkavalle kaudelle</h2>
 
@@ -57,7 +60,7 @@ const SelectStrategy = () => {
         </Box>
       )}
 
-      {team.strategy && (
+      {isStrategySet && (
         <Box p={1}>
           <h2>Valitsemasi valmennusstrategia kuluvalle kaudelle</h2>
 

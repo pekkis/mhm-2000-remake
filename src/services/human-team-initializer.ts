@@ -124,6 +124,8 @@ export const generatePlayers = (manager: Manager, team: Team): Player[] => {
   const defenderSkill = Math.floor(team.strength.d / 6);
   const forwardSkill = Math.floor(team.strength.a / 12);
 
+  console.log(goalieSkill, defenderSkill, forwardSkill);
+
   const players = playersFromGenerationInfo(
     [
       { position: "g" as PlayerPosition, skill: goalieSkill },

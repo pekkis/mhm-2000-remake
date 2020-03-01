@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { MHMState } from "../ducks";
 import { HumanManager } from "../types/manager";
 import {
-  activeManager,
+  selectActiveManager,
   interestingCompetitions,
   weightedCompetitions
 } from "../services/selectors";
@@ -23,7 +23,7 @@ import ButtonRow from "./fixed-bar/ButtonRow";
 import PrimaryButton from "./fixed-bar/PrimaryButton";
 
 const MainMenu: FunctionComponent = () => {
-  const manager = useSelector<MHMState, HumanManager>(activeManager);
+  const manager = useSelector<MHMState, HumanManager>(selectActiveManager);
 
   const interesting = useSelector(interestingCompetitions(manager.id));
   const competitions = useSelector(
