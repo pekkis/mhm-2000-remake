@@ -8,7 +8,7 @@ import {
   FinancialTransaction
 } from "../../types/base";
 import { Team } from "../../types/team";
-import { values, concat, sum, map, append } from "ramda";
+import { values, concat, sum, map, append, toPairs } from "ramda";
 import {
   GameDecrementDurationsActions,
   GAME_DECREMENT_DURATIONS
@@ -22,10 +22,22 @@ import {
 import {
   currentCalendarEntry,
   selectCurrentTurn,
-  selectTeamsContractedPlayers
+  selectTeamsContractedPlayers,
+  managerById
 } from "../../services/selectors";
 import { isHumanControlledTeam } from "../../services/team";
 import { Player } from "../../types/player";
+import difficultyLevelMap from "../../services/difficulty-levels";
+import { Manager, HumanManager } from "../../types/manager";
+import { executeSponsorFinancialTransaction } from "../sponsor";
+
+function* payRoundlySponsorship(teams: MapOf<Team>) {
+  for (const team of values(teams)) {
+    if (isHumanControlledTeam(team)) {
+      yield call(executeSponsorFinancialTransaction, team, "roundlyPayment");
+    }
+  }
+}
 
 function* paySalaries(teams: MapOf<Team>) {
   let transactions: FinancialTransaction[] = [];
@@ -34,17 +46,49 @@ function* paySalaries(teams: MapOf<Team>) {
 
   for (const team of values(teams)) {
     if (isHumanControlledTeam(team)) {
+      if (!team.manager) {
+        throw new Error("No manager");
+      }
+
+      const manager: HumanManager = yield select(managerById(team.manager));
+
       const players: Player[] = yield select(
         selectTeamsContractedPlayers(team.id, true)
       );
-      const totalSalaries = sum(players.map(p => p.contract?.salary || 0));
+
+      const organizationPrices = difficultyLevelMap[
+        manager.difficultyLevel
+      ].organizationPrices();
+      const organizationSalaries = sum([
+        organizationPrices.coaching[manager.difficultyLevel - 1],
+        organizationPrices.goalieCoaching[manager.difficultyLevel - 1],
+        organizationPrices.juniorAcademy[manager.difficultyLevel - 1],
+        organizationPrices.care[manager.difficultyLevel - 1],
+        organizationPrices.benefits[manager.difficultyLevel - 1] *
+          players.length
+      ]);
+
       transactions = append(
         {
           season: turn.season,
           round: turn.round,
           team: team.id,
-          amount: -totalSalaries,
-          category: "salary"
+          amount: organizationSalaries,
+          category: "salary",
+          reference: "hallinnon palkat"
+        },
+        transactions
+      );
+
+      const playerSalaries = sum(players.map(p => p.contract?.salary || 0));
+      transactions = append(
+        {
+          season: turn.season,
+          round: turn.round,
+          team: team.id,
+          amount: -playerSalaries,
+          category: "salary",
+          reference: "pelaajien palkat"
         },
         transactions
       );
@@ -73,7 +117,7 @@ export default function* calculationsPhase() {
   }
 
   if (calendarEntry.tags.includes("sponsorRoundlyPayment")) {
-    // todo
+    yield call(payRoundlySponsorship, teams);
   }
 
   if (calendarEntry.tags.includes("incrementReadiness")) {

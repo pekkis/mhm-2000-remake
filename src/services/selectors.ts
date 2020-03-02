@@ -39,7 +39,13 @@ import { isComputerManager } from "./manager";
 import { victors } from "./playoffs";
 import r from "./random";
 import { isComputerControlledTeam, isHumanControlledTeam } from "./team";
-import { SponsorshipProposal } from "../types/sponsor";
+import { SponsorshipProposal, SponsorshipDeal } from "../types/sponsor";
+
+export const selectTeamSponsorshipDeals = (teamId: string) => (
+  state: MHMState
+): SponsorshipDeal[] => {
+  return values(state.sponsor.deals).filter(deal => deal.team === teamId);
+};
 
 export const selectTeamFlag = (teamId: string, flag: string) => (
   state: MHMState

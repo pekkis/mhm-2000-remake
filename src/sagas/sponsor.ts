@@ -1,4 +1,4 @@
-import { append, range } from "ramda";
+import { append, range, prop } from "ramda";
 import { call, put, select } from "redux-saga/effects";
 import { v4 as uuid } from "uuid";
 import {
@@ -10,21 +10,29 @@ import {
   humanManagers,
   requireHumanManagersTeamObj,
   selectAllTeamsCompetitions,
-  teamsAverageRankingFromLastYears
+  teamsAverageRankingFromLastYears,
+  selectTeamSponsorshipDeals,
+  selectCurrentTurn
 } from "../services/selectors";
 import {
   getArenaModifier,
   getRandomSponsorName,
   weightedSponsorshipClausuleList,
-  getRandomAttitude
+  getRandomAttitude,
+  sponsorshipClausuleMap
 } from "../services/sponsors";
-import { CompetitionNames } from "../types/base";
+import { CompetitionNames, FinancialTransaction, Turn } from "../types/base";
 import { HumanManager } from "../types/manager";
 import {
   SponsorshipProposal,
-  SponsorshipProposalClausule
+  SponsorshipProposalClausule,
+  SponsorshipDeal
 } from "../types/sponsor";
 import { Team } from "../types/team";
+import {
+  TEAM_FINANCIAL_TRANSACTION,
+  TeamFinancialTransactionAction
+} from "../ducks/team";
 
 const createClausules = (
   proposal: SponsorshipProposal
@@ -97,6 +105,48 @@ function* createSponsorshipProposalsForManager(manager: HumanManager) {
     }
   );
 }
+
+export function* executeSponsorFinancialTransaction(
+  team: Team,
+  clausuleType: string
+) {
+  const deals: SponsorshipDeal[] = yield select(
+    selectTeamSponsorshipDeals(team.id)
+  );
+
+  const turn: Turn = yield select(selectCurrentTurn);
+
+  const transactions: FinancialTransaction[] = deals
+    .map(deal => {
+      return deal.clausules
+        .filter(c => c.type === clausuleType)
+        .map(
+          (clausule): FinancialTransaction => {
+            return {
+              team: team.id,
+              season: turn.season,
+              round: turn.round,
+              category: "sponsorship",
+              amount: clausule.amount,
+              reference: `${sponsorshipClausuleMap[clausule.type].title}, ${
+                deal.sponsorName
+              }`
+            };
+          }
+        );
+    })
+    .flat();
+
+  yield put<TeamFinancialTransactionAction>({
+    type: TEAM_FINANCIAL_TRANSACTION,
+    payload: transactions
+  });
+}
+
+export function* nullifySponsorshipDealClausule(
+  team: Team,
+  clausuleType: string
+) {}
 
 export function* createSponsorshipProposals() {
   const managers = yield select(humanManagers);
