@@ -99,6 +99,9 @@ const bp2 = pipe(
 )(bp);
 const config = build(bp2);
 
+const config2 = config;
+
+/*
 const config2 = over(
   lensPath(["module", "rules", 1, "exclude", 0]),
   () => {
@@ -106,6 +109,7 @@ const config2 = over(
   },
   config
 );
+*/
 
 if (config2.output) {
   config2.output.publicPath = "/";
