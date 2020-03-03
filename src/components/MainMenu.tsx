@@ -36,6 +36,8 @@ const MainMenu: FunctionComponent = () => {
 
   const dispatch = useDispatch();
 
+  console.log("hello");
+
   return (
     <HeaderedPage>
       <FixedBar>
