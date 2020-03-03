@@ -1,8 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { Formik, Field, Form } from "formik";
 import Button from "../form/Button";
-import Input from "../form/Input";
-import Select from "../form/Select";
+import { Input, Box, Slider, Select } from "theme-ui";
 import Fieldset from "../form/Fieldset";
 import Label from "../form/Label";
 import LabelDiv from "../form/LabelDiv";
@@ -11,7 +10,7 @@ import difficultyLevelMap from "../../services/difficulty-levels";
 import { map, values as rValues, values, sum } from "ramda";
 import { Competition, ForEveryCompetition, MapOf } from "../../types/base";
 import { Team } from "../../types/team";
-import { teamListByIds, nameToId } from "../../services/team";
+import { teamListByIds, nameToId, getTeamLevelData } from "../../services/team";
 import * as Yup from "yup";
 import { Dispatch } from "redux";
 import { advance } from "../../ducks/game";
@@ -25,6 +24,7 @@ import { alphabeticalCountryList } from "../../services/country";
 import { ManagerAbilities } from "../../types/manager";
 import { number } from "prop-types";
 import Markdown from "../Markdown";
+import { team } from "../../ducks";
 
 export interface ManagerInput {
   name: string;
@@ -98,6 +98,8 @@ const ManagerForm: FunctionComponent<Props> = props => {
         }}
       >
         {({ handleChange, values, isValid, errors, setFieldValue }) => {
+          const team = teams[values.team];
+
           return (
             <Form>
               <UIField>
@@ -107,7 +109,7 @@ const ManagerForm: FunctionComponent<Props> = props => {
 
               <UIField>
                 <Label>Managerin kotimaa</Label>
-                <Field component="select" name="country">
+                <Field as={Select} name="country">
                   {alphabeticalCountryList.map(c => {
                     return (
                       <option key={c.iso} value={c.iso}>
@@ -122,7 +124,7 @@ const ManagerForm: FunctionComponent<Props> = props => {
                 <LabelDiv>Managerina olet...</LabelDiv>
 
                 <Field
-                  component="select"
+                  as={Select}
                   name="previousExperience"
                   onChange={(e, e2, e3) => {
                     handleChange(e);
@@ -152,7 +154,7 @@ const ManagerForm: FunctionComponent<Props> = props => {
               <UIField>
                 <LabelDiv>Vaikeustaso</LabelDiv>
 
-                <Field component="select" name="difficulty">
+                <Field as={Select} name="difficulty">
                   {difficultyLevels.map(dl => {
                     return (
                       <option key={dl.value} value={dl.value}>
@@ -173,7 +175,7 @@ const ManagerForm: FunctionComponent<Props> = props => {
               <UIField>
                 <LabelDiv>Joukkue</LabelDiv>
 
-                <Field component="select" name="team">
+                <Field as={Select} name="team">
                   <option value="">Valitse joukkue</option>
                   {map((c: Competition) => {
                     const competitionTeams = teamListByIds(teams, c.teams);
@@ -197,7 +199,7 @@ const ManagerForm: FunctionComponent<Props> = props => {
                               value={t.id}
                               disabled={isDisabled}
                             >
-                              {t.name}
+                              {t.name}, {t.city}
                             </option>
                           );
                         })}
@@ -205,6 +207,35 @@ const ManagerForm: FunctionComponent<Props> = props => {
                     );
                   }, rValues(competitions))}
                 </Field>
+
+                {team && (
+                  <Box py={3}>
+                    <h3>Joukkueen taso</h3>
+                    {getTeamLevelData(team.level).description} ({team.level} /
+                    58)
+                    <h3>Areena ({team.arena.name})</h3>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <th>viihtyisyystaso</th>
+                          <td>{team.arena.level} / 6</td>
+                        </tr>
+                        <tr>
+                          <th>seisomapaikkoja</th>
+                          <td>{team.arena.seats}</td>
+                        </tr>
+                        <tr>
+                          <th>istumapaikkoja</th>
+                          <td>{team.arena.seats}</td>
+                        </tr>
+                        <tr>
+                          <th>aitioita</th>
+                          <td>{team.arena.boxes ? "kyllä" : "ei"}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </Box>
+                )}
               </UIField>
 
               <Fieldset>
@@ -223,7 +254,7 @@ const ManagerForm: FunctionComponent<Props> = props => {
                       <LabelDiv>{ability.name}</LabelDiv>
                       <Field
                         name={`abilities.${ability.id}`}
-                        component="input"
+                        as={Slider}
                         type="range"
                         min="-3"
                         max="3"
@@ -239,7 +270,12 @@ const ManagerForm: FunctionComponent<Props> = props => {
               </Fieldset>
 
               <UIField>
-                <Button disabled={!isValid} block type="submit">
+                <Button
+                  variant="primary"
+                  disabled={!isValid}
+                  block
+                  type="submit"
+                >
                   Eteenpäin
                 </Button>
               </UIField>

@@ -21,7 +21,7 @@ import {
   Team,
   TeamStrength
 } from "../types/team";
-import levels from "./data/team-levels";
+import { levels, TeamLevelData } from "./data/team-levels";
 import teamList, { RawTeamData, rawTeamStats, StatsDatas } from "./data/teams";
 
 export const isTeam = (team: Team | undefined): team is Team => {
@@ -120,16 +120,21 @@ export const teamListByIds = (
   )(ids);
 };
 
-export const teamLevelToStrength = (level: number): TeamStrength => {
+export const getTeamLevelData = (level: number): TeamLevelData => {
   const data = levels[level - 1];
   if (!data) {
     throw new Error("Invalid team level");
   }
+  return data;
+};
+
+export const teamLevelToStrength = (level: number): TeamStrength => {
+  const data = getTeamLevelData(level);
 
   return {
-    g: data.g,
-    d: data.d,
-    a: data.a
+    ...data.strength,
+    pk: -1,
+    pp: -1
   };
 };
 

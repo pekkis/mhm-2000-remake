@@ -1,9 +1,18 @@
-import { tailwind as base } from "@theme-ui/presets";
+import { base } from "@theme-ui/presets";
 
 const theme = {
-  ...base
+  ...base,
+  buttons: {
+    primary: {
+      // you can reference other values defined in the theme
+      color: "white",
+      bg: "primary",
+      "&:disabled": {
+        cursor: "not-allowed",
+        opacity: 0.3
+      }
+    }
+  }
 };
-
-console.log("DA THIIM", theme);
 
 export default theme;

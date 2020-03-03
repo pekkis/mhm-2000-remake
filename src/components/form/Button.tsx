@@ -18,13 +18,11 @@ const Button: FunctionComponent<Props &
   disabled,
   ...props
 }) => {
-  const useVariant = disabled ? "disabled" : variant;
-
   return (
     <TButton
       {...props}
       disabled={disabled}
-      variant={useVariant}
+      variant={variant}
       sx={{
         width: block ? "full" : "auto"
       }}
