@@ -3,6 +3,7 @@ import path from "path";
 import util from "util";
 
 import { any, pickBy, mapObjIndexed } from "ramda";
+import { merge } from "webpack-merge";
 
 // import MiniCssExtractPlugin from "mini-css-extract-plugin";
 
@@ -162,9 +163,17 @@ const c: webpack.Configuration = {
   },
 };
 
-console.log(util.inspect(c, false, 999));
+const p: webpack.Configuration = {
+  output: {
+    filename: "[name].[contenthash].js",
+  },
+};
 
-export default c;
+const f = mode === "production" ? merge(c, p) : c;
+
+console.log(util.inspect(f, false, 999));
+
+export default f;
 
 // process.exit();
 
