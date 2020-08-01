@@ -20,7 +20,7 @@ import WatchMissingNodeModulesPlugin from "react-dev-utils/WatchMissingNodeModul
 import HtmlWebpackPlugin from "html-webpack-plugin";
 
 const hasPrefix = (prefixes: string[], value: string): boolean => {
-  return any(p => value.startsWith(p), prefixes);
+  return any((p) => value.startsWith(p), prefixes);
 };
 
 const getEnvironmentVariables = (
@@ -36,7 +36,7 @@ const getEnvironmentVariables = (
     env
   );
 
-  return mapObjIndexed(v => {
+  return mapObjIndexed((v) => {
     return JSON.stringify(v);
   }, picked);
 };
@@ -48,7 +48,7 @@ const getBundleAnalyzer = (mode: string) => {
       : {
           analyzerMode: "disabled",
           generateStatsFile: true,
-          statsFilename: "stats.json"
+          statsFilename: "stats.json",
         };
 
   const p = new BundleAnalyzerPlugin(options);
@@ -62,23 +62,23 @@ const c: webpack.Configuration = {
   mode,
   optimization: {
     splitChunks: {
-      chunks: "all"
-    }
+      chunks: "all",
+    },
   },
   devtool: false,
   output: {
-    publicPath: "/"
+    publicPath: "/",
   },
   devServer: {
     port: 11000,
     hot: true,
     index: "index.html",
     disableHostCheck: true,
-    historyApiFallback: true
+    historyApiFallback: true,
   },
   resolve: {
     modules: ["/home/pekkis/js/mhm-2000-remake/node_modules"],
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".mjs"]
+    extensions: [".js", ".ts", ".jsx", ".tsx", ".mjs"],
   },
   context: "/home/pekkis/js/mhm-2000-remake/src",
   entry: { client: "./client.tsx" },
@@ -86,10 +86,10 @@ const c: webpack.Configuration = {
     new webpack.DefinePlugin({
       __DEVELOPMENT__: mode === "development",
       __PRODUCTION__: mode === "production",
-      "process.env": getEnvironmentVariables(process.env, ["REACT_APP_"], [])
+      "process.env": getEnvironmentVariables(process.env, ["REACT_APP_"], []),
     }),
     new CopyWebpackPlugin({
-      patterns: [{ from: "assets/web", flatten: false }]
+      patterns: [{ from: "assets/web", flatten: false }],
     }),
     new CaseSensitivePathsPlugin(),
     new WatchMissingNodeModulesPlugin(path.resolve("node_modules")),
@@ -97,9 +97,9 @@ const c: webpack.Configuration = {
       template: "assets/index.html",
       favicon: "assets/index.html",
       chunksSortMode: "auto",
-      title: "MHM 2000"
+      title: "MHM 2000",
     }),
-    getBundleAnalyzer(mode)
+    getBundleAnalyzer(mode),
   ],
   module: {
     rules: [
@@ -109,10 +109,13 @@ const c: webpack.Configuration = {
         use: [
           {
             loader: "file-loader",
-            options: { name: "[path][name]-[hash].[ext]", emitFile: true }
+            options: { name: "[path][name]-[hash].[ext]", emitFile: true },
           },
-          { loader: "img-loader", options: { enabled: mode === "production" } }
-        ]
+          {
+            loader: "image-webpack-loader",
+            options: { disabled: mode !== "production" },
+          },
+        ],
       },
       {
         test: /\.(js|jsx|ts|tsx)$/,
@@ -129,34 +132,34 @@ const c: webpack.Configuration = {
                     debug: true,
                     useBuiltIns: "usage",
                     targets: {
-                      browsers: pkg.browserslist[mode]
+                      browsers: pkg.browserslist[mode],
                     },
                     modules: false,
-                    corejs: 3
-                  }
+                    corejs: 3,
+                  },
                 ],
                 ["@babel/preset-react", { development: true }],
-                "@emotion/babel-preset-css-prop"
+                "@emotion/babel-preset-css-prop",
               ],
               plugins: [
                 "@babel/plugin-syntax-dynamic-import",
                 "@babel/plugin-proposal-class-properties",
                 "@babel/plugin-proposal-nullish-coalescing-operator",
-                "@babel/plugin-proposal-optional-chaining"
+                "@babel/plugin-proposal-optional-chaining",
               ],
-              cacheDirectory: true
-            }
-          }
+              cacheDirectory: true,
+            },
+          },
         ],
-        exclude: ["/home/pekkis/js/mhm-2000-remake/node_modules"]
+        exclude: ["/home/pekkis/js/mhm-2000-remake/node_modules"],
       },
       {
         test: /\.mjs$/,
         include: /node_modules/,
-        type: "javascript/auto"
-      }
-    ]
-  }
+        type: "javascript/auto",
+      },
+    ],
+  },
 };
 
 console.log(util.inspect(c, false, 999));
