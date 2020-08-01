@@ -77,10 +77,10 @@ const c: webpack.Configuration = {
     historyApiFallback: true,
   },
   resolve: {
-    modules: ["/home/pekkis/js/mhm-2000-remake/node_modules"],
+    modules: [path.resolve("node_modules")],
     extensions: [".js", ".ts", ".jsx", ".tsx", ".mjs"],
   },
-  context: "/home/pekkis/js/mhm-2000-remake/src",
+  context: path.resolve("src"),
   entry: { client: "./client.tsx" },
   plugins: [
     new webpack.DefinePlugin({
@@ -105,7 +105,7 @@ const c: webpack.Configuration = {
     rules: [
       {
         test: /\.(png|jpg|gif|ico|svg)$/,
-        include: ["/home/pekkis/js/mhm-2000-remake/src"],
+        include: [path.resolve("src")],
         use: [
           {
             loader: "file-loader",
@@ -151,7 +151,7 @@ const c: webpack.Configuration = {
             },
           },
         ],
-        exclude: ["/home/pekkis/js/mhm-2000-remake/node_modules"],
+        exclude: [path.resolve("node_modules")],
       },
       {
         test: /\.mjs$/,
