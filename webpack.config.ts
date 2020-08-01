@@ -19,6 +19,7 @@ import CopyWebpackPlugin from "copy-webpack-plugin";
 import CaseSensitivePathsPlugin from "case-sensitive-paths-webpack-plugin";
 import WatchMissingNodeModulesPlugin from "react-dev-utils/WatchMissingNodeModulesPlugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
 
 const hasPrefix = (prefixes: string[], value: string): boolean => {
   return any((p) => value.startsWith(p), prefixes);
@@ -68,6 +69,7 @@ const c: webpack.Configuration = {
   },
   devtool: false,
   output: {
+    path: path.resolve("dist"),
     publicPath: "/",
   },
   devServer: {
@@ -167,6 +169,7 @@ const p: webpack.Configuration = {
   output: {
     filename: "[name].[contenthash].js",
   },
+  plugins: [new CleanWebpackPlugin()],
 };
 
 const f = mode === "production" ? merge(c, p) : c;
