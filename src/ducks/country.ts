@@ -9,7 +9,7 @@ export interface CountryState {
 }
 
 const defaultState: CountryState = {
-  countries: mapObjIndexed<CountryData, Country>(countryData => {
+  countries: mapObjIndexed<CountryData, Country>((countryData) => {
     return { ...countryData, strength: countryData.strength() };
   }, countryData) as ForEveryCountry<Country>
 };
@@ -77,7 +77,7 @@ const countryReducer: Reducer<typeof defaultState, CountryActions> = (
     case COUNTRY_ALTER_STRENGTH:
       return state.updateIn(
         ["countries", action.payload.country, "strength"],
-        s => s + action.payload.amount
+        (s) => s + action.payload.amount
       );
 
     default:

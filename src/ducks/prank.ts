@@ -37,21 +37,21 @@ const defaultState: PrankState = {
   pranks: {}
 };
 
-export const cancelPrank = id => {
+export const cancelPrank = (id) => {
   return {
     type: "PRANK_CANCEL",
     payload: id
   };
 };
 
-export const selectPrankType = id => {
+export const selectPrankType = (id) => {
   return {
     type: "PRANK_SELECT_TYPE",
     payload: id
   };
 };
 
-export const selectPrankVictim = id => {
+export const selectPrankVictim = (id) => {
   return {
     type: "PRANK_SELECT_VICTIM",
     payload: id

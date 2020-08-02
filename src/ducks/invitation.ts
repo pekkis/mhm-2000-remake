@@ -44,24 +44,24 @@ export default function invitationReducer(state = defaultState, action) {
       return payload.invitation;
 
     case INVITATION_ADD:
-      return state.update("invitations", invitations =>
+      return state.update("invitations", (invitations) =>
         invitations.push(Map(payload).set("id", uuid()))
       );
 
     case INVITATION_ACCEPT:
-      return state.update("invitations", invitations => {
+      return state.update("invitations", (invitations) => {
         return invitations
           .update(
             invitations.findIndex(
-              i =>
+              (i) =>
                 i.get("manager") === payload.manager &&
                 i.get("id") === payload.id
             ),
-            invitation => {
+            (invitation) => {
               return invitation.set("participate", true);
             }
           )
-          .filter(i => {
+          .filter((i) => {
             return i.get("manager") !== payload.manager || i.get("participate");
           });
       });
@@ -71,7 +71,7 @@ export default function invitationReducer(state = defaultState, action) {
     case GAME_DECREMENT_DURATIONS:
       return over(
         lensProp("invitations"),
-        map<Invitation, Invitation>(i => {
+        map<Invitation, Invitation>((i) => {
           if (i.participate) {
             return i;
           }
@@ -88,7 +88,7 @@ export default function invitationReducer(state = defaultState, action) {
     case GAME_CLEAR_EXPIRED:
       return over(
         lensProp("invitations"),
-        reject<Invitation>(i => i.participate || i.duration === 0),
+        reject<Invitation>((i) => i.participate || i.duration === 0),
         state
       );
 

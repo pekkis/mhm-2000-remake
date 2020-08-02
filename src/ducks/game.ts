@@ -242,7 +242,7 @@ const gameReducer: Reducer<typeof defaultState> = (
     case GAME_SEASON_END:
       return over(
         lensPath(["turn"]),
-        turn => {
+        (turn) => {
           return {
             season: turn.season + 1,
             round: -1

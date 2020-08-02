@@ -290,7 +290,7 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
           over(
             lensPath(["teams", increment.team]),
             evolve({
-              morale: value => normalizeMorale(value + increment.amount)
+              morale: (value) => normalizeMorale(value + increment.amount)
             }),
             a
           ),
@@ -301,7 +301,7 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
     case GAME_DECREMENT_DURATIONS:
       return over(
         lensProp("teams"),
-        map<Team, Team>(t => {
+        map<Team, Team>((t) => {
           return evolve(
             {
               effects: map<TeamEffect, TeamEffect>(evolve({ duration: dec })),
@@ -364,7 +364,7 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
           "penalties"
         ],
         List(),
-        penalties => {
+        (penalties) => {
           return penalties.push(
             Map({
               team: payload.team,
@@ -378,24 +378,24 @@ const teamReducer = (state: TeamState = defaultState, action: TeamActions) => {
       return state.setIn(["teams", payload.team, "name"], payload.name);
 
     case "TEAM_ADD_EFFECT":
-      return state.updateIn(["teams", payload.team, "effects"], effects =>
+      return state.updateIn(["teams", payload.team, "effects"], (effects) =>
         effects.push(Map(payload.effect))
       );
 
     case "TEAM_ADD_OPPONENT_EFFECT":
       return state.updateIn(
         ["teams", payload.team, "opponentEffects"],
-        opponentEffects => opponentEffects.push(Map(payload.effect))
+        (opponentEffects) => opponentEffects.push(Map(payload.effect))
       );
 
-      return state.update("teams", teams => {
-        return teams.map(team => {
+      return state.update("teams", (teams) => {
+        return teams.map((team) => {
           return team
-            .update("effects", effects => {
-              return effects.map(e => e.update("duration", d => d - 1));
+            .update("effects", (effects) => {
+              return effects.map((e) => e.update("duration", (d) => d - 1));
             })
-            .update("opponentEffects", effects => {
-              return effects.map(e => e.update("duration", d => d - 1));
+            .update("opponentEffects", (effects) => {
+              return effects.map((e) => e.update("duration", (d) => d - 1));
             });
         });
       });

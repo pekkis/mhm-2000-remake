@@ -315,7 +315,7 @@ export default function competitionReducer(
     case COMPETITION_REMOVE_TEAM:
       return over(
         lensPath(["competitions", action.payload.competition, "teams"]),
-        reject(t => t === action.payload.team),
+        reject((t) => t === action.payload.team),
         state
       );
 
