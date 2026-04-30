@@ -1,35 +1,29 @@
-import React, { FunctionComponent, ReactNode } from "react";
-import {
-  MHMCalendar,
-  CalendarEntry,
-  ForEveryCompetition,
-  Competition
-} from "../../types/base";
-import { useSelector } from "react-redux";
-import { currentCalendarEntry } from "../../services/selectors";
-import { MHMState } from "../../ducks";
+import type { FC, ReactNode } from "react";
+import calendar from "@/data/calendar";
+import type { CalendarEntry } from "@/data/calendar";
+import { useGameContext } from "@/context/game-machine-context";
+import type { Competition, CompetitionId } from "@/types/competitions";
 
-interface Props {
+type CalendarProps = {
   when: (
-    turn: CalendarEntry,
-    calendar: MHMCalendar,
-    competitions: ForEveryCompetition<Competition>
+    entry: CalendarEntry,
+    calendar: CalendarEntry[],
+    competitions: Record<CompetitionId, Competition>
   ) => boolean;
+  children: ReactNode;
   fallback?: ReactNode;
-}
+};
 
-const Calendar: FunctionComponent<Props> = ({ when, children, fallback }) => {
-  const calendar = useSelector((state: MHMState) => state.game.calendar);
-  const entry = useSelector(currentCalendarEntry);
-  const competitions = useSelector(
-    (state: MHMState) => state.competition.competitions
-  );
+const Calendar: FC<CalendarProps> = ({ when, children, fallback = null }) => {
+  const turn = useGameContext((ctx) => ctx.turn);
+  const competitions = useGameContext((ctx) => ctx.competitions);
+
+  const entry = calendar[turn.round];
 
   if (when(entry, calendar, competitions)) {
     return <>{children}</>;
   }
-
-  return fallback ? <>{fallback}</> : null;
+  return <>{fallback}</>;
 };
 
 export default Calendar;

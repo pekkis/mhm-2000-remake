@@ -1,21 +1,10 @@
-import {
-  RoundRobinCompetitionGroup,
-  ScheduleGame,
-  TournamentCompetitionGroup
-} from "../types/base";
-import {
-  over,
-  lensProp,
-  sum,
-  map,
-  prop,
-  sortWith,
-  descend,
-  ascend
-} from "ramda";
-import { LeagueTable, LeagueTableRow } from "../types/base";
+import type { Group, Pairing, Penalty, TeamStat } from "@/types/competitions";
 
-const changedPoints = (points: number, isWin: boolean, isDraw: boolean) => {
+const changedPoints = (
+  points: number,
+  isWin: boolean,
+  isDraw: boolean
+): number => {
   if (isWin) {
     return points + 2;
   }
@@ -28,87 +17,101 @@ const changedPoints = (points: number, isWin: boolean, isDraw: boolean) => {
 };
 
 const changedStats = (
-  stats: LeagueTableRow,
-  game: ScheduleGame,
+  stats: TeamStat,
+  game: Pairing,
   team: number
-): LeagueTableRow => {
-  if (!game.result) {
-    throw new Error("Result is undefined");
-  }
-
+): TeamStat => {
   const isHome = team === game.home;
+  const result = game.result!;
 
-  const myKey = isHome ? "home" : "away";
-  const theirKey = isHome ? "away" : "home";
+  const my = isHome ? result.home : result.away;
+  const their = isHome ? result.away : result.home;
 
-  // TODO: Replace with game facts!!!
-  const isWin = game.result[myKey] > game.result[theirKey];
-  const isDraw = game.result[myKey] === game.result[theirKey];
-  const isLoss = game.result[myKey] < game.result[theirKey];
+  const isWin = my > their;
+  const isDraw = my === their;
+  const isLoss = my < their;
 
   return {
     ...stats,
     gamesPlayed: stats.gamesPlayed + 1,
-    wins: !isWin ? stats.wins : stats.wins + 1,
-    draws: !isDraw ? stats.draws : stats.draws + 1,
-    losses: !isLoss ? stats.losses : stats.losses + 1,
+    wins: isWin ? stats.wins + 1 : stats.wins,
+    draws: isDraw ? stats.draws + 1 : stats.draws,
+    losses: isLoss ? stats.losses + 1 : stats.losses,
     points: changedPoints(stats.points, isWin, isDraw),
-    goalsFor: stats.goalsFor + game.result[myKey],
-    goalsAgainst: stats.goalsAgainst + game.result[theirKey]
+    goalsFor: stats.goalsFor + my,
+    goalsAgainst: stats.goalsAgainst + their
   };
 };
 
-export const groupStats = (
-  group: RoundRobinCompetitionGroup | TournamentCompetitionGroup
-) => {
+export const groupStats = (group: Group): TeamStat[] => {
   const stats = group.teams.map((id, index) => {
-    const stats = group.schedule
-      .map(round => round.filter(p => p.home === index || p.away === index))
-      .flat()
-      .filter(g => g.result)
-      .reduce((stats, game) => changedStats(stats, game, index), {
-        index,
-        id,
-        gamesPlayed: 0,
-        wins: 0,
-        draws: 0,
-        losses: 0,
-        goalsFor: 0,
-        goalsAgainst: 0,
-        points: 0
-      } as LeagueTableRow);
+    let stat: TeamStat = {
+      index,
+      id,
+      gamesPlayed: 0,
+      wins: 0,
+      draws: 0,
+      losses: 0,
+      goalsFor: 0,
+      goalsAgainst: 0,
+      points: 0
+    };
 
-    const penalties = group.penalties.filter(p => p.team === id);
-    if (!penalties.length) {
-      return stats;
+    for (const round of group.schedule) {
+      for (const game of round) {
+        if (game.home !== index && game.away !== index) {
+          continue;
+        }
+        if (!game.result) {
+          continue;
+        }
+        stat = changedStats(stat, game, index);
+      }
     }
 
-    // TODO: Make possible POSITIVE penalties!
-    return over(
-      lensProp("points"),
-      points => {
-        return points - sum(map(prop("points"), penalties));
-      },
-      stats
-    );
+    const penalties = (
+      "penalties" in group ? group.penalties : []
+    ) as Penalty[];
+    for (const p of penalties) {
+      if (p.team === id) {
+        stat = { ...stat, points: stat.points + p.penalty };
+      }
+    }
+
+    return stat;
   });
 
   return stats;
 };
 
-export const sortLeagueTable = sortWith<LeagueTableRow>([
-  descend(prop("points")),
-  descend(r => r.goalsFor - r.goalsAgainst),
-  descend(prop("goalsFor")),
-  descend(prop("wins")),
-  ascend(prop("id"))
-]);
+export const sortStats = (stats: TeamStat[]): TeamStat[] => {
+  return stats.toSorted((a, b) => {
+    // points desc
+    if (b.points !== a.points) {
+      return b.points - a.points;
+    }
+    // goal diff desc
+    const diffA = a.goalsFor - a.goalsAgainst;
+    const diffB = b.goalsFor - b.goalsAgainst;
+    if (diffB !== diffA) {
+      return diffB - diffA;
+    }
+    // goalsFor desc
+    if (b.goalsFor !== a.goalsFor) {
+      return b.goalsFor - a.goalsFor;
+    }
+    // wins desc
+    if (b.wins !== a.wins) {
+      return b.wins - a.wins;
+    }
+    // stable by id
+    return a.id - b.id;
+  });
+};
 
-const table = (
-  group: RoundRobinCompetitionGroup | TournamentCompetitionGroup
-): LeagueTable => {
+const table = (group: Group): TeamStat[] => {
   const unsorted = groupStats(group);
-  return sortLeagueTable(unsorted);
+  return sortStats(unsorted);
 };
 
 export default table;

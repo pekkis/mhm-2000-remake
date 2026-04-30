@@ -1,93 +1,105 @@
-import React from "react";
-import ManagerInfo from "./containers/ManagerInfoContainer";
-import Header from "./containers/HeaderContainer";
-import HeaderedPage from "./ui/HeaderedPage";
+import ManagerInfo from "./ManagerInfo";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
 
 import SelectVictim from "./pranks/SelectVictim";
 import SelectType from "./pranks/SelectType";
 import ConfirmPrank from "./pranks/ConfirmPrank";
-import { Box } from "theme-ui";
+import Paragraph from "./ui/Paragraph";
 import Calendar from "./ui/Calendar";
 
-import difficultyLevels from "../services/difficulty-levels";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
+import { useMachine } from "@xstate/react";
+import { prankSelectionMachine } from "@/machines/prankSelection";
+import { activeManager, canOrderPrank } from "@/machines/selectors";
+import Stack from "@/components/ui/Stack";
+import Heading from "@/components/ui/Heading";
 
-const Pranks = props => {
-  const {
-    competitions,
-    manager,
-    teams,
-    selectPrankType,
-    selectPrankVictim,
-    orderPrank,
-    cancelPrank,
-    prank
-  } = props;
+const Pranks = () => {
+  const manager = useGameContext(activeManager);
+  const teams = useGameContext((ctx) => ctx.teams);
+  const competitions = useGameContext((ctx) => ctx.competitions);
+  const canDo = useGameContext(canOrderPrank(manager.id));
+  const [state, send] = useMachine(prankSelectionMachine);
+  const gameActor = GameMachineContext.useActorRef();
 
-  const phl = competitions.get("phl");
-  const division = competitions.get("division");
+  const phl = competitions.phl;
+  const division = competitions.division;
 
-  const difficultyLevel = difficultyLevels.get(manager.get("difficulty"));
-
-  const canDo =
-    difficultyLevel.get("pranksPerSeason") > manager.get("pranksExecuted");
-
-  const targetCompetition = phl.get("teams").includes(manager.get("team"))
-    ? phl
-    : division;
+  const targetCompetition = phl.teams.includes(manager.team!) ? phl : division;
 
   return (
-    <HeaderedPage>
-      <Header back />
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu back />}
+      managerInfo={<ManagerInfo details />}
+    >
+      <Stack gap="lg">
+        <Heading level={2}>Jäynät</Heading>
 
-      <ManagerInfo details />
+        <Stack>
+          <Calendar
+            when={(c) => c.pranks}
+            fallback={
+              <Paragraph>Jäynät on tältä kaudelta jäynäytetty.</Paragraph>
+            }
+          >
+            {!canDo && (
+              <Paragraph>
+                Olet jo jäynäyttänyt {manager.pranksExecuted} kertaa tällä
+                kaudella. Nähdään ensi vuonna!
+              </Paragraph>
+            )}
 
-      <Box p={1}>
-        <Calendar
-          when={c => c.get("pranks")}
-          fallback={<p>Jäynät on tältä kaudelta jäynäytetty.</p>}
-        >
-          <h2>Jäynät</h2>
+            {state.matches("idle") && (
+              <SelectType
+                manager={manager}
+                enabled={canDo}
+                competition={targetCompetition.name}
+                selectType={(id: string) =>
+                  send({ type: "SELECT_TYPE", prankType: id })
+                }
+                cancel={() => send({ type: "CANCEL" })}
+              />
+            )}
 
-          {!canDo && (
-            <p>
-              Olet jo jäynäyttänyt {manager.get("pranksExecuted")} kertaa tällä
-              kaudella. Nähdään ensi vuonna!
-            </p>
-          )}
+            {state.matches("typeSelected") && (
+              <SelectVictim
+                manager={manager}
+                prank={state.context}
+                competition={targetCompetition}
+                teams={teams}
+                selectVictim={(id: number) =>
+                  send({ type: "SELECT_VICTIM", victim: id })
+                }
+                cancel={() => send({ type: "CANCEL" })}
+              />
+            )}
 
-          {!prank.get("type") && (
-            <SelectType
-              manager={manager}
-              enabled={canDo}
-              competition={targetCompetition.get("name")}
-              selectType={selectPrankType}
-              cancel={cancelPrank}
-            />
-          )}
-
-          {prank.get("type") && !prank.get("victim") && (
-            <SelectVictim
-              manager={manager}
-              prank={prank}
-              competition={targetCompetition}
-              teams={teams}
-              selectVictim={selectPrankVictim}
-              cancel={cancelPrank}
-            />
-          )}
-
-          {prank.get("type") && prank.get("victim") && (
-            <ConfirmPrank
-              manager={manager}
-              prank={prank}
-              execute={orderPrank}
-              teams={teams}
-              cancel={cancelPrank}
-            />
-          )}
-        </Calendar>
-      </Box>
-    </HeaderedPage>
+            {state.matches("victimSelected") && (
+              <ConfirmPrank
+                manager={manager}
+                prank={{
+                  type: state.context.type!,
+                  victim: state.context.victim!
+                }}
+                execute={(m: string, t: string, v: number) => {
+                  gameActor.send({
+                    type: "ORDER_PRANK",
+                    payload: { manager: m, type: t, victim: v }
+                  });
+                  send({ type: "ORDER" });
+                }}
+                teams={teams}
+                cancel={() => send({ type: "CANCEL" })}
+              />
+            )}
+          </Calendar>
+        </Stack>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

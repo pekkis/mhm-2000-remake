@@ -1,121 +1,59 @@
-import { matchups } from "./playoffs";
-import table from "./league";
-import {
-  CompetitionTypes,
-  ForEvery,
-  MatchOvertimeType,
-  RoundRobinCompetitionGroup,
-  LeagueTable,
-  TournamentCompetitionGroup,
-  PlayoffsCompetitionGroup,
-  PlayoffsStats,
-  CompetitionGroup,
-  CupCompetitionGroup,
-  CupStats,
-  PartialMatchResult
-} from "../types/base";
-import { cupStats } from "./cup";
+import { matchups } from "@/services/playoffs";
+import table from "@/services/league";
+import type {
+  GameResult,
+  Group,
+  MatchupStat,
+  PlayoffGroup
+} from "@/types/competitions";
 
-interface CompetitionTypeService<G extends CompetitionGroup, S> {
-  stats: (group: G) => S;
-  overtime: (
-    group: G,
-    round: number,
-    matchup: number,
-    result: PartialMatchResult
-  ) => MatchOvertimeType | false;
-  playMatch: (group: G, round: number, matchup: number) => boolean;
-}
+type GroupOfType<T extends Group["type"]> = Extract<Group, { type: T }>;
 
-const competitionTypeService: ForEvery<
-  CompetitionTypes,
-  CompetitionTypeService<any, any>
-> = {
-  training: {
-    playMatch: () => true,
-    stats: () => {
-      return {};
-    },
-    overtime: () => false
-  },
-  cup: {
-    playMatch: () => true,
-    stats: g => {
-      return cupStats(g);
-    },
-    overtime: (group, round, matchup, result) => {
-      if (round === 0) {
-        return false;
-      }
+type CompetitionType<T extends Group["type"]> = {
+  playMatch: (phase: Group, round: number, matchup: number) => boolean;
+  overtime: (result: GameResult) => boolean;
+  stats: (group: GroupOfType<T>) => GroupOfType<T>["stats"];
+};
 
-      const firstMatch = group.schedule[0][matchup];
-      if (!firstMatch.result) {
-        throw new Error("Cup resolution fails");
-      }
-
-      const firstGoals = firstMatch.result.home + result.away;
-      const secondGoals = firstMatch.result.away + result.home;
-
-      if (firstGoals !== secondGoals) {
-        return false;
-      }
-
-      return {
-        type: "continuous"
-      };
-    }
-  } as CompetitionTypeService<CupCompetitionGroup, CupStats>,
-
+const competitionTypes: { [K in Group["type"]]: CompetitionType<K> } = {
   "round-robin": {
     playMatch: () => true,
-    overtime: (group, round, matchup, result) => {
-      if (result.home !== result.away) {
-        return false;
-      }
-
-      return { type: "5min" };
-    },
-    stats: (group: RoundRobinCompetitionGroup) => {
-      return table(group);
-    }
-  } as CompetitionTypeService<RoundRobinCompetitionGroup, LeagueTable>,
-
+    overtime: () => false,
+    stats: (group) => table(group)
+  },
   tournament: {
     playMatch: () => true,
     overtime: () => false,
-    stats: group => {
-      return table(group);
-    }
-  } as CompetitionTypeService<TournamentCompetitionGroup, LeagueTable>,
-
+    stats: (group) => table(group)
+  },
   playoffs: {
-    stats: group => {
-      return matchups(group);
-    },
-    playMatch: (phase, round, matchup) => {
-      const match = phase.stats[matchup];
+    stats: (group) => matchups(group),
+    playMatch: (phase, _round, matchup) => {
+      const p = phase as PlayoffGroup;
+      const match = p.stats[matchup] as MatchupStat;
 
-      if (match.home.wins >= phase.winsToAdvance) {
-        console.log("HOME TEAM HAS ENUFF WINS");
+      if (match.home.wins === p.winsToAdvance) {
         return false;
       }
 
-      if (match.away.wins >= phase.winsToAdvance) {
-        console.log("AWAY TEAM HAS ENUFF WINS");
+      if (match.away.wins === p.winsToAdvance) {
         return false;
       }
 
       return true;
     },
-    overtime: (group, round, matchup, result) => {
-      if (result.home !== result.away) {
-        return false;
-      }
-      return {
-        type: "continuous"
-      };
-    }
-  } as CompetitionTypeService<PlayoffsCompetitionGroup, PlayoffsStats>
+    overtime: (result) => result.home === result.away
+  }
 };
 
-export default competitionTypeService;
+/**
+ * Dispatch by `group.type` and return the precise `stats` subtype.
+ * Single internal cast confines the union-narrowing problem to one spot;
+ * call sites get exact types.
+ */
+export const computeStats = <G extends Group>(group: G): G["stats"] => {
+  const impl = competitionTypes[group.type] as CompetitionType<G["type"]>;
+  return impl.stats(group as unknown as GroupOfType<G["type"]>);
+};
+
+export default competitionTypes;

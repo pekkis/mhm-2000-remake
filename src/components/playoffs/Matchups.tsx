@@ -1,47 +1,33 @@
-import React, { FunctionComponent } from "react";
-import { HumanManager } from "../../types/manager";
-import {
-  MapOf,
-  CompetitionGroup,
-  PlayoffsCompetitionGroup
-} from "../../types/base";
-import { Team } from "../../types/team";
-import TeamName from "../team/TeamName";
+import type { FC } from "react";
+import type { Team } from "@/state/game";
+import type { Manager } from "@/state/manager";
+import type { PlayoffGroup, MatchupStat } from "@/types/competitions";
+import { Table } from "@/components/ui/Table";
+import MatchRow from "@/components/team/MatchRow";
 
-interface Props {
-  group: PlayoffsCompetitionGroup;
-  teams: MapOf<Team>;
-  managers: HumanManager[];
-  round: number;
-}
+type MatchupsProps = {
+  managers: Record<string, Manager>;
+  teams: Team[];
+  group: PlayoffGroup;
+};
 
-const Matchups: FunctionComponent<Props> = props => {
-  const { managers, teams, group } = props;
-
-  const matches = group.stats;
+const Matchups: FC<MatchupsProps> = ({ teams, group, managers }) => {
+  const matches = group.stats as MatchupStat[];
 
   return (
-    <table>
+    <Table>
       <tbody>
-        {matches.map((m, i) => {
-          return (
-            <tr key={i}>
-              <td>
-                <TeamName managers={managers} team={teams[m.home.id]} />
-              </td>
-              <td>-</td>
-              <td>
-                {" "}
-                <TeamName managers={managers} team={teams[m.away.id]} />
-              </td>
-              <td>
-                {m.home.wins}-{m.away.wins}
-              </td>
-            </tr>
-          );
-        })}
+        {matches.map((m, i) => (
+          <MatchRow
+            key={i}
+            home={teams[m.home.id]}
+            away={teams[m.away.id]}
+            score={`${m.home.wins}–${m.away.wins}`}
+            managers={managers}
+          />
+        ))}
       </tbody>
-    </table>
+    </Table>
   );
 };
 

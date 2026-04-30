@@ -1,0 +1,590 @@
+/**
+ * Context-aware selectors for `GameContext`.
+ *
+ * These are pure functions that take a `GameContext` (the future
+ * `gameMachine.context`) and return derived data. They mirror the
+ * existing Redux selectors in `src/selectors.ts` but read from
+ * the flat `GameContext` shape instead of `RootState`.
+ *
+ * During the migration, components can use either set:
+ *   - Redux: `useAppSelector(reduxSelector)` (existing)
+ *   - XState: `useSelector(actorRef, contextSelector)` (new)
+ *
+ * The selector bodies are intentionally identical to their Redux
+ * counterparts — only the parameter type and property access paths
+ * differ. This makes it easy to verify correctness by diffing.
+ *
+ * Selectors that depend on randomness (`randomRankedTeam`,
+ * `randomTeamFrom`, `randomManager`) are included for completeness
+ * but should be used with care in XState guards/actions — they are
+ * not pure and may cause non-deterministic behavior in devtools
+ * replay. Consider moving randomness into event payloads instead.
+ */
+
+import r from "@/services/random";
+import { victors } from "@/services/playoffs";
+import { entries, keys, pick, values } from "remeda";
+import arenas from "@/data/arenas";
+import difficultyLevels from "@/data/difficulty-levels";
+import calendar from "@/data/calendar";
+import { CRISIS_COST, CRISIS_MORALE_MAX } from "@/data/constants";
+import type { SnapshotFrom } from "xstate";
+import type { gameMachine } from "./game";
+import type {
+  GameContext,
+  Manager,
+  ManagerDefinition,
+  ManagerServices,
+  Team,
+  GameFlags
+} from "./types";
+import type {
+  CompetitionId,
+  Competition,
+  PlayoffGroup,
+  TeamStat
+} from "@/types/competitions";
+
+// ---------------------------------------------------------------------------
+// Helper types
+// ---------------------------------------------------------------------------
+
+/** Pure selector over `GameContext`. Most selectors are this shape. */
+export type ContextSelector<T> = (ctx: GameContext) => T;
+
+/**
+ * Selector over the full game-machine snapshot. Use when the derived
+ * value depends on machine state (`snap.matches(...)`), not just
+ * context. Components consume these directly via
+ * `GameMachineContext.useSelector(snapshotSelector)`.
+ */
+export type SnapshotSelector<T> = (snap: SnapshotFrom<typeof gameMachine>) => T;
+
+// ---------------------------------------------------------------------------
+// Competitions
+// ---------------------------------------------------------------------------
+
+export const primaryCompetitions: ContextSelector<
+  Record<string, Competition>
+> = (ctx) => pick(ctx.competitions, ["phl", "division"]);
+
+export const competition =
+  (id: CompetitionId): ContextSelector<Competition> =>
+  (ctx) =>
+    ctx.competitions[id];
+
+// ---------------------------------------------------------------------------
+// Advance enabled (derived from machine state + events)
+// ---------------------------------------------------------------------------
+
+/**
+ * True iff every stored event has been resolved by the player (or
+ * auto-resolved on entry to the event phase). Shared between the
+ * machine guard on `event → news_check` and the snapshot selector
+ * `advanceEnabled` consumed by the UI.
+ */
+export const allEventsResolved: ContextSelector<boolean> = (ctx) =>
+  !values(ctx.event.events).some((e) => !e.resolved);
+
+/**
+ * Advance is enabled unless we're parked on the event phase with at
+ * least one unresolved event. This is a `SnapshotSelector` because
+ * the gating predicate needs to know which machine state we're in,
+ * not just the context. Read with
+ * `GameMachineContext.useSelector(advanceEnabled)`, NOT
+ * `useGameContext(advanceEnabled)`.
+ */
+export const advanceEnabled: SnapshotSelector<boolean> = (snap) =>
+  !snap.matches({ in_game: { executing_phases: "event" } }) ||
+  allEventsResolved(snap.context);
+
+// ---------------------------------------------------------------------------
+// Teams
+// ---------------------------------------------------------------------------
+
+export const allTeams: ContextSelector<Team[]> = (ctx) => ctx.teams;
+
+export const foreignTeams: ContextSelector<Team[]> = (ctx) =>
+  ctx.teams.filter((t) => !t.domestic);
+
+export const pekkalandianTeams: ContextSelector<Team[]> = (ctx) =>
+  ctx.teams.slice(0, 24);
+
+export const teamsStrength =
+  (team: number): ContextSelector<number> =>
+  (ctx) =>
+    ctx.teams[team].strength;
+
+export const teamHasActiveEffects =
+  (team: number): ContextSelector<boolean> =>
+  (ctx) =>
+    ctx.teams[team].effects.length > 0;
+
+export const teamsManagerId =
+  (team: number): ContextSelector<string | undefined> =>
+  (ctx) =>
+    ctx.teams[team]?.manager;
+
+export const teamsManager =
+  (team: number): ContextSelector<Manager | undefined> =>
+  (ctx) => {
+    const managerId = ctx.teams[team]?.manager;
+    return managerId ? ctx.manager.managers[managerId] : undefined;
+  };
+
+export const teamsMainCompetition =
+  (team: number): ContextSelector<string> =>
+  (ctx) => {
+    const competesInPHL = teamCompetesIn(team, "phl")(ctx);
+    return competesInPHL ? "phl" : "division";
+  };
+
+export const teamsCompetitions =
+  (team: number): ContextSelector<Record<string, Competition>> =>
+  (ctx) =>
+    Object.fromEntries(
+      entries(ctx.competitions).filter(([, c]) =>
+        (c.teams ?? []).includes(team)
+      )
+    );
+
+export const teamCompetesIn =
+  (team: number, competitionId: string): ContextSelector<boolean> =>
+  (ctx) => {
+    const comps = teamsCompetitions(team)(ctx);
+    return competitionId in comps;
+  };
+
+export const teamWasRelegated =
+  (team: number): ContextSelector<boolean> =>
+  (ctx) => {
+    const phlStats = ctx.competitions.phl.phases[0].groups[0]
+      .stats as TeamStat[];
+    const phlLoser = phlStats[phlStats.length - 1].id;
+
+    if (phlLoser !== team) {
+      return false;
+    }
+
+    const divisionVictor = victors(
+      ctx.competitions.division.phases[3].groups[0] as PlayoffGroup
+    )[0].id;
+
+    if (divisionVictor === team) {
+      return false;
+    }
+
+    return true;
+  };
+
+export const teamWasPromoted =
+  (team: number): ContextSelector<boolean> =>
+  (ctx) => {
+    const competesInDivision = teamCompetesIn(team, "division")(ctx);
+    if (!competesInDivision) {
+      return false;
+    }
+
+    const divisionVictor = victors(
+      ctx.competitions.division.phases[3].groups[0] as PlayoffGroup
+    )[0].id;
+
+    return divisionVictor === team;
+  };
+
+export const teamsPositionInRoundRobin =
+  (
+    team: number,
+    competitionId: string,
+    phase: number
+  ): ContextSelector<number | false> =>
+  (ctx) => {
+    const thePhase = ctx.competitions[competitionId].phases[phase];
+
+    const group = thePhase.groups.find((g) => g.teams.includes(team));
+
+    if (!group) {
+      return false;
+    }
+
+    const index = (group.stats as TeamStat[]).findIndex((e) => e.id === team);
+
+    if (index === -1) {
+      return false;
+    }
+
+    return index + 1;
+  };
+
+export const randomRankedTeam =
+  (
+    competitionId: string,
+    phaseId: number,
+    range: number[],
+    f: (t: Team) => boolean = () => true
+  ): ContextSelector<Team | false> =>
+  (ctx) => {
+    const managerIds = keys(ctx.manager.managers);
+
+    const groups = ctx.competitions[competitionId].phases[phaseId].groups;
+
+    const ret: Team[] = groups.flatMap((group) => {
+      return (group.stats as TeamStat[])
+        .filter((_s, i) => range.includes(i))
+        .map((s) => ctx.teams[s.id])
+        .filter((t) => !managerIds.includes(t.manager!))
+        .filter(f);
+    });
+
+    if (ret.length === 0) {
+      return false;
+    }
+
+    const randomized: Team = r.pick(ret);
+    return ctx.teams[randomized.id];
+  };
+
+export const randomTeamFrom =
+  (
+    competitionIds: string[],
+    canBeHumanControlled = false,
+    excluded: number[] = [],
+    f: (t: Team) => boolean = () => true
+  ): ContextSelector<Team> =>
+  (ctx) => {
+    const team = randomTeamOrNullFrom(
+      competitionIds,
+      canBeHumanControlled,
+      excluded,
+      f
+    )(ctx);
+
+    if (!team) {
+      throw new Error("Random team not found");
+    }
+
+    return team;
+  };
+
+export const randomTeamOrNullFrom =
+  (
+    competitionIds: string[],
+    canBeHumanControlled = false,
+    excluded: number[] = [],
+    f: (t: Team) => boolean = () => true
+  ): ContextSelector<Team | null> =>
+  (ctx) => {
+    const managersTeams: number[] = values(ctx.manager.managers)
+      .map((p) => p.team)
+      .filter((t): t is number => t !== undefined);
+
+    const teams = entries(ctx.competitions)
+      .filter(([id]) => competitionIds.includes(id))
+      .flatMap(([, c]) => c.teams)
+      .map((t) => ctx.teams[t])
+      .filter((t) => canBeHumanControlled || !managersTeams.includes(t.id))
+      .filter((t) => !excluded.includes(t.id))
+      .filter(f);
+
+    if (teams.length === 0) {
+      return null;
+    }
+
+    const randomized: Team = r.pick(teams);
+    return ctx.teams[randomized.id];
+  };
+
+// ---------------------------------------------------------------------------
+// Managers
+// ---------------------------------------------------------------------------
+
+export const activeManager: ContextSelector<Manager> = (ctx) => {
+  const activeId = ctx.manager.active;
+
+  if (!activeId) {
+    throw new Error("No manager is active");
+  }
+
+  return ctx.manager.managers[activeId];
+};
+
+export const activeManagersTeam: ContextSelector<Team> = (ctx) => {
+  const mgr = activeManager(ctx);
+  return ctx.teams[mgr.team!];
+};
+
+export const managerObject =
+  (manager: string): ContextSelector<Manager | undefined> =>
+  (ctx) => {
+    const managerObj = ctx.manager.managers[manager];
+    if (!managerObj) {
+      throw new Error(`Manager #${manager} not found`);
+    }
+    return managerObj;
+  };
+
+export const managerById =
+  (manager: string): ContextSelector<Manager | undefined> =>
+  (ctx) =>
+    ctx.manager.managers[manager];
+
+/**
+ * True iff `manager` can afford the next arena upgrade and isn't already at
+ * the top tier. Single source of truth shared by the `Arena.tsx` button's
+ * `disabled` prop and the gameMachine's `IMPROVE_ARENA` guard.
+ */
+export const canImproveArena =
+  (manager: string): ContextSelector<boolean> =>
+  (ctx) => {
+    const m = ctx.manager.managers[manager];
+    if (!m) {
+      return false;
+    }
+    const next = arenas[m.arena.level + 1];
+    if (!next) {
+      return false;
+    }
+    return m.balance >= next.price;
+  };
+
+/**
+ * True iff `manager` can still order a prank this round: their difficulty's
+ * per-season cap isn't reached, the current calendar round actually allows
+ * pranks, and — when a `price` is supplied — they can afford it.
+ *
+ * Price is passed in (rather than looked up from `@/game/pranks`) to avoid a
+ * circular import: prank `execute()` generators reach back into sagas, which
+ * already import these selectors. Callers resolve the price themselves.
+ */
+export const canOrderPrank =
+  (manager: string, price?: number): ContextSelector<boolean> =>
+  (ctx) => {
+    const m = ctx.manager.managers[manager];
+    if (!m) {
+      return false;
+    }
+    const round = calendar[ctx.turn.round];
+    if (!round?.pranks) {
+      return false;
+    }
+    const cap = difficultyLevels[m.difficulty].pranksPerSeason;
+    if (m.pranksExecuted >= cap) {
+      return false;
+    }
+    if (price !== undefined && m.balance < price) {
+      return false;
+    }
+    return true;
+  };
+
+/**
+ * True iff `manager` can afford the given player price. Same shape as
+ * `canOrderPrank` — caller passes the resolved price (the `playerTypes`
+ * registry would create the same circular dep that `pranks` would).
+ */
+export const canBuyPlayer =
+  (manager: string, price?: number): ContextSelector<boolean> =>
+  (ctx) => {
+    const m = ctx.manager.managers[manager];
+    if (!m) {
+      return false;
+    }
+    if (price !== undefined && m.balance < price) {
+      return false;
+    }
+    return true;
+  };
+
+/**
+ * True iff `manager`'s team can stand to lose more strength: PHL teams
+ * must stay above 130, division teams above 50. Mirrors the legacy
+ * `sellPlayer()` saga's "Myyntilupa evätty" check (which the machine
+ * still emits as a notification on the failure path — this selector is
+ * purely for proactive UI gating).
+ */
+export const canSellPlayer =
+  (manager: string): ContextSelector<boolean> =>
+  (ctx) => {
+    const m = ctx.manager.managers[manager];
+    if (!m || m.team === undefined) {
+      return false;
+    }
+    const team = ctx.teams[m.team];
+    const competesInPHL = managerCompetesIn(manager, "phl")(ctx);
+    const minStrength = competesInPHL ? 130 : 50;
+    return team.strength > minStrength;
+  };
+
+/**
+ * True iff `manager` can hold a crisis meeting: calendar window is open,
+ * team morale is low enough (≤ -3), and the manager can afford the cost
+ * (PHL: full price, division: half). 1-1 with the disabled-button logic
+ * in `CrisisActions.tsx`.
+ */
+export const canCrisisMeeting =
+  (manager: string): ContextSelector<boolean> =>
+  (ctx) => {
+    const m = ctx.manager.managers[manager];
+    if (!m || m.team === undefined) {
+      return false;
+    }
+    if (!calendar[ctx.turn.round]?.crisisMeeting) {
+      return false;
+    }
+    const team = ctx.teams[m.team];
+    if (team.morale > CRISIS_MORALE_MAX) {
+      return false;
+    }
+    const cost = ctx.competitions.division.teams.includes(team.id)
+      ? CRISIS_COST / 2
+      : CRISIS_COST;
+    return m.balance >= cost;
+  };
+
+export const managerWithId =
+  (id: string): ContextSelector<Manager | undefined> =>
+  (ctx) =>
+    ctx.manager.managers[id];
+
+export const managersMainCompetition =
+  (manager: string): ContextSelector<string> =>
+  (ctx) => {
+    const competesInPHL = managerCompetesIn(manager, "phl")(ctx);
+    return competesInPHL ? "phl" : "division";
+  };
+
+export const managersCompetitions =
+  (manager: string): ContextSelector<Record<string, Competition>> =>
+  (ctx) => {
+    const team = ctx.manager.managers[manager]?.team;
+    if (team === undefined) {
+      return {};
+    }
+    return Object.fromEntries(
+      entries(ctx.competitions).filter(([, c]) => c.teams.includes(team))
+    );
+  };
+
+export const managerCompetesIn =
+  (manager: string, competitionId: string): ContextSelector<boolean> =>
+  (ctx) => {
+    const competitions = managersCompetitions(manager)(ctx);
+    return competitionId in competitions;
+  };
+
+export const managersTeam =
+  (manager: string): ContextSelector<Team> =>
+  (ctx) =>
+    ctx.teams[ctx.manager.managers[manager]?.team!];
+
+export const managersBalance =
+  (manager: string): ContextSelector<number> =>
+  (ctx) =>
+    ctx.manager.managers[manager].balance;
+
+export const managersTeamId =
+  (manager: string): ContextSelector<number> =>
+  (ctx) =>
+    managersTeam(manager)(ctx).id;
+
+export const managersDifficulty =
+  (manager: string): ContextSelector<number> =>
+  (ctx) =>
+    ctx.manager.managers[manager]?.difficulty as number;
+
+export const managersArena =
+  (manager: string): ContextSelector<Manager["arena"] | undefined> =>
+  (ctx) =>
+    ctx.manager.managers[manager]?.arena;
+
+export const managerHasService =
+  (manager: string, service: keyof ManagerServices): ContextSelector<boolean> =>
+  (ctx) =>
+    ctx.manager.managers[manager]?.services?.[service];
+
+export const managerHasEnoughMoney =
+  (manager: string, neededAmount: number): ContextSelector<boolean> =>
+  (ctx) => {
+    const amount = ctx.manager.managers[manager].balance;
+    return neededAmount <= amount;
+  };
+
+export const managerWhoControlsTeam =
+  (id: number): ContextSelector<Manager | undefined> =>
+  (ctx) =>
+    values(ctx.manager.managers).find((p) => p.team === id);
+
+export const managerFlag =
+  (manager: string, flag: string): ContextSelector<boolean | undefined> =>
+  (ctx) =>
+    ctx.manager.managers[manager]?.flags?.[flag];
+
+export const randomManager =
+  (exclude: number[] = []): ContextSelector<ManagerDefinition> =>
+  (ctx) => {
+    const psycho = flag("psycho")(ctx);
+    const mgrs = ctx.managers
+      .filter((m) => m.id !== psycho)
+      .filter((m) => !exclude.includes(m.id));
+
+    const random = r.pick(mgrs);
+    return random;
+  };
+
+// ---------------------------------------------------------------------------
+// Flags
+// ---------------------------------------------------------------------------
+
+export const flag =
+  <K extends keyof GameFlags>(f: K): ContextSelector<GameFlags[K]> =>
+  (ctx) =>
+    ctx.flags[f];
+
+// ---------------------------------------------------------------------------
+// Invitations
+// ---------------------------------------------------------------------------
+
+export const allInvitations: ContextSelector<
+  GameContext["invitation"]["invitations"]
+> = (ctx) => ctx.invitation.invitations;
+
+export const activeManagersInvitations: ContextSelector<
+  GameContext["invitation"]["invitations"]
+> = (ctx) => {
+  const mgr = activeManager(ctx);
+  return ctx.invitation.invitations.filter((i) => i.manager === mgr.id);
+};
+
+// ---------------------------------------------------------------------------
+// Stats
+// ---------------------------------------------------------------------------
+
+export const totalGamesPlayed =
+  (
+    manager: string,
+    competition: string,
+    phase: number
+  ): ContextSelector<number | undefined> =>
+  (ctx) => {
+    const record = ctx.stats.managers?.[manager]?.games?.[competition]?.[phase];
+
+    if (!record) {
+      return 0;
+    }
+
+    return record.win + record.draw + record.loss;
+  };
+
+// ---------------------------------------------------------------------------
+// Competitions (derived)
+// ---------------------------------------------------------------------------
+
+export const interestingCompetitions: ContextSelector<string[]> = (ctx) => {
+  const team = activeManagersTeam(ctx);
+  return keys(ctx.competitions).filter((id) => {
+    const comp = ctx.competitions[id];
+    return comp.phases.some((phase) =>
+      phase.groups.some((group) => group.teams.includes(team.id))
+    );
+  });
+};

@@ -1,35 +1,55 @@
-import React from "react";
-
-import ManagerInfo from "./containers/ManagerInfoContainer";
-import Header from "./containers/HeaderContainer";
-import HeaderedPage from "./ui/HeaderedPage";
+import ManagerInfo from "./ManagerInfo";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
 import BettingForm from "./betting/BettingForm";
+import Box from "./ui/Box";
+import Paragraph from "./ui/Paragraph";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
+import { activeManager } from "@/machines/selectors";
+import Stack from "@/components/ui/Stack";
+import Heading from "@/components/ui/Heading";
 
-import { Box } from "theme-ui";
-
-const Betting = props => {
-  const { teams, competition, bet, manager, turn } = props;
+const Betting = () => {
+  const turn = useGameContext((ctx) => ctx.turn);
+  const manager = useGameContext(activeManager);
+  const teams = useGameContext((ctx) => ctx.teams);
+  const competition = useGameContext((ctx) => ctx.competitions.phl);
+  const actor = GameMachineContext.useActorRef();
 
   return (
-    <HeaderedPage>
-      <Header back />
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu back />}
+      managerInfo={<ManagerInfo details />}
+    >
+      <Stack gap="lg">
+        <Heading level={2}>Kavioveikkaus</Heading>
 
-      <ManagerInfo details />
+        <Box>
+          <Paragraph>
+            Pekkalandiassa rahapelejä on aina pyörittänyt, ja tulee aina
+            pyörittämään, monopoliyhtiö <strong>Arvaus</strong>. Pelivalikoima
+            on kapea, kertoimet huonoja. Tässä viikon kavioveikkauskuponki.
+            Onnea matkaan. Kansan terveydelle!
+          </Paragraph>
 
-      <Box p={1}>
-        <h2>Kavioveikkaus</h2>
-
-        <p>Puuppa.</p>
-
-        <BettingForm
-          turn={turn}
-          teams={teams}
-          manager={manager}
-          bet={bet}
-          competition={competition}
-        />
-      </Box>
-    </HeaderedPage>
+          <BettingForm
+            turn={turn}
+            teams={teams}
+            manager={manager}
+            bet={(coupon: string[], amount: number) =>
+              actor.send({
+                type: "PLACE_BET",
+                payload: { manager: manager.id, coupon, amount }
+              })
+            }
+            competition={competition}
+          />
+        </Box>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

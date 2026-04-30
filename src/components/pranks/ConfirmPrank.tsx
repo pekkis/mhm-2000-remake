@@ -1,32 +1,45 @@
-import React from "react";
-import ButtonContainer from "../ui/ButtonContainer";
-import Button from "../form/Button";
-import pranks from "../../services/data/pranks";
+import type { FC } from "react";
+import Stack from "@/components/ui/Stack";
+import Button from "@/components/ui/Button";
+import pranks from "@/game/pranks";
+import type { Team } from "@/state/game";
+import type { Manager } from "@/state/manager";
+import Box from "@/components/ui/Box";
 
-const ConfirmPrank = props => {
-  const { cancel, manager, teams, prank, execute } = props;
+type ConfirmPrankProps = {
+  cancel: () => void;
+  manager: Manager;
+  teams: Team[];
+  prank: { type: string; victim: number };
+  execute: (managerId: string, type: string, victim: number) => void;
+};
 
-  const prankInfo = pranks.get(prank.get("type"));
-
-  console.log(prankInfo.toJS(), "pinfo");
+const ConfirmPrank: FC<ConfirmPrankProps> = ({
+  cancel,
+  manager,
+  teams,
+  prank,
+  execute
+}) => {
+  const prankInfo = pranks[prank.type];
 
   return (
-    <div>
-      <p>
+    <Stack>
+      <Box>
         <strong>Jäynä: </strong>
-        {prankInfo.get("name")}
-      </p>
+        {prankInfo.name}
+      </Box>
 
-      <p>
+      <Box>
         <strong>Uhri: </strong>
-        {teams.getIn([prank.get("victim"), "name"])}
-      </p>
+        {teams[prank.victim]?.name}
+      </Box>
 
-      <ButtonContainer>
+      <Stack>
         <Button
           block
           onClick={() => {
-            execute(manager.get("id"), prank.get("type"), prank.get("victim"));
+            execute(manager.id, prank.type, prank.victim);
           }}
         >
           Varmista
@@ -41,8 +54,8 @@ const ConfirmPrank = props => {
         >
           Peruuta
         </Button>
-      </ButtonContainer>
-    </div>
+      </Stack>
+    </Stack>
   );
 };
 

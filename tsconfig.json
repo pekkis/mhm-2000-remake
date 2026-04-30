@@ -1,21 +1,22 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true,
-    "jsx": "react",
-    "target": "esnext",
-    "module": "commonjs",
-    "strict": true,
+    "moduleResolution": "Bundler",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react-jsx",
     "noImplicitAny": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": false,
-    "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "sourceMap": true,
     "noEmit": true,
-    "isolatedModules": true,
-    "allowJs": true
-  }
-  // "include": ["src/**/*", "/webpack.config.ts"]
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "types": ["vite/client"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"]
 }

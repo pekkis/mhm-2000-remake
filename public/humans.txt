@@ -1,0 +1,16 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+  Mikko Forsström (Pekkis)
+
+  Github Copilot
+
+  Claude Opus
+
+# THANKS
+
+# TECH
+
+  <3 React <3

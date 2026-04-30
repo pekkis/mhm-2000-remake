@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "plugins": ["react"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "rules": {
+    "no-empty-file": "off",
+    "require-yield": "off",
+    "no-unused-vars": "error",
+    "no-constant-condition": "off",
+    "curly": "error"
+  }
+}

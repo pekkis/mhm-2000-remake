@@ -1,22 +1,16 @@
-import PropTypes from "prop-types";
+import type { FC } from "react";
 
-const Season = props => {
-  const { index, long } = props;
+type SeasonProps = {
+  index: number;
+  long?: boolean;
+};
 
+const Season: FC<SeasonProps> = ({ index, long = false }) => {
   if (!long) {
-    return index + 1998;
+    return <>{index + 1998}</>;
   }
 
-  return `${index + 1997}-${index + 1998}`;
-};
-
-Season.propTypes = {
-  index: PropTypes.number.isRequired,
-  long: PropTypes.bool.isRequired
-};
-
-Season.defaultProps = {
-  long: false
+  return <>{`${index + 1997}-${index + 1998}`}</>;
 };
 
 export default Season;

@@ -1,53 +1,54 @@
-import React from "react";
-import Season from "../data/Season";
+import type { FC } from "react";
+import Season from "@/components/data/Season";
 import Achievements from "./Achievements";
-import ResponsiveTable from "../responsive-table/ResponsiveTable";
-import Table from "../responsive-table/Table";
-import Td from "../responsive-table/Td";
-import { Box } from "theme-ui";
+import Box from "@/components/ui/Box";
+import { Table, Td, Th } from "@/components/ui/Table";
+import type { Team } from "@/state/game";
+import type { Competition } from "@/types/competitions";
 
-const Story = props => {
-  const { season, story, teams, competitions } = props;
+type StoryProps = {
+  season: number;
+  story: any;
+  teams: Team[];
+  competitions: Record<string, Competition>;
+};
 
-  const t = story.get("mainCompetitionStat");
+const Story: FC<StoryProps> = ({ season, story, teams, competitions }) => {
+  const t = story.mainCompetitionStat;
   return (
-    <Box my={1}>
+    <Box my="md">
       <h3>
         <Season long index={season} />{" "}
       </h3>
 
-      <ResponsiveTable>
-        <Table>
-          <thead>
-            <tr>
-              <th className="fixed">Sarja</th>
-              <th className="fixed">Sija</th>
-              <th className="fixed">Joukkue</th>
-              <th>O</th>
-              <th>V</th>
-              <th>TP</th>
-              <th>H</th>
-              <th>P</th>
-              <th>ME</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <Td className="fixed">
-                {competitions.getIn([story.get("mainCompetition"), "abbr"])}
-              </Td>
-              <Td className="fixed">{story.get("ranking") + 1}</Td>
-              <Td className="fixed">{teams.getIn([t.get("id"), "name"])}</Td>
-              <Td>{t.get("gamesPlayed")}</Td>
-              <td>{t.get("wins")}</td>
-              <td>{t.get("draws")}</td>
-              <td>{t.get("losses")}</td>
-              <td>{t.get("points")}</td>
-              <td>{t.get("goalsFor") - t.get("goalsAgainst")}</td>
-            </tr>
-          </tbody>
-        </Table>
-      </ResponsiveTable>
+      <Table>
+        <thead>
+          <tr>
+            <Th>Sarja</Th>
+            <Th>Sija</Th>
+            <Th>Joukkue</Th>
+            <Th>O</Th>
+            <Th>V</Th>
+            <Th>TP</Th>
+            <Th>H</Th>
+            <Th>P</Th>
+            <Th>ME</Th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <Td>{competitions[story.mainCompetition].abbr}</Td>
+            <Td>{story.ranking + 1}</Td>
+            <Td>{teams[t.id]?.name}</Td>
+            <Td>{t.gamesPlayed}</Td>
+            <Td>{t.wins}</Td>
+            <Td>{t.draws}</Td>
+            <Td>{t.losses}</Td>
+            <Td>{t.points}</Td>
+            <Td>{t.goalsFor - t.goalsAgainst}</Td>
+          </tr>
+        </tbody>
+      </Table>
       <Achievements story={story} />
     </Box>
   );

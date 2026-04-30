@@ -1,35 +1,36 @@
-import React from "react";
-
 import News from "./news/News";
-import Header from "./containers/HeaderContainer";
-import HeaderedPage from "./ui/HeaderedPage";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
 import Season from "./data/Season";
 import Announcements from "./events/Announcements";
 
-import { Box } from "theme-ui";
+import Heading from "@/components/ui/Heading";
+import Stack from "@/components/ui/Stack";
+import { useGameContext } from "@/context/game-machine-context";
+import { activeManager } from "@/machines/selectors";
 
-const EndOfSeason = props => {
-  const { manager, news, turn, announcements } = props;
+const EndOfSeason = () => {
+  const manager = useGameContext(activeManager);
+  const news = useGameContext((ctx) => ctx.news.news);
+  const turn = useGameContext((ctx) => ctx.turn);
+  const announcements = useGameContext((ctx) => ctx.news.announcements);
 
   return (
-    <HeaderedPage>
-      <Header forward="Seuraava kausi" />
+    <AdvancedHeaderedPage stickyMenu={<StickyMenu forward="Seuraava kausi" />}>
+      <Stack gap="lg">
+        <Heading level={2}>
+          Kausi <Season long index={turn.season} />
+        </Heading>
 
-      <Box p={1}>
-        <h2>
-          Kausi <Season long index={turn.get("season")} />
-        </h2>
+        <Stack>
+          <Announcements
+            announcements={announcements[manager.id.toString()] || []}
+          />
 
-        <Announcements
-          announcements={announcements.get(
-            manager.get("id").toString(),
-            List()
-          )}
-        />
-
-        <News manager={manager} news={news} />
-      </Box>
-    </HeaderedPage>
+          <News manager={manager} news={news} />
+        </Stack>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

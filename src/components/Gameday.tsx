@@ -1,75 +1,69 @@
-import React, { FunctionComponent } from "react";
-import Table from "./league-table/Table";
-import Header from "./Header";
-import HeaderedPage from "./ui/HeaderedPage";
+import calendar from "@/data/calendar";
+import Table from "./league-table/LeagueTable";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
 import Games from "./gameday/Games";
-import { Box } from "theme-ui";
-import { CompetitionGroup, isTournamentCompetitionGroup } from "../types/base";
-import { useSelector } from "react-redux";
-import {
-  currentCalendarEntry,
-  allCompetitions,
-  humanManagers,
-  allTeamsMap
-} from "../services/selectors";
+import Box from "./ui/Box";
+import { useGameContext } from "@/context/game-machine-context";
+import Heading from "@/components/ui/Heading";
+import Stack from "@/components/ui/Stack";
 
-const Gameday: FunctionComponent = () => {
-  const calendarEntry = useSelector(currentCalendarEntry);
-  const competitions = useSelector(allCompetitions);
-  const managers = useSelector(humanManagers);
-  const teams = useSelector(allTeamsMap);
+const Gameday = () => {
+  const turn = useGameContext((ctx) => ctx.turn);
+  const managers = useGameContext((ctx) => ctx.manager.managers);
+  const teams = useGameContext((ctx) => ctx.teams);
+  const competitions = useGameContext((ctx) => ctx.competitions);
 
-  const currentCompetitions = calendarEntry.gamedays.map(c => competitions[c]);
+  const calendarEntry = calendar[turn.round];
+
+  const currentCompetitions = calendarEntry.gamedays.map(
+    (c) => competitions[c]
+  );
 
   return (
-    <HeaderedPage>
-      <Header />
+    <AdvancedHeaderedPage stickyMenu={<StickyMenu />}>
+      <Stack gap="lg">
+        <Heading level={2}>Pelipäivä</Heading>
 
-      <Box p={1}>
-        <h2>Pelipäivä</h2>
-
-        {currentCompetitions.map(competition => {
+        {currentCompetitions.map((competition) => {
           const currentPhase = competition.phases[competition.phase];
 
           return (
-            <div key={competition.name}>
-              {(currentPhase.groups as CompetitionGroup[]).map(
-                (group, groupIndex) => {
-                  const currentRound = group.round;
+            <Stack key={competition.name} gap="md">
+              {currentPhase.groups.map((group, groupIndex) => {
+                const currentRound = group.round;
 
-                  return (
-                    <div key={groupIndex}>
-                      <h3>
-                        {competition.name}, {group.name} [{currentRound}]
-                      </h3>
+                return (
+                  <Stack key={groupIndex}>
+                    <Heading level={3}>
+                      {competition.name}, {group.name}, kierros{" "}
+                      {currentRound + 1} / {group.schedule.length}
+                    </Heading>
 
-                      <Games
-                        teams={teams}
-                        context={group}
-                        round={currentRound}
-                        managers={managers}
-                      />
+                    <Games
+                      teams={teams}
+                      context={group}
+                      round={currentRound}
+                      managers={managers}
+                    />
 
-                      {isTournamentCompetitionGroup(group) && (
-                        <div>
-                          <Table
-                            division={group}
-                            managers={managers}
-                            teams={teams}
-                          />
-                        </div>
-                      )}
-
-                      <div />
-                    </div>
-                  );
-                }
-              )}
-            </div>
+                    {currentPhase.type === "tournament" && (
+                      <Box>
+                        <Table
+                          division={group}
+                          managers={managers}
+                          teams={teams}
+                        />
+                      </Box>
+                    )}
+                  </Stack>
+                );
+              })}
+            </Stack>
           );
         })}
-      </Box>
-    </HeaderedPage>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

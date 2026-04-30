@@ -1,88 +1,116 @@
-import React, { useState } from "react";
-import Header from "./Header";
-import HeaderedPage from "./ui/HeaderedPage";
+import { useState } from "react";
+import playerTypes from "@/data/transfer-market";
+import Button from "./ui/Button";
+import Stack from "./ui/Stack";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import Calendar from "./ui/Calendar";
+import { currency } from "@/services/format";
 import ManagerInfo from "./ManagerInfo";
-import { Box } from "theme-ui";
-import { Player } from "../types/player";
-import { sortWith, ascend, prop, values, take, descend, range } from "ramda";
-import { useSelector } from "react-redux";
-import { MHMState } from "../ducks";
-import PlayerList from "./transfer-market/PlayerList";
-import { Route, Switch } from "react-router";
-import PlayerInfo from "./transfer-market/PlayerInfo";
-
-const playersPerPage = 100;
+import Box from "./ui/Box";
+import Paragraph from "./ui/Paragraph";
+import Tabs from "./ui/Tabs";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
+import { activeManager, canSellPlayer } from "@/machines/selectors";
+import Heading from "@/components/ui/Heading";
 
 const TransferMarket = () => {
-  const [page, setPage] = useState(0);
+  const manager = useGameContext(activeManager);
+  const canSell = useGameContext(canSellPlayer(manager.id));
+  const gameActor = GameMachineContext.useActorRef();
 
-  const playerMap = useSelector((state: MHMState) => state.player.players);
-  const playerList = values(playerMap).filter(p => !p.contract);
-
-  const totalPages = Math.ceil(playerList.length / playersPerPage);
-
-  console.log("TOTAL PAGES", totalPages);
-
-  /*
-  const filters = [
-    (p: Player) => p.skill <= 12,
-    (p: Player) => p.skill >= 8,
-    (p: Player) => ["FI"].includes(p.country)
-  ];
-  */
-
-  const filters = [];
-
-  const sorter = sortWith<Player>([
-    descend(prop("skill")),
-    ascend(prop("lastName")),
-    ascend(prop("firstName"))
-  ]);
-
-  const filteredPlayers = filters.reduce(
-    (players, filter) => players.filter(filter),
-    playerList
-  );
-
-  const sortedPlayers = sorter(filteredPlayers);
-
-  const pagedPlayers = sortedPlayers.slice(
-    page * playersPerPage,
-    page * playersPerPage + playersPerPage
-  );
+  const balance = manager.balance;
+  const [tab, setTab] = useState(0);
 
   return (
-    <HeaderedPage>
-      <Header back />
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu back />}
+      managerInfo={<ManagerInfo details />}
+    >
+      <Stack gap="lg">
+        <Heading level={2}>Pelaajamarkkinat</Heading>
 
-      <ManagerInfo details />
-
-      <Box p={1}>
-        <Switch>
-          <Route
-            exact
-            path="/pelaajamarkkinat"
-            render={() => {
-              return (
-                <PlayerList
-                  totalPages={totalPages}
-                  players={pagedPlayers}
-                  setPage={setPage}
-                />
-              );
-            }}
+        <Calendar
+          when={(c) => c.transferMarket}
+          fallback={
+            <Paragraph>
+              Valitettavasti siirtoaika on umpeutunut. Tervetuloa takaisin ensi
+              vuonna!
+            </Paragraph>
+          }
+        >
+          <Tabs
+            selected={tab}
+            onSelect={setTab}
+            items={[
+              {
+                title: "Osta pelaajia",
+                content: () => (
+                  <Stack>
+                    {playerTypes.map((playerType, index) => {
+                      return (
+                        <Button
+                          key={index}
+                          onClick={() =>
+                            gameActor.send({
+                              type: "BUY_PLAYER",
+                              payload: {
+                                manager: manager.id,
+                                playerType: index
+                              }
+                            })
+                          }
+                          block
+                          disabled={balance < playerType.buy}
+                        >
+                          <Box>{playerType.description}</Box>
+                          <Box>
+                            <Box>{currency(playerType.buy)}</Box>
+                          </Box>
+                        </Button>
+                      );
+                    })}
+                  </Stack>
+                )
+              },
+              {
+                title: "Myy pelaajia",
+                content: () => (
+                  <Stack>
+                    {playerTypes.map((playerType, index) => {
+                      return (
+                        <Button
+                          key={index}
+                          onClick={() =>
+                            gameActor.send({
+                              type: "SELL_PLAYER",
+                              payload: {
+                                manager: manager.id,
+                                playerType: index
+                              }
+                            })
+                          }
+                          block
+                          disabled={!canSell}
+                        >
+                          <Box>{playerType.description}</Box>
+                          <Box>
+                            <strong>{currency(playerType.sell)}</strong>
+                          </Box>
+                        </Button>
+                      );
+                    })}
+                  </Stack>
+                )
+              }
+            ]}
           />
-          <Route
-            exact
-            path="/pelaajamarkkinat/:playerId"
-            render={props => {
-              const player = playerMap[props.match.params.playerId];
-              return <PlayerInfo player={player} />;
-            }}
-          />
-        </Switch>
-      </Box>
-    </HeaderedPage>
+        </Calendar>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

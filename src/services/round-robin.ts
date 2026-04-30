@@ -1,75 +1,92 @@
-import {
-  range,
-  append,
-  map,
-  take,
-  takeLast,
-  slice,
-  pair,
-  reverse,
-  concat,
-  repeat
-} from "ramda";
-import { Schedule, ScheduleGame, ScheduleRound } from "../types/base";
-
 const DUMMY = -1;
 
-const getRange = (n: number): number[] => {
-  const r = range(0, n);
-
-  if (n % 2 === 0) {
-    return r;
+const assertValidNumberOfTeams = (numberOfTeams: number): void => {
+  if (numberOfTeams < 2) {
+    throw new RangeError("roundRobin requires at least 2 teams");
   }
-  return append(DUMMY, r);
 };
 
-const reverser = (roundRobin: [number, number][][]): [number, number][][] => {
-  return map(r => map(rr => reverse(rr) as [number, number], r), roundRobin);
+const assertValidTimes = (times: number): void => {
+  if (!Number.isInteger(times) || times < 1) {
+    throw new RangeError("scheduler requires times to be a positive integer");
+  }
 };
 
-const createScheduleGame = (pairing: [number, number]): ScheduleGame => {
-  const [first, second] = pairing;
-
-  return {
-    home: first,
-    away: second
-  } as ScheduleGame;
+/** Generates a range from 0 to n-1, padding with DUMMY if n is odd */
+const getRange = (n: number): number[] => {
+  const range = Array.from({ length: n }, (_, i) => i);
+  if (n % 2 === 0) {
+    return range;
+  }
+  return [...range, DUMMY];
 };
 
-const createScheduleRound = (data: unknown): ScheduleRound => {
-  return map(createScheduleGame, data);
+/** Reverses each pairing in each round */
+const reverser = (rr: number[][][]): number[][][] => {
+  return rr.map((round) => round.map((pairing) => pairing.toReversed()));
 };
 
-const scheduler = (numberOfTeams: number, times: number): Schedule => {
-  const rr = roundRobin(numberOfTeams);
-  const schedule = concat(reverser(rr), rr);
-  const rounds = map(createScheduleRound, schedule);
-  const repeated = repeat(rounds, times);
-  return repeated.flat(1);
+export type Pairing = {
+  home: number;
+  away: number;
 };
 
-const createRound = (round: number, teams: number[]) => {
-  const ordered = [
-    ...take(1, teams),
-    ...takeLast(round, teams),
-    ...slice(1, teams.length - round, teams)
-  ];
+/** Repeats an array a specified number of times */
+const repeatArray = <T>(arr: T[], times: number): T[] => {
+  return Array.from({ length: times }, () => arr).flat();
+};
 
-  const pairings = range(0, teams.length / 2);
+/** Generates a full schedule with home/away matches, repeating times times */
+export const scheduler = (
+  numberOfTeams: number,
+  times: number
+): Pairing[][] => {
+  assertValidNumberOfTeams(numberOfTeams);
+  assertValidTimes(times);
+  const baseSchedule = roundRobin(numberOfTeams);
+  const schedule = baseSchedule.concat(reverser(baseSchedule));
 
-  const pairs = map(
-    pairing => pair(ordered[pairing], ordered[teams.length - 1 - pairing]),
-    pairings
+  return repeatArray(schedule, times).map((round) =>
+    round.map((pairing) => ({
+      home: pairing[0],
+      away: pairing[1]
+    }))
   );
-
-  return round % 2 ? pairs : reverse(pairs);
 };
 
-export const roundRobin = (numberOfTeams: number) => {
+/**
+ * Core round-robin scheduling algorithm using the rotation method.
+ * Returns array of rounds, each round contains pairings as [home, away] arrays.
+ */
+export const roundRobin = (numberOfTeams: number): number[][][] => {
+  assertValidNumberOfTeams(numberOfTeams);
   const px = getRange(numberOfTeams);
   const n = px.length;
-  const rounds = range(0, n - 1);
-  const rs = map(r => createRound(r, px), rounds);
+
+  const rs: number[][][] = [];
+
+  for (let j = 0; j < n - 1; j++) {
+    // Reconstruct array for this round using rotation
+    const lastJElements = j === 0 ? [] : px.slice(-j);
+    const ps: number[] = [
+      ...px.slice(0, 1),
+      ...lastJElements,
+      ...px.slice(1, n - j)
+    ];
+
+    const pairs: number[][] = [];
+    for (let i = 0; i < n / 2; i++) {
+      const pair = [ps[i], ps[n - 1 - i]];
+      // Filter out pairs containing DUMMY
+      if (!pair.includes(DUMMY)) {
+        pairs.push(pair);
+      }
+    }
+
+    const round = j % 2 === 1 ? pairs : pairs.map((pair) => pair.toReversed());
+    rs.push(round);
+  }
+
   return rs;
 };
 

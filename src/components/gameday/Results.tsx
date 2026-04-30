@@ -1,40 +1,41 @@
-import React, { FunctionComponent } from "react";
-import styled from "@emotion/styled";
-import Game from "./Game";
-import { Box } from "theme-ui";
-import { HumanManager } from "../../types/manager";
-import { MapOf, CompetitionGroup } from "../../types/base";
-import { Team } from "../../types/team";
+import type { FC } from "react";
+import { Table } from "@/components/ui/Table";
+import MatchRow from "@/components/team/MatchRow";
+import type { Team } from "@/state/game";
+import type { Manager } from "@/state/manager";
+import type { Group } from "@/types/competitions";
 
-interface Props {
-  context: CompetitionGroup;
-  teams: MapOf<Team>;
-  managers: HumanManager[];
+type ResultsProps = {
+  teams: Team[];
+  context: Group;
   round: number;
-}
+  managers: Record<string, Manager>;
+};
 
-const Results: FunctionComponent<Props> = props => {
-  const { className, teams, context, round, managers } = props;
-
-  const pairings = context.schedule[round];
+const Results: FC<ResultsProps> = ({ teams, context, round, managers }) => {
+  const pairings = (context.schedule[round] ?? []).filter((p) => {
+    return p.result;
+  });
 
   return (
-    <Box my={1}>
-      {pairings.map((pairing, i) => {
-        return (
-          <Game
+    <Table>
+      <tbody>
+        {pairings.map((pairing, i) => (
+          <MatchRow
             key={i}
-            context={context}
-            pairing={pairing}
+            home={teams[context.teams[pairing.home]]}
+            away={teams[context.teams[pairing.away]]}
+            score={
+              pairing.result
+                ? `${pairing.result.home}–${pairing.result.away}`
+                : undefined
+            }
             managers={managers}
-            teams={teams}
           />
-        );
-      })}
-    </Box>
+        ))}
+      </tbody>
+    </Table>
   );
 };
 
-export default styled(Results)`
-  max-width: 30em;
-`;
+export default Results;

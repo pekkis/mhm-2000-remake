@@ -1,30 +1,46 @@
-import React from "react";
-import Button from "../form/Button";
-import ButtonContainer from "../ui/ButtonContainer";
+import type { FC } from "react";
+import Button from "@/components/ui/Button";
+import Stack from "@/components/ui/Stack";
+import type { Team } from "@/state/game";
+import type { Manager } from "@/state/manager";
+import type { Competition } from "@/types/competitions";
+import Heading from "@/components/ui/Heading";
 
-const SelectVictim = props => {
-  const { competition, manager, selectVictim, teams, cancel } = props;
+type SelectVictimProps = {
+  competition: Competition;
+  manager: Manager;
+  selectVictim: (teamId: number) => void;
+  teams: Team[];
+  cancel: (...args: any[]) => void;
+  prank?: unknown;
+};
 
+const SelectVictim: FC<SelectVictimProps> = ({
+  competition,
+  manager,
+  selectVictim,
+  teams,
+  cancel
+}) => {
   return (
-    <div>
-      <h3>Valitse uhrisi</h3>
-      <ButtonContainer>
+    <Stack gap="sm">
+      <Heading level={3}>Valitse uhrisi</Heading>
+      <Stack>
         <Button secondary block onClick={cancel}>
           Peruuta jäynä
         </Button>
 
-        {competition
-          .get("teams")
-          .filter(teamId => teamId !== manager.get("team"))
-          .map(teamId => {
+        {competition.teams
+          .filter((teamId) => teamId !== manager.team)
+          .map((teamId) => {
             return (
               <Button key={teamId} block onClick={() => selectVictim(teamId)}>
-                {teams.get(teamId).get("name")}
+                {teams[teamId].name}
               </Button>
             );
           })}
-      </ButtonContainer>
-    </div>
+      </Stack>
+    </Stack>
   );
 };
 

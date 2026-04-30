@@ -1,60 +1,68 @@
-import React from "react";
-import Header from "./containers/HeaderContainer";
-import HeaderedPage from "./ui/HeaderedPage";
-import ManagerInfo from "./containers/ManagerInfoContainer";
-import styled from "@emotion/styled";
-import Toggle from "react-toggle";
-import Markdown from "react-markdown";
-import { Box } from "theme-ui";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import ManagerInfo from "./ManagerInfo";
+import Toggle from "@/components/ui/form/Toggle";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
+import { entries } from "remeda";
 
-// import services from "../data/services";
+import services from "@/data/services";
+import { activeManager } from "@/machines/selectors";
+import Markdown from "@/components/Markdown";
+import Stack from "@/components/ui/Stack";
+import Heading from "@/components/ui/Heading";
+import Box from "@/components/ui/Box";
+import Cluster from "@/components/ui/Cluster";
 
-const ServicesList = styled.div`
-  margin: 1em 0;
-`;
+const Services = () => {
+  const manager = useGameContext(activeManager);
+  const basePrices = useGameContext((ctx) => ctx.serviceBasePrices);
+  const gameActor = GameMachineContext.useActorRef();
 
-const Services = props => {
-  const { manager, toggleService, basePrices } = props;
+  console.log("MANAGER SERVICES", manager.services);
 
   return (
-    <HeaderedPage>
-      <Header back />
-      <ManagerInfo details />
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu back />}
+      managerInfo={<ManagerInfo details />}
+    >
+      <Stack gap="lg">
+        <Heading level={2}>Erikoistoimenpiteet</Heading>
 
-      <Box p={1}>
-        <h2>Erikoistoimenpiteet</h2>
-
-        <ServicesList>
-          {services
-            .map((service, key) => {
-              const basePrice = basePrices.get(key);
-              return (
-                <div key={key}>
-                  <div>
-                    <Toggle
-                      id={key}
-                      checked={manager.getIn(["services", key])}
-                      onChange={() => {
-                        toggleService(manager.get("id"), key);
-                      }}
-                    />
-                    <label htmlFor={key}>
-                      <strong>{service.get("name")}</strong>
-                    </label>
-                  </div>
-
-                  <Markdown
-                    source={service.get("description")(
-                      service.get("price")(basePrice, manager)
-                    )}
+        <Stack gap="md">
+          {entries(services).map(([key, service]) => {
+            const basePrice = basePrices[key];
+            return (
+              <Box key={key}>
+                <Cluster>
+                  <Toggle
+                    id={key}
+                    checked={manager.services[key]}
+                    onChange={() => {
+                      gameActor.send({
+                        type: "TOGGLE_SERVICE",
+                        payload: { manager: manager.id, service: key }
+                      });
+                    }}
                   />
-                </div>
-              );
-            })
-            .toList()}
-        </ServicesList>
-      </Box>
-    </HeaderedPage>
+                  <Box>
+                    <label htmlFor={key}>
+                      <strong>{service.name}</strong>
+                    </label>
+                  </Box>
+                </Cluster>
+
+                <Markdown>
+                  {service.description(service.price(basePrice, manager))}
+                </Markdown>
+              </Box>
+            );
+          })}
+        </Stack>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

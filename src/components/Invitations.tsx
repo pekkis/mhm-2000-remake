@@ -1,44 +1,58 @@
-import React from "react";
-import Header from "./containers/HeaderContainer";
-import HeaderedPage from "./ui/HeaderedPage";
-import ManagerInfo from "./containers/ManagerInfoContainer";
-import { Box } from "theme-ui";
-import tournamentList from "../data/tournaments";
-import Markdown from "react-markdown";
-import Button from "./form/Button";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import ManagerInfo from "./ManagerInfo";
+import Heading from "@/components/ui/Heading";
+import Stack from "@/components/ui/Stack";
+import tournamentList from "@/data/tournaments";
+import Button from "./ui/Button";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
+import { activeManager, activeManagersInvitations } from "@/machines/selectors";
+import Markdown from "@/components/Markdown";
 
-const Invitations = props => {
-  const { manager, invitations, acceptInvitation } = props;
+const Invitations = () => {
+  const manager = useGameContext(activeManager);
+
+  const invitations = useGameContext(activeManagersInvitations);
+  const actor = GameMachineContext.useActorRef();
 
   return (
-    <HeaderedPage>
-      <Header back />
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu back />}
+      managerInfo={<ManagerInfo details />}
+    >
+      <Stack gap="lg">
+        <Heading level={2}>Turnauskutsut</Heading>
 
-      <ManagerInfo details />
+        <Stack gap="md">
+          {invitations.map((i, index) => {
+            const t = tournamentList[i.tournament];
+            return (
+              <Stack key={index} gap="sm">
+                <Heading level={3}>{t.name}</Heading>
 
-      <Box p={1}>
-        <h2>Turnauskutsut</h2>
+                <Markdown>{t.description(t.award)}</Markdown>
 
-        {invitations.map((i, index) => {
-          const t = tournamentList.get(i.get("tournament"));
-          return (
-            <div key={index}>
-              <h3>{t.get("name")}</h3>
-
-              <Markdown source={t.get("description")(t.get("award"))} />
-
-              <Button
-                block
-                onClick={() => acceptInvitation(manager.get("id"), i.get("id"))}
-                disabled={i.get("participate")}
-              >
-                Hyväksy turnauskutsu
-              </Button>
-            </div>
-          );
-        })}
-      </Box>
-    </HeaderedPage>
+                <Button
+                  block
+                  onClick={() =>
+                    actor.send({
+                      type: "ACCEPT_INVITATION",
+                      payload: { manager: manager.id, id: i.id }
+                    })
+                  }
+                  disabled={i.accepted}
+                >
+                  Hyväksy turnauskutsu
+                </Button>
+              </Stack>
+            );
+          })}
+        </Stack>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

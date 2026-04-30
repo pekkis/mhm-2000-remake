@@ -1,143 +1,103 @@
-import React, { FunctionComponent, useCallback } from "react";
-import ButtonRow from "./form/ButtonRow";
-import Button from "./form/Button";
-import { Box } from "theme-ui";
-import ManagerForm from "./start-menu/ManagerForm";
-import styled from "@emotion/styled";
-import title from "../assets/title.png";
-import { useSelector, useDispatch } from "react-redux";
-import { MHMState } from "../ducks";
-import { startGame, loadGame, advance } from "../ducks/game";
-import {
-  playableCompetitions,
-  allTeams,
-  allTeamsMap
-} from "../services/selectors";
-import { Team } from "../types/team";
+import Cluster from "@/components/ui/Cluster";
+import Button from "@/components/ui/Button";
+import Box from "./ui/Box";
+import title from "./start-menu/title.png";
+import { AppMachineContext } from "@/context/app-machine-context";
+import { Starting } from "@/components/start-menu/Starting";
+import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
+import Stack from "@/components/ui/Stack";
+import Heading from "@/components/ui/Heading";
+import Centerer from "@/components/Centerer";
 
-const Menu = styled.div``;
+const StartMenu = () => {
+  const starting = AppMachineContext.useSelector((state) =>
+    state.matches("starting")
+  );
 
-const Contents = styled.div`
-  h1 {
-    margin: 0;
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 1em;
-  }
-`;
-
-const Centerer = styled.div`
-  text-align: center;
-`;
-
-const StartMenu: FunctionComponent = () => {
-  /*
-  state => ({
-    started: state.meta.get("started"),
-    turn: state.game.get("turn"),
-    menu: state.ui.get("menu"),
-    calendar: state.game.get("calendar")
-  }),
-  { startGame, loadGame }
-  */
-
-  const teams = useSelector(allTeamsMap);
-  const competitions = useSelector(playableCompetitions);
-  const starting = useSelector((state: MHMState) => state.game.starting);
-  const dispatch = useDispatch();
-
-  const teamStats = useSelector((state: MHMState) => state.stats.teams);
+  const app = AppMachineContext.useActorRef();
 
   return (
-    <main
-      css={{
-        margin: "0 auto",
-        maxWidth: "600px",
-
-        p: {
-          margin: "1em 0"
-        }
-      }}
-      role="main"
-    >
-      <Menu>
-        <Contents>
-          <Centerer>
-            <img
-              alt="MHM 2000"
+    <Centerer>
+      <Stack gap="lg">
+        <Box>
+          <Stack align="center" gap="md">
+            <ResponsiveImage
               src={title}
-              css={{
-                maxWidth: "100%",
-                display: "block"
-              }}
+              alt="MHM 97, maailman paras jääkiekkomanagerisimulaatio"
             />
-            <Box px={1} py={0}>
-              <h1>MHM 2000</h1>
-              <h2>
-                Maailman paras jääkiekkomanagerisimulaatio, syntynyt uudelleen!
-              </h2>
-              <h2>build: {process.env.COMMIT_REF || "dev"}</h2>
+            <Box textAlign="center">
+              <Stack gap="sm">
+                <Heading level={1}>MHM 97</Heading>
+                <Heading level={2} size="md">
+                  maailman paras jääkiekkomanagerisimulaatio
+                </Heading>
+              </Stack>
             </Box>
-          </Centerer>
+          </Stack>
+        </Box>
 
-          {!starting && (
-            <Box p={1}>
-              <Centerer>
-                <ButtonRow>
-                  <Button
-                    tabIndex={0}
-                    onClick={() => {
-                      dispatch(startGame());
-                    }}
-                  >
-                    Uusi peli
-                  </Button>
-                  <Button
-                    tabIndex={0}
-                    onClick={() => {
-                      dispatch(loadGame());
-                    }}
-                  >
-                    Lataa peli
-                  </Button>
-                </ButtonRow>
-              </Centerer>
-              <h3>Alkuperäinen suunnittelu & ohjelmointi</h3>
-              <ul>
-                <li>Mikko Forsström</li>
-              </ul>
-              <h3>Remaken suunnittelu & ohjelmointi</h3>
-              <ul>
-                <li>Mikko Forsström</li>
-              </ul>
-              <h3>Grafiikka</h3>
-              <ul>
-                <li>Santtu Huotilainen</li>
-                <li>Mikko Forsström</li>
-              </ul>
-              <h3>Laadunvalvonta</h3>
-              <ul>
-                <li>X</li>
-              </ul>
-            </Box>
-          )}
+        {!starting && (
+          <Box>
+            <Cluster justify="center" gap="md">
+              <Button
+                onClick={() => {
+                  app.send({ type: "START_GAME" });
+                }}
+              >
+                Uusi peli
+              </Button>
+              <Button
+                onClick={() => {
+                  app.send({ type: "LOAD_GAME" });
+                }}
+              >
+                Lataa peli
+              </Button>
+            </Cluster>
+            <h3>Alkuperäinen suunnittelu & ohjelmointi</h3>
+            <ul>
+              <li>Mikko Forsström</li>
+            </ul>
+            <h3>Remaken suunnittelu & ohjelmointi</h3>
+            <ul>
+              <li>Mikko Forsström</li>
+              <li>Jean-Claude van Copilot</li>
+            </ul>
+            <h3>Grafiikka</h3>
+            <ul>
+              <li>Teemu Nevalainen</li>
+              <li>Mikko Forsström</li>
+            </ul>
+            <h3>Laadunvalvonta</h3>
+            <ul>
+              <li>Teemu Nevalainen</li>
+              <li>Sami Helen</li>
+              <li>A-P Nevalainen</li>
+              <li>Antti Kettunen</li>
+            </ul>
+            <h3>v1.2 betatestaus</h3>
+            <ul>
+              <li>Henri Hokkanen</li>
+              <li>Jussi Kniivilä </li>
+              <li>Tony Herranen</li>
+              <li>Antti Laakso</li>
+              <li>Markus Lämsä</li>
+              <li>Tomi Salmi</li>
+              <li>Aleksi Ursin</li>
+              <li>Ilmari Sandelin</li>
+            </ul>
+            <h3>Erityiskiitokset</h3>
+            <ul>
+              <li>Erno Vanhala</li>
+              <li>Sami Ritola</li>
+            </ul>
+          </Box>
+        )}
 
-          {starting && (
-            <Box p={1}>
-              <ManagerForm
-                stats={teamStats}
-                teams={teams}
-                competitions={competitions}
-                dispatch={dispatch}
-              />
-            </Box>
-          )}
-        </Contents>
-      </Menu>
-    </main>
+        {starting && <Starting />}
+      </Stack>
+    </Centerer>
   );
 };
 
-export default React.memo(StartMenu);
+export default StartMenu;

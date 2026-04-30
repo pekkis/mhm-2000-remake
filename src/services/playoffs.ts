@@ -1,87 +1,70 @@
-import { matchFacts, matchFactsByIndex } from "./match";
-import {
-  Matchups,
-  Matchup,
-  Schedule,
-  ScheduleGame,
-  ScheduleRound,
-  PlayoffsCompetitionGroup,
-  PlayoffTeamStat
-} from "../types/base";
-import { range, map, sortBy, prop } from "ramda";
+import type {
+  MatchupStat,
+  MatchupTeamStat,
+  Pairing,
+  PlayoffGroup
+} from "@/types/competitions";
+import { gameFacts } from "./game";
 
-const definePlayoffResults = (key: "wins" | "losses") => (
-  group: PlayoffsCompetitionGroup
-): PlayoffTeamStat[] => {
-  const winsToAdvance = group.winsToAdvance;
-  const allTeamStats = group.stats.map(stat => [stat.home, stat.away]).flat();
-  return sortBy(
-    prop("index"),
-    allTeamStats.filter(m => m[key] === winsToAdvance)
-  );
+export const victors = (phase: PlayoffGroup): MatchupTeamStat[] => {
+  const winsToAdvance = phase.winsToAdvance;
+  const all = phase.stats.flatMap((m) => [m.home, m.away]);
+  return all
+    .filter((m) => m.wins === winsToAdvance)
+    .sort((a, b) => a.index - b.index);
 };
 
-export const victors = definePlayoffResults("wins");
+export const eliminated = (phase: PlayoffGroup): MatchupTeamStat[] => {
+  const winsToAdvance = phase.winsToAdvance;
+  const all = phase.stats.flatMap((m) => [m.home, m.away]);
+  return all
+    .filter((m) => m.losses === winsToAdvance)
+    .sort((a, b) => a.index - b.index);
+};
 
-export const eliminated = definePlayoffResults("losses");
+export const matchups = (phase: PlayoffGroup): MatchupStat[] => {
+  const teams = phase.teams;
 
-const mapHomeAndAway = (matchup: Matchup, group: PlayoffsCompetitionGroup) => {
-  const [home, away] = ["home", "away"].map(which => {
-    const index = which === "home" ? 0 : 1;
-    const teamIndex = matchup[index];
+  return phase.matchups.map((matchup) => {
+    const [home, away] = ([0, 1] as const).map((index) => {
+      const teamIndex = matchup[index];
 
-    const games = group.schedule
-      .map(pairings =>
-        pairings.filter(p => p.away === teamIndex || p.home === teamIndex)
-      )
-      .flat()
-      .filter(g => g.result);
+      const games: Pairing[] = phase.schedule
+        .map((pairings) =>
+          pairings.find((p) => p.home === teamIndex || p.away === teamIndex)
+        )
+        .filter((g): g is Pairing => g !== undefined)
+        .filter((g) => g.result !== undefined);
 
-    const facts = games.map(matchFactsByIndex(teamIndex));
+      const facts = games.map((g) => gameFacts(g, teamIndex));
 
-    return {
-      index: teamIndex,
-      id: group.teams[teamIndex],
-      wins: facts.filter(f => f.isWin).length,
-      losses: facts.filter(f => f.isLoss).length
-    };
+      return {
+        index: teamIndex,
+        id: teams[teamIndex],
+        wins: facts.filter((f) => f.isWin).length,
+        losses: facts.filter((f) => f.isLoss).length
+      } satisfies MatchupTeamStat;
+    });
+
+    return { home, away } satisfies MatchupStat;
   });
-
-  return {
-    home,
-    away
-  };
 };
 
-export const matchups = (group: PlayoffsCompetitionGroup) => {
-  return map(
-    (matchup: Matchup) => mapHomeAndAway(matchup, group),
-    group.matchups
-  );
-};
-
-const createGame = (matchup: Matchup, round: number): ScheduleGame => {
-  const [first, second] = matchup;
-  if (round % 2 !== 0) {
-    return {
-      home: first,
-      away: second
-    };
+const scheduler = (
+  matchupList: [number, number][],
+  winsToAdvance: number
+): Pairing[][] => {
+  const rounds: Pairing[][] = [];
+  for (let r = 1; r < winsToAdvance * 2; r++) {
+    const round = matchupList.map((matchup) => {
+      if (r % 2 !== 0) {
+        return { home: matchup[0], away: matchup[1] };
+      }
+      return { home: matchup[1], away: matchup[0] };
+    });
+    rounds.push(round);
   }
-
-  return {
-    home: second,
-    away: first
-  };
-};
-
-const createRound = (matchups: Matchups, round: number): ScheduleRound => {
-  return map(m => createGame(m, round), matchups);
-};
-
-const scheduler = (matchups: Matchups, winsToAdvance: number): Schedule => {
-  const r = range(1, winsToAdvance * 2);
-  return map(r => createRound(matchups, r), r);
+  return rounds;
 };
 
 export default scheduler;

@@ -1,36 +1,48 @@
-import React from "react";
-import Button from "../form/Button";
-import ButtonContainer from "../ui/ButtonContainer";
-import pranks from "../../services/data/pranks";
-import { currency as c } from "../../services/format";
+import type { FC } from "react";
+import Button from "@/components/ui/Button";
+import Stack from "@/components/ui/Stack";
+import pranks from "@/game/pranks";
+import { currency as c } from "@/services/format";
+import type { Manager } from "@/state/manager";
+import { entries } from "remeda";
 
-const SelectType = props => {
-  const { manager, selectType, competition, enabled } = props;
+type SelectTypeProps = {
+  manager: Manager;
+  selectType: (type: string) => void;
+  competition: string;
+  enabled: boolean;
+  cancel?: (id: string) => void;
+};
+
+const SelectType: FC<SelectTypeProps> = ({
+  manager,
+  selectType,
+  competition,
+  enabled
+}) => {
   return (
     <div>
-      <ButtonContainer>
-        {pranks
-          .map((prank, i) => {
-            const price = prank.get("price")(competition);
+      <Stack>
+        {entries(pranks).map(([key, prank]) => {
+          const price = prank.price(competition);
 
-            return (
-              <Button
-                disabled={!enabled || price > manager.get("balance")}
-                block
-                key={i}
-                onClick={() => {
-                  selectType(i);
-                }}
-              >
-                <div>{prank.get("name")}</div>
-                <div>
-                  <small>{c(price)}</small>
-                </div>
-              </Button>
-            );
-          })
-          .toList()}
-      </ButtonContainer>
+          return (
+            <Button
+              disabled={!enabled || price > manager.balance}
+              block
+              key={key}
+              onClick={() => {
+                selectType(key);
+              }}
+            >
+              <div>{prank.name}</div>
+              <div>
+                <small>{c(price)}</small>
+              </div>
+            </Button>
+          );
+        })}
+      </Stack>
     </div>
   );
 };

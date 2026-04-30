@@ -1,74 +1,79 @@
-import React from "react";
-import Header from "./containers/HeaderContainer";
-import HeaderedPage from "./ui/HeaderedPage";
-import ManagerInfo from "./containers/ManagerInfoContainer";
-import ButtonRow from "./form/ButtonRow";
-import Button from "./form/Button";
-// import arenas from "../data/arenas";
-import styled from "@emotion/styled";
-import { css } from "@emotion/core";
-import { currency } from "../services/format";
-import { Box } from "theme-ui";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import ManagerInfo from "./ManagerInfo";
+import Button from "./ui/Button";
+import arenas from "@/data/arenas";
+import clsx from "clsx";
+import * as styles from "./Arena.css";
+import { currency } from "@/services/format";
+import Box from "./ui/Box";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
+import { activeManager, canImproveArena } from "@/machines/selectors";
+import Stack from "@/components/ui/Stack";
+import Heading from "@/components/ui/Heading";
 
-const ArenaHierarchy = styled.div``;
+const Arenas = () => {
+  const manager = useGameContext(activeManager);
+  const canDo = useGameContext(canImproveArena(manager.id));
+  const gameActor = GameMachineContext.useActorRef();
 
-const Arena = styled.div`
-  ${props =>
-    props.current &&
-    css`
-      font-weight: bold;
-    `}
-`;
-
-const Arenas = props => {
-  const { manager, teams, improveArena } = props;
-
-  const currentLevel = manager.getIn(["arena", "level"]);
-
-  const nextLevel = arenas.get(currentLevel + 1);
-
-  const canDo =
-    currentLevel < 9 && manager.get("balance") >= nextLevel.get("price");
+  const currentLevel = manager.arena.level;
+  const nextLevel = arenas[currentLevel + 1];
 
   return (
-    <HeaderedPage>
-      <Header back />
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu back />}
+      managerInfo={<ManagerInfo details />}
+    >
+      <Stack gap="lg">
+        <Heading level={2}>Areena</Heading>
 
-      <ManagerInfo details />
+        <Stack gap="md">
+          <Heading level={3}>Areenasi sijoitus areenahierarkiassa:</Heading>
 
-      <Box p={1}>
-        <h2>Areena</h2>
+          <Box>
+            {arenas
+              .map((arena, level) => {
+                return (
+                  <div
+                    className={clsx(
+                      styles.arenaRow,
+                      level === currentLevel && styles.arenaRowCurrent
+                    )}
+                    key={arena.id}
+                  >
+                    {arena.name}
+                  </div>
+                );
+              })
+              .toReversed()}
+          </Box>
+        </Stack>
 
-        <ArenaHierarchy>
-          <h3>Areenasi sijoitus areenahierarkiassa:</h3>
-
-          {arenas
-            .map((arena, level) => {
-              return (
-                <Arena current={level === currentLevel} key={arena.get("id")}>
-                  {arena.get("name")}
-                </Arena>
-              );
-            })
-            .reverse()}
-        </ArenaHierarchy>
-
-        <ButtonRow>
+        <Box>
           {nextLevel && (
             <Button
               block
               disabled={!canDo}
-              onClick={() => {
-                improveArena(manager.get("id"));
-              }}
+              onClick={() =>
+                gameActor.send({
+                  type: "IMPROVE_ARENA",
+                  payload: { manager: manager.id }
+                })
+              }
             >
-              <div>Paranna halliolosuhteitasi</div>
-              <div>{currency(nextLevel.get("price"))}</div>
+              <Box>Paranna halliolosuhteitasi</Box>
+              <Box>
+                <strong>{currency(nextLevel.price)}</strong>
+              </Box>
             </Button>
           )}
-        </ButtonRow>
-      </Box>
-    </HeaderedPage>
+        </Box>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

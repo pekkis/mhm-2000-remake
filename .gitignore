@@ -1,6 +1,6 @@
-yarn-error.log
+.tsbuildinfo
 node_modules/
 .env
 dist/
-dist-server/
-.yarn
+package-lock.json
+

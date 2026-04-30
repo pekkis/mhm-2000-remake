@@ -1,0 +1,298 @@
+# MHM 2000 — SUB / FUNCTION map
+
+Every callable across `MHM2K.BAS` (entry), `ILEX5.BAS` (main loop),
+`ILEZ5.BAS` (end-of-season), `ILES5.BAS` (utilities). My one-liner
+guesses inline; `❓ TODO` where opaque.
+
+Several SUBs are **redeclared in multiple files** — that's because each
+CHAIN'd program is a self-contained .EXE. Same name, same code (mostly).
+
+## Convention (mostly self-explanatory)
+
+- Suffix `chk` = check / validate
+- Suffix `maar` = määritä = "determine/initialize"
+- Suffix `print` / `nayt` = render
+- Prefix `kuv` = kuva = picture
+- Prefix `pirtar` = ❓ TODO (stock-market levels?)
+
+---
+
+## MHM2K.BAS — entry / new game
+
+| Line | Sub                     | Guess                                                                                                       | TODO       |
+| ---- | ----------------------- | ----------------------------------------------------------------------------------------------------------- | ---------- |
+|      | `alku`                  | start screen                                                                                                |            |
+|      | `alku2`                 | start screen variant                                                                                        | TODO diff  |
+|      | `uusipeli`              | new game wizard                                                                                             |            |
+|      | `uusipeliman`           | new-game manager creation                                                                                   |            |
+|      | `uusipelitop`           | ❓ "new game top"?                                                                                          | TODO       |
+|      | `valitsekansallisuus`   | choose nationality                                                                                          |            |
+|      | `valitsestrattie`       | choose initial strategy                                                                                     |            |
+|      | `omajoukkue`            | choose own team                                                                                             |            |
+|      | `annanimihallille`      | "give a name to the hall" — name your arena                                                                 |            |
+|      | `maaritakarakter`       | character/personality definition                                                                            | TODO whose |
+|      | `lataus`                | load game                                                                                                   |            |
+|      | `tallennus`             | save game (lives in ilex5 actually)                                                                         |            |
+|      | `avaa`                  | open (file?)                                                                                                | TODO       |
+|      | `oppnas2`               | ❓ "oppnas" — TODO                                                                                          | TODO       |
+|      | `historia`              | history viewer                                                                                              |            |
+|      | `options`               | options menu                                                                                                |            |
+|      | `vihat`                 | ❓ ("viha" = hate) — rivalries?                                                                             | TODO       |
+|      | `piraatti`              | pirate — copy-protection check (entry; calls into `pirtar1..7`)                                             |            |
+|      | `printident`            | print credits/identity                                                                                      |            |
+|      | `tyhjennalokero`        | empty slot (reset save)                                                                                     |            |
+|      | `exitus`                | exit                                                                                                        |            |
+|      | `pirtar1`..`pirtar7`    | piracy-check stages — heuristics against hidden code + `REGISTER.200` license file. **Will not be ported.** |            |
+|      | `sarjamaaralku`         | initial league setup                                                                                        |            |
+|      | `topmaar`               | top-scorer init                                                                                             |            |
+|      | `tasomaar`              | level/tier init                                                                                             |            |
+|      | `palkmaar`              | salary init                                                                                                 |            |
+|      | `orgamaar`              | organization init                                                                                           |            |
+|      | `mahmax`                | ❓ ("mahdollisuus-max"? possibility cap?)                                                                   | TODO       |
+|      | `gene`                  | generate (players? teams?)                                                                                  | TODO which |
+|      | `rela`                  | ❓ ("relations"? — TODO)                                                                                    | TODO       |
+|      | `muutmestarit`          | "the other champions" — historical champion init                                                            |            |
+|      | `wnd (sex%)`            | wait-for-keypress wrapper                                                                                   |            |
+|      | `colchk (colre%)`       | color check (CGA/EGA/VGA?)                                                                                  |            |
+|      | `ku (kuz%, ku1%, ku2%)` | window/box draw (kursori?)                                                                                  | TODO       |
+|      | `pjn`                   | ❓ — TODO                                                                                                   | TODO       |
+|      | `qelp (qel%)`           | help text? "Q-help"?                                                                                        | TODO       |
+|      | `lt (lue$, lukux%)`     | "lue text" — print text helper                                                                              |            |
+|      | `etsipel (fat%)`        | "etsi pelaaja" — find player                                                                                |            |
+|      | `hahaa (haha%)`         | scratch event ("ha-ha"?)                                                                                    | TODO       |
+|      | `kuvax (tied$)`         | display image                                                                                               |            |
+
+CHAIN: `MHM2K.BAS:562 → CHAIN "ilex5"`.
+
+---
+
+## ILEX5.BAS — main play loop (8967 lines, ~120 SUBs)
+
+### Main flow
+
+| Line | Sub              | Guess                                | TODO |
+| ---- | ---------------- | ------------------------------------ | ---- |
+| 1486 | `gameday`        | the gameday simulation entry         |      |
+| 1769 | `gamedayhaara`   | gameday "haara" = branch, sub-flow   |      |
+| 3709 | `ottpel`         | match / per-team play (ottelu/pelaa) |      |
+| 4018 | `ottul`          | match result resolution?             | TODO |
+| 5527 | `sattuma`        | RANDOM EVENTS. Look here for events. |      |
+| 7695 | `uusikausi`      | new season transition                |      |
+| 7776 | `uutisia`        | news/announcements                   |      |
+| 8802 | `zreseasongala`  | end-of-season gala                   |      |
+| 7226 | `tallennus`      | save game                            |      |
+| 7466 | `tulevatottelut` | upcoming matches viewer              |      |
+
+### Per-feature
+
+| Line      | Sub                       | Guess                                           | TODO                  |
+| --------- | ------------------------- | ----------------------------------------------- | --------------------- |
+| 441       | `aaaargh`                 | ❓ panic / bankrupt?                            | TODO                  |
+| 457       | `actionprint`             | render action menu                              |                       |
+| 519       | `al (fat%)`               | ❓ "al" = ?                                     | TODO                  |
+| 569       | `annanhal`                | "give the hall" — name arena?                   |                       |
+| 597       | `annarahaa`               | give money (cheat? subsidy?)                    | TODO                  |
+| 614       | `apulaisvalm`             | assistant trainer                               |                       |
+| 731       | `arpo`                    | "arpoo" = randomize / draw lottery              |                       |
+| 747       | `arpol`                   | randomize variant                               | TODO                  |
+| 776       | `arvox`                   | ❓ "arvonta-x"?                                 | TODO                  |
+| 786       | `asetukset`               | settings                                        |                       |
+| 822       | `automa`                  | autoplay handler                                |                       |
+| 932       | `baaorsmuutos`            | player-market price/availability change         |                       |
+| 955       | `bors`                    | player-market screen                            |                       |
+| 1061      | `borsgene`                | player-market entry generator                   |                       |
+| 1085      | `borsinit`                | player-market init                              |                       |
+| 1104      | `budget`                  | budget screen                                   |                       |
+| 1160      | `cuparpo`                 | cup draw                                        |                       |
+| 1187      | `cupjuhla`                | cup celebration                                 |                       |
+| 1211      | `cupohjelma`              | cup schedule view                               |                       |
+| 1256      | `dap (dep%)`              | ❓ — TODO                                       | TODO                  |
+| 1283      | `ehllopturmaar`           | EHL end-of-tournament setup                     |                       |
+| 1378      | `erikoisp`                | special action picker                           |                       |
+| 1414      | `euromaar`                | EHL setup                                       |                       |
+| 1448      | `faarao`                  | "pharaoh" — TODO event?                         | TODO                  |
+| 1467      | `fbimiehet`               | "FBI-men" — TODO event                          | TODO                  |
+| 1869      | `graph`                   | graph render                                    |                       |
+| 1915      | `haahaa`                  | event flavor?                                   | TODO same as `hahaa`? |
+| 1996      | `harjotte`                | training (harjoitus)                            |                       |
+| 2104      | `iaformaatio`             | "informaatio" = info screen                     | TODO typo?            |
+| 2140      | `intejasopu`              | "interview ja sopu" = interview & accord        |                       |
+| 2152      | `jaauniorit`              | distribute juniors                              |                       |
+| 2177      | `jaynacheck`              | prank check (jäynä)                             |                       |
+| 2268      | `joulutauko`              | Christmas break                                 |                       |
+| 2326      | `katsoket`                | view chains/lines (katso ketjut)                |                       |
+| 2391      | `katsopel`                | view player (katso pelaaja)                     |                       |
+| 2507      | `kausikorttimaar`         | season-ticket pricing                           |                       |
+| 2558      | `kc`                      | ❓ — TODO                                       | TODO                  |
+| 2571      | `ketjuchk`                | line-chain validation                           |                       |
+| 2639      | `ketlaita`                | edit chain ("ketju-laita")                      |                       |
+| 2687      | `klear (fat%)`            | clear (per team/player)                         |                       |
+| 2712      | `klearstat (fat%)`        | clear stats                                     |                       |
+| 2719      | `komme (sano%)`           | comment text                                    |                       |
+| 2737      | `krapulapiirto`           | hangover icon draw                              |                       |
+| 2747      | `kriisipalaveri`          | **crisis meeting** (matches MHM 97)             |                       |
+| 2892      | `kuitt`                   | "kuitti" = receipt / acknowledge                |                       |
+| 2912      | `kuntopuntari`            | condition meter (per league)                    |                       |
+| 2974      | `kutsuturnaus`            | invitation tournament                           |                       |
+| 3022      | `lentti (kuka%, sano%)`   | ❓ "lentää"? "lenttu"?                          | TODO                  |
+| 3014–3119 | `lax/lay/leq/lex/lux/luz` | various single-letter print helpers             | TODO each             |
+| 3119      | `maajoukkue`              | national team selection                         |                       |
+| 3151      | `maarpalk`                | salary set                                      |                       |
+| 3169      | `meanstuff`               | ❓ — TODO                                       | TODO                  |
+| 3255      | `mmkisaalku`              | MM-kisat start                                  |                       |
+| 3283      | `mmkisaloppu`             | MM-kisat end                                    |                       |
+| 3361      | `mor`                     | morale clamp helper                             |                       |
+| 3365      | `muilutus`                | "muilutus" = mugging?? — TODO event             | TODO                  |
+| 3390      | `mukachk`                 | participation check                             |                       |
+| 3410      | `naytaott`                | display match                                   |                       |
+| 3486      | `nollaux`                 | "zero out" generic                              |                       |
+| 3503      | `ont (ontto%)`            | ❓ "onttous" = hollowness??                     | TODO                  |
+| 3518      | `organisaatio`            | organization screen                             |                       |
+| 3619      | `osto2`                   | buy variant 2                                   | TODO vs. osto         |
+| 3660      | `otmuut (fat%)`           | "ottelu-muut" = match-others?                   | TODO                  |
+| 4062      | `palkmaar`                | salary determination                            |                       |
+| 4073      | `pankki`                  | bank screen                                     |                       |
+| 4147      | `pesc`                    | ❓ ESC handler?                                 | TODO                  |
+| 4155      | `piirtox`                 | drawing helper                                  |                       |
+| 4300      | `pisteet`                 | points / standings                              |                       |
+| 4430      | `pisteporssi (fat%)`      | points-stock — points exchange?                 | TODO                  |
+| 4475      | `pisteporssimaar`         | points-stock setup                              |                       |
+| 4564      | `plajaytajoukkueet`       | "play-jäynä joukkueet" — set prank-target teams | TODO                  |
+| 4589      | `playoffplajays`          | playoff seed-jäynä — TODO                       | TODO                  |
+| 4797      | `poisjun`                 | drop junior                                     |                       |
+| 4814      | `poisne`                  | ❓ "drop ne (=them)?"                           | TODO                  |
+| 4868      | `poispel`                 | drop player                                     |                       |
+| 4875      | `poispelaaja`             | drop player (full)                              |                       |
+| 4899      | `postia (posti%)`         | mail / postage event                            |                       |
+| 4908      | `potk (potcu%)`           | firing (potku)                                  |                       |
+| 4923      | `printket`                | print chains                                    |                       |
+| 5006      | `printpel (fat%)`         | print player                                    |                       |
+| 5181      | `protesti`                | **protest event** (matches MHM 97)              |                       |
+| 5224      | `rah`                     | money helper                                    |                       |
+| 5241      | `report`                  | match/round report                              |                       |
+| 5451      | `rstages`                 | "round-stages" — round subphases                | TODO                  |
+| 6173      | `scoutit`                 | scouts screen                                   |                       |
+| 6200      | `sex (stondis%)`          | "sex" = SCREEN handler? — TODO                  | TODO                  |
+| 6208      | `skandal`                 | scandal event                                   |                       |
+| 6219      | `skreensaver`             | screensaver                                     |                       |
+| 6267      | `snayt`                   | "summary nayt" — render summary                 | TODO                  |
+| 6312      | `sopimusext (fat%)`       | contract extension                              |                       |
+| 6590      | `sortbors`                | sort the player-market list                     |                       |
+| 6619      | `sortmaar`                | sort tables init                                |                       |
+| 6642      | `sponsorit`               | sponsors screen                                 |                       |
+| 6900      | `sporvagen`               | "spårvagen" = streetcar — TODO event            | TODO                  |
+| 6942      | `staulehlmaar`            | "standings-table-EHL" init                      |                       |
+| 6970      | `staulmaar`               | standings-table init                            |                       |
+| 7007      | `staulnayt`               | standings-table render                          |                       |
+| 7057      | `staulnaytehl`            | standings render — EHL                          |                       |
+| 7083      | `staulturmaar`            | standings — tournament init                     |                       |
+| 7117      | `suosikitchk`             | favorites check                                 |                       |
+| 7167      | `suunnitelma`             | strategy / plan                                 |                       |
+| 7394      | `tarjousmaar`             | offer determination                             |                       |
+| 7413      | `tarka%`                  | rounding/precision FUNCTION                     | TODO                  |
+| 7417      | `tarkistanhlc`            | NHL check                                       |                       |
+| 7433      | `tarko%`                  | precision/integrity FUNCTION                    | TODO                  |
+| 7443      | `taut`                    | illness handler                                 |                       |
+| 7448      | `teet (jup, jupp, juppp)` | "tee" = do — generic action                     | TODO                  |
+| 7453      | `tmankom`                 | "team-comment" / manager comment                | TODO                  |
+| 7457      | `tremaar`                 | training init                                   |                       |
+| 7571      | `tulonsiirto`             | "income transfer" — donation/tax?               | TODO                  |
+| 7603      | `turnaus`                 | tournament screen                               |                       |
+| 7656      | `tyytyma`                 | "tyytymä" = displeased — board-discontent       | TODO                  |
+| 8316      | `valitsestrat`            | choose strategy                                 |                       |
+| 8338      | `vastmaar`                | opponent setup                                  |                       |
+| 8375      | `vedonlyonti`             | betting screen                                  |                       |
+| 8412      | `veiktark`                | betting check                                   |                       |
+| 8429      | `voimamaar`               | strength setup                                  |                       |
+| 8583      | `xavier (fat%)`           | "Xavier" — TODO mystery character               | TODO                  |
+| 8665      | `ylmaar`                  | "yleisö-määritä" — audience setup               | TODO                  |
+
+CHAINs from ilex5:
+
+- `me$="2"` → iles5 statistics (`chainahdus=1`)
+- `me$="d"` → iles5 arena (`chainahdus=2`)
+- end-of-season → ilez5
+
+---
+
+## ILEZ5.BAS — between-seasons (~30 SUBs)
+
+| Line | Sub               | Guess                                | TODO |
+| ---- | ----------------- | ------------------------------------ | ---- |
+| 75   | `alkukevat`       | "early spring" = post-season opening |      |
+| 287  | `endseason`       | end-of-season main                   |      |
+| 555  | `gene`            | generate new players                 |      |
+| 896  | `maajoukkue`      | national team finalization           |      |
+| 940  | `managerisiirrot` | manager transfers/firings            |      |
+| 990  | `mmkisaloppu`     | MM-kisat end                         |      |
+| 1070 | `muutmestarit`    | non-PHL champions                    |      |
+| 1125 | `omasopimus`      | own contract negotiation             |      |
+| 1322 | `palkmaar`        | salaries for next season             |      |
+| 1333 | `pelaajasiirrot`  | player transfers                     |      |
+| 1832 | `tasomuut`        | level changes (promote/relegate)     |      |
+| 1980 | `valitsestrattie` | next-season strategy                 |      |
+
+(Plus the same standard helpers: `aaargh`, `borsinit`, `colchk`, `ku`,
+`klear`, `klearstat`, `wnd`, `lt`, `lentti`, `mahmax`, `pjn`, `poispel`,
+`poispelaaja`, `qelp`, `rela`, `sarjamaar`, `sortmaar`, `tasomaar`,
+`tmankom` — same shape as in ilex5.)
+
+CHAINs back to ilex5 for new season.
+
+---
+
+## ILES5.BAS — utilities (~16 SUBs)
+
+| Line | Sub            | Guess                      | TODO |
+| ---- | -------------- | -------------------------- | ---- |
+| 30   | `areena`       | arena renovation screen    |      |
+| 364  | `remppa`       | "remppa" = renovation work |      |
+| 548  | `statistiikka` | statistics viewer          |      |
+
+(Plus standard helpers: `colchk`, `haahaa`, `klearstat`, `ku`, `kuva`,
+`lax`, `lay`, `leq`, `lt`, `pjn`, `qelp`, `tarjousmaar`, `wnd`.)
+
+Entry on CHAIN: dispatch on `chainahdus` (1=stats, 2=arena), then
+CHAIN back to ilex5.
+
+---
+
+## Cross-file standard helpers (defined in every program)
+
+These exist multiple times because each CHAIN'd .EXE is independent.
+They're the mhm2k stdlib:
+
+- `wnd (sex%)` — wait for keypress window
+- `colchk (colre%)` — color/palette setup
+- `ku (kuz%, ku1%, ku2%)` — UI box drawing
+- `lt (lue$, lukux%)` — formatted text printer
+- `pjn` — TODO
+- `qelp (qel%)` — help/popup
+- `kuva (tied$)` — load image
+- `klear (fat%)` / `klearstat (fat%)` — clear team / stats
+- `tmankom (sano%)` — manager comment
+- `mahmax` — TODO
+- `lentti (kuka%, sano%)` — TODO
+- `haahaa (haha%)` — flavor text
+- `lax/lay/leq/lex/lux/luz (fat%)` — print helpers (TODO map each)
+
+These should consolidate into our shared TS UI primitives in the port.
+
+---
+
+## High-priority decode targets
+
+For a port, rank-ordered:
+
+1. **`ottpel`** + **`ottul`** (ilex5:3709 / 4018) — match simulation.
+2. **`gameday`** + **`gamedayhaara`** — gameday loop.
+3. **`sattuma`** — random events.
+4. **`endseason`** — promote/relegate, awards, season rollover.
+5. **`bors`** + **`borsgene`** + **`baaorsmuutos`** — player market (börssi).
+6. **`pelaajasiirrot`** + **`omasopimus`** — transfer market.
+7. **`mmkisaloppu`** — MM-kisat resolution.
+8. **`kriisipalaveri`** — crisis meeting (already exists in MHM 97).
+9. **`protesti`** — protest event (already exists in MHM 97).
+10. **`muilutus`**, **`faarao`**, **`fbimiehet`**, **`xavier`**,
+    **`sporvagen`** — extra random events that don't ring bells from
+    MHM 97. New material!

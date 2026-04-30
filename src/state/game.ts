@@ -1,0 +1,49 @@
+import type { Competition, CompetitionId } from "@/types/competitions";
+import type { ManagerDefinition } from "@/data/managers";
+
+export type TeamEffect = {
+  parameter: string[];
+  amount: number | string;
+  duration: number;
+  extra?: Record<string, unknown>;
+};
+
+export type Team = {
+  id: number;
+  name: string;
+  strength: number;
+  domestic: boolean;
+  morale: number;
+  strategy: number;
+  readiness: number;
+  effects: TeamEffect[];
+  opponentEffects: TeamEffect[];
+  manager?: string;
+};
+
+export type GameFlags = {
+  jarko: boolean;
+  usa: boolean;
+  canada: boolean;
+  haanperaMarried: boolean;
+  mauto: boolean;
+  psycho: number | undefined;
+};
+
+export type WorldChampionshipEntry = {
+  id: string;
+  name: string;
+  strength: number;
+  luck: number;
+  random: number;
+};
+
+export type GameState = {
+  turn: { season: number; round: number; phase: string | undefined };
+  flags: GameFlags;
+  serviceBasePrices: Record<string, number>;
+  managers: ManagerDefinition[];
+  competitions: Record<CompetitionId, Competition>;
+  teams: Team[];
+  worldChampionshipResults: WorldChampionshipEntry[] | undefined;
+};

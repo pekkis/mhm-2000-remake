@@ -1,38 +1,42 @@
-import React from "react";
-import { Box } from "theme-ui";
+import { entries } from "remeda";
+import Box from "./ui/Box";
+import { useGameContext } from "@/context/game-machine-context";
+import PhaseStatusPhase from "@/components/context-sensitive/PhaseStatusPhase";
 
-const humanReadables = Map([
-  ["loss", "tappiota"],
-  ["noWin", "voitotonta ottelua"],
-  ["noLoss", "tappiotonta ottelua"],
-  ["win", "voittoa"]
-]);
+const humanReadables: Record<string, string> = {
+  loss: "tappiota",
+  noWin: "voitotonta ottelua",
+  noLoss: "tappiotonta ottelua",
+  win: "voittoa"
+};
 
-const Streaks = props => {
-  const { competition, team, streaks } = props;
+type StreaksProps = {
+  competition: string;
+  team: number;
+};
 
-  const teamStreaks = streaks
-    .getIn([team.toString(), competition], Map())
-    .filter(s => s > 1);
+const Streaks = ({ competition, team }: StreaksProps) => {
+  const streaks = useGameContext((ctx) => ctx.stats.streaks.team);
 
-  if (teamStreaks.count() === 0) {
+  const teamStreaks = streaks?.[team]?.[competition] ?? {};
+  const filtered = entries(teamStreaks).filter(([, s]) => s > 1);
+
+  if (filtered.length === 0) {
     return null;
   }
 
   return (
-    <Box my={1}>
-      <h4>Putket</h4>
-      {teamStreaks
-        .filter(s => s > 1)
-        .map((s, index) => {
+    <PhaseStatusPhase heading="Putket">
+      <Box>
+        {filtered.map(([key, s]) => {
           return (
-            <div key={index}>
-              <strong>{s}</strong> {humanReadables.get(index)} putkeen.
-            </div>
+            <Box key={key}>
+              <strong>{s}</strong> {humanReadables[key]} putkeen.
+            </Box>
           );
-        })
-        .toList()}
-    </Box>
+        })}
+      </Box>
+    </PhaseStatusPhase>
   );
 };
 

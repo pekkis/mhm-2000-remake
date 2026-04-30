@@ -1,27 +1,40 @@
-import React from "react";
+import Stack from "@/components/ui/Stack";
 import EventsList from "./events/Events";
-import ManagerInfo from "./containers/ManagerInfoContainer";
-import Header from "./containers/HeaderContainer";
-import HeaderedPage from "./ui/HeaderedPage";
-import { Box } from "theme-ui";
+import ManagerInfo from "./ManagerInfo";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
+import { activeManager } from "@/machines/selectors";
+import Heading from "@/components/ui/Heading";
 
-const Events = props => {
-  const { manager, resolveEvent, events } = props;
+const Events = () => {
+  const game = GameMachineContext.useActorRef();
+  const manager = useGameContext(activeManager);
+  const events = useGameContext((ctx) => ctx.event.events);
 
   return (
-    <HeaderedPage>
-      <Header />
-      <ManagerInfo details />
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu />}
+      managerInfo={<ManagerInfo details />}
+    >
+      <Stack gap="lg">
+        <Heading level={2}>Tapahtumat</Heading>
 
-      <Box p={1}>
-        <h2>Tapahtumat</h2>
         <EventsList
           manager={manager}
           events={events}
-          resolveEvent={resolveEvent}
+          onAnswer={(e, key) =>
+            game.send({
+              type: "RESOLVE_EVENT",
+              payload: { id: e.id, value: key }
+            })
+          }
         />
-      </Box>
-    </HeaderedPage>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

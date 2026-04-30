@@ -1,41 +1,43 @@
-import React, { FunctionComponent } from "react";
-import competitionTypes from "../../services/competition-type";
-import Game from "./Game";
-import { Box } from "theme-ui";
-import { CompetitionGroup, MapOf } from "../../types/base";
-import { Team } from "../../types/team";
-import { HumanManager } from "../../types/manager";
+import type { FC } from "react";
+import competitionTypes from "@/services/competition-type";
+import { Table } from "@/components/ui/Table";
+import MatchRow from "@/components/team/MatchRow";
+import type { Team } from "@/state/game";
+import type { Manager } from "@/state/manager";
+import type { Group } from "@/types/competitions";
 
-interface Props {
-  context: CompetitionGroup;
-  teams: MapOf<Team>;
-  managers: HumanManager[];
+type GamesProps = {
+  teams: Team[];
+  context: Group;
   round: number;
-}
+  managers: Record<string, Manager>;
+};
 
-const Games: FunctionComponent<Props> = props => {
-  const { teams, context, round, managers } = props;
-
-  const playMatchFunc = competitionTypes[context.type].playMatch;
-
-  const pairings = context.schedule[round].filter((_, i) =>
-    playMatchFunc(context, round, i)
-  );
+const Games: FC<GamesProps> = ({ teams, context, round, managers }) => {
+  const playMatch = competitionTypes[context.type].playMatch;
+  const pairings = (context.schedule[round] ?? []).filter((_p, i) => {
+    return playMatch(context, round, i);
+  });
 
   return (
-    <Box my={1}>
-      {pairings.map((pairing, i) => {
-        return (
-          <Game
+    <Table>
+      <tbody>
+        {pairings.map((pairing, i) => (
+          <MatchRow
             key={i}
-            context={context}
-            pairing={pairing}
-            teams={teams}
+            home={teams[context.teams[pairing.home]]}
+            away={teams[context.teams[pairing.away]]}
+            score={
+              pairing.result
+                ? `${pairing.result.home}–${pairing.result.away}`
+                : undefined
+            }
+            reserveScore
             managers={managers}
           />
-        );
-      })}
-    </Box>
+        ))}
+      </tbody>
+    </Table>
   );
 };
 

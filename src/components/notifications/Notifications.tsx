@@ -1,26 +1,22 @@
-import React, { FunctionComponent } from "react";
+import * as styles from "./Notifications.css";
 import Notification from "./Notification";
-import { useDispatch, useSelector } from "react-redux";
-import { MHMState } from "../../ducks";
-import { values } from "ramda";
+import { NotificationsContext } from "@/context/notifications-context";
+import { GameMachineContext } from "@/context/game-machine-context";
 
-const Notifications: FunctionComponent = () => {
-  const dispatch = useDispatch();
-  const notifications = useSelector(
-    (state: MHMState) => state.notification.notifications
+const Notifications = () => {
+  const appActor = GameMachineContext.useActorRef();
+  const notifications = NotificationsContext.useSelector(
+    (s) => s.context.notifications
   );
 
   return (
-    <div
-      css={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%"
-      }}
-    >
-      {values(notifications).map(n => (
-        <Notification key={n.id} dispatch={dispatch} notification={n} />
+    <div className={styles.notifications}>
+      {notifications.toReversed().map((ref) => (
+        <Notification
+          key={ref.id}
+          actorRef={ref}
+          dismiss={(id) => appActor.send({ type: "DISMISS_NOTIFICATION", id })}
+        />
       ))}
     </div>
   );

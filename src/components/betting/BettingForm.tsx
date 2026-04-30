@@ -1,125 +1,142 @@
-import React, { FunctionComponent } from "react";
-import { Formik } from "formik";
-import { amount as a } from "../../services/format";
-import Button from "../form/Button";
-import TeamName from "../team/TeamName";
-import { bet, BettingCouponRow } from "../../ducks/betting";
+import type { FC } from "react";
+import { useForm, Controller } from "react-hook-form";
+import Slider from "@/components/ui/form/Slider";
+import { amount as a } from "@/services/format";
+import Button from "@/components/ui/Button";
+import TeamName from "@/components/team/Name";
+import type { Team } from "@/state/game";
+import type { Manager } from "@/state/manager";
+import type { Competition } from "@/types/competitions";
+import { entries } from "remeda";
+import Stack from "@/components/ui/Stack";
+import Box from "@/components/ui/Box";
 
-interface Props {
-  bet: typeof bet;
-}
+type BettingFormValues = {
+  "0": string;
+  "1": string;
+  "2": string;
+  "3": string;
+  "4": string;
+  "5": string;
+  amount: number;
+};
 
-const BettingForm: FunctionComponent<Props> = props => {
-  const { manager, competition, teams, bet } = props;
+type BettingFormProps = {
+  manager: Manager;
+  competition: Competition;
+  teams: Team[];
+  bet: (coupon: string[], amount: number) => void;
+  turn?: unknown;
+};
 
-  const group = competition.getIn(["phases", 0, "groups", 0]);
-  const round = group.get("round");
+const BettingForm: FC<BettingFormProps> = ({ competition, teams, bet }) => {
+  const group = competition.phases[0].groups[0];
+  const round = group.round;
+  const pairings = group.schedule[round];
 
-  const pairings = group.getIn(["schedule", round]);
-
-  return (
-    <Formik
-      initialValues={{
+  const { register, handleSubmit, control, watch } = useForm<BettingFormValues>(
+    {
+      defaultValues: {
         "0": "",
         "1": "",
         "2": "",
         "3": "",
         "4": "",
         "5": "",
-        amount: "10000"
-      }}
-      onSubmit={values => {
-        const coupon = [
-          values["0"] as BettingCouponRow,
-          values["1"] as BettingCouponRow,
-          values["2"] as BettingCouponRow,
-          values["3"] as BettingCouponRow,
-          values["4"] as BettingCouponRow,
-          values["5"] as BettingCouponRow
-        ];
+        amount: 10000
+      }
+    }
+  );
 
-        bet(manager.get("id"), coupon, parseInt(values.amount, 10));
-      }}
-    >
-      {({ values, setFieldValue, handleChange, handleSubmit }) => {
-        return (
-          <form onSubmit={handleSubmit}>
-            {pairings.map((pairing, i) => {
-              return (
-                <div key={i}>
-                  <div>
-                    <TeamName
-                      team={teams.get(
-                        group.getIn(["teams", pairing.get("home")])
-                      )}
-                    />{" "}
-                    -{" "}
-                    <TeamName
-                      team={teams.get(
-                        group.getIn(["teams", pairing.get("away")])
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <label>
-                      <input
-                        name={i.toString()}
-                        type="radio"
-                        value="1"
-                        checked={values[i.toString()] === "1"}
-                        onChange={handleChange}
-                      />{" "}
-                      1
-                    </label>
-                    <label>
-                      <input
-                        name={i.toString()}
-                        type="radio"
-                        value="x"
-                        checked={values[i.toString()] === "x"}
-                        onChange={handleChange}
-                      />{" "}
-                      x
-                      <label>
-                        <input
-                          name={i.toString()}
-                          type="radio"
-                          value="2"
-                          checked={values[i.toString()] === "2"}
-                          onChange={handleChange}
-                        />{" "}
-                        2
-                      </label>
-                    </label>
-                  </div>
+  const values = watch();
+
+  const onSubmit = (data: BettingFormValues) => {
+    const coupon = [
+      data["0"],
+      data["1"],
+      data["2"],
+      data["3"],
+      data["4"],
+      data["5"]
+    ];
+    bet(coupon, data.amount);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Stack gap="md">
+        <Stack gap="sm">
+          {pairings.map((pairing, i) => {
+            const name = i.toString() as keyof BettingFormValues;
+            return (
+              <div key={i}>
+                <div>
+                  <TeamName team={teams[group.teams[pairing.home]]} /> -{" "}
+                  <TeamName team={teams[group.teams[pairing.away]]} />
                 </div>
-              );
-            })}
+                <div>
+                  <label>
+                    <input
+                      type="radio"
+                      value="1"
+                      {...register(name, { required: true })}
+                    />{" "}
+                    1
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="x"
+                      {...register(name, { required: true })}
+                    />{" "}
+                    x
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="2"
+                      {...register(name, { required: true })}
+                    />{" "}
+                    2
+                  </label>
+                </div>
+              </div>
+            );
+          })}
+        </Stack>
 
-            <div>
-              <Slider
-                min={10000}
-                max={1000000}
-                step={10000}
-                value={values.amount}
-                onChange={value => {
-                  setFieldValue("amount", value);
-                }}
-              />
-              <strong>{a(values.amount)}</strong> pekkaa
-            </div>
+        <Stack direction="row">
+          <Box flex="1">
+            <Controller
+              name="amount"
+              control={control}
+              render={({ field }) => (
+                <Slider
+                  min={10000}
+                  max={1000000}
+                  step={10000}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </Box>
+          <Box>
+            <strong>{a(values.amount)}</strong> pekkaa
+          </Box>
+        </Stack>
 
-            <Button
-              disabled={Seq(values).some(value => value === "")}
-              block
-              type="submit"
-            >
-              Veikkaa
-            </Button>
-          </form>
-        );
-      }}
-    </Formik>
+        <Button
+          disabled={entries(values).some(
+            ([k, v]) => k !== "amount" && v === ""
+          )}
+          block
+          type="submit"
+        >
+          Veikkaa
+        </Button>
+      </Stack>{" "}
+    </form>
   );
 };
 

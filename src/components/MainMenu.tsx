@@ -1,57 +1,26 @@
-import React, { FunctionComponent } from "react";
-
-import Events from "./events/Events";
 import Situation from "./context-sensitive/Situation";
 import ManagerInfo from "./ManagerInfo";
-import Header from "./Header";
-import HeaderedPage from "./ui/HeaderedPage";
-import Forward from "./fixed-bar/Forward";
+import StickyMenu from "./StickyMenu";
+import Forward from "./context-sensitive/Forward";
 import Current from "./context-sensitive/Current";
 
-import { Box } from "theme-ui";
-import { useSelector, useDispatch } from "react-redux";
-import { MHMState } from "../ducks";
-import { HumanManager } from "../types/manager";
-import {
-  selectActiveManager,
-  interestingCompetitions,
-  weightedCompetitions
-} from "../services/selectors";
-import FixedBar from "./fixed-bar/FixedBar";
-import MenuButton from "./fixed-bar/MenuButton";
-import ButtonRow from "./fixed-bar/ButtonRow";
-import PrimaryButton from "./fixed-bar/PrimaryButton";
+import { useGameContext } from "@/context/game-machine-context";
+import { activeManager, interestingCompetitions } from "@/machines/selectors";
+import AdvancedHeaderedPage from "@/components/ui/AdvancedHeaderedPage";
+import Stack from "@/components/ui/Stack";
 
-const MainMenu: FunctionComponent = () => {
-  const manager = useSelector<MHMState, HumanManager>(selectActiveManager);
-
-  const interesting = useSelector(interestingCompetitions(manager.id));
-  const competitions = useSelector(
-    (state: MHMState) => state.competition.competitions
-  );
-
-  const teams = useSelector((state: MHMState) => state.team.teams);
-
-  const events = useSelector((state: MHMState) => state.event.events);
-
-  const dispatch = useDispatch();
-
-  console.log("hello");
+const MainMenu = () => {
+  const manager = useGameContext(activeManager);
+  const teams = useGameContext((ctx) => ctx.teams);
+  const competitions = useGameContext((ctx) => ctx.competitions);
+  const interesting = useGameContext(interestingCompetitions);
 
   return (
-    <HeaderedPage>
-      <FixedBar>
-        <ButtonRow>
-          <MenuButton />
-          <PrimaryButton>
-            <Forward />
-          </PrimaryButton>
-        </ButtonRow>
-      </FixedBar>
-
-      <ManagerInfo details />
-
-      <Box p={[1, 3]}>
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu menu forward={<Forward />} />}
+      managerInfo={<ManagerInfo details />}
+    >
+      <Stack gap="lg">
         <Current />
 
         <Situation
@@ -60,10 +29,8 @@ const MainMenu: FunctionComponent = () => {
           interesting={interesting}
           teams={teams}
         />
-
-        {/*<Events manager={manager} events={events} resolveEvent={resolveEvent} />*/}
-      </Box>
-    </HeaderedPage>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

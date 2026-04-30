@@ -1,35 +1,48 @@
-import React, { FunctionComponent } from "react";
 import StartMenu from "./StartMenu";
 import Game from "./Game";
-import * as Sentry from "@sentry/browser";
-import { useSelector } from "react-redux";
-import { MHMState } from "../ducks";
-import LoadingScreen from "./LoadingScreen";
+import { ErrorBoundary } from "react-error-boundary";
+import type { FC } from "react";
+import { AppMachineContext } from "@/context/app-machine-context";
+import { GameMachineContext } from "@/context/game-machine-context";
+import Paragraph from "./ui/Paragraph";
 
-/*
-    Sentry.withScope(scope => {
-      Object.keys(info).forEach(key => {
-        scope.setExtra(key, info[key]);
-      });
-      Sentry.captureException(error);
-    });
-*/
+const ErrorFallback = () => (
+  <div>
+    <h1>Jokin meni pieleen. Voi örr!</h1>
+    <Paragraph>Syynä lienee tieteelle tuntematon bugi.</Paragraph>
+    <Paragraph>
+      Virhe on toivottavasti jo lähetetty palvelimelle turvaan ja Pekkis näkee
+      sen! Toivottavasti olit tallentanut, koska tästä ei toivuta!
+    </Paragraph>
+  </div>
+);
 
-const App: FunctionComponent = () => {
-  const started = useSelector<MHMState, boolean>(state => state.game.started);
-  const isLoading = useSelector((state: MHMState) => state.ui.isLoading);
+const GameProvider: FC = () => {
+  const gameRef = AppMachineContext.useSelector(
+    (state) => state.context.gameRef
+  );
 
-  if (isLoading) {
-    return <LoadingScreen />;
+  if (!gameRef) {
+    return null;
   }
 
-  switch (true) {
-    case !started:
-      return <StartMenu />;
+  return (
+    <GameMachineContext.Provider actor={gameRef}>
+      <Game />
+    </GameMachineContext.Provider>
+  );
+};
 
-    default:
-      return <Game />;
-  }
+const App: FC = () => {
+  const playing = AppMachineContext.useSelector((state) => {
+    return state.matches("playing");
+  });
+
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      {playing ? <GameProvider /> : <StartMenu />}
+    </ErrorBoundary>
+  );
 };
 
 export default App;

@@ -1,62 +1,70 @@
-import React from "react";
-import { CRISIS_MORALE_MAX } from "../data/constants";
-import Button from "./form/Button";
-import Header from "./containers/HeaderContainer";
-import HeaderedPage from "./ui/HeaderedPage";
-import ManagerInfo from "./containers/ManagerInfoContainer";
+import Button from "./ui/Button";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import ManagerInfo from "./ManagerInfo";
 import Calendar from "./ui/Calendar";
-import { Box } from "theme-ui";
+import Heading from "@/components/ui/Heading";
+import Stack from "@/components/ui/Stack";
+import Paragraph from "./ui/Paragraph";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
 
-// import crisis from "../data/crisis";
-import { currency as c } from "../services/format";
-import { getEffective } from "../services/effects";
+import crisis from "@/data/crisis";
+import { currency as c } from "@/services/format";
+import { getEffective } from "@/services/effects";
+import { activeManager, canCrisisMeeting } from "@/machines/selectors";
 
-const CrisisActions = props => {
-  const { manager, teams, competitions, crisisMeeting } = props;
+const CrisisActions = () => {
+  const manager = useGameContext(activeManager);
+  const teams = useGameContext((ctx) => ctx.teams);
+  const competitions = useGameContext((ctx) => ctx.competitions);
+  const canDo = useGameContext(canCrisisMeeting(manager.id));
+  const gameActor = GameMachineContext.useActorRef();
 
-  const balance = manager.get("balance");
-  const team = getEffective(teams.get(manager.get("team")));
-
+  const team = getEffective(teams[manager.team!]);
   const crisisInfo = crisis(team, competitions);
 
   return (
-    <HeaderedPage>
-      <Header back />
-
-      <ManagerInfo details />
-
-      <Box p={1}>
-        <h2>Kriisipalaveri</h2>
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu back />}
+      managerInfo={<ManagerInfo details />}
+    >
+      <Stack gap="lg">
+        <Heading level={2}>Kriisipalaveri</Heading>
 
         <Calendar
-          when={c => c.get("crisisMeeting")}
+          when={(c) => c.crisisMeeting}
           fallback={
-            <p>
+            <Paragraph>
               Tässä vaiheessa kautta on auttamatta liian myöhäistä
               kriisipalaveroida!
-            </p>
+            </Paragraph>
           }
         >
-          <p>
-            Kriisipalaveri auttaa joukkuetta unohtamaan tappioputken ja
-            keskittymään tulevaan. Se maksaa {c(crisisInfo.get("amount"))}.
-          </p>
+          <Stack gap="md">
+            <Paragraph>
+              Kriisipalaveri auttaa joukkuetta unohtamaan tappioputken ja
+              keskittymään tulevaan. Se maksaa {c(crisisInfo.amount)}.
+            </Paragraph>
 
-          <Button
-            block
-            disabled={
-              balance < crisisInfo.get("amount") ||
-              team.get("morale") > CRISIS_MORALE_MAX
-            }
-            onClick={() => {
-              crisisMeeting(manager.get("id"));
-            }}
-          >
-            Pidä kriisipalaveri
-          </Button>
+            <Button
+              block
+              disabled={!canDo}
+              onClick={() =>
+                gameActor.send({
+                  type: "CRISIS_MEETING",
+                  payload: { manager: manager.id }
+                })
+              }
+            >
+              Pidä kriisipalaveri
+            </Button>
+          </Stack>
         </Calendar>
-      </Box>
-    </HeaderedPage>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

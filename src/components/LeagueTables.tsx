@@ -1,56 +1,54 @@
-import React from "react";
-import Table from "./league-table/Table";
-import Header from "./Header";
-import HeaderedPage from "./ui/HeaderedPage";
-import { Box } from "theme-ui";
-import { useSelector } from "react-redux";
-import {
-  humanManagers,
-  allTeamsMap,
-  weightedCompetitions
-} from "../services/selectors";
-import { CompetitionGroup, RoundRobinCompetitionGroup } from "../types/base";
+import { useState } from "react";
+import { values } from "remeda";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import Heading from "@/components/ui/Heading";
+import Stack from "@/components/ui/Stack";
+import Tabs, { type TabItem } from "@/components/ui/Tabs";
+import LeagueTable from "@/components/league-table/LeagueTable";
+import { useGameContext } from "@/context/game-machine-context";
+import ManagerInfo from "@/components/ManagerInfo";
 
-const LeagueTables = props => {
-  const managers = useSelector(humanManagers);
-  const teams = useSelector(allTeamsMap);
-  const competitions = useSelector(weightedCompetitions);
+const LeagueTables = () => {
+  const managers = useGameContext((ctx) => ctx.manager.managers);
+  const teams = useGameContext((ctx) => ctx.teams);
+  const competitions = useGameContext((ctx) => ctx.competitions);
+
+  const [tab, setTab] = useState(0);
+
+  const items: TabItem[] = values(competitions)
+    .filter((c) => c.phase >= 0)
+    .map((c) => {
+      const groups = c.phases[0].groups;
+      return {
+        title: c.name,
+        content: () => (
+          <Stack gap="md">
+            {groups.map((group, i) => (
+              <Stack key={i} gap="sm">
+                {<Heading level={3}>{group.name}</Heading>}
+                <LeagueTable
+                  division={group}
+                  managers={managers}
+                  teams={teams}
+                />
+              </Stack>
+            ))}
+          </Stack>
+        )
+      };
+    });
 
   return (
-    <HeaderedPage>
-      <Header back />
-      <Box p={1}>
-        <h2>Sarjataulukot</h2>
-
-        {competitions
-          .filter(c => c.phase >= 0)
-          .map(c => {
-            const phase = c.phases[0];
-
-            if (phase.type !== "round-robin") {
-              return null;
-            }
-
-            return (
-              <div key={c.id}>
-                <h3>{c.name}</h3>
-                {(phase.groups as CompetitionGroup[]).map((group, i) => {
-                  return (
-                    <div key={i}>
-                      <h4>{group.name}</h4>
-                      <Table
-                        division={group as RoundRobinCompetitionGroup}
-                        managers={managers}
-                        teams={teams}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-      </Box>
-    </HeaderedPage>
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu back />}
+      managerInfo={<ManagerInfo details />}
+    >
+      <Stack gap="lg">
+        <Heading level={2}>Sarjataulukot</Heading>
+        <Tabs items={items} selected={tab} onSelect={setTab} />
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

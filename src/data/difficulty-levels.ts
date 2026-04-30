@@ -1,0 +1,105 @@
+/*
+IF vai = 1 AND mo < -6 THEN mo = -6
+IF vai = 2 AND mo < -10 THEN mo = -10
+IF vai = 3 AND mo < -14 THEN mo = -14
+IF vai = 4 AND mo < -18 THEN mo = -18
+IF vai = 5 AND mo < -22 THEN mo = -22
+IF mo > 12 THEN mo = 12
+IF vai = 5 AND mo > 8 THEN mo = 8
+
+IF vai$ = "1" THEN vai = 1: banki = 1: ghalli = 1: moplus = 1: raha = 1000000: GOTO hgg
+IF vai$ = "2" THEN vai = 2: banki = 1: ghalli = 0: moplus = 1: raha = 500000: GOTO hgg
+IF vai$ = "3" THEN vai = 3: banki = 0: ghalli = 0: moplus = 0: raha = 0: GOTO hgg
+IF vai$ = "4" THEN vai = 4: banki = 0: ghalli = 0: moplus = -1: raha = -250000: GOTO hgg
+IF vai$ = "5" THEN vai = 5: banki = 0: ghalli = 0: moplus = -1: raha = -600000: GOTO hgg
+*/
+
+export type DifficultyLevel = {
+  value: number;
+  name: string;
+  description: string;
+  moraleMin: number;
+  moraleMax: number;
+  moraleBoost: number;
+  startBalance: number;
+  pranksPerSeason: number;
+  extra: number;
+  salary: (competition: string) => number;
+  rallyMorale: number;
+  rallyExtra: (competition: string) => number;
+};
+
+const difficultyLevels: DifficultyLevel[] = [
+  {
+    value: 0,
+    name: "Nörttivatsa",
+    description: "Sokeria, sokeria!",
+    moraleMin: -6,
+    moraleMax: 12,
+    moraleBoost: 1,
+    startBalance: 1000000,
+    pranksPerSeason: 5,
+    extra: 3000,
+    salary: (competition) => (competition === "phl" ? 2600 : 2000),
+    rallyMorale: 33,
+    rallyExtra: (competition) => (competition === "phl" ? 40000 : 10000)
+  },
+  {
+    value: 1,
+    name: "Maitovatsa",
+    description: "Rutkasti maitoa, kiitos!",
+    moraleMin: 10,
+    moraleMax: 12,
+    moraleBoost: 1,
+    startBalance: 500000,
+    pranksPerSeason: 4,
+    extra: 0,
+    salary: (competition) => (competition === "phl" ? 3000 : 2350),
+    rallyMorale: 33,
+    rallyExtra: (competition) => (competition === "phl" ? 35000 : 10000)
+  },
+  {
+    value: 2,
+    name: "Kahvivatsa",
+    description: "Kahvi kahvina, maito maitona",
+    moraleMin: -14,
+    moraleMax: 12,
+    moraleBoost: 0,
+    startBalance: 0,
+    pranksPerSeason: 3,
+    extra: 0,
+    salary: (competition) => (competition === "phl" ? 3200 : 2700),
+    rallyMorale: 33,
+    rallyExtra: (competition) => (competition === "phl" ? 30000 : 10000)
+  },
+  {
+    value: 3,
+    name: "Vatsahaava",
+    description: "Vahvan elämyksen ystäville",
+    moraleMin: -18,
+    moraleMax: 12,
+    moraleBoost: -1,
+    startBalance: -250000,
+    pranksPerSeason: 2,
+    extra: -3000,
+    salary: (competition) => (competition === "phl" ? 3500 : 2900),
+    rallyMorale: 33,
+    rallyExtra: (competition) => (competition === "phl" ? 25000 : 10000)
+  },
+  {
+    value: 4,
+    name: "Vatsakatarri",
+    description: "Todellista tervanjuontia",
+    moraleMin: -22,
+    moraleMax: 8,
+    moraleBoost: -1,
+    startBalance: -600000,
+    pranksPerSeason: 1,
+    extra: -3000,
+    salary: (competition) => (competition === "phl" ? 4000 : 3200),
+    rallyMorale: 15,
+    rallyExtra: (competition) => (competition === "phl" ? 20000 : 10000)
+  }
+];
+
+export default difficultyLevels;

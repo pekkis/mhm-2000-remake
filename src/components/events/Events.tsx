@@ -1,57 +1,26 @@
-import React from "react";
-import Markdown from "react-markdown";
-// import eventList from "../../data/events";
+import { values } from "remeda";
+import EventResolver from "./EventResolver";
+import type { StoredEvent } from "@/state/event";
+import Paragraph from "@/components/ui/Paragraph";
+import Stack from "@/components/ui/Stack";
 
-const Events = props => {
-  const { events, manager, resolveEvent } = props;
+type EventsListProps = {
+  events: Record<string, StoredEvent>;
+  manager: { id: string };
+  onAnswer: (event: StoredEvent, key: string) => void;
+};
 
-  const managersEvents = events.filter(
-    e => e.get("manager") === manager.get("id")
-  );
+const Events = ({ events, manager, onAnswer }: EventsListProps) => {
+  const managersEvents = values(events).filter((e) => e.manager === manager.id);
 
   return (
-    <div>
-      <p>{managersEvents.count()} tapahtumaa...</p>
+    <Stack>
+      {managersEvents.length === 0 && <Paragraph>Ei tapahtumia.</Paragraph>}
 
-      {managersEvents
-        .map(e => {
-          const event = eventList.get(e.get("eventId"));
-
-          return (
-            <div key={e.get("id")}>
-              <Markdown
-                source={event
-                  .render(e)
-                  .filter(t => t)
-                  .join("\n\n")}
-              />
-              {!e.get("resolved") && (
-                <ul>
-                  {event
-                    .options(e)
-                    .map((option, key) => {
-                      return (
-                        <li key={key}>
-                          <a
-                            href="#"
-                            onClick={evt => {
-                              evt.preventDefault();
-                              resolveEvent(e, key);
-                            }}
-                          >
-                            {option}
-                          </a>
-                        </li>
-                      );
-                    })
-                    .toList()}
-                </ul>
-              )}
-            </div>
-          );
-        })
-        .toList()}
-    </div>
+      {managersEvents.map((e) => (
+        <EventResolver key={e.id} event={e} onAnswer={onAnswer} />
+      ))}
+    </Stack>
   );
 };
 

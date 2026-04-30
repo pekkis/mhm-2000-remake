@@ -1,0 +1,11 @@
+allowBuilds:
+  core-js: true
+  core-js-pure: true
+  ejs: true
+  esbuild: true
+  fsevents: true
+  highlight.js: true
+  styled-components: true
+disallowWorkspaceCycles: true
+
+minimumReleaseAge: 4320

@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from "react";
-import { Switch, Route } from "react-router";
+import { Routes, Route } from "react-router-dom";
+
 import MainMenu from "./MainMenu";
 import TransferMarket from "./TransferMarket";
 import LeagueTables from "./LeagueTables";
 import DeveloperMenu from "./DeveloperMenu";
-import StrategyMenu from "./StrategyMenu";
+import SelectStrategy from "./SelectStrategy";
 import Events from "./Events";
 import News from "./News";
 import Gameday from "./Gameday";
@@ -18,98 +18,168 @@ import ModalMenu from "./ModalMenu";
 import ChampionshipBetting from "./ChampionshipBetting";
 import Betting from "./Betting";
 import EndOfSeason from "./EndOfSeason";
-import LoadingScreen from "./LoadingScreen";
 import WorldChampionships from "./WorldChampionships";
 import Stats from "./Stats";
 import Invitations from "./Invitations";
 import Gala from "./Gala";
-import { useSelector } from "react-redux";
-import { MHMState } from "../ducks";
-import { Turn } from "../types/base";
-import BudgetOrganizationMenu from "./BudgetOrganizationMenu";
-import SponsorsMenu from "./SponsorsMenu";
-import ContractNegotiation from "./ContractNegotiation";
-import SquadMenu from "./SquadMenu";
-import LineupMenu from "./LineupMenu";
+import { NotificationsContext } from "@/context/notifications-context";
+import type { ActorRefFrom } from "xstate";
+import type { notificationsMachine } from "@/machines/notifications";
+import type { FC } from "react";
+import { GameMachineContext } from "@/context/game-machine-context";
 
-interface Props {
-  turn: Turn;
-}
+type PhaseProps = {
+  phase: string | undefined;
+};
 
-const Phase: FunctionComponent<Props> = props => {
-  const { turn } = props;
+const useUiPhase = (): string | undefined => {
+  return GameMachineContext.useSelector((state) => {
+    if (state.matches({ in_game: { executing_phases: "action" } })) {
+      return "action";
+    }
+    if (state.matches({ in_game: { executing_phases: "prank" } })) {
+      return "prank";
+    }
+    if (
+      state.matches({ in_game: { executing_phases: { gameday: "preview" } } })
+    ) {
+      return "gameday";
+    }
+    if (
+      state.matches({ in_game: { executing_phases: { gameday: "results" } } })
+    ) {
+      return "results";
+    }
+    if (state.matches({ in_game: { executing_phases: "calculations" } })) {
+      return "calculations";
+    }
+    if (state.matches({ in_game: { executing_phases: "event_creation" } })) {
+      return "event_creation";
+    }
+    if (state.matches({ in_game: { executing_phases: "event" } })) {
+      return "event";
+    }
+    if (state.matches({ in_game: { executing_phases: "news" } })) {
+      return "news";
+    }
+    if (
+      state.matches({ in_game: { executing_phases: "invitations_create" } })
+    ) {
+      return "invitations_create";
+    }
+    if (
+      state.matches({
+        in_game: {
+          executing_phases: { start_of_season: "select_strategy" }
+        }
+      })
+    ) {
+      return "select_strategy";
+    }
+    if (
+      state.matches({
+        in_game: {
+          executing_phases: { start_of_season: "championship_betting" }
+        }
+      })
+    ) {
+      return "championship_betting";
+    }
+    if (state.matches({ in_game: { executing_phases: "seed" } })) {
+      return "seed";
+    }
+    if (state.matches({ in_game: { executing_phases: "gala" } })) {
+      return "gala";
+    }
+    if (
+      state.matches({
+        in_game: {
+          executing_phases: { end_of_season: "world_championships" }
+        }
+      })
+    ) {
+      return "world_championships";
+    }
+    if (
+      state.matches({
+        in_game: { executing_phases: { end_of_season: "review" } }
+      })
+    ) {
+      return "end_of_season";
+    }
 
+    return undefined;
+  });
+};
+
+const Phase: FC<PhaseProps> = ({ phase }) => {
   switch (true) {
-    case turn.phase === "championshipBetting":
+    case phase === "select_strategy":
+      return <SelectStrategy />;
+
+    case phase === "championship_betting":
       return <ChampionshipBetting />;
 
-    case turn.phase === "event":
+    case phase === "event":
       return <Events />;
 
-    case turn.phase === "gala":
+    case phase === "gala":
       return <Gala />;
 
-    case turn.phase === "news":
+    case phase === "news":
       return <News />;
 
-    case turn.phase === "gameday":
+    case phase === "gameday":
       return <Gameday />;
 
-    case turn.phase === "worldChampionships":
+    case phase === "world_championships":
       return <WorldChampionships />;
 
-    case turn.phase === "endOfSeason":
+    case phase === "end_of_season":
       return <EndOfSeason />;
 
-    case turn.phase === "results":
+    case phase === "results":
       return <GamedayResults />;
 
-    case turn.phase === "action":
+    case phase === "action":
       return (
-        <Switch>
-          <Route exact path="/" component={MainMenu} />
-          <Route exact path="/strategia" component={StrategyMenu} />
-          <Route exact path="/sarjataulukot" component={LeagueTables} />
-          <Route
-            exact
-            path="/budjetti/organisaatio"
-            component={BudgetOrganizationMenu}
-          />
-          <Route exact path="/sponsorit" component={SponsorsMenu} />
-
-          <Route path="/ketjukoostumus" component={LineupMenu} />
-          <Route path="/pelaajamarkkinat" component={TransferMarket} />
-          <Route path="/pelaajarinki" component={SquadMenu} />
-          <Route
-            path="/sopimusneuvottelu/:negotiationId"
-            component={ContractNegotiation}
-          />
-          <Route exact path="/kriisipalaveri" component={CrisisActions} />
-          <Route exact path="/erikoistoimenpiteet" component={Services} />
-          <Route exact path="/areena" component={Arena} />
-          <Route exact path="/jaynat" component={Pranks} />
-          <Route exact path="/tilastot" component={Stats} />
-          <Route exact path="/kutsut" component={Invitations} />
-          <Route exact path="/veikkaus" component={Betting} />
-          <Route exact path="/debug" component={DeveloperMenu} />
-        </Switch>
+        <Routes>
+          <Route path="/" element={<MainMenu />} />
+          <Route path="/sarjataulukot" element={<LeagueTables />} />
+          <Route path="/pelaajamarkkinat" element={<TransferMarket />} />
+          <Route path="/kriisipalaveri" element={<CrisisActions />} />
+          <Route path="/erikoistoimenpiteet" element={<Services />} />
+          <Route path="/areena" element={<Arena />} />
+          <Route path="/jaynat" element={<Pranks />} />
+          <Route path="/tilastot" element={<Stats />} />
+          <Route path="/kutsut" element={<Invitations />} />
+          <Route path="/veikkaus" element={<Betting />} />
+          <Route path="/debug" element={<DeveloperMenu />} />
+        </Routes>
       );
 
     default:
-      return <span>laddare...</span>;
+      return "laddare...";
   }
 };
 
-const Game: FunctionComponent = () => {
-  const menu = useSelector<MHMState, boolean>(state => state.ui.menu);
-  const turn = useSelector<MHMState, Turn>(state => state.game.turn);
+const Game: FC = () => {
+  const phase = useUiPhase();
+  const gameActor = GameMachineContext.useActorRef();
+  const notificationsActor = gameActor.system.get(
+    "notifications"
+  ) as ActorRefFrom<typeof notificationsMachine>;
+
+  console.log("GAME", gameActor);
 
   return (
-    <div>
-      {menu && <ModalMenu />}
-      <Phase turn={turn} />
-      <Notifications />
-    </div>
+    <>
+      <ModalMenu />
+      <Phase phase={phase} />
+      <NotificationsContext.Provider actor={notificationsActor}>
+        <Notifications />
+      </NotificationsContext.Provider>
+    </>
   );
 };
 

@@ -1,24 +1,20 @@
-import React, { FunctionComponent } from "react";
-import styled from "@emotion/styled";
-import { MHMNotification } from "../../ducks/notification";
-import { Dispatch } from "redux";
-import { dismissNotification } from "../../ducks/notification";
+import type { FC } from "react";
+import { useSelector } from "@xstate/react";
+import * as styles from "./Notification.css";
+import type { NotificationActorRef } from "@/machines/notifications";
 
-interface Props {
-  notification: MHMNotification;
-  dispatch: Dispatch;
-}
+type NotificationProps = {
+  actorRef: NotificationActorRef;
+  dismiss: (id: string) => void;
+};
 
-const Notification: FunctionComponent<Props> = ({ notification, dispatch }) => {
+const Notification: FC<NotificationProps> = ({ actorRef, dismiss }) => {
+  const notification = useSelector(actorRef, (s) => s.context);
+
   return (
     <div
-      onClick={() => dispatch(dismissNotification(notification.id))}
-      css={{
-        backgroundColor: "rgb(33, 33, 33)",
-        color: "rgb(222, 222, 222)",
-        padding: "1em",
-        cursor: "pointer"
-      }}
+      onClick={() => dismiss(notification.id)}
+      className={styles.notification}
     >
       {notification.message}
     </div>

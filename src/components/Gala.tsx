@@ -1,30 +1,24 @@
-import React from "react";
-
-import Events from "./events/Events";
 import News from "./news/News";
-import Situation from "./context-sensitive/Situation";
-import ManagerInfo from "./containers/ManagerInfoContainer";
-import Header from "./containers/HeaderContainer";
-import HeaderedPage from "./ui/HeaderedPage";
-import Button from "./form/Button";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
 
-import BettingForm from "./championship-betting/BettingForm";
+import Heading from "@/components/ui/Heading";
+import Stack from "@/components/ui/Stack";
+import { useGameContext } from "@/context/game-machine-context";
 
-import { Box } from "theme-ui";
-
-const Gala = props => {
-  const { teams, competitions, advance, betChampion, manager, news } = props;
+const Gala = () => {
+  const news = useGameContext((ctx) => ctx.news.news);
 
   return (
-    <HeaderedPage>
-      <Header forward="Jo riittää lätinä, asiaan!" />
-
-      <Box p={1}>
-        <h2>Loppuottelugaala</h2>
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu forward="Jo riittää lätinä, asiaan!" />}
+    >
+      <Stack gap="lg">
+        <Heading level={2}>Loppuottelugaala</Heading>
 
         <News news={news} />
-      </Box>
-    </HeaderedPage>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

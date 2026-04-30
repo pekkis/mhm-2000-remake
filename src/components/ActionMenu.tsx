@@ -1,153 +1,138 @@
-import React, { FunctionComponent } from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "@xstate/store-react";
 import Calendar from "./ui/Calendar";
-import { CRISIS_MORALE_MAX } from "../data/constants";
-import Button from "./form/Button";
-import { useDispatch, useSelector } from "react-redux";
-import { selectActiveManager } from "../services/selectors";
-import { MHMState } from "../ducks";
-import { closeMenu } from "../ducks/ui";
-import { saveGame, quitToMainMenu } from "../ducks/game";
+import Cluster from "./ui/Cluster";
+import { getEffective } from "@/services/effects";
+import { CRISIS_MORALE_MAX } from "@/data/constants";
+import Button from "./ui/Button";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
+import { AppMachineContext } from "@/context/app-machine-context";
+import { uiStore, type ThemePreference } from "@/stores/ui";
+import { activeManager } from "@/machines/selectors";
+import Stack from "@/components/ui/Stack";
 
-const ActionMenu: FunctionComponent = () => {
-  // const team = getEffective(teams.get(manager.get("team")));
+const themeOptions: ReadonlyArray<{ value: ThemePreference; label: string }> = [
+  { value: "system", label: "Järjestelmä" },
+  { value: "light", label: "Vaalea" },
+  { value: "dark", label: "Tumma" }
+];
 
-  const dispatch = useDispatch();
-  const manager = useSelector(selectActiveManager);
-  const turn = useSelector((state: MHMState) => state.game.turn);
-  const teams = useSelector((state: MHMState) => state.team.teams);
+const ActionMenu = () => {
+  const manager = useGameContext(activeManager);
+  const teams = useGameContext((ctx) => ctx.teams);
+  const appActor = AppMachineContext.useActorRef();
+  const team = getEffective(teams[manager.team!]);
+  const theme = useSelector(uiStore, (s) => s.context.theme);
 
-  if (!manager.team) {
-    throw new Error("Invalid team for manager");
-  }
+  const canSave = GameMachineContext.useSelector((state) =>
+    state.matches({ in_game: { executing_phases: "action" } })
+  );
 
-  const team = teams[manager.team];
+  const close = () => uiStore.send({ type: "closeMenu" });
 
   return (
-    <div>
-      <nav>
-        <ul>
-          <li>
-            <Link onClick={() => dispatch(closeMenu())} to="/">
-              Päävalikko
-            </Link>
-          </li>
+    <Stack gap="md">
+      <Stack gap="md">
+        <Stack as="nav" gap="xs" align="center">
+          <Link onClick={close} to="/">
+            Päävalikko
+          </Link>
 
           {team.morale <= CRISIS_MORALE_MAX && (
-            <Calendar when={c => c.crisisMeeting}>
-              <li>
-                <Link
-                  onClick={() => dispatch(closeMenu())}
-                  to="/kriisipalaveri"
-                >
-                  Kriisipalaveri
-                </Link>
-              </li>
+            <Calendar when={(c) => c.crisisMeeting}>
+              <Link onClick={close} to="/kriisipalaveri">
+                Kriisipalaveri
+              </Link>
             </Calendar>
           )}
-          <Calendar when={c => c.transferMarket}>
-            <li>
-              <Link
-                onClick={() => dispatch(closeMenu())}
-                to="/pelaajamarkkinat"
-              >
-                Pelaajamarkkinat
-              </Link>
-            </li>
-            <li>
-              <Link onClick={() => dispatch(closeMenu())} to="/pelaajarinki">
-                Pelaajarinki
-              </Link>
-            </li>
-            <li>
-              <Link onClick={() => dispatch(closeMenu())} to="/ketjukoostumus">
-                Ketjukoostumus
-              </Link>
-            </li>
-          </Calendar>
-          <li>
-            <Link onClick={() => dispatch(closeMenu())} to="/sarjataulukot">
-              Sarjataulukot
-            </Link>
-          </li>
-          <li>
-            <Link onClick={() => dispatch(closeMenu())} to="/strategia">
-              Strategia
-            </Link>
-          </li>
-          <li>
-            <Link onClick={() => dispatch(closeMenu())} to="/areena">
-              Areena
-            </Link>
-          </li>
 
-          <li>
-            <Link
-              onClick={() => dispatch(closeMenu())}
-              to="/erikoistoimenpiteet"
-            >
-              Erikoistoimenpiteet
+          <Calendar when={(c) => c.transferMarket}>
+            <Link onClick={close} to="/pelaajamarkkinat">
+              Pelaajamarkkinat
             </Link>
-          </li>
-
-          <Calendar when={c => c.pranks}>
-            <li>
-              <Link onClick={() => dispatch(closeMenu())} to="/jaynat">
-                Jäynät
-              </Link>
-            </li>
           </Calendar>
 
-          <li>
-            <Link onClick={() => dispatch(closeMenu())} to="/tilastot">
-              Tilastot
+          <Link onClick={close} to="/sarjataulukot">
+            Sarjataulukot
+          </Link>
+
+          <Link onClick={close} to="/areena">
+            Areena
+          </Link>
+
+          <Link onClick={close} to="/erikoistoimenpiteet">
+            Erikoistoimenpiteet
+          </Link>
+
+          <Calendar when={(c) => c.pranks}>
+            <Link onClick={close} to="/jaynat">
+              Jäynät
             </Link>
-          </li>
+          </Calendar>
+
+          <Link onClick={close} to="/tilastot">
+            Tilastot
+          </Link>
 
           <Calendar
-            when={(turn, calendar, competitions) => {
-              return (
-                turn.gamedays.includes("phl") && competitions.phl.phase === 0
-              );
+            when={(e, _c, competitions) => {
+              return e.gamedays.includes("phl") && competitions.phl.phase === 0;
             }}
           >
-            <li>
-              <Link onClick={() => dispatch(closeMenu())} to="/veikkaus">
-                Veikkaus
-              </Link>
-            </li>
+            <Link onClick={close} to="/veikkaus">
+              Veikkaus
+            </Link>
           </Calendar>
 
-          <li>
-            <Link onClick={() => dispatch(closeMenu())} to="/debug">
-              Devausmenukka
-            </Link>
-          </li>
-        </ul>
-      </nav>
-      <Button
-        block
-        disabled={turn.phase !== "action"}
-        type="button"
-        onClick={() => {
-          dispatch(saveGame());
-          dispatch(closeMenu());
-        }}
-      >
-        Tallenna
-      </Button>
+          <Link onClick={close} to="/debug">
+            Devausmenukka
+          </Link>
+        </Stack>
 
-      <Button
-        block
-        type="button"
-        onClick={() => {
-          dispatch(quitToMainMenu());
-          dispatch(closeMenu());
-        }}
-      >
-        Lopeta!
-      </Button>
-    </div>
+        <Stack direction="row">
+          <Button
+            block
+            disabled={!canSave}
+            type="button"
+            onClick={() => {
+              appActor.send({ type: "SAVE_GAME" });
+              close();
+            }}
+          >
+            Tallenna
+          </Button>
+
+          <Button
+            block
+            type="button"
+            secondary
+            onClick={() => {
+              appActor.send({ type: "QUIT" });
+              close();
+            }}
+          >
+            Lopeta!
+          </Button>
+        </Stack>
+      </Stack>
+
+      <Cluster gap="xs" justify="space-between">
+        {themeOptions.map((opt) => (
+          <Button
+            key={opt.value}
+            type="button"
+            terse
+            secondary={theme !== opt.value}
+            onClick={() => uiStore.send({ type: "setTheme", theme: opt.value })}
+          >
+            {opt.label}
+          </Button>
+        ))}
+      </Cluster>
+    </Stack>
   );
 };
 

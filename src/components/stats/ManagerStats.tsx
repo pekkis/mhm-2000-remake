@@ -1,84 +1,102 @@
-import React, { useState } from "react";
-
-import Tabs from "../ui/Tabs";
-import Tab from "../ui/Tab";
+import { useState, type FC } from "react";
+import Tabs from "@/components/ui/Tabs";
+import { Table, Td, Th } from "@/components/ui/Table";
 import Story from "./Story";
+import type { Team } from "@/state/game";
+import type { Manager } from "@/state/manager";
+import type { StatsState } from "@/state/stats";
+import type { Competition } from "@/types/competitions";
 
-const TeamStats = props => {
-  const { competitions, manager, stats, teams } = props;
+type ManagerStatsProps = {
+  competitions: Record<string, Competition>;
+  manager: Manager;
+  stats: StatsState;
+  teams: Team[];
+};
 
-  console.log("stats", stats.toJS());
-
+const ManagerStats: FC<ManagerStatsProps> = ({
+  competitions,
+  manager,
+  stats,
+  teams
+}) => {
   const [tab, setTab] = useState(0);
 
-  const managersStories = stats
-    .getIn(["seasons"])
-    .map(season => season.getIn(["stories", manager.get("id")]));
+  const managersStories = stats.seasons.map(
+    (season) => season.stories?.[manager.id]
+  );
 
   return (
-    <div>
-      <Tabs selected={tab} onSelect={setTab}>
-        <Tab title="Kausi kaudelta">
-          {managersStories
-            .map((story, seasonIndex) => {
-              return (
-                <Story
-                  key={seasonIndex}
-                  season={seasonIndex}
-                  story={story}
-                  teams={teams}
-                  competitions={competitions}
-                />
-              );
-            })
-            .reverse()}
-        </Tab>
-        <Tab title="Ura numeroina">
-          <div>
-            {List.of("phl", "division", "ehl")
-              .map(c => competitions.get(c))
-              .map(c => {
-                const stat = stats.getIn(
-                  ["managers", manager.get("id"), "games", c.get("id"), "0"],
-                  Map({
+    <Tabs
+      selected={tab}
+      onSelect={setTab}
+      items={[
+        {
+          title: "Kausi kaudelta",
+          content: () => (
+            <>
+              {managersStories
+                .map((story, seasonIndex) => (
+                  <Story
+                    key={seasonIndex}
+                    season={seasonIndex}
+                    story={story}
+                    teams={teams}
+                    competitions={competitions}
+                  />
+                ))
+                .toReversed()}
+            </>
+          )
+        },
+        {
+          title: "Ura numeroina",
+          content: () => (
+            <div>
+              {(["phl", "division", "ehl"] as const)
+                .map((c) => competitions[c])
+                .map((c) => {
+                  const stat = stats.managers?.[manager.id]?.games?.[c.id]?.[
+                    "0"
+                  ] ?? {
                     win: 0,
                     draw: 0,
                     loss: 0
-                  })
-                );
+                  };
 
-                return (
-                  <div key={c}>
-                    <h3>{c.get("name")}</h3>
+                  return (
+                    <div key={c.id}>
+                      <h3>{c.name}</h3>
 
-                    <table>
-                      <tbody>
-                        <tr>
-                          <th>Otteluita</th>
-                          <td>{stat.reduce((r, s) => r + s, 0)}</td>
-                        </tr>
-                        <tr>
-                          <th>Voittoja</th>
-                          <td>{stat.get("win")}</td>
-                        </tr>
-                        <tr>
-                          <th>Tasapelejä</th>
-                          <td>{stat.get("draw")}</td>
-                        </tr>
-                        <tr>
-                          <th>Tappioita</th>
-                          <td>{stat.get("loss")}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                );
-              })}
-          </div>
-        </Tab>
-      </Tabs>
-    </div>
+                      <Table>
+                        <tbody>
+                          <tr>
+                            <Th>Otteluita</Th>
+                            <Td>{stat.win + stat.draw + stat.loss}</Td>
+                          </tr>
+                          <tr>
+                            <Th>Voittoja</Th>
+                            <Td>{stat.win}</Td>
+                          </tr>
+                          <tr>
+                            <Th>Tasapelejä</Th>
+                            <Td>{stat.draw}</Td>
+                          </tr>
+                          <tr>
+                            <Th>Tappioita</Th>
+                            <Td>{stat.loss}</Td>
+                          </tr>
+                        </tbody>
+                      </Table>
+                    </div>
+                  );
+                })}
+            </div>
+          )
+        }
+      ]}
+    />
   );
 };
 
-export default TeamStats;
+export default ManagerStats;

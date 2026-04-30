@@ -1,59 +1,38 @@
-import React from "react";
-import EventsList from "./events/Events";
 import Announcements from "./events/Announcements";
 import ManagerInfo from "./ManagerInfo";
-import Header from "./Header";
-import HeaderedPage from "./ui/HeaderedPage";
-import { Box } from "theme-ui";
-import { HumanManager } from "../types/manager";
-import { Team } from "../types/team";
-import { useSelector } from "react-redux";
-import {
-  selectActiveManager,
-  requireHumanManagersTeamObj,
-  selectCurrentTurn
-} from "../services/selectors";
-import { MHMState } from "../ducks";
-import FinancialReport from "./accounting/FinancialReport";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import { useGameContext } from "@/context/game-machine-context";
+import { activeManager } from "@/machines/selectors";
+import EventsList from "./events/Events";
+import Stack from "@/components/ui/Stack";
+import Heading from "@/components/ui/Heading";
 
 const News = () => {
-  const manager = useSelector(selectActiveManager);
-  const team = useSelector(requireHumanManagersTeamObj(manager.id));
-  const turn = useSelector(selectCurrentTurn);
-
-  const allTransactions = useSelector(
-    (state: MHMState) => state.team.accounting[team.id] || []
-  );
-
-  const transactions = allTransactions.filter(
-    t => t.round === turn.round && t.season === turn.season
-  );
+  const manager = useGameContext(activeManager);
+  const announcements = useGameContext((ctx) => ctx.news.announcements);
+  const events = useGameContext((ctx) => ctx.event.events);
 
   return (
-    <HeaderedPage>
-      <Header />
-      <ManagerInfo details />
+    <AdvancedHeaderedPage
+      stickyMenu={<StickyMenu />}
+      managerInfo={<ManagerInfo details />}
+    >
+      <Stack gap="lg">
+        <Heading level={2}>Tapahtumat</Heading>
 
-      <Box p={1}>
-        <h2>Tapahtumat</h2>
-
-        {/*<EventsList
-          manager={manager}
-          events={events}
-          resolveEvent={resolveEvent}
-        />
+        <Stack gap="md">
+          <EventsList
+            manager={manager}
+            events={events}
+            onAnswer={() => undefined}
+          />
+        </Stack>
         <Announcements
-          announcements={announcements.get(
-            manager.get("id").toString(),
-            List()
-          )}
-          />*/}
-
-        <h2>Talousraportti</h2>
-
-        <FinancialReport transactions={transactions} />
-      </Box>
-    </HeaderedPage>
+          announcements={announcements[manager.id.toString()] || []}
+        />
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 

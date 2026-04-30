@@ -1,19 +1,24 @@
-import React from "react";
-import Markdown from "react-markdown";
+import Markdown from "@/components/Markdown";
+import Box from "@/components/ui/Box";
+import Stack from "@/components/ui/Stack";
+import type { FC } from "react";
 
-const News = props => {
-  const { news } = props;
+type NewsProps = {
+  news: string[];
+  manager?: unknown;
+};
 
+const News: FC<NewsProps> = ({ news }) => {
   return (
-    <div>
+    <Stack>
       {news.map((n, i) => {
         return (
-          <div key={i}>
-            <Markdown source={n} />
-          </div>
+          <Box key={i}>
+            <Markdown>{n}</Markdown>
+          </Box>
         );
       })}
-    </div>
+    </Stack>
   );
 };
 

@@ -1,135 +1,50 @@
-import React from "react";
 import { Link } from "react-router-dom";
-import Calendar from "../ui/Calendar";
-import styled from "@emotion/styled";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { nth } from "ramda";
-import { MHMState } from "../../ducks";
-import { useSelector } from "react-redux";
+import Calendar from "@/components/ui/Calendar";
+import { useGameContext } from "@/context/game-machine-context";
 import {
-  selectActiveManager,
-  requireManagersTeam,
-  allTeamsMap,
-  managersTeam,
-  selectCurrentTurn,
-  requireHumanManagersTeamObj,
-  teamsMatchOfTurn,
-  selectTeamFlag
-} from "../../services/selectors";
-import { MapOf } from "../../types/base";
-import { Team } from "../../types/team";
-import NextMatch from "./NextMatch";
-import { Box } from "theme-ui";
-
-const CurrentEntry = styled.div`
-  padding: 0.5em;
-  border: 1px dotted rgb(225, 225, 225);
-`;
+  activeManagersInvitations,
+  activeManagersTeam
+} from "@/machines/selectors";
+import Stack from "@/components/ui/Stack";
+import Alert from "@/components/ui/Alert";
 
 const Current = () => {
-  const manager = useSelector(selectActiveManager);
-  if (!manager.team) {
-    throw new Error("No team");
-  }
+  const invitations = useGameContext(activeManagersInvitations);
+  const team = useGameContext(activeManagersTeam);
 
-  const invitations = useSelector((state: MHMState) =>
-    state.invitation.invitations.filter(
-      i => i.manager === manager.id && !i.participate
-    )
-  );
-
-  const turn = useSelector(selectCurrentTurn);
-  const team = useSelector(requireHumanManagersTeamObj(manager.id));
-  const teams = useSelector(allTeamsMap);
-  const teamsMatch = useSelector(teamsMatchOfTurn(team.id, turn));
-
-  const isStrategySet: boolean = useSelector(
-    selectTeamFlag(team.id, "strategy")
-  );
-
-  const isSponsorNegotiated: boolean = useSelector(
-    selectTeamFlag(team.id, "sponsor")
-  );
-
-  const isBudgeted: boolean = useSelector(selectTeamFlag(team.id, "budget"));
+  const numberOfAcceptedInvititations = invitations.filter(
+    (i) => !i.accepted
+  ).length;
 
   return (
-    <div>
-      {teamsMatch && (
-        <NextMatch
-          manager={manager}
-          team={team}
-          teams={teams}
-          match={teamsMatch}
-        />
+    <Stack gap="sm">
+      {numberOfAcceptedInvititations > 0 && (
+        <Alert level="info">
+          Pöydälläsi odottaa{" "}
+          <Link to="/kutsut">avaamattomia kutsuja joulutauon turnauksiin.</Link>
+        </Alert>
       )}
-      <Box my={1} bg="muted" p={1}>
-        <h2>Akuutit asiat</h2>
 
-        {!isBudgeted && (
-          <CurrentEntry>
-            <FontAwesomeIcon icon={["fas", "exclamation-circle"]} />
-            Et ole vielä{" "}
-            <Link to="/budjetti/organisaatio">
-              budjetoinut organisaatiota
-            </Link>{" "}
-            alkavalle kaudelle.
-          </CurrentEntry>
-        )}
+      <Calendar
+        when={(entry, c) => {
+          const nextTurn = c[entry.round + 1];
+          return entry.transferMarket && !nextTurn.transferMarket;
+        }}
+      >
+        <Alert level="warning">
+          Nyt on viimeinen tilaisuutemme{" "}
+          <Link to="/pelaajamarkkinat">ostaa pelaajia</Link>, sillä siirtoaika
+          umpeutuu seuraavan ottelun jälkeen.
+        </Alert>
+      </Calendar>
 
-        {!isSponsorNegotiated && (
-          <CurrentEntry>
-            <FontAwesomeIcon icon={["fas", "exclamation-circle"]} />
-            Et ole vielä{" "}
-            <Link to="/sponsorit">neuvotellut sponsorisopimuksia</Link>{" "}
-            alkavalle kaudelle.
-          </CurrentEntry>
-        )}
-
-        {!isStrategySet && (
-          <CurrentEntry>
-            <FontAwesomeIcon icon={["fas", "exclamation-circle"]} />
-            Et ole vielä <Link to="/strategia">valinnut strategiaa</Link>{" "}
-            alkavalle kaudelle.
-          </CurrentEntry>
-        )}
-
-        {invitations.length > 0 && (
-          <CurrentEntry>
-            <FontAwesomeIcon icon={["fas", "exclamation-circle"]} />
-            Pöydälläsi odottaa{" "}
-            <Link to="/kutsut">
-              avaamattomia kutsuja joulutauon turnauksiin.
-            </Link>
-          </CurrentEntry>
-        )}
-
-        <Calendar
-          when={(turn, c) => {
-            const nextTurn = nth(turn.round + 1, c);
-            if (!nextTurn) {
-              return false;
-            }
-            return turn.transferMarket && !nextTurn.transferMarket;
-          }}
-        >
-          <CurrentEntry>
-            <FontAwesomeIcon icon={["fas", "exclamation-circle"]} /> Nyt on
-            viimeinen tilaisuutemme{" "}
-            <Link to="/pelaajamarkkinat">ostaa pelaajia</Link>, sillä siirtoaika
-            umpeutuu seuraavan ottelun jälkeen.
-          </CurrentEntry>
-        </Calendar>
-
-        <Calendar when={ce => ce.crisisMeeting && team.morale <= -3}>
-          <CurrentEntry>
-            <FontAwesomeIcon icon={["fas", "exclamation-circle"]} /> Joukkueen
-            moraali on huono. <Link to="/kriisipalaveri">Kriisipalaveri</Link>{" "}
-            auttaisi.
-          </CurrentEntry>
-        </Calendar>
-      </Box>
-    </div>
+      <Calendar when={(e) => e.crisisMeeting && team.morale <= -3}>
+        <Alert level="danger">
+          Joukkueen moraali on huono.{" "}
+          <Link to="/kriisipalaveri">Kriisipalaveri</Link> auttaisi.
+        </Alert>
+      </Calendar>
+    </Stack>
   );
 };
 

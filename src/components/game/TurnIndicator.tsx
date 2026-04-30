@@ -1,11 +1,10 @@
-import React, { FunctionComponent } from "react";
-import { Turn } from "../../types/base";
+import type { FC } from "react";
 
-interface Props {
-  turn: Turn;
-}
+type TurnIndicatorProps = {
+  turn: { season: number; round: number; phase: string | undefined };
+};
 
-const TurnIndicator: FunctionComponent<Props> = ({ turn }) => {
+const TurnIndicator: FC<TurnIndicatorProps> = ({ turn }) => {
   return (
     <span>
       {turn.season}, {turn.round} / {turn.phase}

@@ -1,70 +1,62 @@
-import React from "react";
-import Header from "./Header";
-import HeaderedPage from "./ui/HeaderedPage";
-import { getEffective } from "../services/effects";
-import { Box } from "theme-ui";
-import { useSelector } from "react-redux";
-import { MHMState, competition } from "../ducks";
-import {
-  allTeams,
-  allManagersMap,
-  allCompetitions,
-  weightedCompetitions,
-  allTeamsMap
-} from "../services/selectors";
-import { toPairs } from "ramda";
+import StickyMenu from "./StickyMenu";
+import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import { getEffective } from "@/services/effects";
+import { useGameContext } from "@/context/game-machine-context";
+import { values } from "remeda";
+import { Table, Td, Th } from "./ui/Table";
+import Stack from "@/components/ui/Stack";
+import Heading from "@/components/ui/Heading";
 
 const DeveloperMenu = () => {
-  const teams = useSelector(allTeamsMap);
-  const managers = useSelector(allManagersMap);
-
-  const competitions = useSelector(weightedCompetitions);
+  const teams = useGameContext((ctx) => ctx.teams);
+  const competitions = useGameContext((ctx) => ctx.competitions);
 
   return (
-    <HeaderedPage>
-      <Header back />
+    <AdvancedHeaderedPage stickyMenu={<StickyMenu back />}>
+      <Stack gap="lg">
+        <Heading level={2}>Devausinfo</Heading>
 
-      <Box p={1}>
-        <h2>Joukkueet</h2>
+        <Stack gap="md">
+          {values(competitions).map((c) => {
+            return (
+              <Stack gap="sm" key={c.id}>
+                <Heading level={3}>{c.name}</Heading>
+                <Table>
+                  <thead>
+                    <tr>
+                      <Th>Joukkue</Th>
+                      <Th>O-voima</Th>
+                      <Th>E-voima</Th>
+                      <Th>E-moraali</Th>
+                      <Th>E-valmius</Th>
+                    </tr>
+                  </thead>
 
-        {competitions.map(c => {
-          return (
-            <div key={c.id}>
-              <h3>{c.name}</h3>
+                  <tbody>
+                    {c.teams
+                      .toSorted((a, b) => teams[b].strength - teams[a].strength)
+                      .map((t) => {
+                        const team = teams[t];
+                        const e = getEffective(team);
 
-              <table>
-                <thead>
-                  <tr>
-                    <th>Joukkue</th>
-                    <th>Moraali</th>
-                    <th>Taso</th>
-                    <th>Voima</th>
-                    <th>Strategia</th>
-                    <th>Valmius</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {c.teams
-                    .map(tid => teams[tid])
-                    .map(team => {
-                      return (
-                        <tr key={team.id}>
-                          <td>{team.name}</td>
-                          <td>{team.morale}</td>
-                          <td>{team.level}</td>
-                          <td>{JSON.stringify(team.strength)}</td>
-                          <td>{team.strategy}</td>
-                          <td>{team.readiness}</td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            </div>
-          );
-        })}
-      </Box>
-    </HeaderedPage>
+                        return (
+                          <tr key={team.id}>
+                            <Td>{team.name}</Td>
+                            <Td>{team.strength}</Td>
+                            <Td>{e.strength}</Td>
+                            <Td>{e.morale}</Td>
+                            <Td>{e.readiness}</Td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </Table>
+              </Stack>
+            );
+          })}
+        </Stack>
+      </Stack>
+    </AdvancedHeaderedPage>
   );
 };
 
