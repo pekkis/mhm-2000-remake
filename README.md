@@ -1,6 +1,6 @@
-# MHM 97 Remake
+# MHM 2000 Remake
 
-A remake of MHM 97, my first hockey manager simulation from ~1996-1997.
+A remake of MHM 2000, my best hockey manager simulation from 1999-2000.
 
 ## Development
 

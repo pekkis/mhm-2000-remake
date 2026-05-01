@@ -1,16 +1,16 @@
 {
   "name": "mhm-97-remake",
   "version": "3.0.0",
-  "description": "A remake of MHM 97",
+  "description": "A remake of MHM 2000",
   "keywords": [
-    "MHM 97",
+    "MHM 2000",
     "remake"
   ],
   "license": "MIT",
   "author": "Pekkis",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pekkis/mhm-97-remake"
+    "url": "https://github.com/pekkis/mhm-2000-remake"
   },
   "type": "module",
   "main": "src",
