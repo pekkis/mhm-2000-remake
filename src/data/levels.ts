@@ -40,6 +40,24 @@ export type TeamLevelDefinition = {
   attack: number;
 };
 
+/**
+ * Realised team strength — what a team actually brings to a match. Same
+ * shape as a `TeamLevelDefinition` minus the index (`level`), because at
+ * runtime the strength is a *value*, no longer a row in TASOT.M2K.
+ *
+ * For CPU teams this is computed at season start by looking up the team's
+ * tier (`tazo` → `TeamLevelDefinition`) and adding the per-match noise
+ * applied by QB `tasomaar` (MHM2K.BAS:2188, ILEZ5.BAS:1832):
+ *
+ *     mw = lvl(tazo).maz + INT(3*RND) - 1   ' goalie  ±1
+ *     pw = lvl(tazo).puz + INT(5*RND) - 2   ' defence ±2
+ *     hw = lvl(tazo).hyz + INT(9*RND) - 4   ' attack  ±4
+ *
+ * For human-managed teams the same shape is computed from the actual
+ * roster (QB `orgamaar`), bypassing the TASOT.M2K lookup entirely.
+ */
+export type TeamStrength = Omit<TeamLevelDefinition, "level">;
+
 export const teamLevels: readonly TeamLevelDefinition[] = [
   { level: 1, goalie: 2, defence: 6, attack: 12 },
   { level: 2, goalie: 3, defence: 8, attack: 16 },

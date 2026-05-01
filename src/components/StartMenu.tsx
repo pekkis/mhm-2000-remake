@@ -1,7 +1,7 @@
 import Cluster from "@/components/ui/Cluster";
 import Button from "@/components/ui/Button";
 import Box from "./ui/Box";
-import title from "./start-menu/title.png";
+import title from "@/assets/mhm_pics/MHM2000.png";
 import { AppMachineContext } from "@/context/app-machine-context";
 import { Starting } from "@/components/start-menu/Starting";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
@@ -66,7 +66,17 @@ const StartMenu = () => {
                 <li>Mikko Forsström</li>
                 <li>Jean-Claude van Copilot</li>
               </ul>
-              <h3>Laadunvalvonta</h3>
+              <h3>Alkuperäinen laadunvalvonta</h3>
+              <ul>
+                <li>Aki Haviala</li>
+                <li>Sami Kytömäki</li>
+                <li>Markus Lummi</li>
+                <li>Matias Lofman</li>
+                <li>Jussi Myllykoski</li>
+                <li>Lauri Pihlman</li>
+                <li>Toni Syvänen</li>
+              </ul>
+              <h3>Remaken laadunvalvonta</h3>
               <ul>
                 <li>Erno Vanhala</li>
               </ul>

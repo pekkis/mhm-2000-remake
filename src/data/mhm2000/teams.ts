@@ -4,8 +4,12 @@
 export type ArenaLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 export type Arena = {
-  /** Original Finnish arena name. Preserve verbatim. */
-  name: string;
+  /**
+   * Original Finnish arena name. Preserve verbatim. Only managed teams
+   * (TEAMS.PLN) carry an arena name; light teams (TEAMS.NHL/FOR/ALA) load
+   * just `paikka(1..3)` + `taso` and have no named arena in QB.
+   */
+  name?: string;
   /** taso(team) in QB — class tier 1..6. Unlocks box seating at level 4. */
   level: ArenaLevel;
   /**
@@ -36,7 +40,12 @@ export type Arena = {
 
 export type LeagueTier = "phl" | "divisioona" | "mutasarja";
 
-export type Team = {
+/**
+ * A managed team (TEAMS.PLN) — one of the 48 base Finnish teams that carry
+ * a manager, a roster, league standings, and full season state.
+ */
+export type ManagedTeamDefinition = {
+  kind: "managed";
   /** 0-based id. Original QB indices were 1-based (1..48). */
   id: number;
   /** Original team name; cp850 → UTF-8. */
@@ -59,12 +68,46 @@ export type Team = {
 };
 
 /**
+ * Origin of a `LightTeamDefinition`:
+ *   - `"nhl"`     — TEAMS.NHL, 20 NHL teams, drawn 5 at a time as the EHL
+ *                   foreign-champion bracket (`muutmestarit` in ILEZ5.BAS).
+ *   - `"foreign"` — TEAMS.FOR, 70 European clubs, also drawn for EHL/cup
+ *                   opposition.
+ *   - `"amateur"` — TEAMS.ALA, 16 Finnish amateur sides loaded once at
+ *                   startup into `l(71..86)` for the cup's early rounds.
+ */
+export type LightTeamOrigin = "nhl" | "foreign" | "amateur";
+
+/**
+ * A light (non-managed) team. No manager, no roster, no league standings —
+ * just enough to participate in cup/EHL/tournament fixtures: a name, a
+ * tier, and an arena (capacity drives gate revenue).
+ */
+export type LightTeamDefinition = {
+  kind: "light";
+  origin: LightTeamOrigin;
+  /** 0-based id within `origin`. (No global id space — pair with `origin`.) */
+  id: number;
+  /** Original team name; cp850 → UTF-8. */
+  name: string;
+  /** Home city. */
+  city: string;
+  /** tazo(team) — overall team-strength tier (same scale as managed). */
+  tier: number;
+  /** Arena has no name (the source data files don't include one). */
+  arena: Arena;
+};
+
+export type TeamDefinition = ManagedTeamDefinition | LightTeamDefinition;
+
+/**
  * All 48 base teams from TEAMS.PLN, in the original QB order.
  * The QB code reads 12 PHL + 12 Divisioona + 24 Mutasarja teams; ordering
  * within each tier is meaningful (matches calendar / fixture generation).
  */
-export const teams: Team[] = [
+export const teams: ManagedTeamDefinition[] = [
   {
+    kind: "managed",
     id: 0,
     name: "TPS",
     city: "Turku",
@@ -81,6 +124,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 1,
     name: "HIFK",
     city: "Helsinki",
@@ -97,6 +141,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 2,
     name: "HPK",
     city: "Hämeenlinna",
@@ -113,6 +158,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 3,
     name: "SaiPa",
     city: "Lappeenranta",
@@ -129,6 +175,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 4,
     name: "Jokerit",
     city: "Helsinki",
@@ -145,6 +192,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 5,
     name: "Ilves",
     city: "Tampere",
@@ -161,6 +209,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 6,
     name: "Blues",
     city: "Espoo",
@@ -177,6 +226,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 7,
     name: "JYP",
     city: "Jyväskylä",
@@ -193,6 +243,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 8,
     name: "Tappara",
     city: "Tampere",
@@ -209,6 +260,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 9,
     name: "Ässät",
     city: "Pori",
@@ -225,6 +277,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 10,
     name: "Lukko",
     city: "Rauma",
@@ -241,6 +294,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 11,
     name: "Pelicans",
     city: "Lahti",
@@ -257,6 +311,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 12,
     name: "KalPa",
     city: "Kuopio",
@@ -273,6 +328,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 13,
     name: "Kärpät",
     city: "Oulu",
@@ -289,6 +345,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 14,
     name: "Hermes",
     city: "Kokkola",
@@ -305,6 +362,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 15,
     name: "TuTo",
     city: "Turku",
@@ -321,6 +379,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 16,
     name: "FPS",
     city: "Forssa",
@@ -337,6 +396,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 17,
     name: "Diskos",
     city: "Jyväskylä",
@@ -353,6 +413,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 18,
     name: "Sport",
     city: "Vaasa",
@@ -369,6 +430,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 19,
     name: "SaPKo",
     city: "Savonlinna",
@@ -385,6 +447,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 20,
     name: "Jokipojat",
     city: "Joensuu",
@@ -401,6 +464,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 21,
     name: "KJT",
     city: "Järvenpää",
@@ -417,6 +481,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 22,
     name: "Ahmat",
     city: "Hyvinkää",
@@ -433,6 +498,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 23,
     name: "Jääkotkat",
     city: "Uusikaupunki",
@@ -449,6 +515,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 24,
     name: "Jukurit",
     city: "Mikkeli",
@@ -465,6 +532,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 25,
     name: "VG-62",
     city: "Naantali",
@@ -481,6 +549,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 26,
     name: "Testicles",
     city: "Kivesjärvi",
@@ -497,6 +566,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 27,
     name: "SantaClaus",
     city: "Rovaniemi",
@@ -513,6 +583,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 28,
     name: "Ruiske",
     city: "Tiukukoski",
@@ -529,6 +600,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 29,
     name: "Lightning",
     city: "Kerava",
@@ -545,6 +617,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 30,
     name: "Nikkarit",
     city: "Riihimäki",
@@ -561,6 +634,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 31,
     name: "Salama",
     city: "Sompio",
@@ -577,6 +651,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 32,
     name: "Hait",
     city: "Nuuksio",
@@ -593,6 +668,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 33,
     name: "Mahti",
     city: "Mäntsälä",
@@ -609,6 +685,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 34,
     name: "Siat",
     city: "Syväri",
@@ -625,6 +702,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 35,
     name: "Veto",
     city: "Töysä",
@@ -641,6 +719,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 36,
     name: "Ikirouta",
     city: "Inari",
@@ -657,6 +736,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 37,
     name: "Jymy",
     city: "Sotkamo",
@@ -673,6 +753,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 38,
     name: "Hokki",
     city: "Salo",
@@ -689,6 +770,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 39,
     name: "Voitto",
     city: "Kangasala",
@@ -705,6 +787,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 40,
     name: "Teurastus",
     city: "Porvoo",
@@ -721,6 +804,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 41,
     name: "KoMu HT",
     city: "Korsholm",
@@ -737,6 +821,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 42,
     name: "Saappaat",
     city: "Nokia",
@@ -753,6 +838,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 43,
     name: "Aromi",
     city: "Valkeakoski",
@@ -769,6 +855,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 44,
     name: "Gepardit",
     city: "Klaukkala",
@@ -785,6 +872,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 45,
     name: "KooKoo",
     city: "Kouvola",
@@ -801,6 +889,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 46,
     name: "HardCore",
     city: "Loimaa",
@@ -817,6 +906,7 @@ export const teams: Team[] = [
     }
   },
   {
+    kind: "managed",
     id: 47,
     name: "Turmio",
     city: "Kolari",

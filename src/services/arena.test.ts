@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { lightTeams } from "@/data/mhm2000/light-teams";
 import { teams } from "@/data/mhm2000/teams";
 import {
   arenaFreePoints,
@@ -44,7 +45,14 @@ describe("qbCint (banker's rounding)", () => {
 
 describe("seatAllocationPoints", () => {
   it("matches every base team's stored ppiste", () => {
-    for (const team of teams) {
+    for (const team of [...teams, ...lightTeams]) {
+      // Leksand (TEAMS.FOR:10) is the lone outlier: level 3 with hasBoxes=1
+      // and ppiste=353 (= 294 × 1.2). Level 3 doesn't actually allow boxes
+      // (tila(3,3) = -1), so our derivation correctly produces 294. Bug in
+      // the original v1.2 source data; preserved verbatim. See issue #38.
+      if (team.kind === "light" && team.origin === "foreign" && team.name === "Leksand") {
+        continue;
+      }
       const points = seatAllocationPoints(
         team.arena.level,
         team.arena.standingCount,

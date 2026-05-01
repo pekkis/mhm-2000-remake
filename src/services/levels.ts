@@ -1,4 +1,5 @@
-import { teamLevels, type TeamLevelDefinition } from "@/data/levels";
+import { teamLevels, type TeamLevelDefinition, type TeamStrength } from "@/data/levels";
+import { default as defaultRandom, type RandomService } from "./random";
 
 /**
  * The 20 human-readable "material tier" labels for CPU team strength,
@@ -76,3 +77,42 @@ export function getTeamLevel(level: number): TeamLevelDefinition {
   }
   return def;
 }
+
+/**
+ * Faithful port of QB `SUB tasomaar` (MHM2K.BAS:2188, ILEZ5.BAS:1832) —
+ * the CPU-team branch only. Given a team's tier (`tazo`, 1..58), looks up
+ * the base goalie/defence/attack from TASOT.M2K and applies per-roll noise:
+ *
+ * ```basic
+ * mw(zz) = lvl(tazo(zz)).maz + INT(3 * RND) - 1   ' goalie  ±1
+ * pw(zz) = lvl(tazo(zz)).puz + INT(5 * RND) - 2   ' defence ±2
+ * hw(zz) = lvl(tazo(zz)).hyz + INT(9 * RND) - 4   ' attack  ±4
+ * ```
+ *
+ * `INT(N * RND)` is uniform `0..N-1`, so the offsets are uniform
+ * `[-1, 1]` / `[-2, 2]` / `[-4, 4]` inclusive. We deliberately use
+ * `random.integer` (not `cinteger`) — MHM 2000 QB never uses the biased
+ * `CINT(...*RND)` form (see AGENTS.md "Randomness").
+ *
+ * This is the CPU path. The human-managed branch in QB recomputes from
+ * the actual roster via `orgamaar`; that's a different function and
+ * doesn't belong here.
+ *
+ * Called once per CPU team at season start (and on tier changes during
+ * the season — see ILEZ5.BAS), so the noise is per-season, not per-match.
+ */
+export const createTeamStrengthService = (
+  random: RandomService = defaultRandom
+) => {
+  const rollTeamStrength = (level: number): TeamStrength => {
+    const base = getTeamLevel(level);
+    return {
+      goalie: base.goalie + random.integer(-1, 1),
+      defence: base.defence + random.integer(-2, 2),
+      attack: base.attack + random.integer(-4, 4)
+    };
+  };
+  return { rollTeamStrength };
+};
+
+export const { rollTeamStrength } = createTeamStrengthService();
