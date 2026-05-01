@@ -191,7 +191,7 @@ CHAIN: `MHM2K.BAS:562 → CHAIN "ilex5"`.
 | 7394      | `tarjousmaar`             | offer determination                             |                       |
 | 7413      | `tarka%`                  | rounding/precision FUNCTION                     | TODO                  |
 | 7417      | `tarkistanhlc`            | NHL check                                       |                       |
-| 7433      | `tarko%`                  | precision/integrity FUNCTION                    | TODO                  |
+| 7433      | `tarko%`                  | **manager-attribute roll** — returns 1 iff `INT(100*RND)+1 < t3 + mtaito(t1, man(t0)) * t2`. `t0` = team index (dereffed via `man()` to find that team's manager), `t1` = attribute index 1..6 (1=strategy, 2=specialTeams, 3=negotiation, 4=resourcefulness, 5=charisma, 6=luck), `t2` = per-attribute weight, `t3` = base threshold. Strict `<` comparison — preserve the off-by-one. Ported as `attributeRoll()` in [src/services/attribute-roll.ts](../../services/attribute-roll.ts). | confirmed             |
 | 7443      | `taut`                    | illness handler                                 |                       |
 | 7448      | `teet (jup, jupp, juppp)` | "tee" = do — generic action                     | TODO                  |
 | 7453      | `tmankom`                 | "team-comment" / manager comment                | TODO                  |

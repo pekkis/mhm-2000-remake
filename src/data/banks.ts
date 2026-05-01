@@ -39,6 +39,14 @@ export type BankDefinition = {
 };
 
 export const banks: ReadonlyArray<BankDefinition> = [
+  // Player-testimony note (the project owner, who actually played MHM
+  // 2000 in 1999): nobody ever borrows from Mëritä or Väliveto. The
+  // economics make the "honest" banks a trap-in-reverse — Ivan offers
+  // both the lowest rate AND the highest ceiling, so the rational
+  // play is always Ivan, and the price of the rational play is the
+  // `sovtap` shakedown right before important matches. Preserve this
+  // balance carefully when porting; "fixing" the rates would gut the
+  // intended loan-shark loop.
   {
     id: "merita",
     name: "MëRITÄ",

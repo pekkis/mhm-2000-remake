@@ -28,6 +28,42 @@ export type ManagerAttributes = {
 };
 
 /**
+ * Six-key tuple for `ManagerAttributes`. Matches QB array order
+ * `mtaito(1..6, manager)` — index 1 = strategy, …, index 6 = luck.
+ */
+export type ManagerAttributeKey = keyof ManagerAttributes;
+
+/**
+ * Mapping from QB's 1-based attribute index to our string key. Used
+ * by the attribute-roll service (`tarko`) and any code that ports
+ * QB sites such as `mtaito(t1, man(t0))`.
+ *
+ * Keep order STABLE — QB call sites pass literal indices (4, 5, 6
+ * are common) and changing this mapping would silently break every
+ * morality / luck check.
+ */
+export const managerAttributeByLegacyIndex = [
+  // index 0 unused (QB is 1-based)
+  null,
+  "strategy",
+  "specialTeams",
+  "negotiation",
+  "resourcefulness",
+  "charisma",
+  "luck"
+] as const satisfies readonly (ManagerAttributeKey | null)[];
+
+/** Inverse of `managerAttributeByLegacyIndex` — for nicer call sites. */
+export const legacyIndexByManagerAttribute = {
+  strategy: 1,
+  specialTeams: 2,
+  negotiation: 3,
+  resourcefulness: 4,
+  charisma: 5,
+  luck: 6
+} as const satisfies Record<ManagerAttributeKey, number>;
+
+/**
  * A computer-controlled manager identity that ships with the game.
  * Pre-built rosters live in `src/mhm2000-qb/DATA/MANAGERS.M2K` (54
  * rows × 7 lines: name+nationality, then six attribute values).
