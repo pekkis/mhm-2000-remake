@@ -95,9 +95,10 @@ param`). MHM 2000 expanded MHM 97's 75-round calendar.
    tournaments + an "elite" definition. Need to peek.
 7. **`.MHZ` files** (3: `LAKKO.MHZ`, `MONTY.MHZ`, `P.MHZ`) — strike +
    `montx` records?
-8. **Remaining `.M2K` files** still ❓: `KEISIT`, `STVARI`, `PEPDEP`,
-   `MUUDIT`, `MUUTOS`, `MATERIA`, `MATERIAX`, `ORGASM`, `PELKIEL`,
-   `PEPDEP`, `STVARI`, `TAHDET`.
+8. **Remaining `.M2K` files** still ❓: `STVARI`, `PEPDEP`,
+   `MUUDIT`, `MUUTOS`, `ORGASM`, `PELKIEL`,
+   `TAHDET`. (Decoded so far: `KANSAT`, `MANAGERS`, `KEISIT`,
+   `MATERIA`, `MATERIAX`, `TASOT`, `DATAX`, `KARSA`, `KIERO` outline.)
 9. **`TEAMS.{ALA,FOR,NHL,PLN}`** — extension naming. Best guesses in
    [DATA-FILES.md](DATA-FILES.md).
 

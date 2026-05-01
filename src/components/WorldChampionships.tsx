@@ -3,7 +3,6 @@ import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
 
 import Heading from "@/components/ui/Heading";
 import Stack from "@/components/ui/Stack";
-import Paragraph from "./ui/Paragraph";
 import { useGameContext } from "@/context/game-machine-context";
 import Box from "@/components/ui/Box";
 

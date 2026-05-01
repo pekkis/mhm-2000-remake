@@ -113,6 +113,8 @@ export const createDefaultGameContext = (): GameContext => ({
         acc[country.iso] = {
           iso: country.iso,
           name: country.name,
+          series: country.series,
+          level: country.level,
           strength: country.strength()
         };
         return acc;
