@@ -123,7 +123,7 @@ gala? Different speakers? Different shows?
 | File        | Records | Role                                                      |
 | ----------- | ------- | --------------------------------------------------------- |
 | **X.MHM**   | 216     | difficulty descriptions (long help text per setting)      |
-| **Y.MHM**   | 192     | UI strings (validation messages, prompts)                 |
+| **Y.MHM**   | 192     | UI strings (validation messages, prompts). Records 41..54 hold the **player specialty labels** (`spe = 0..13`), printed by `lay 41 + spe`. 55..61 are unused placeholders ("Erikoisuus 14".."erikoisuus 20"). Decoded into `src/data/player-specialties.ts`. |
 | **Q.MHM**   | 39      | screen titles ("@6, KAUDEN KULKU" = "Pekka, SEASON FLOW") |
 | **AL.MHM**  | 10      | new-game wizard labels                                    |
 | **ST.MHM**  | 12      | stats column headers                                      |
