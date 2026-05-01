@@ -96,7 +96,7 @@ beam/pole?). TODO.
 | `s`                             | INTEGER | sarja (current league: 1=PHL, 2=Division) |                         |
 | `ki`                            | INTEGER | ❓ (kierros?)                             | TODO                    |
 | `ot`                            | INTEGER | ottelu (match counter)                    |                         |
-| `pv`                            | INTEGER | päivä (day)                               |                         |
+| `pv`                            | INTEGER | **pelaaja vuorossa** — index (1..`plkm`, max 4) of the human player whose turn it currently is in the hot-seat rotation. Used everywhere as the per-manager subscript: `raha(pv)`, `laina(curso, pv)`, `mafia(pv)`, `u(pv)` (which team this player manages), `sr(u(pv))` (the tier of that team), etc. NOT a day counter despite the obvious "päivä" reading. | confirmed               |
 | `kr`                            | INTEGER | kierros — round counter                   | TODO: vs. nn            |
 | `pkr`                           | INTEGER | playoff round                             |                         |
 | `ekr`                           | INTEGER | EHL round                                 |                         |
@@ -104,7 +104,7 @@ beam/pole?). TODO.
 | `kolo`                          | INTEGER | ❓ ("kolo" = hole/slot)                   | TODO                    |
 | `xx`, `yy`, `zz`, `zzz`, `zzzz` | INTEGER | scratch loop indices                      |                         |
 | `xxx`                           | INTEGER | scratch                                   | TODO: any specific use? |
-| `plkm`                          | INTEGER | pelaajien lukumäärä (player count)        | TODO confirm            |
+| `plkm`                          | INTEGER | pelaajien lukumäärä — number of human players in this hot-seat game (1..4). Bound for every `FOR pv = 1 TO plkm` loop. | confirmed               |
 
 ## League per-team arrays (indexed by team id)
 
@@ -115,7 +115,7 @@ beam/pole?). TODO.
 | `p()`                  | INTEGER | points                            |                         |
 | `win() dra() los()`    | INTEGER | W / D / L                         |                         |
 | `s()`                  | INTEGER | ❓ scalar `s` shadowed by array?  | TODO                    |
-| `sr()`                 | INTEGER | sort table                        |                         |
+| `sr()`                 | INTEGER | series tier per team: 1 = PHL, 2 = Divisioona, 3 = Mutasarja (`ILEZ5.BAS:1226` PRINT, `ILEZ5.BAS:295..314` promotion/relegation mutations). Also gates loan ceilings (`luotto * (4 - sr)`) and many UI color choices via `jkolo(sr(...))`. | confirmed               |
 | `gl()`                 | INTEGER | ❓ goal-related?                  | TODO                    |
 | `x()`                  | INTEGER | ❓ generic "extra" / sort scratch | TODO                    |
 | `ja()`                 | INTEGER | ❓                                | TODO                    |
@@ -161,7 +161,7 @@ beam/pole?). TODO.
 | `potti()`         | LONG    | jackpot per competition?              | TODO confirm           |
 | `ppotti`          | LONG    | grand jackpot?                        | TODO                   |
 | `ylm()`           | LONG    | ❓                                    | TODO                   |
-| `mafia()`         | INTEGER | mafia influence per manager           |                        |
+| `mafia()`         | INTEGER | per-manager "the mafia owns you" flag (0/1). Set to 1 the instant a manager borrows even one pekka from bank #3 IVAN'S INVEST (`ILEX5.BAS:4126`). While set, the random event walker can fire mafia-only branches: morality-tested morale hits (CASES 148, 149 with `lux 63`), forced match-fixing (`sovtap = 1`, CASES 150 151 160 161 with `lux 64`), and an interactive shakedown (CASES 152 159 — refuse and pranks 3, 5, 6 are queued against you; comply for an extra cash trickle, `lux 65`/`64`/`55`). After fully repaying the Ivan loan there's a per-rollover 30% chance the flag clears (`ILEX5.BAS:7728..7729`). | confirmed              |
 
 ## Players / roster
 
@@ -232,7 +232,7 @@ beam/pole?). TODO.
 | `spx()`                     | INTEGER | ❓                                       | TODO                        |
 | `inte()`                    | INTEGER | interview / interest                     | TODO                        |
 | `sopuhu()`                  | INTEGER | ❓ ("sopu-puhe"? peace talk?)            | TODO                        |
-| `sovtap()`                  | INTEGER | ❓ ("sovittelu-tapaus"? mediation case?) | TODO                        |
+| `sovtap()`                  | INTEGER | match-fixing flag ("sovittu tappio" = agreed loss). Set to 1 by mafia event branches CASES 150/151/160/161 (`ILEX5.BAS:6132`) when the morality check fails — the manager is forced to throw the next match for the Russian mob. Likely also set by the regular `sopupeli` event. | confirmed                   |
 | `sopim()`                   | INTEGER | contract status                          | TODO                        |
 | `sopvplus`                  | INTEGER | contract bonus                           | TODO                        |
 | `pelki()`                   | INTEGER | fear (pelko)                             |                             |
