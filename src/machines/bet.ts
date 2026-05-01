@@ -1,7 +1,7 @@
 import { setup, sendTo, assign } from "xstate";
 
 import type { EventEffect } from "@/game/event-effects";
-import { amount as formatAmount } from "@/services/format";
+import { currency } from "@/services/format";
 
 /**
  * Parlay payout multipliers indexed by number of correct picks (0..6).
@@ -90,7 +90,7 @@ function computePayout(ctx: BetContext): EventEffect[] {
       {
         type: "addAnnouncement",
         manager: ctx.manager,
-        text: `Voitit kavioveikkauksessa __${formatAmount(win)}__ pekkaa. Rivissäsi oli __${correct}__ oikein. Panoksesi oli __${formatAmount(ctx.amount)}__ pekkaa.`
+        text: `Voitit kavioveikkauksessa __${currency(win)}__. Rivissäsi oli __${correct}__ oikein. Panoksesi oli __${currency(ctx.amount)}__.`
       }
     ];
   }
@@ -99,7 +99,7 @@ function computePayout(ctx: BetContext): EventEffect[] {
     {
       type: "addAnnouncement",
       manager: ctx.manager,
-      text: `Et voittanut kavioveikkauksessa. Rivissäsi oli __${correct}__ oikein. Panoksesi oli __${formatAmount(ctx.amount)}__ pekkaa.`
+      text: `Et voittanut kavioveikkauksessa. Rivissäsi oli __${correct}__ oikein. Panoksesi oli __${currency(ctx.amount)}__.`
     }
   ];
 }

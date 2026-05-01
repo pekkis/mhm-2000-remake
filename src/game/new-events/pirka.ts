@@ -1,4 +1,5 @@
 import type { DeclarativeEvent } from "@/types/event";
+import { currency } from "@/services/format";
 
 const eventId = "pirka";
 
@@ -27,7 +28,7 @@ const pirka: DeclarativeEvent<PirkaData> = {
   }),
 
   render: (data) => [
-    `Ikääntynyt rokkitähti, __Pirka__, kuolee ja lahjoittaa koko omaisuutensa joukkueelle (${data.amount} pekkaa ja kiinanpalatsikoiran).`
+    `Ikääntynyt rokkitähti, __Pirka__, kuolee ja lahjoittaa koko omaisuutensa joukkueelle (${currency(data.amount)} ja kiinanpalatsikoiran).`
   ],
 
   // No `options` and no `resolve` — `resolved: true` at creation time.

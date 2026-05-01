@@ -24,17 +24,17 @@ describe("format", () => {
   });
 
   describe("currency", () => {
-    it("should append 'pekkaa' suffix", () => {
-      expect(currency(100)).toContain("pekkaa");
+    it("should append the euro symbol", () => {
+      expect(currency(100)).toContain("€");
     });
 
     it("should format the amount with Finnish locale", () => {
       const result = currency(5000);
-      expect(result).toMatch(/5[\s\u00a0]000 pekkaa/);
+      expect(result).toMatch(/5[\s\u00a0]000[\s\u00a0]€/);
     });
 
     it("should handle zero", () => {
-      expect(currency(0)).toBe("0 pekkaa");
+      expect(currency(0)).toMatch(/^0[\s\u00a0]€$/);
     });
   });
 });

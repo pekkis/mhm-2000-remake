@@ -1,7 +1,7 @@
 import { setup, sendTo, assign } from "xstate";
 
 import type { EventEffect } from "@/game/event-effects";
-import { amount as formatAmount } from "@/services/format";
+import { currency } from "@/services/format";
 
 export type ChampionBetInput = {
   manager: string;
@@ -79,7 +79,7 @@ function computePayout(ctx: ChampionBetContext): EventEffect[] {
     {
       type: "addAnnouncement",
       manager: ctx.manager,
-      text: `Voitit __${formatAmount(win)}__ pekkaa mestariveikkauksessa. Hyvin veikattu!`
+      text: `Voitit __${currency(win)}__ mestariveikkauksessa. Hyvin veikattu!`
     }
   ];
 }

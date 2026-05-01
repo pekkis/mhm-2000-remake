@@ -3,7 +3,7 @@ import type { PrankInstance } from "@/game/pranks";
 import type { EventEffect } from "@/game/event-effects";
 import random from "@/services/random";
 import { teamCompetesIn } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 
 const eventId = "sellNarcotics";
 
@@ -67,7 +67,7 @@ const sellNarcotics: DeclarativeEvent<SellNarcoticsData, PrankInstance> = {
     ];
     if (data.caught) {
       lines.push(
-        `Vaikka miliisi ei julkisesti tapahtumista puhukaan, sinulle he kyllä soittavat. On tapahtunut "pikku kämmi", ja tarvitaan lisävoitelua. Joudut pulittamaan ylimääräiset __${a(data.fine!)}__ pekkaa. Ystäväsi Jaarnio pahoittelee suuresti.`
+        `Vaikka miliisi ei julkisesti tapahtumista puhukaan, sinulle he kyllä soittavat. On tapahtunut "pikku kämmi", ja tarvitaan lisävoitelua. Joudut pulittamaan ylimääräiset __${currency(data.fine!)}__. Ystäväsi Jaarnio pahoittelee suuresti.`
       );
     }
     return lines;

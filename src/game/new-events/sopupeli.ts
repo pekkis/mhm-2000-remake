@@ -1,5 +1,5 @@
 import { managerCompetesIn, managersTeamId } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -46,7 +46,7 @@ const sopupeli: DeclarativeEvent<SopupeliData> = {
 
   render: (data) => {
     const lines = [
-      `Nimetön soittaja lupaa siirtää joukkueenne tilille ${a(data.amount)} pekkaa jos "järjestät" joukkueesi tappion seuraavassa ottelussa. Suostutko sopupeliin?`
+      `Nimetön soittaja lupaa siirtää joukkueenne tilille ${currency(data.amount)} jos "järjestät" joukkueesi tappion seuraavassa ottelussa. Suostutko sopupeliin?`
     ];
     if (!data.resolved) {
       return lines;

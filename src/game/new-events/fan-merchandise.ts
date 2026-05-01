@@ -1,5 +1,5 @@
 import { managersDifficulty } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "fanMerchandise";
@@ -35,10 +35,10 @@ const fanMerchandise: DeclarativeEvent<FanMerchandiseData> = {
   render: (data) =>
     data.sales === "good"
       ? [
-          `Fanituotteet myyvät __todella hyvin__! Viime kuukauden voitto ${a(data.amount)} pekkaa.`
+          `Fanituotteet myyvät __todella hyvin__! Viime kuukauden voitto ${currency(data.amount)}.`
         ]
       : [
-          `Fanituotteet myyvät __todella huonosti__! Viime kuukauden tappio ${a(data.amount)} pekkaa.`
+          `Fanituotteet myyvät __todella huonosti__! Viime kuukauden tappio ${currency(data.amount)}.`
         ],
 
   process: (_ctx, data) => [

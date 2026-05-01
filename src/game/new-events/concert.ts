@@ -1,5 +1,5 @@
 import { managersArena } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "concert";
@@ -35,7 +35,7 @@ const concert: DeclarativeEvent<ConcertData> = {
   },
 
   render: (data) => [
-    `Joukkueesi areenalla pidetään suuri rock-konsertti. Tuotto: ${a(data.amount)} pekkaa.`
+    `Joukkueesi areenalla pidetään suuri rock-konsertti. Tuotto: ${currency(data.amount)}.`
   ],
 
   process: (_ctx, data) => [

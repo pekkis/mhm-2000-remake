@@ -5,7 +5,7 @@ import {
   managersMainCompetition,
   managersTeam
 } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -65,10 +65,10 @@ const mcHabadobo: DeclarativeEvent<McHabadoboData> = {
     const t = [
       `Joukkueen fanikaupan vieressä sijaitsevaan moottoripyöräkerho __MC Habadobon__ isännöimään kapakkaan suunnattu leikkimielinen sinkoisku osuu harhaan!
 
-Lukematon määrä fanituotteita ja muuta krääsää tuhoutuu. Lasku kohoaa ${a(data.amount)} pekkaan!`
+Lukematon määrä fanituotteita ja muuta krääsää tuhoutuu. Lasku kohoaa ${currency(data.amount)}!`
     ];
     if (data.hasInsurance) {
-      t.push(`Etelälä maksaa laskusta ${a(data.insuranceClaim)} pekkaa.`);
+      t.push(`Etelälä maksaa laskusta ${currency(data.insuranceClaim)}.`);
     }
     return t;
   },

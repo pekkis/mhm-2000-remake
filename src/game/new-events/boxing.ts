@@ -1,5 +1,5 @@
 import { managersTeamId, randomManager } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import random from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
@@ -28,7 +28,7 @@ const results: { text: (data: BoxingData) => string; moraleGain: number }[] = [
   { text: () => `Ottelu päättyy tappioosi tuomariäänillä!`, moraleGain: 3 },
   {
     text: (data) =>
-      `Ottelu päättyy, kun vastustajasi tyrmää sinut! Lääkärilasku kohoaa ${a(data.amount)} pekkaan.`,
+      `Ottelu päättyy, kun vastustajasi tyrmää sinut! Lääkärilasku kohoaa ${currency(data.amount)}.`,
     moraleGain: 1
   }
 ];

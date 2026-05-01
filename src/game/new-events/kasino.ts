@@ -1,6 +1,7 @@
 import random from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
+import { currency } from "@/services/format";
 
 const eventId = "kasino";
 
@@ -57,7 +58,7 @@ const kasino: DeclarativeEvent<KasinoData> = {
     const lines = [
       `Olet eräänä iltana kasinolla.
 
-  Yhtäkkiä ääni päässäsi sanoo: 'Laita ${data.amount} pekkaa joukkueen kassasta peliin, niin voitto on sinun!' Otatko riskin?`
+  Yhtäkkiä ääni päässäsi sanoo: 'Laita ${currency(data.amount)} joukkueen kassasta peliin, niin voitto on sinun!' Otatko riskin?`
     ];
 
     if (!data.resolved) {
@@ -75,7 +76,7 @@ const kasino: DeclarativeEvent<KasinoData> = {
     }
 
     lines.push(
-      `JESS! Voitit omasi takaisin sekä ${data.amount * 3} pekkaa lisää!`
+      `JESS! Voitit omasi takaisin sekä ${currency(data.amount * 3)} lisää!`
     );
     return lines;
   },

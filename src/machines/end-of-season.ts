@@ -23,6 +23,7 @@ import type { RandomService } from "@/services/random";
 import { values } from "remeda";
 import { victors, eliminated } from "@/services/playoffs";
 import competitionData from "@/data/competitions";
+import { currency } from "@/services/format";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -160,29 +161,29 @@ const createAward = (
 const playoffBonusAward = createAward(
   100000,
   2,
-  (d) => `__${d.name}__ saa playoff-bonuksen, ${d.amount} pekkaa!`
+  (d) => `__${d.name}__ saa playoff-bonuksen, ${currency(d.amount)}!`
 );
 
 const medalAwards: Award[] = [
   createAward(
     1500000,
     29,
-    (d) => `__${d.name}__ nettoaa mestaruudestaan ${d.amount} pekkaa!`
+    (d) => `__${d.name}__ nettoaa mestaruudestaan ${currency(d.amount)}!`
   ),
   createAward(
     1000000,
     19,
-    (d) => `__${d.name}__ nettoaa hopeastaan ${d.amount} pekkaa!`
+    (d) => `__${d.name}__ nettoaa hopeastaan ${currency(d.amount)}!`
   ),
   createAward(
     700000,
     12,
-    (d) => `__${d.name}__ nettoaa pronssistaan ${d.amount} pekkaa!`
+    (d) => `__${d.name}__ nettoaa pronssistaan ${currency(d.amount)}!`
   ),
   createAward(
     500000,
     10,
-    (d) => `__${d.name}__ nettoaa neljännestä sijastaan ${d.amount} pekkaa!`
+    (d) => `__${d.name}__ nettoaa neljännestä sijastaan ${currency(d.amount)}!`
   )
 ];
 
@@ -190,24 +191,24 @@ const roundRobinAwards: Award[] = [
   createAward(
     500000,
     10,
-    (d) => `__${d.name}__ saa runkosarjan voitosta ${d.amount} pekkaa!`
+    (d) => `__${d.name}__ saa runkosarjan voitosta ${currency(d.amount)}!`
   ),
   createAward(
     400000,
     7,
-    (d) => `__${d.name}__ saa runkosarjan toisesta sijasta ${d.amount} pekkaa!`
+    (d) => `__${d.name}__ saa runkosarjan toisesta sijasta ${currency(d.amount)}!`
   ),
   createAward(
     300000,
     6,
     (d) =>
-      `__${d.name}__ saa runkosarjan kolmannesta sijasta ${d.amount} pekkaa!`
+      `__${d.name}__ saa runkosarjan kolmannesta sijasta ${currency(d.amount)}!`
   ),
   createAward(
     200000,
     4,
     (d) =>
-      `__${d.name}__ saa runkosarjan neljännestä sijasta ${d.amount} pekkaa!`
+      `__${d.name}__ saa runkosarjan neljännestä sijasta ${currency(d.amount)}!`
   ),
   playoffBonusAward,
   playoffBonusAward,

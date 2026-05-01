@@ -14,34 +14,34 @@ per-manager indexed; scalar = global.
 
 ### `pelaaja` — PLAYER (the central record)
 
-| Field  | QB type    | Meaning                                             | TODO                  |
-| ------ | ---------- | --------------------------------------------------- | --------------------- |
-| `nam`  | STRING\*13 | name                                                |                       |
+| Field  | QB type    | Meaning                                                                           | TODO                  |
+| ------ | ---------- | --------------------------------------------------------------------------------- | --------------------- |
+| `nam`  | STRING\*13 | name                                                                              |                       |
 | `ppp`  | INTEGER    | **player position**: 1=goalkeeper, 2=defence, 3=left wing, 4=center, 5=right wing | confirmed             |
-| `nat`  | INTEGER    | nationality (index into nation table)               |                       |
-| `age`  | INTEGER    | age                                                 |                       |
-| `psk`  | INTEGER    | skill / "pelisilmä-skill"?                          | TODO: confirm         |
-| `spe`  | INTEGER    | speed?                                              | TODO: confirm         |
-| `svu`  | INTEGER    | ❓                                                  | TODO: `svu` =?        |
-| `sra`  | LONG       | salary (`sra` = "saraka"? "sara")                   | TODO: confirm meaning |
-| `ego`  | INTEGER    | ego                                                 |                       |
-| `pok`  | INTEGER    | ❓ ("pokka"? coolness?)                             | TODO                  |
-| `pot`  | INTEGER    | potential                                           |                       |
-| `kun`  | INTEGER    | current condition / form (kunto)                    |                       |
-| `gls`  | INTEGER    | season goals                                        |                       |
-| `ass`  | INTEGER    | season assists                                      |                       |
-| `inj`  | INTEGER    | injury (rounds remaining)                           |                       |
-| `lah`  | INTEGER    | ❓ ("lahjakkuus"? talent? "lähtö"? exit?)           | TODO                  |
-| `neu`  | INTEGER    | ❓ ("neuvottelu"? negotiation skill?)               | TODO                  |
-| `ket`  | INTEGER    | line/chain assignment (ketju)                       |                       |
-| `plus` | INTEGER    | bonus modifier                                      | TODO: clarify         |
-| `kest` | INTEGER    | durability (kesto)                                  |                       |
-| `yvo`  | INTEGER    | power-play rating (ylivoima)                        |                       |
-| `avo`  | INTEGER    | penalty-kill rating (alivoima)                      |                       |
-| `ldr`  | INTEGER    | leadership                                          |                       |
-| `nhl`  | INTEGER    | NHL flag (drafted / leaving)                        | TODO: 0/1 or year?    |
-| `kar`  | INTEGER    | **charisma** (drawn from KEISIT.M2K col 6 with bell-shaped roll)                                       | confirmed          |
-| `mjo`  | INTEGER    | national team flag (maajoukkue)                     |                       |
+| `nat`  | INTEGER    | nationality (index into nation table)                                             |                       |
+| `age`  | INTEGER    | age                                                                               |                       |
+| `psk`  | INTEGER    | skill / "pelisilmä-skill"?                                                        | TODO: confirm         |
+| `spe`  | INTEGER    | speed?                                                                            | TODO: confirm         |
+| `svu`  | INTEGER    | ❓                                                                                | TODO: `svu` =?        |
+| `sra`  | LONG       | salary (`sra` = "saraka"? "sara")                                                 | TODO: confirm meaning |
+| `ego`  | INTEGER    | ego                                                                               |                       |
+| `pok`  | INTEGER    | ❓ ("pokka"? coolness?)                                                           | TODO                  |
+| `pot`  | INTEGER    | potential                                                                         |                       |
+| `kun`  | INTEGER    | current condition / form (kunto)                                                  |                       |
+| `gls`  | INTEGER    | season goals                                                                      |                       |
+| `ass`  | INTEGER    | season assists                                                                    |                       |
+| `inj`  | INTEGER    | injury (rounds remaining)                                                         |                       |
+| `lah`  | INTEGER    | ❓ ("lahjakkuus"? talent? "lähtö"? exit?)                                         | TODO                  |
+| `neu`  | INTEGER    | ❓ ("neuvottelu"? negotiation skill?)                                             | TODO                  |
+| `ket`  | INTEGER    | line/chain assignment (ketju)                                                     |                       |
+| `plus` | INTEGER    | bonus modifier                                                                    | TODO: clarify         |
+| `kest` | INTEGER    | durability (kesto)                                                                |                       |
+| `yvo`  | INTEGER    | power-play rating (ylivoima)                                                      |                       |
+| `avo`  | INTEGER    | penalty-kill rating (alivoima)                                                    |                       |
+| `ldr`  | INTEGER    | leadership                                                                        |                       |
+| `nhl`  | INTEGER    | NHL flag (drafted / leaving)                                                      | TODO: 0/1 or year?    |
+| `kar`  | INTEGER    | **charisma** (drawn from KEISIT.M2K col 6 with bell-shaped roll)                  | confirmed             |
+| `mjo`  | INTEGER    | national team flag (maajoukkue)                                                   |                       |
 
 ### `topp` — top scorer entry
 
@@ -188,26 +188,26 @@ beam/pole?). TODO.
 
 ## Strategy & match
 
-| Var                                 | Type      | Meaning                                                                                                                                                                                                          | TODO         |
-| ----------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| `koti() vieras() vast()`            | INTEGER   | home/away/opponent of upcoming match                                                                                                                                                                             | TODO confirm |
-| `pelip()`                           | STRING\*2 | strategy code                                                                                                                                                                                                    |              |
-| `tazo()`                            | INTEGER   | **CPU team strength level (1..58)** — indexes TASOT.M2K (`lvl(tazo(team))`) for goalie/def/att raw stats and MATERIAX.M2K → MATERIA.M2K for the UI "material tier" label. NOT the same as `taso()` (arena tier). |
-| `jayna()`                           | STRING    | ❓ ("jäynä" = prank? line setup?)                                                                                                                                                                                | TODO         |
-| `jaynteh jaynateh jaynmax jaynax()` | INTEGER   | prank counts/limits                                                                                                                                                                                              | TODO clarify |
-| `valms()`                           | STRING    | strategy name                                                                                                                                                                                                    |              |
-| `valb()`                            | INTEGER   | strategy weight                                                                                                                                                                                                  |              |
-| `intens()`                          | STRING    | intensity label                                                                                                                                                                                                  |              |
-| `genre()`                           | INTEGER   | playing-style genre                                                                                                                                                                                              | TODO         |
+| Var                                 | Type      | Meaning                                                                                                                                                                                                                                                            | TODO         |
+| ----------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| `koti() vieras() vast()`            | INTEGER   | home/away/opponent of upcoming match                                                                                                                                                                                                                               | TODO confirm |
+| `pelip()`                           | STRING\*2 | strategy code                                                                                                                                                                                                                                                      |              |
+| `tazo()`                            | INTEGER   | **CPU team strength level (1..58)** — indexes TASOT.M2K (`lvl(tazo(team))`) for goalie/def/att raw stats and MATERIAX.M2K → MATERIA.M2K for the UI "material tier" label. NOT the same as `taso()` (arena tier).                                                   |
+| `jayna()`                           | STRING    | ❓ ("jäynä" = prank? line setup?)                                                                                                                                                                                                                                  | TODO         |
+| `jaynteh jaynateh jaynmax jaynax()` | INTEGER   | prank counts/limits                                                                                                                                                                                                                                                | TODO clarify |
+| `valms()`                           | STRING    | strategy name                                                                                                                                                                                                                                                      |              |
+| `valb()`                            | INTEGER   | strategy weight                                                                                                                                                                                                                                                    |              |
+| `intens()`                          | STRING    | intensity label                                                                                                                                                                                                                                                    |              |
+| `genre()`                           | INTEGER   | playing-style genre                                                                                                                                                                                                                                                | TODO         |
 | `krjn()`                            | STRING\*1 | **first-initial pool** — 23 single letters (`A E I O U Y R T P S H J K L N M C D B W Z G F`) loaded from DATAX.M2K records 41..63. Pekkalandian players draw from `krjn(1..16)`, foreigners from all 23. Ported to [src/data/initials.ts](../../data/initials.ts). | confirmed    |
 | `krj$`                              | STRING    | scratch holding the rolled first initial in `SUB rela` ([YHTEIS.BAS:1](../YHTEIS.BAS)). Player name composed as `krj$ + "." + ptemp$` → e.g. `K.Hirvikoski`.                                                                                                       | confirmed    |
-| `maali()`                           | STRING    | goal-event text log                                                                                                                                                                                              |              |
-| `syotto()`                          | STRING    | assist text                                                                                                                                                                                                      |              |
-| `vu`                                | INTEGER   | scratch (vuoro = turn?)                                                                                                                                                                                          |              |
-| `vuoro()`                           | INTEGER   | turn order per team?                                                                                                                                                                                             | TODO         |
-| `kotiot()`                          | INTEGER   | home matches played counter                                                                                                                                                                                      |              |
-| `otma`                              | INTEGER   | match... mahjong? maximum?                                                                                                                                                                                       | TODO         |
-| `otte()`                            | INTEGER   | match flags                                                                                                                                                                                                      | TODO         |
+| `maali()`                           | STRING    | goal-event text log                                                                                                                                                                                                                                                |              |
+| `syotto()`                          | STRING    | assist text                                                                                                                                                                                                                                                        |              |
+| `vu`                                | INTEGER   | scratch (vuoro = turn?)                                                                                                                                                                                                                                            |              |
+| `vuoro()`                           | INTEGER   | turn order per team?                                                                                                                                                                                                                                               | TODO         |
+| `kotiot()`                          | INTEGER   | home matches played counter                                                                                                                                                                                                                                        |              |
+| `otma`                              | INTEGER   | match... mahjong? maximum?                                                                                                                                                                                                                                         | TODO         |
+| `otte()`                            | INTEGER   | match flags                                                                                                                                                                                                                                                        | TODO         |
 
 ## Morale / status / events
 

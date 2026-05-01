@@ -1,5 +1,5 @@
 import { managersArena, randomManager } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "scoreboard";
@@ -39,7 +39,7 @@ const scoreboard: DeclarativeEvent<ScoreboardData> = {
   render: (data) => [
     `Hallisi tulostaulu on pudonnut keskellä yötä! Eräs pelaajasi löytää mustan kommandopipon pukuhuoneen roskiksesta, mutta tekijää ei saada kiinni.
 
-Manageri __${data.otherManager}__ soittaa ja valittelee tapahtunutta. Korjauskustannukset nousevat ${a(data.amount)} pekkaan!`
+Manageri __${data.otherManager}__ soittaa ja valittelee tapahtunutta. Korjauskustannukset nousevat ${currency(data.amount)}!`
   ],
 
   process: (_ctx, data) => [

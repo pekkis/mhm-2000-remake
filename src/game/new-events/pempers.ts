@@ -1,5 +1,5 @@
 import { managersTeamId } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "pempers";
@@ -30,7 +30,7 @@ const pempers: DeclarativeEvent<PempersData> = {
   }),
 
   render: (data) => [
-    `Mainostoimisto maksaa ${a(data.amount)} pekkaa joukkueen esiintymisestä vaippamainoksessa. Ihmiset nauravat, ja moraali laskee!`
+    `Mainostoimisto maksaa ${currency(data.amount)} joukkueen esiintymisestä vaippamainoksessa. Ihmiset nauravat, ja moraali laskee!`
   ],
 
   process: (ctx, data) => {

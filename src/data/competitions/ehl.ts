@@ -2,7 +2,7 @@ import table, { sortStats } from "@/services/league";
 import { defaultMoraleBoost } from "@/services/morale";
 import { scheduler as roundRobinScheduler } from "@/services/round-robin";
 import tournamentScheduler from "@/services/tournament";
-import { amount as formatAmount } from "@/services/format";
+import { currency } from "@/services/format";
 import type {
   Competition,
   CompetitionDefinition,
@@ -22,37 +22,37 @@ const ehlAwards: EhlAward[] = [
     amount: 2_000_000,
     strength: 30,
     text: (a) =>
-      `Voitimme jääkiekon euroopan mestaruuden. Johtokunta onnittelee menestyksekästä joukkuetta ja sen manageria yksissä tuumin. Sielua lämmittävän kiittelyn ohella joukkueen tilille napsahtaa aimo summa pätäkkää, kaiken kaikkiaan __${formatAmount(a)}__ pekkaa. `
+      `Voitimme jääkiekon euroopan mestaruuden. Johtokunta onnittelee menestyksekästä joukkuetta ja sen manageria yksissä tuumin. Sielua lämmittävän kiittelyn ohella joukkueen tilille napsahtaa aimo summa pätäkkää, kaiken kaikkiaan __${currency(a)}__. `
   },
   {
     amount: 1_600_000,
     strength: 28,
     text: (a) =>
-      `Sijoituimme toiseksi EHL:n lopputurnauksessa. Hopea ei ole häpeä, ja johtokunta on samaan aikaan onnellinen saavutuksesta mutta haikea saavuttamattomasta. Onneksi palkkiosumma, __${formatAmount(a)}__ pekkaa, lohduttaa tasaisesti kaikkia asianosaisia.`
+      `Sijoituimme toiseksi EHL:n lopputurnauksessa. Hopea ei ole häpeä, ja johtokunta on samaan aikaan onnellinen saavutuksesta mutta haikea saavuttamattomasta. Onneksi palkkiosumma, __${currency(a)}__, lohduttaa tasaisesti kaikkia asianosaisia.`
   },
   {
     amount: 1_400_000,
     strength: 26,
     text: (a) =>
-      `Sijoituimme kolmanneksi EHL:n lopputurnauksessa. Himmeinkin mitali kelpaa, ja johtokunta on miedosti onnellinen saavutuksestanne. Kättelyt ovat ainakin kädenlämpoisiä, ja rahapalkkio, __${formatAmount(a)}__ pekkaa, kyllä kelpaa aivan jokaiselle.`
+      `Sijoituimme kolmanneksi EHL:n lopputurnauksessa. Himmeinkin mitali kelpaa, ja johtokunta on miedosti onnellinen saavutuksestanne. Kättelyt ovat ainakin kädenlämpoisiä, ja rahapalkkio, __${currency(a)}__, kyllä kelpaa aivan jokaiselle.`
   },
   {
     amount: 1_200_000,
     strength: 24,
     text: (a) =>
-      `Sijoituimme neljänneksi EHL:n lopputurnauksessa. Johtokunta tunnustaa haaveilleensa paremmasta, mutta ottaa silti ilolla vastaan rahapalkkion, __${formatAmount(a)}__ pekkaa.`
+      `Sijoituimme neljänneksi EHL:n lopputurnauksessa. Johtokunta tunnustaa haaveilleensa paremmasta, mutta ottaa silti ilolla vastaan rahapalkkion, __${currency(a)}__.`
   },
   {
     amount: 1_000_000,
     strength: 22,
     text: (a) =>
-      `Sijoituimme viidenneksi EHL:n lopputurnauksessa. Johtokunta nyreilee ja kyräilee, he odottivat joukkueelta selvästi enemmän. Rahapalkkio, __${formatAmount(a)}__ pekkaa, kelpaa heille kyllä, mutta se ei kuulemma "lohduta heitä pimeinä talvi-iltoina".`
+      `Sijoituimme viidenneksi EHL:n lopputurnauksessa. Johtokunta nyreilee ja kyräilee, he odottivat joukkueelta selvästi enemmän. Rahapalkkio, __${currency(a)}__, kelpaa heille kyllä, mutta se ei kuulemma "lohduta heitä pimeinä talvi-iltoina".`
   },
   {
     amount: 800_000,
     strength: 20,
     text: (a) =>
-      `Sijoituimme viimeiseksi EHL:n lopputurnauksessa. No, ainakin kohtuullinen rahapalkkio, __${formatAmount(a)}__ pekkaa, napsahtaa tilillenne.`
+      `Sijoituimme viimeiseksi EHL:n lopputurnauksessa. No, ainakin kohtuullinen rahapalkkio, __${currency(a)}__, napsahtaa tilillenne.`
   }
 ];
 

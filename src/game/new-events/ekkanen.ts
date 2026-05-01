@@ -4,7 +4,7 @@ import {
   managersDifficulty,
   managersTeamId
 } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -63,7 +63,7 @@ const ekkanen: DeclarativeEvent<EkkanenData> = {
     }
     if (data.giveMoney) {
       t.push(
-        `Eikä siinä vielä kaikki. Ekkanen lahjoittaa seuralle ${a(data.amount)} pekkaa kylmää käteistä.`
+        `Eikä siinä vielä kaikki. Ekkanen lahjoittaa seuralle ${currency(data.amount)} kylmää käteistä.`
       );
     }
     return t;

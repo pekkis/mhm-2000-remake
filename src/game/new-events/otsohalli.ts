@@ -1,5 +1,5 @@
 import { managersArena } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -45,7 +45,7 @@ const otsohalli: DeclarativeEvent<OtsohalliData> = {
 
   render: (data) => {
     const lines = [
-      `Suuri olutpanimo on halukas sponsoroimaan joukkuettasi! Se maksaa ${a(data.amount)} pekkaa, jos hallin nimi muutetaan __Otso-Halliksi__. Otatko tarjouksen vastaan?"`
+      `Suuri olutpanimo on halukas sponsoroimaan joukkuettasi! Se maksaa ${currency(data.amount)}, jos hallin nimi muutetaan __Otso-Halliksi__. Otatko tarjouksen vastaan?"`
     ];
     if (!data.resolved) {
       return lines;

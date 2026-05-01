@@ -1,5 +1,5 @@
 import { managerHasService, managersTeam } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -36,7 +36,7 @@ const fever: DeclarativeEvent<FeverData> = {
       `Omituinen kuumetauti iskee joukkueeseen. Puolet pelaajista makaa petissä seuraavan ottelun ajan!`
     ];
     if (data.hasInsurance) {
-      t.push(`Etelälä korvaa ${a(data.amount)} pekkaa.`);
+      t.push(`Etelälä korvaa ${currency(data.amount)}.`);
     }
     return t;
   },

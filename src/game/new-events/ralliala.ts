@@ -1,5 +1,5 @@
 import { managersTeam } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "ralliala";
@@ -39,7 +39,7 @@ const ralliala: DeclarativeEvent<RallialaData> = {
   },
 
   render: (data) => [
-    `Lavakoomikko __Aape Ralliala__ julistaa kääntyneensä ${data.teamName}:n kannattajaksi ja lahjoittaa sen osoitukseksi joukkueelle ${a(data.amount)} pekkaa.`
+    `Lavakoomikko __Aape Ralliala__ julistaa kääntyneensä ${data.teamName}:n kannattajaksi ja lahjoittaa sen osoitukseksi joukkueelle ${currency(data.amount)}.`
   ],
 
   process: (_ctx, data) => [

@@ -1,4 +1,5 @@
 import type { DeclarativeEvent } from "@/types/event";
+import { currency } from "@/services/format";
 
 const eventId = "topGame";
 
@@ -27,7 +28,7 @@ const topGame: DeclarativeEvent<TopGameData> = {
   }),
 
   render: (data) => [
-    `__Maso TV:llä__ on sopimus liigan kanssa otteluiden näyttämisestä. Luonnollisesti huippuottelut kiinnostavat, ja joukkueesi äskeinen ottelu näkyikin valtakunnanverkossa. Liiga maksaa teille ${data.amount} pekkaa.`
+    `__Maso TV:llä__ on sopimus liigan kanssa otteluiden näyttämisestä. Luonnollisesti huippuottelut kiinnostavat, ja joukkueesi äskeinen ottelu näkyikin valtakunnanverkossa. Liiga maksaa teille ${currency(data.amount)}.`
   ],
 
   process: (_ctx, data) => [

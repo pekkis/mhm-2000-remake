@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Slider from "@/components/ui/form/Slider";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import Button from "@/components/ui/Button";
 import TeamName from "@/components/team/Name";
 import type { Team } from "@/state/game";
@@ -122,7 +122,7 @@ const BettingForm: FC<BettingFormProps> = ({ competition, teams, bet }) => {
             />
           </Box>
           <Box>
-            <strong>{a(values.amount)}</strong> pekkaa
+            <strong>{currency(values.amount)}</strong>
           </Box>
         </Stack>
 

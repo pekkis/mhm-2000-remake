@@ -1,5 +1,5 @@
 import { managerCompetesIn, managersTeamId } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -51,7 +51,7 @@ const pakibetteri: DeclarativeEvent<PakibetteriData> = {
 
   render: (data) => {
     const lines = [
-      `NHL-seura Florida Panthersin kykyjenetsijä ehdottaa: eestiläinen pakki Paki-Betteri Erg kiinnostaa heitä, mutta he haluavat ensin nähdä hänen taitonsa. Suostutko ottamaan Ergin joukkueeseen, kun Panthers maksaisi joukkueellenne ${data.duration} ottelun koeajasta ${a(data.amount)} pekkaa?`
+      `NHL-seura Florida Panthersin kykyjenetsijä ehdottaa: eestiläinen pakki Paki-Betteri Erg kiinnostaa heitä, mutta he haluavat ensin nähdä hänen taitonsa. Suostutko ottamaan Ergin joukkueeseen, kun Panthers maksaisi joukkueellenne ${data.duration} ottelun koeajasta ${currency(data.amount)}?`
     ];
     if (!data.resolved) {
       return lines;

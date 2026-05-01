@@ -1,5 +1,5 @@
 import { managerHasService } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "ramirez";
@@ -33,7 +33,7 @@ const ramirez: DeclarativeEvent<RamirezData> = {
 
   render: (data) => {
     const t = [
-      `Espanjalaisvahvistuksesi __Jorge Ramirez__, liigan komeimmaksi ja egoistisimmaksi mainittu pelaaja, kompastuu harjoituksissa kaatuen ja murtaen kuuluisan kyömynenänsä! Sopimuksen erikoispykälä velvoittaa sinut maksamaan plastiikkakirurgikulut, ${a(data.amount)} pekkaa!`
+      `Espanjalaisvahvistuksesi __Jorge Ramirez__, liigan komeimmaksi ja egoistisimmaksi mainittu pelaaja, kompastuu harjoituksissa kaatuen ja murtaen kuuluisan kyömynenänsä! Sopimuksen erikoispykälä velvoittaa sinut maksamaan plastiikkakirurgikulut, ${currency(data.amount)}!`
     ];
     if (data.hasInsurance) {
       t.push(`Etelälä maksaa viulut!`);

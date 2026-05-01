@@ -6,7 +6,7 @@ import type {
   TournamentGroup
 } from "@/types/competitions";
 import tournamentScheduler from "@/services/tournament";
-import { amount as formatAmount } from "@/services/format";
+import { currency } from "@/services/format";
 import type { Manager } from "@/state/manager";
 import type { Invitation } from "@/state/invitation";
 import { foreignTeams } from "@/machines/selectors";
@@ -157,7 +157,7 @@ const tournaments: CompetitionDefinition = {
         draft.news.announcements[m.id] = [];
       }
       draft.news.announcements[m.id].push(
-        `Tilillenne on siirretty __${formatAmount(award)}__ pekkaa rahaa. Viiteviesti: joulutauon turnaus, osallistumismaksu, _${group.name}_.`
+        `Tilillenne on siirretty __${currency(award)}__ rahaa. Viiteviesti: joulutauon turnaus, osallistumismaksu, _${group.name}_.`
       );
     }
   }

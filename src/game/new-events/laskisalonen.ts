@@ -3,7 +3,7 @@ import {
   managerHasService,
   managersTeamId
 } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -46,7 +46,7 @@ const laskisalonen: DeclarativeEvent<LaskisalonenData> = {
     ];
     if (data.hasInsurance) {
       t.push(
-        `Etelälä on velvollinen maksamaan korvauksina ${a(data.amount)} pekkaa!`
+        `Etelälä on velvollinen maksamaan korvauksina ${currency(data.amount)}!`
       );
     }
     return t;

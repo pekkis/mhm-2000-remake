@@ -6,6 +6,7 @@ import {
 import random from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
+import { currency } from "@/services/format";
 
 const eventId = "juznetsov";
 
@@ -45,7 +46,7 @@ const juznetsov: DeclarativeEvent<JuznetsovData> = {
       `Auts! Venäläispakki Kuri Juznetsov törmää harjoituksissa pää edellä laitaan ja on seuraavat ${data.duration} ottelua pyörällä päästään!`
     ];
     if (data.hasInsurance) {
-      t.push(`Etelälä joutuu maksamaan ${data.amount} pekkaa!`);
+      t.push(`Etelälä joutuu maksamaan ${currency(data.amount)}!`);
     }
     return t;
   },

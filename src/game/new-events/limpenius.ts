@@ -1,5 +1,5 @@
 import { managersTeamId } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import r from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
@@ -40,11 +40,11 @@ const limpenius: DeclarativeEvent<LimpeniusData> = {
     ];
     if (data.success) {
       t.push(
-        `Voitat jutun ja Ilta-Maso maksaa sinulle ${a(data.amount)} pekkaa. Lisäksi moraali nousee maineesi puhdistuessa!`
+        `Voitat jutun ja Ilta-Maso maksaa sinulle ${currency(data.amount)}. Lisäksi moraali nousee maineesi puhdistuessa!`
       );
     } else {
       t.push(
-        `Ilta-Maso voittaa jutun ja maksat kulut, ${a(data.amount)} pekkaa. Lisäksi moraali laskee maineesi murentuessa!`
+        `Ilta-Maso voittaa jutun ja maksat kulut, ${currency(data.amount)}. Lisäksi moraali laskee maineesi murentuessa!`
       );
     }
     return t;

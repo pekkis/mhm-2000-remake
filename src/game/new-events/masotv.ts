@@ -1,4 +1,4 @@
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "masotv";
@@ -28,7 +28,7 @@ const masotv: DeclarativeEvent<MasotvData> = {
   }),
 
   render: (data) => [
-    `__Maso TV__ ostaa seuraavan ottelunne televisiointioikeudet. He maksavat joukkueelle ${a(data.amount)} pekkaa.`
+    `__Maso TV__ ostaa seuraavan ottelunne televisiointioikeudet. He maksavat joukkueelle ${currency(data.amount)}.`
   ],
 
   process: (_ctx, data) => [

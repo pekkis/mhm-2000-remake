@@ -1,4 +1,4 @@
-import { amount as a } from "@/services/format";
+import { amount as a, currency } from "@/services/format";
 import {
   managerHasService,
   managersTeamId,
@@ -64,7 +64,7 @@ const jaralahti: DeclarativeEvent<JaralahtiData> = {
   }),
 
   options: (data) => ({
-    support: `Lahjoitan miliisien virkistysrahastoon ${a(data.amount)} pekkaa.`,
+    support: `Lahjoitan miliisien virkistysrahastoon ${currency(data.amount)}.`,
     nothing: "Lyön luurin korvaan ja sanoudun irti koko hommasta!"
   }),
 

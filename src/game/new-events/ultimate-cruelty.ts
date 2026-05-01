@@ -5,7 +5,7 @@ import {
   managersMainCompetition,
   managersTeam
 } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "ultimateCruelty";
@@ -56,7 +56,7 @@ const ultimateCruelty: DeclarativeEvent<UltimateCrueltyData> = {
 
   render: (data) => {
     const t = [
-      `Valtaisa hallisi sortui viime yönä! Huolimattomasta rakentamisesta johtunut onnettomuus hautasi alleen 5 ihmistä, ja syytteiltä välttyäksesi joudut maksamaan kipurahoja yhteensä ${a(data.amount)} pekkaa. Joukkue joutuu siirtymään harjoitus-"areenalle".`
+      `Valtaisa hallisi sortui viime yönä! Huolimattomasta rakentamisesta johtunut onnettomuus hautasi alleen 5 ihmistä, ja syytteiltä välttyäksesi joudut maksamaan kipurahoja yhteensä ${currency(data.amount)}. Joukkue joutuu siirtymään harjoitus-"areenalle".`
     ];
     if (data.hasInsurance) {
       t.push(

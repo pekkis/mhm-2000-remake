@@ -1,5 +1,5 @@
 import { managersDifficulty } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -36,11 +36,11 @@ const bankMistake: DeclarativeEvent<BankMistakeData> = {
 
   render: (data) => {
     const t = [
-      `Pankkinne on tehnyt virheen. Tilillänne on __${a(data.amount)}__ pekkaa liikaa. Kukaan ei huomaa mitään...`
+      `Pankkinne on tehnyt virheen. Tilillänne on __${currency(data.amount)}__ liikaa. Kukaan ei huomaa mitään...`
     ];
     if (data.bribe) {
       t.push(
-        `... paitsi yksi erittäin tarkkaavainen pelaaja, jonka vaikeneminen maksaa __${a(data.bribe)}__ pekkaa.`
+        `... paitsi yksi erittäin tarkkaavainen pelaaja, jonka vaikeneminen maksaa __${currency(data.bribe)}__.`
       );
     }
     return t;

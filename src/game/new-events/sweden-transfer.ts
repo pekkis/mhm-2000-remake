@@ -3,7 +3,7 @@ import {
   managersTeamId,
   teamCompetesIn
 } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { amount as a, currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -51,7 +51,7 @@ const swedenTransfer: DeclarativeEvent<SwedenTransferData> = {
       `Joukkueen nuori, lupaava taituri siirtyy Ruotsiin kesken kauden. Nyyh! Ruotsalaiset korvaavat menetyksen ${a(data.amount)} pekalla!`
     ];
     if (data.hasInsurance) {
-      t.push(`Etelälältä saat lisäksi ${a(data.amount)} pekkaa.`);
+      t.push(`Etelälältä saat lisäksi ${currency(data.amount)}.`);
     }
     return t;
   },

@@ -3,7 +3,7 @@ import {
   managerObject,
   managersDifficulty
 } from "@/machines/selectors";
-import { amount as a } from "@/services/format";
+import { currency } from "@/services/format";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -57,11 +57,11 @@ const embezzlement: DeclarativeEvent<EmbezzlementData> = {
 
   render: (data) => {
     const t = [
-      `Yksi johtokunnan jäsen katoaa, vieden mukanaan aimo siivun joukkueen kassasta. Tililtänne uupuu yhteensä __${a(data.amountEmbezzled)}__ pekkaa.`
+      `Yksi johtokunnan jäsen katoaa, vieden mukanaan aimo siivun joukkueen kassasta. Tililtänne uupuu yhteensä __${currency(data.amountEmbezzled)}__.`
     ];
     if (data.amountReimbursed) {
       t.push(
-        `Etelälä maksaa teille korvauksena __${a(data.amountReimbursed)}__ pekkaa.`
+        `Etelälä maksaa teille korvauksena __${currency(data.amountReimbursed)}__.`
       );
     }
     return t;

@@ -1,4 +1,4 @@
-import { amount as a } from "@/services/format";
+import { amount as a, currency } from "@/services/format";
 import type { Team } from "@/state/game";
 import type { CompetitionId } from "@/types/competitions";
 
@@ -15,7 +15,7 @@ const tournamentList: Tournament[] = [
     name: "Christmas Cup",
     award: 300000,
     description: (amount) =>
-      `__Christmas Cup__ on euroopan perinteisin, suurin ja seuratuin jokavuotinen kutsuturnaus. Mukana on seurajoukkueita monesta maasta, ja osallistumisesta on luvassa __${a(amount)}__ pekkaa.`,
+      `__Christmas Cup__ on euroopan perinteisin, suurin ja seuratuin jokavuotinen kutsuturnaus. Mukana on seurajoukkueita monesta maasta, ja osallistumisesta on luvassa __${currency(amount)}__.`,
     eligibility: { competitionId: "phl", maxRanking: 5 },
     filter: (t) => t.strength > 200
   },
