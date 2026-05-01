@@ -47,8 +47,8 @@ describe("seatAllocationPoints", () => {
     for (const team of teams) {
       const points = seatAllocationPoints(
         team.arena.level,
-        team.arena.seatedCount,
         team.arena.standingCount,
+        team.arena.seatedCount,
         team.arena.hasBoxes
       );
       expect(points).toBe(team.arena.valuePoints);

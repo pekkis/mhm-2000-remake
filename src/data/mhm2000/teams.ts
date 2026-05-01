@@ -8,10 +8,18 @@ export type Arena = {
   name: string;
   /** taso(team) in QB — class tier 1..6. Unlocks box seating at level 4. */
   level: ArenaLevel;
-  /** paikka(1, team) — seated capacity in units of 100 spectators. */
-  seatedCount: number;
-  /** paikka(2, team) — standing capacity in units of 100 spectators. */
+  /**
+   * paikka(1, team) — standing (seisomapaikat) capacity, in units of 100
+   * spectators. Cheaper ticket (75 % of base price, ILEX5.BAS:5312-5313)
+   * but worse for atmosphere/season-ticket sales (HELP/22.HLP).
+   */
   standingCount: number;
+  /**
+   * paikka(2, team) — seated (istumapaikat) capacity, in units of 100
+   * spectators. Full-price tickets and the cap on season-ticket holders
+   * (`paikka(2) * 100 - kausik`, ILEX5.BAS:2511, 5312-5313).
+   */
+  seatedCount: number;
   /** paikka(3, team) — VIP-box section present. Only meaningful at level >= 4. */
   hasBoxes: boolean;
   /**
@@ -66,8 +74,8 @@ export const teams: Team[] = [
     arena: {
       name: "Turkuhallin Nimihirviö Areena",
       level: 5,
-      seatedCount: 28,
-      standingCount: 90,
+      standingCount: 28,
+      seatedCount: 90,
       hasBoxes: true,
       valuePoints: 1032
     }
@@ -82,8 +90,8 @@ export const teams: Team[] = [
     arena: {
       name: "Nordenskjöld Areena",
       level: 4,
-      seatedCount: 0,
-      standingCount: 80,
+      standingCount: 0,
+      seatedCount: 80,
       hasBoxes: true,
       valuePoints: 672
     }
@@ -98,8 +106,8 @@ export const teams: Team[] = [
     arena: {
       name: "Rinkelinmäen Halli",
       level: 3,
-      seatedCount: 30,
-      standingCount: 20,
+      standingCount: 30,
+      seatedCount: 20,
       hasBoxes: false,
       valuePoints: 210
     }
@@ -114,8 +122,8 @@ export const teams: Team[] = [
     arena: {
       name: "Kisapuisto",
       level: 3,
-      seatedCount: 27,
-      standingCount: 25,
+      standingCount: 27,
+      seatedCount: 25,
       hasBoxes: false,
       valuePoints: 231
     }
@@ -130,8 +138,8 @@ export const teams: Team[] = [
     arena: {
       name: "Hjartwall Areena",
       level: 6,
-      seatedCount: 0,
-      standingCount: 137,
+      standingCount: 0,
+      seatedCount: 137,
       hasBoxes: true,
       valuePoints: 1480
     }
@@ -146,8 +154,8 @@ export const teams: Team[] = [
     arena: {
       name: "Hakametsän Areena",
       level: 4,
-      seatedCount: 12,
-      standingCount: 68,
+      standingCount: 12,
+      seatedCount: 68,
       hasBoxes: false,
       valuePoints: 524
     }
@@ -162,8 +170,8 @@ export const teams: Team[] = [
     arena: {
       name: "ItäAuto Areena",
       level: 5,
-      seatedCount: 0,
-      standingCount: 74,
+      standingCount: 0,
+      seatedCount: 74,
       hasBoxes: true,
       valuePoints: 710
     }
@@ -178,8 +186,8 @@ export const teams: Team[] = [
     arena: {
       name: "Hippos",
       level: 3,
-      seatedCount: 26,
-      standingCount: 22,
+      standingCount: 26,
+      seatedCount: 22,
       hasBoxes: false,
       valuePoints: 210
     }
@@ -194,8 +202,8 @@ export const teams: Team[] = [
     arena: {
       name: "Hakametsän Jäähalli",
       level: 4,
-      seatedCount: 12,
-      standingCount: 68,
+      standingCount: 12,
+      seatedCount: 68,
       hasBoxes: false,
       valuePoints: 524
     }
@@ -210,8 +218,8 @@ export const teams: Team[] = [
     arena: {
       name: "Isonmäen Hornankattila",
       level: 3,
-      seatedCount: 25,
-      standingCount: 40,
+      standingCount: 25,
+      seatedCount: 40,
       hasBoxes: false,
       valuePoints: 315
     }
@@ -226,8 +234,8 @@ export const teams: Team[] = [
     arena: {
       name: "Äijänsuon Areena",
       level: 4,
-      seatedCount: 29,
-      standingCount: 31,
+      standingCount: 29,
+      seatedCount: 31,
       hasBoxes: false,
       valuePoints: 333
     }
@@ -242,8 +250,8 @@ export const teams: Team[] = [
     arena: {
       name: "Lahden Jäähalli",
       level: 3,
-      seatedCount: 21,
-      standingCount: 30,
+      standingCount: 21,
+      seatedCount: 30,
       hasBoxes: false,
       valuePoints: 243
     }
@@ -258,8 +266,8 @@ export const teams: Team[] = [
     arena: {
       name: "Niiralan Monttu",
       level: 2,
-      seatedCount: 28,
-      standingCount: 22,
+      standingCount: 28,
+      seatedCount: 22,
       hasBoxes: false,
       valuePoints: 166
     }
@@ -274,8 +282,8 @@ export const teams: Team[] = [
     arena: {
       name: "Raksilan Jäähalli",
       level: 3,
-      seatedCount: 20,
-      standingCount: 56,
+      standingCount: 20,
+      seatedCount: 56,
       hasBoxes: false,
       valuePoints: 396
     }
@@ -290,8 +298,8 @@ export const teams: Team[] = [
     arena: {
       name: "Kokkolahalli",
       level: 2,
-      seatedCount: 30,
-      standingCount: 10,
+      standingCount: 30,
+      seatedCount: 10,
       hasBoxes: false,
       valuePoints: 110
     }
@@ -306,8 +314,8 @@ export const teams: Team[] = [
     arena: {
       name: "Kupittaan Kiekkokeskus",
       level: 3,
-      seatedCount: 33,
-      standingCount: 29,
+      standingCount: 33,
+      seatedCount: 29,
       hasBoxes: false,
       valuePoints: 273
     }
@@ -322,8 +330,8 @@ export const teams: Team[] = [
     arena: {
       name: "Forssan Jäähalli",
       level: 2,
-      seatedCount: 20,
-      standingCount: 10,
+      standingCount: 20,
+      seatedCount: 10,
       hasBoxes: false,
       valuePoints: 90
     }
@@ -338,8 +346,8 @@ export const teams: Team[] = [
     arena: {
       name: "Jyväskylä-halli",
       level: 3,
-      seatedCount: 26,
-      standingCount: 22,
+      standingCount: 26,
+      seatedCount: 22,
       hasBoxes: false,
       valuePoints: 210
     }
@@ -354,8 +362,8 @@ export const teams: Team[] = [
     arena: {
       name: "Vaasan Uusi Areena",
       level: 2,
-      seatedCount: 40,
-      standingCount: 6,
+      standingCount: 40,
+      seatedCount: 6,
       hasBoxes: false,
       valuePoints: 110
     }
@@ -370,8 +378,8 @@ export const teams: Team[] = [
     arena: {
       name: "Savonlinnan Lato",
       level: 2,
-      seatedCount: 20,
-      standingCount: 8,
+      standingCount: 20,
+      seatedCount: 8,
       hasBoxes: false,
       valuePoints: 80
     }
@@ -386,8 +394,8 @@ export const teams: Team[] = [
     arena: {
       name: "Mehtimäki",
       level: 2,
-      seatedCount: 30,
-      standingCount: 20,
+      standingCount: 30,
+      seatedCount: 20,
       hasBoxes: false,
       valuePoints: 160
     }
@@ -402,8 +410,8 @@ export const teams: Team[] = [
     arena: {
       name: "Järvenpään Hökötys",
       level: 1,
-      seatedCount: 10,
       standingCount: 10,
+      seatedCount: 10,
       hasBoxes: false,
       valuePoints: 50
     }
@@ -418,8 +426,8 @@ export const teams: Team[] = [
     arena: {
       name: "Hyvinkään 'areena'",
       level: 2,
-      seatedCount: 15,
-      standingCount: 7,
+      standingCount: 15,
+      seatedCount: 7,
       hasBoxes: false,
       valuePoints: 65
     }
@@ -434,8 +442,8 @@ export const teams: Team[] = [
     arena: {
       name: "Uudenkaupungin Halli",
       level: 2,
-      seatedCount: 12,
-      standingCount: 10,
+      standingCount: 12,
+      seatedCount: 10,
       hasBoxes: false,
       valuePoints: 74
     }
@@ -450,8 +458,8 @@ export const teams: Team[] = [
     arena: {
       name: "Mikkeli-keskus",
       level: 1,
-      seatedCount: 14,
-      standingCount: 5,
+      standingCount: 14,
+      seatedCount: 5,
       hasBoxes: false,
       valuePoints: 34
     }
@@ -466,8 +474,8 @@ export const teams: Team[] = [
     arena: {
       name: "Muumimaailma",
       level: 1,
-      seatedCount: 10,
-      standingCount: 2,
+      standingCount: 10,
+      seatedCount: 2,
       hasBoxes: false,
       valuePoints: 18
     }
@@ -482,8 +490,8 @@ export const teams: Team[] = [
     arena: {
       name: "Balls Areena",
       level: 1,
-      seatedCount: 10,
-      standingCount: 3,
+      standingCount: 10,
+      seatedCount: 3,
       hasBoxes: false,
       valuePoints: 22
     }
@@ -498,8 +506,8 @@ export const teams: Team[] = [
     arena: {
       name: "Napapiiri",
       level: 2,
-      seatedCount: 10,
-      standingCount: 3,
+      standingCount: 10,
+      seatedCount: 3,
       hasBoxes: false,
       valuePoints: 35
     }
@@ -514,8 +522,8 @@ export const teams: Team[] = [
     arena: {
       name: "Diazepam Areena",
       level: 1,
-      seatedCount: 11,
-      standingCount: 3,
+      standingCount: 11,
+      seatedCount: 3,
       hasBoxes: false,
       valuePoints: 23
     }
@@ -530,8 +538,8 @@ export const teams: Team[] = [
     arena: {
       name: "Keravan Kuoppa",
       level: 1,
-      seatedCount: 16,
-      standingCount: 2,
+      standingCount: 16,
+      seatedCount: 2,
       hasBoxes: false,
       valuePoints: 24
     }
@@ -546,8 +554,8 @@ export const teams: Team[] = [
     arena: {
       name: "Riihimäen Jäähalli",
       level: 1,
-      seatedCount: 10,
-      standingCount: 3,
+      standingCount: 10,
+      seatedCount: 3,
       hasBoxes: false,
       valuePoints: 22
     }
@@ -562,8 +570,8 @@ export const teams: Team[] = [
     arena: {
       name: "Sompion Hoki-Senter",
       level: 1,
-      seatedCount: 8,
-      standingCount: 2,
+      standingCount: 8,
+      seatedCount: 2,
       hasBoxes: false,
       valuePoints: 16
     }
@@ -578,8 +586,8 @@ export const teams: Team[] = [
     arena: {
       name: "Nuuksion Jäähalli",
       level: 1,
-      seatedCount: 8,
-      standingCount: 2,
+      standingCount: 8,
+      seatedCount: 2,
       hasBoxes: false,
       valuePoints: 16
     }
@@ -594,8 +602,8 @@ export const teams: Team[] = [
     arena: {
       name: "Mäntsälän Tekojäärata",
       level: 1,
-      seatedCount: 7,
-      standingCount: 2,
+      standingCount: 7,
+      seatedCount: 2,
       hasBoxes: false,
       valuePoints: 15
     }
@@ -610,8 +618,8 @@ export const teams: Team[] = [
     arena: {
       name: "Itä-Karjala Areena",
       level: 1,
-      seatedCount: 14,
-      standingCount: 4,
+      standingCount: 14,
+      seatedCount: 4,
       hasBoxes: false,
       valuePoints: 30
     }
@@ -626,8 +634,8 @@ export const teams: Team[] = [
     arena: {
       name: "Yläasteen Kaukalo",
       level: 1,
-      seatedCount: 10,
-      standingCount: 2,
+      standingCount: 10,
+      seatedCount: 2,
       hasBoxes: false,
       valuePoints: 18
     }
@@ -642,8 +650,8 @@ export const teams: Team[] = [
     arena: {
       name: "Inarijärven Jää",
       level: 1,
-      seatedCount: 7,
-      standingCount: 2,
+      standingCount: 7,
+      seatedCount: 2,
       hasBoxes: false,
       valuePoints: 15
     }
@@ -658,8 +666,8 @@ export const teams: Team[] = [
     arena: {
       name: "Sotkamon Pesismekka",
       level: 1,
-      seatedCount: 7,
-      standingCount: 2,
+      standingCount: 7,
+      seatedCount: 2,
       hasBoxes: false,
       valuePoints: 15
     }
@@ -674,8 +682,8 @@ export const teams: Team[] = [
     arena: {
       name: "3210 Areena",
       level: 1,
-      seatedCount: 10,
-      standingCount: 4,
+      standingCount: 10,
+      seatedCount: 4,
       hasBoxes: false,
       valuePoints: 26
     }
@@ -690,8 +698,8 @@ export const teams: Team[] = [
     arena: {
       name: "Kangasalareena",
       level: 1,
-      seatedCount: 7,
-      standingCount: 3,
+      standingCount: 7,
+      seatedCount: 3,
       hasBoxes: false,
       valuePoints: 19
     }
@@ -706,8 +714,8 @@ export const teams: Team[] = [
     arena: {
       name: "Gore Areena",
       level: 1,
-      seatedCount: 10,
-      standingCount: 2,
+      standingCount: 10,
+      seatedCount: 2,
       hasBoxes: false,
       valuePoints: 18
     }
@@ -722,8 +730,8 @@ export const teams: Team[] = [
     arena: {
       name: "Korsholm Hockeyring",
       level: 1,
-      seatedCount: 6,
-      standingCount: 2,
+      standingCount: 6,
+      seatedCount: 2,
       hasBoxes: false,
       valuePoints: 14
     }
@@ -738,8 +746,8 @@ export const teams: Team[] = [
     arena: {
       name: "Nokian Kylpylä",
       level: 1,
-      seatedCount: 6,
-      standingCount: 3,
+      standingCount: 6,
+      seatedCount: 3,
       hasBoxes: false,
       valuePoints: 18
     }
@@ -754,8 +762,8 @@ export const teams: Team[] = [
     arena: {
       name: "Paperitehtaan Kellari",
       level: 1,
-      seatedCount: 6,
-      standingCount: 3,
+      standingCount: 6,
+      seatedCount: 3,
       hasBoxes: false,
       valuePoints: 18
     }
@@ -770,8 +778,8 @@ export const teams: Team[] = [
     arena: {
       name: "Klaukkalan Areena",
       level: 1,
-      seatedCount: 12,
-      standingCount: 4,
+      standingCount: 12,
+      seatedCount: 4,
       hasBoxes: false,
       valuePoints: 28
     }
@@ -786,8 +794,8 @@ export const teams: Team[] = [
     arena: {
       name: "Kouvolan Jäähalli",
       level: 3,
-      seatedCount: 22,
-      standingCount: 38,
+      standingCount: 22,
+      seatedCount: 38,
       hasBoxes: false,
       valuePoints: 294
     }
@@ -802,8 +810,8 @@ export const teams: Team[] = [
     arena: {
       name: "Granit Arena",
       level: 2,
-      seatedCount: 15,
-      standingCount: 5,
+      standingCount: 15,
+      seatedCount: 5,
       hasBoxes: false,
       valuePoints: 55
     }
@@ -818,8 +826,8 @@ export const teams: Team[] = [
     arena: {
       name: "Lunastus Areena",
       level: 1,
-      seatedCount: 8,
-      standingCount: 2,
+      standingCount: 8,
+      seatedCount: 2,
       hasBoxes: false,
       valuePoints: 16
     }
@@ -836,18 +844,18 @@ export const teams: Team[] = [
  *
  * Upgrade cost (per QB ILES5.BAS:465): (newPpiste - oldPpiste) * 20_000 mk.
  */
-export const arenaUnitCosts: Record<ArenaLevel, { seated: number; standing: number; box: number }> = {
-  1: { seated: 1, standing: 4, box: -1 },
-  2: { seated: 2, standing: 5, box: -1 },
-  3: { seated: 3, standing: 6, box: -1 },
-  4: { seated: 4, standing: 7, box: 20 },
-  5: { seated: 5, standing: 8, box: 20 },
-  6: { seated: 6, standing: 9, box: 20 },
+export const arenaUnitCosts: Record<ArenaLevel, { standing: number; seated: number; box: number }> = {
+  1: { standing: 1, seated: 4, box: -1 },
+  2: { standing: 2, seated: 5, box: -1 },
+  3: { standing: 3, seated: 6, box: -1 },
+  4: { standing: 4, seated: 7, box: 20 },
+  5: { standing: 5, seated: 8, box: 20 },
+  6: { standing: 6, seated: 9, box: 20 },
 };
 
 /** Total arena-value points (ppiste in QB). Pure derivation; matches the stored Arena.valuePoints for all 48 base teams. */
 export const arenaValuePoints = (arena: Arena): number => {
   const cost = arenaUnitCosts[arena.level];
-  const base = arena.seatedCount * cost.seated + arena.standingCount * cost.standing;
+  const base = arena.standingCount * cost.standing + arena.seatedCount * cost.seated;
   return arena.hasBoxes ? Math.round(base * 1.2) : base;
 };

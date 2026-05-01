@@ -261,13 +261,13 @@ export const tickConstruction = (
  */
 export const seatAllocationPoints = (
   level: ArenaLevel,
-  seatedCount: number,
   standingCount: number,
+  seatedCount: number,
   hasBoxes: boolean
 ): number => {
   const unit = arenaUnitCosts[level];
-  const seated = unit.seated < 0 ? 0 : seatedCount * unit.seated;
   const standing = unit.standing < 0 ? 0 : standingCount * unit.standing;
+  const seated = unit.seated < 0 ? 0 : seatedCount * unit.seated;
   const base = seated + standing;
   return hasBoxes && unit.box >= 0 ? Math.round(base * 1.2) : base;
 };
@@ -280,8 +280,8 @@ export const arenaFreePoints = (plan: Arena): number =>
   plan.valuePoints -
   seatAllocationPoints(
     plan.level,
-    plan.seatedCount,
     plan.standingCount,
+    plan.seatedCount,
     plan.hasBoxes
   );
 
