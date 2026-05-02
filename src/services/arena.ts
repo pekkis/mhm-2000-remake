@@ -65,8 +65,12 @@ import {
 export const qbCint = (value: number): number => {
   const floor = Math.floor(value);
   const frac = value - floor;
-  if (frac < 0.5) {return floor;}
-  if (frac > 0.5) {return floor + 1;}
+  if (frac < 0.5) {
+    return floor;
+  }
+  if (frac > 0.5) {
+    return floor + 1;
+  }
   // Exactly .5 — pick the even neighbour.
   return floor % 2 === 0 ? floor : floor + 1;
 };

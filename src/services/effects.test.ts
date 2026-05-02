@@ -5,6 +5,14 @@ import type { Team, TeamEffect } from "@/state/game";
 const makeTeam = (overrides: Partial<Team> = {}): Team => ({
   id: 0,
   name: "Pier Paolo Pasolini FC",
+  city: "Bologna",
+  arena: {
+    level: 1,
+    standingCount: 0,
+    seatedCount: 0,
+    hasBoxes: false,
+    valuePoints: 0
+  },
   strength: 50,
   domestic: true,
   morale: 50,

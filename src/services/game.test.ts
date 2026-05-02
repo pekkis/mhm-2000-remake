@@ -10,6 +10,14 @@ import type { GameResult } from "@/types/competitions";
 const makeTeam = (overrides: Partial<Team> = {}): Team => ({
   id: 0,
   name: "Pasolini United",
+  city: "Bologna",
+  arena: {
+    level: 1,
+    standingCount: 0,
+    seatedCount: 0,
+    hasBoxes: false,
+    valuePoints: 0
+  },
   strength: 50,
   domestic: true,
   morale: 50,

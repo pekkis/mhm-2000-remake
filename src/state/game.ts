@@ -1,5 +1,6 @@
 import type { Competition, CompetitionId } from "@/types/competitions";
 import type { ManagerDefinition } from "@/data/managers";
+import type { Arena } from "@/data/mhm2000/teams";
 
 export type TeamEffect = {
   parameter: string[];
@@ -11,6 +12,8 @@ export type TeamEffect = {
 export type Team = {
   id: number;
   name: string;
+  city: string;
+  arena: Arena;
   strength: number;
   domestic: boolean;
   morale: number;

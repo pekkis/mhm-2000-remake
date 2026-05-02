@@ -4,7 +4,6 @@ import { values } from "remeda";
 import type { GameContext } from "@/state";
 import { managersMainCompetition } from "@/machines/selectors";
 import difficultyLevels from "@/data/difficulty-levels";
-import teamData from "@/data/teams";
 import random from "@/services/random";
 
 /**
@@ -24,9 +23,11 @@ import random from "@/services/random";
 export function runSeasonStart(draft: Draft<GameContext>): void {
   const season = draft.turn.season;
 
-  // Re-strength European teams (indices 24+).
+  // Re-strength European teams (indices 24+). Hardcoded to 100 during
+  // the MHM 2000 transplant — proper per-team strength roll lands when
+  // the new attribute model is wired in.
   for (let i = 24; i < draft.teams.length; i++) {
-    draft.teams[i].strength = teamData[draft.teams[i].id].strength();
+    draft.teams[i].strength = 100;
   }
 
   // Reset per-team season state.

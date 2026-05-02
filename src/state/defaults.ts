@@ -12,14 +12,74 @@
 
 import { entries, values } from "remeda";
 
-import teamDefs from "@/data/teams";
+import { teams as managedTeamDefs } from "@/data/mhm2000/teams";
+import { foreignTeams as foreignLightTeams } from "@/data/mhm2000/light-teams";
 import managerDefs from "@/data/managers";
 import competitionList from "@/data/competitions";
 import { countries as countryList } from "@/data/countries";
 
 import type { GameContext } from "./game-context";
 import type { Country } from "./country";
+import type { Team } from "./game";
 import type { Competition, CompetitionId } from "@/types/competitions";
+
+// Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
+// three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
+// order (id 12 is mutasarja, etc.). The runtime competitions hard-code
+// team-id arrays (PHL = 0..11, Divisioona = 12..23), so we renumber on
+// transplant so each tier occupies a contiguous id range.
+//
+// For now only PHL + Divisioona are wired; Mutasarja (TEAMS.PLN's
+// remaining 24 teams) lands in the next pass. Slots 24..40 are padded
+// with 17 European clubs from TEAMS.FOR so the existing season-start EHL
+// seed (`draft.teams.slice(24, 24 + 17)`) keeps working.
+const phlSource = managedTeamDefs.filter((t) => t.league === "phl");
+const divisioonaSource = managedTeamDefs.filter(
+  (t) => t.league === "divisioona"
+);
+const ehlForeign = foreignLightTeams.slice(0, 17);
+
+const seedTeams = (): Team[] => [
+  ...phlSource.map((t, i) => ({
+    id: i,
+    name: t.name,
+    city: t.city,
+    arena: t.arena,
+    strength: 100,
+    domestic: true,
+    morale: 0,
+    strategy: 2,
+    readiness: 0,
+    effects: [],
+    opponentEffects: []
+  })),
+  ...divisioonaSource.map((t, i) => ({
+    id: 12 + i,
+    name: t.name,
+    city: t.city,
+    arena: t.arena,
+    strength: 100,
+    domestic: true,
+    morale: 0,
+    strategy: 2,
+    readiness: 0,
+    effects: [],
+    opponentEffects: []
+  })),
+  ...ehlForeign.map((t, i) => ({
+    id: 24 + i,
+    name: t.name,
+    city: t.city,
+    arena: t.arena,
+    strength: 100,
+    domestic: false,
+    morale: 0,
+    strategy: 2,
+    readiness: 0,
+    effects: [],
+    opponentEffects: []
+  }))
+];
 
 export const createDefaultGameContext = (): GameContext => ({
   // game
@@ -59,17 +119,7 @@ export const createDefaultGameContext = (): GameContext => ({
       structuredClone(def.data)
     ])
   ) as Record<CompetitionId, Competition>,
-  teams: teamDefs.map((t) => ({
-    id: t.id,
-    name: t.name,
-    strength: t.strength(),
-    domestic: t.domestic,
-    morale: 0,
-    strategy: 2,
-    readiness: 0,
-    effects: [],
-    opponentEffects: []
-  })),
+  teams: seedTeams(),
 
   worldChampionshipResults: undefined,
 

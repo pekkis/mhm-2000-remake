@@ -64,7 +64,9 @@ describe("attributeRoll", () => {
     let hits = 0;
     const trials = 10000;
     for (let i = 0; i < trials; i++) {
-      if (attributeRoll(pasolini, "charisma", 30, 0)) {hits++;}
+      if (attributeRoll(pasolini, "charisma", 30, 0)) {
+        hits++;
+      }
     }
     const empirical = hits / trials;
     // 29% expected; allow 2pp tolerance
