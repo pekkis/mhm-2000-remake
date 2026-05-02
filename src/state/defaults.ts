@@ -26,18 +26,31 @@ import type { Competition, CompetitionId } from "@/types/competitions";
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
 // order (id 12 is mutasarja, etc.). The runtime competitions hard-code
-// team-id arrays (PHL = 0..11, Divisioona = 12..23), so we renumber on
-// transplant so each tier occupies a contiguous id range.
+// team-id arrays (PHL = 0..11, Divisioona = 12..23, Mutasarja = 24..47),
+// so we renumber on transplant so each tier occupies a contiguous id
+// range.
 //
-// For now only PHL + Divisioona are wired; Mutasarja (TEAMS.PLN's
-// remaining 24 teams) lands in the next pass. Slots 24..40 are padded
-// with 17 European clubs from TEAMS.FOR so the existing season-start EHL
-// seed (`draft.teams.slice(24, 24 + 17)`) keeps working.
+// Foreign clubs land at slots 48..117 (all 70 European clubs from
+// TEAMS.FOR). The season-start EHL seed still pulls `slice(48, 48 + 17)`
+// which lines up with the first 17 cleanly. The wide pool means the three
+// tournament filters in `src/data/tournaments.ts` always find enough
+// candidates each season.
+//
+// Strength is still a placeholder (real per-roster attribute model lands
+// later). Values are picked so:
+//   * Tournament filters all resolve (`>200`, `150..225`, `<=175`).
+//   * Turmio gets a 200 special so we can validate Mutasarja->Divisioona
+//     promotion without waiting for the attribute model.
 const phlSource = managedTeamDefs.filter((t) => t.league === "phl");
 const divisioonaSource = managedTeamDefs.filter(
   (t) => t.league === "divisioona"
 );
-const ehlForeign = foreignLightTeams.slice(0, 17);
+const mutasarjaSource = managedTeamDefs.filter((t) => t.league === "mutasarja");
+const ehlForeign = foreignLightTeams;
+
+// Cycled across the foreign list so each of the three tournament filter
+// buckets has plenty of eligible candidates (>200, 150..225, <=175).
+const FOREIGN_PLACEHOLDER_STRENGTHS = [230, 180, 150];
 
 const seedTeams = (): Team[] => [
   ...phlSource.map((t, i) => ({
@@ -45,7 +58,7 @@ const seedTeams = (): Team[] => [
     name: t.name,
     city: t.city,
     arena: t.arena,
-    strength: 100,
+    strength: 250,
     domestic: true,
     morale: 0,
     strategy: 2,
@@ -58,7 +71,20 @@ const seedTeams = (): Team[] => [
     name: t.name,
     city: t.city,
     arena: t.arena,
-    strength: 100,
+    strength: 175,
+    domestic: true,
+    morale: 0,
+    strategy: 2,
+    readiness: 0,
+    effects: [],
+    opponentEffects: []
+  })),
+  ...mutasarjaSource.map((t, i) => ({
+    id: 24 + i,
+    name: t.name,
+    city: t.city,
+    arena: t.arena,
+    strength: t.name === "Turmio" ? 200 : 100,
     domestic: true,
     morale: 0,
     strategy: 2,
@@ -67,11 +93,12 @@ const seedTeams = (): Team[] => [
     opponentEffects: []
   })),
   ...ehlForeign.map((t, i) => ({
-    id: 24 + i,
+    id: 48 + i,
     name: t.name,
     city: t.city,
     arena: t.arena,
-    strength: 100,
+    strength:
+      FOREIGN_PLACEHOLDER_STRENGTHS[i % FOREIGN_PLACEHOLDER_STRENGTHS.length],
     domestic: false,
     morale: 0,
     strategy: 2,

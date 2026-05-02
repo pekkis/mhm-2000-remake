@@ -100,7 +100,12 @@ export type Phase = {
 
 // --- Competition (in state.game.competitions) ---
 
-export type CompetitionId = "phl" | "division" | "ehl" | "tournaments";
+export type CompetitionId =
+  | "phl"
+  | "division"
+  | "mutasarja"
+  | "ehl"
+  | "tournaments";
 
 export type Competition = {
   id: CompetitionId;

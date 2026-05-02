@@ -47,7 +47,7 @@ const phlDiv = (
   extra?: Partial<RawEntry>
 ): RawEntry => ({
   phases,
-  gamedays: ["phl", "division"],
+  gamedays: ["phl", "division", "mutasarja"],
   ...extra
 });
 
@@ -66,6 +66,7 @@ const raw: RawEntry[] = [
     seed: [
       { competition: "phl", phase: 0 },
       { competition: "division", phase: 0 },
+      { competition: "mutasarja", phase: 0 },
       { competition: "ehl", phase: 0 }
     ]
   },
@@ -164,7 +165,8 @@ const raw: RawEntry[] = [
     phases: ["action", "event", "news", "seed"],
     seed: [
       { competition: "phl", phase: 1 },
-      { competition: "division", phase: 1 }
+      { competition: "division", phase: 1 },
+      { competition: "mutasarja", phase: 1 }
     ]
   },
 
@@ -180,7 +182,8 @@ const raw: RawEntry[] = [
     phases: ["action", "event", "news", "seed"],
     seed: [
       { competition: "phl", phase: 2 },
-      { competition: "division", phase: 2 }
+      { competition: "division", phase: 2 },
+      { competition: "mutasarja", phase: 2 }
     ]
   },
 
@@ -196,7 +199,8 @@ const raw: RawEntry[] = [
     phases: ["action", "event", "news", "seed", "gala"],
     seed: [
       { competition: "phl", phase: 3 },
-      { competition: "division", phase: 3 }
+      { competition: "division", phase: 3 },
+      { competition: "mutasarja", phase: 3 }
     ]
   },
 

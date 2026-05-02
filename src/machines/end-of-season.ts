@@ -616,8 +616,11 @@ export const runAwards = (
 
   yieldAwards(draft, roundRobinAwards, tableEntries);
 
-  // Pekkalandian teams = first 24.
-  for (const team of draft.teams.slice(0, 24)) {
+  // Pekkalandian teams = first 48 (PHL + Divisioona + Mutasarja).
+  // Awards/random events still only fire for PHL- and Divisioona-eligible
+  // teams via the per-event `isEligible` predicates; Mutasarja teams pass
+  // through silently for now (MHM 2000-only tier, awards not yet wired).
+  for (const team of draft.teams.slice(0, 48)) {
     for (const ev of randomEvents) {
       ev(draft, random, team.id);
     }
@@ -752,6 +755,74 @@ const runRelegate = (
   addTeamToCompetition(draft, relegateTo, teamId);
 };
 
+/**
+ * Apply the Mutasarja ↔ Divisioona swap.
+ *
+ * MHM 2000 third-tier rules: the two winners of Mutasarja's phase 3
+ * round-of-4 playoffs are promoted to Divisioona for the next season.
+ * The two slots they take are vacated by the two worst Divisioona teams
+ * after the regular season — except those two had a chance to defend
+ * their slot by entering Mutasarja's phase 2 as seeds 1 & 2. If a
+ * Divisioona relegation candidate fights its way to a phase-3 win, it
+ * stays in Divisioona; the other relegation candidate is the one who
+ * actually drops.
+ *
+ * Implementation: each phase-3 winner that is currently in Mutasarja
+ * gets promoted; for every slot we need to vacate in Divisioona we
+ * relegate one of the two original Divisioona relegation candidates
+ * that did NOT survive phase 3. Net effect: Divisioona size stays at
+ * 12, Mutasarja size stays at 24.
+ *
+ * No-op if Mutasarja's phase-3 group hasn't been seeded (e.g. early
+ * release, manual context, partial port).
+ */
+const runMutasarjaSwap = (draft: Draft<GameContext>): void => {
+  const muta = draft.competitions.mutasarja;
+  const finalGroup = muta.phases[3]?.groups[0];
+  if (!finalGroup || finalGroup.type !== "playoffs") {
+    return;
+  }
+  const winnersIds = victors(finalGroup as PlayoffGroup).map((t) => t.id);
+  if (winnersIds.length === 0) {
+    return;
+  }
+
+  const divStats = draft.competitions.division.phases[0]?.groups[0]?.stats as
+    | TeamStat[]
+    | undefined;
+  if (!divStats || divStats.length < 2) {
+    return;
+  }
+  const relegationCandidates = [
+    divStats[divStats.length - 1].id,
+    divStats[divStats.length - 2].id
+  ];
+
+  // Promote every phase-3 winner currently in Mutasarja.
+  const promoted: number[] = [];
+  for (const teamId of winnersIds) {
+    if (teamCompetesIn(draft, teamId, "mutasarja")) {
+      runPromote(draft, "mutasarja", teamId);
+      promoted.push(teamId);
+    }
+  }
+
+  // Relegate as many Divisioona relegation candidates as Mutasarja
+  // teams we just promoted — but skip ones that already won phase 3
+  // (they earned their stay).
+  let toRelegate = promoted.length;
+  for (const teamId of relegationCandidates) {
+    if (toRelegate === 0) {
+      break;
+    }
+    if (winnersIds.includes(teamId)) {
+      continue;
+    }
+    runRelegate(draft, "division", teamId);
+    toRelegate -= 1;
+  }
+};
+
 export const runSeasonEnd = (draft: Draft<GameContext>): void => {
   const cs = draft.stats.currentSeason;
   if (cs) {
@@ -763,6 +834,9 @@ export const runSeasonEnd = (draft: Draft<GameContext>): void => {
     runPromote(draft, "division", cs.promoted);
     runRelegate(draft, "phl", cs.relegated);
   }
+
+  // Mutasarja ↔ Divisioona swap (MHM 2000 third tier).
+  runMutasarjaSwap(draft);
 
   // Bump season; advanceRound will then take round 0 → 1, but we want next
   // season to begin at round 0, so set to -1 and let advanceRound increment.
