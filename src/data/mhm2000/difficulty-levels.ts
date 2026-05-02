@@ -6,16 +6,24 @@
 //   - Per-level state is stored in the QB array `vai(1..4, pv)`:
 //       vai(1) = chosen level (1..5)                — see MHM2K.BAS:1808
 //       vai(2) = budget tier (BUDGET.M2K row, 1..3) — see MHM2K.BAS:1813-1834
-//       vai(3) = salary scale percent (90..200)     — see ILEX5.BAS:6702
-//       vai(4) = jäynä-day trigger threshold        — see MHM2K.BAS:1811,
-//                                                     ILEX5.BAS:5634
+//       vai(3) = sponsor scale percent (90..200)    — see ILEX5.BAS:6702
+//                (scales `spr(curso, 20)` — the sponsor offer base value
+//                inside SUB `sponsorit`)
+//       vai(4) = post-match injury-roll percent              — see
+//                MHM2K.BAS:1811, ILEX5.BAS:5634-5640
 //                derived: vai(4) = 4 + vai(1) * 2
 //   - Morale clamp from src/mhm2000-qb/DATA/DATAX.M2K rows 88..92
 //     (max,min pairs), used in ILEX5.BAS:341-342.
 //   - Character creation point pool (MHM2K.BAS:1482-1483):
 //       IF vai(1) < 3 THEN curso = (3 - vai(1)) * 3
-//   - Bonus actions on the very first round (ILEX5.BAS:248):
+//   - Bonus actions on every **preseason** round (ILEX5.BAS:247-248):
+//       IF kr > 1 THEN actiox(pv) = 999 ELSE actiox(pv) = aktion(kr)
 //       IF vai(1) < 3 THEN actiox(pv) = actiox(pv) + 3 - vai(1)
+//     `kr` runs -9..kierrosmax (season rollover sets `kr = -9` at
+//     ILEX5.BAS:7702); the AKTION.M2K table covers the 11 preseason
+//     rounds (kr ∈ -9..1), and `actiox = 999` from kr=2 onwards makes
+//     actions effectively unlimited during regular play. The +bonus is
+//     therefore added on every one of those 11 preseason rounds.
 //
 // IMPORTANT vs MHM 97: levels 4 and 5 were renamed from "Vatsahaava" /
 // "Vatsakatarri" to "Haavavatsa" / "Katarrivatsa" — Forster wanted every
@@ -36,9 +44,11 @@
 // indirect: a higher `budgetTier` makes the right-end budget sliders
 // hilariously expensive (-18 000/round + -1 200/player/round at tier 3
 // vs -7 000/round + -400/player/round at tier 1, see BUDGET.M2K), which
-// drains `raha(pv)` faster, which makes the manager more dependent on
-// loans — but the loans themselves are identical for everyone. The
-// `mafia` flag fires on any Ivan loan at any difficulty.
+// drains `raha(pv)` faster, AND a lower `sponsorScalePercent` shrinks
+// the income side. Together they turn the screws on cash flow and make
+// the manager more dependent on loans — but the loans themselves are
+// identical for everyone. The `mafia` flag fires on any Ivan loan at
+// any difficulty.
 
 export type DifficultyLevelId = 1 | 2 | 3 | 4 | 5;
 
@@ -71,17 +81,32 @@ export type DifficultyLevel = {
   characterPoints: number;
 
   /**
-   * Extra actions added to the round-1 budget on top of `aktion(1)`.
-   * Only granted on the very first round of the very first season.
+   * Extra actions added to the per-preseason-round budget on top of
+   * `aktion(kr)`. Applies to every preseason round (`kr ∈ -9..1`) — not
+   * just the first. Once regular play starts (`kr >= 2`) `actiox` is
+   * forced to 999 and the bonus is moot.
    */
-  bonusActionsRoundOne: number;
+  bonusActionsPreseason: number;
 
   /**
-   * vai(4, pv) — per-day percentage chance (0..100) that a "self-jäynä"
-   * (`al 1` → `dap 1`) triggers against the manager. Derived as
-   * `4 + id * 2` so it scales linearly with difficulty.
+   * vai(4, pv) — percentage chance (0..100) that the post-match block
+   * (`ILEX5.BAS:5634-5640`) injures a random healthy lineup player on
+   * the manager's roster. Derived as `4 + id * 2` so it scales linearly
+   * with difficulty. Mechanism:
+   *   IF INT(101*RND) < vai(4, pv) THEN
+   *     al 1                       ' pick a random non-injured player
+   *     lukka = INT(44*RND) + 1    ' roll injury type 1..44 (INJURIES.M2K)
+   *     dap 1                      ' pel.inj = loukka(lukka, valb(4, pv))
+   *   END IF
+   * Severity is softened by the manager's medical-budget slider
+   * `valb(4, pv)`. Despite the in-source label "jäynä" (`SUB jaynacheck`
+   * is unrelated and lives in JAYNAT.M2K), this is just the per-gameday
+   * "random training injury" roll — not a true prank.
+   *
+   * Sibling rolls in the same block (NOT difficulty-scaled): a flat 5%
+   * ban roll (`dap 2`) and a flat 20% mood-swing roll (`dap 3`).
    */
-  jaynaDayChancePercent: number;
+  postMatchInjuryRollPercent: number;
 
   /**
    * vai(2, pv) — index into the first dimension of BUDGET.M2K's
@@ -98,15 +123,17 @@ export type DifficultyLevel = {
   budgetTier: BudgetTierId;
 
   /**
-   * vai(3, pv) — percentage applied to the new-player offer salary
-   * baseline (`spr(curso, 20) = 20000 * (1 + sin1*0.07) * (vai(3)/100)`,
-   * ILEX5.BAS:6702). Counter-intuitively inverted vs MHM 97: easy mode
-   * = 200 % (players demand more), hard mode = 90 % (players demand
-   * less). The intent is presumably that hard-mode managers can still
-   * scrape together a roster despite the budget squeeze, while easy
-   * mode players come pre-loaded with cash and inflated payrolls.
+   * vai(3, pv) — percentage applied to the **sponsor offer base**
+   * (`spr(curso, 20) = 20000 * (1 + sin1*0.07) * (vai(3)/100)`,
+   * ILEX5.BAS:6702, inside SUB `sponsorit`). All three sponsor offers
+   * shown to the manager scale their payouts off this base, so the
+   * effect is a flat multiplier on sponsor income:
+   *   easy   (Nörttivatsa)  = 200 %  — sponsors throw money at you
+   *   hard   (Katarrivatsa) =  90 %  — belt-tightening on the income side
+   * (Note: this is NOT player salaries. Player wages are computed
+   * elsewhere from `pel().sra` / `pel().svu` and don't reference `vai`.)
    */
-  salaryScalePercent: number;
+  sponsorScalePercent: number;
 };
 
 export const difficultyLevels: readonly DifficultyLevel[] = [
@@ -116,10 +143,10 @@ export const difficultyLevels: readonly DifficultyLevel[] = [
     moraleMin: -5,
     moraleMax: 13,
     characterPoints: 6,
-    bonusActionsRoundOne: 2,
-    jaynaDayChancePercent: 6,
+    bonusActionsPreseason: 2,
+    postMatchInjuryRollPercent: 6,
     budgetTier: 1,
-    salaryScalePercent: 200
+    sponsorScalePercent: 200
   },
   {
     id: 2,
@@ -127,10 +154,10 @@ export const difficultyLevels: readonly DifficultyLevel[] = [
     moraleMin: -10,
     moraleMax: 10,
     characterPoints: 3,
-    bonusActionsRoundOne: 1,
-    jaynaDayChancePercent: 8,
+    bonusActionsPreseason: 1,
+    postMatchInjuryRollPercent: 8,
     budgetTier: 2,
-    salaryScalePercent: 140
+    sponsorScalePercent: 140
   },
   {
     id: 3,
@@ -138,10 +165,10 @@ export const difficultyLevels: readonly DifficultyLevel[] = [
     moraleMin: -10,
     moraleMax: 10,
     characterPoints: 0,
-    bonusActionsRoundOne: 0,
-    jaynaDayChancePercent: 10,
+    bonusActionsPreseason: 0,
+    postMatchInjuryRollPercent: 10,
     budgetTier: 2,
-    salaryScalePercent: 120
+    sponsorScalePercent: 120
   },
   {
     id: 4,
@@ -149,10 +176,10 @@ export const difficultyLevels: readonly DifficultyLevel[] = [
     moraleMin: -10,
     moraleMax: 10,
     characterPoints: 0,
-    bonusActionsRoundOne: 0,
-    jaynaDayChancePercent: 12,
+    bonusActionsPreseason: 0,
+    postMatchInjuryRollPercent: 12,
     budgetTier: 2,
-    salaryScalePercent: 100
+    sponsorScalePercent: 100
   },
   {
     id: 5,
@@ -160,10 +187,10 @@ export const difficultyLevels: readonly DifficultyLevel[] = [
     moraleMin: -15,
     moraleMax: 7,
     characterPoints: 0,
-    bonusActionsRoundOne: 0,
-    jaynaDayChancePercent: 14,
+    bonusActionsPreseason: 0,
+    postMatchInjuryRollPercent: 14,
     budgetTier: 3,
-    salaryScalePercent: 90
+    sponsorScalePercent: 90
   }
 ] as const;
 

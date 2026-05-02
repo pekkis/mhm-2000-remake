@@ -97,13 +97,24 @@ The per-manager loop. Each manager goes through this sequence in order:
 
 ### 4. `options` — difficulty (1..5)
 
-- Vertical selector with `AL.MHM` rows 5..9 as labels.
-- Sets `vai(1, pv) = 1..5` (rookie → veteran).
-- Derives:
-  - `vai(2, pv)` — max league tier you can pick (1=PHL, 2=incl Div, 3=incl Muta)
-  - `vai(3, pv)` — starting money % (200/140/120/100/90)
-  - `vai(4, pv) = 4 + vai(1) * 2` — purpose ❓ (probably some
-    AI-help / threshold knob; trace later)
+- Vertical selector with `AL.MHM` rows 5..9 as labels (Nörttivatsa /
+  Maitovatsa / Kahvivatsa / Haavavatsa / Katarrivatsa).
+- Sets `vai(1, pv) = 1..5`.
+- Derives the rest of the `vai(1..4, pv)` tuple:
+  - `vai(2, pv)` — **budget tier** 1..3, indexes BUDGET.M2K's first
+    dimension (`valbh(tier, category, choice)`). Mapping is
+    1→1 / 2→2 / 3→2 / 4→2 / 5→3. NOT a bank tier — banks are
+    difficulty-agnostic.
+  - `vai(3, pv)` — **sponsor scale percent** (200/140/120/100/90).
+    Multiplies `spr(curso, 20)` inside `SUB sponsorit`
+    (`ILEX5.BAS:6702`); easy mode = fat sponsor offers, hard mode =
+    starvation income. Not player salaries.
+  - `vai(4, pv) = 4 + vai(1) * 2` — **post-match injury-roll percent**
+    (6/8/10/12/14). Per-gameday roll at `ILEX5.BAS:5634-5640`: picks a
+    random non-injured lineup player and applies a real injury from
+    INJURIES.M2K (severity softened by the medical-budget slider
+    `valb(4, pv)`). NOT the inter-manager prank system despite the
+    in-source `jäynä` label — that's `jaynteh`/JAYNAT.M2K, separate.
 - Then computes a strength score `sin1` from previous-experience
   scaffolding (lots of weighted sums of `otte`/`vsaldo`/`saav`) and
   bins it into `a` — the **team-quality threshold** for the team
@@ -214,6 +225,5 @@ For when we port this into [`appMachine`](../../machines/app.ts) + a new
 
 ## Open questions / TODO
 
-- `vai(4, pv) = 4 + vai(1) * 2` — what reads it? ❓
 - `cauzi(slot)` — start-year metadata: hardcoded `1998` per `kausi = 1998`? Then why is it in the slot card? ❓ (multi-save year display?)
 - Confirm `KANSAT.M2K` is exactly 22 rows (current code grids 14 + 8).
