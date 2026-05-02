@@ -131,7 +131,7 @@ export function runGameday(draft: Draft<GameContext>): void {
         const away = draft.teams[group.teams[pairing.away]];
         const result = simulate({
           ...groupParams,
-          overtime: ct.overtime,
+          overtime: (r) => ct.overtime(r, group, groupRound, x),
           home,
           away,
           homeManager: home.manager

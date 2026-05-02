@@ -102,16 +102,49 @@ export type IndependentGamesGroup = {
   stats: never[];
 };
 
+// --- Cup matchup stat ---
+
+export type CupMatchupTeamStat = {
+  index: number;
+  id: number;
+  goals: number;
+};
+
+export type CupMatchupStat = {
+  home: CupMatchupTeamStat;
+  away: CupMatchupTeamStat;
+  decided: boolean;
+  victor?: "home" | "away";
+};
+
+/**
+ * One round of Pekkalan Cup. Two-leg matchups (each team hosts once).
+ * If aggregate goals are tied after the second leg, that leg goes to
+ * sudden-death overtime — see `competitionTypes.cup.overtime` and
+ * `services/cup.ts`. Stats track aggregate goals per matchup, not a
+ * standings table.
+ */
+export type CupGroup = {
+  type: "cup";
+  round: number;
+  name: string;
+  teams: number[];
+  matchups: [number, number][];
+  schedule: Pairing[][];
+  stats: CupMatchupStat[];
+};
+
 export type Group =
   | RoundRobinGroup
   | TournamentGroup
   | PlayoffGroup
-  | IndependentGamesGroup;
+  | IndependentGamesGroup
+  | CupGroup;
 
 // --- Phase ---
 
 export type Phase = {
-  type: "round-robin" | "playoffs" | "tournament" | "independent-games";
+  type: "round-robin" | "playoffs" | "tournament" | "independent-games" | "cup";
   name: string;
   teams: number[];
   groups: Group[];

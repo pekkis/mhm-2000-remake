@@ -24,6 +24,7 @@
     "test": "vitest",
     "test:run": "vitest --run",
     "test:ui": "vitest --ui",
+    "gen:calendar": "tsx src/data/mhm2000/generate-calendar.ts",
     "verify": "pnpm run test --run && pnpm run format && pnpm run lint --fix && pnpm run typecheck"
   },
   "dependencies": {

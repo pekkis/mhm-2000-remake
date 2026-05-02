@@ -1,6 +1,8 @@
 import { matchups } from "@/services/playoffs";
+import { cupMatchups } from "@/services/cup";
 import table from "@/services/league";
 import type {
+  CupGroup,
   GameResult,
   Group,
   MatchupStat,
@@ -9,9 +11,20 @@ import type {
 
 type GroupOfType<T extends Group["type"]> = Extract<Group, { type: T }>;
 
+/**
+ * `overtime` receives the full `(group, round, matchupIdx)` triple in
+ * addition to the freshly-simulated `result`, so per-matchup history
+ * (e.g. cup leg-1 aggregate) is reachable. Most competitions ignore
+ * the extras.
+ */
 type CompetitionType<T extends Group["type"]> = {
   playMatch: (phase: Group, round: number, matchup: number) => boolean;
-  overtime: (result: GameResult) => boolean;
+  overtime: (
+    result: GameResult,
+    group: Group,
+    round: number,
+    matchup: number
+  ) => boolean;
   stats: (group: GroupOfType<T>) => GroupOfType<T>["stats"];
 };
 
@@ -48,6 +61,29 @@ const competitionTypes: { [K in Group["type"]]: CompetitionType<K> } = {
     playMatch: () => true,
     overtime: () => false,
     stats: () => []
+  },
+  cup: {
+    playMatch: () => true,
+    /**
+     * Sudden-death overtime in leg 2 only, and only if the
+     * aggregate would otherwise be tied. Leg 1 (round 0) never
+     * triggers overtime; ties there are normal and resolved across
+     * the two legs.
+     */
+    overtime: (result, group, round, matchupIdx) => {
+      if (round === 0) return false;
+      const cup = group as CupGroup;
+      const leg1 = cup.schedule[0]?.[matchupIdx]?.result;
+      if (!leg1) return false;
+      // Leg 1: home = matchup[0]. Leg 2: home = matchup[1].
+      // Aggregate per matchup-team:
+      //   teamA = leg1.home + leg2.away
+      //   teamB = leg1.away + leg2.home
+      const teamA = leg1.home + result.away;
+      const teamB = leg1.away + result.home;
+      return teamA === teamB;
+    },
+    stats: (group) => cupMatchups(group)
   }
 };
 
