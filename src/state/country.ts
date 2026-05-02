@@ -1,3 +1,5 @@
+import type { CountryIso } from "@/data/countries";
+
 /**
  * World championship tier the country participates in.
  * - `a` — A-sarja (top division)
@@ -10,7 +12,7 @@ export type CountrySeries = "a" | "b" | "c";
 
 export type Country = {
   /** 2-letter ISO 3166-1 alpha-2 code (consolidated; replaces QB's 3-letter codes). */
-  iso: string;
+  iso: CountryIso;
   name: string;
   series: CountrySeries;
   /** General national level. KANSAT.M2K column 4. The sentinel value 39 has some yet-undecoded meaning. */
@@ -19,5 +21,5 @@ export type Country = {
 };
 
 export type CountryState = {
-  countries: Record<string, Country>;
+  countries: Record<CountryIso, Country>;
 };

@@ -13,7 +13,10 @@
 import { entries, values } from "remeda";
 
 import { teams as managedTeamDefs } from "@/data/mhm2000/teams";
-import { foreignTeams as foreignLightTeams } from "@/data/mhm2000/light-teams";
+import {
+  foreignTeams as foreignLightTeams,
+  amateurTeams as amateurLightTeams
+} from "@/data/mhm2000/light-teams";
 import managerDefs from "@/data/managers";
 import competitionList from "@/data/competitions";
 import { countries as countryList } from "@/data/countries";
@@ -22,6 +25,8 @@ import type { GameContext } from "./game-context";
 import type { Country } from "./country";
 import type { Team } from "./game";
 import type { Competition, CompetitionId } from "@/types/competitions";
+import { managerFromDefinition } from "@/services/manager";
+import { createUniqueId } from "@/services/id";
 
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
@@ -47,6 +52,7 @@ const divisioonaSource = managedTeamDefs.filter(
 );
 const mutasarjaSource = managedTeamDefs.filter((t) => t.league === "mutasarja");
 const ehlForeign = foreignLightTeams;
+const amateurs = amateurLightTeams;
 
 // Cycled across the foreign list so each of the three tournament filter
 // buckets has plenty of eligible candidates (>200, 150..225, <=175).
@@ -54,7 +60,8 @@ const FOREIGN_PLACEHOLDER_STRENGTHS = [230, 180, 150];
 
 const seedTeams = (): Team[] => [
   ...phlSource.map((t, i) => ({
-    id: i,
+    id: createUniqueId(),
+    legacyId: i,
     name: t.name,
     city: t.city,
     arena: t.arena,
@@ -67,7 +74,8 @@ const seedTeams = (): Team[] => [
     opponentEffects: []
   })),
   ...divisioonaSource.map((t, i) => ({
-    id: 12 + i,
+    id: createUniqueId(),
+    legacyId: i,
     name: t.name,
     city: t.city,
     arena: t.arena,
@@ -80,7 +88,8 @@ const seedTeams = (): Team[] => [
     opponentEffects: []
   })),
   ...mutasarjaSource.map((t, i) => ({
-    id: 24 + i,
+    id: createUniqueId(),
+    legacyId: i,
     name: t.name,
     city: t.city,
     arena: t.arena,
@@ -93,13 +102,30 @@ const seedTeams = (): Team[] => [
     opponentEffects: []
   })),
   ...ehlForeign.map((t, i) => ({
-    id: 48 + i,
+    id: createUniqueId(),
+    legacyId: i,
     name: t.name,
     city: t.city,
     arena: t.arena,
     strength:
       FOREIGN_PLACEHOLDER_STRENGTHS[i % FOREIGN_PLACEHOLDER_STRENGTHS.length],
     domestic: false,
+    morale: 0,
+    strategy: 2,
+    readiness: 0,
+    effects: [],
+    opponentEffects: []
+  })),
+  // Finnish amateur clubs (TEAMS.ALA) at ids 118..133. They participate
+  // only in the Pekkalan Cup first round (16 first-round bye-fodder teams).
+  ...amateurs.map((t, i) => ({
+    id: createUniqueId(),
+    legacyId: i,
+    name: t.name,
+    city: t.city,
+    arena: t.arena,
+    strength: 50,
+    domestic: true,
     morale: 0,
     strategy: 2,
     readiness: 0,
@@ -134,7 +160,13 @@ export const createDefaultGameContext = (): GameContext => ({
   // bare `managerDefs` does not. Position in the context object also
   // matters with the bare ref (last is least-bad), but a fresh ref makes
   // position irrelevant. See AGENTS.md for the bisect.
-  managers: [...managerDefs],
+  managers: Object.fromEntries(
+    managerDefs.map((def) => {
+      const manager = managerFromDefinition(def);
+
+      return [manager.id, manager];
+    })
+  ),
 
   competitions: Object.fromEntries(
     entries(competitionList).map(([key, def]) => [
@@ -146,11 +178,16 @@ export const createDefaultGameContext = (): GameContext => ({
       structuredClone(def.data)
     ])
   ) as Record<CompetitionId, Competition>,
-  teams: seedTeams(),
+
+  teams: Object.fromEntries(
+    seedTeams().map((team) => {
+      return [team.id, team];
+    })
+  ),
 
   worldChampionshipResults: undefined,
 
-  manager: { active: undefined, managers: {} },
+  manager: { active: undefined, managers: [] },
 
   // betting — parlay + championship bet actors plus the transient
   // last-round coupon used to bridge `executeGameday` and `resolveParlayBets`.

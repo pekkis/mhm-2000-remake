@@ -11,6 +11,8 @@ import { gameMachine } from "@/machines/game";
 import type { ManagerSubmission } from "@/machines/game";
 import { teamsMainCompetition } from "@/machines/selectors";
 import difficultyLevels from "@/data/difficulty-levels";
+import { produce } from "immer";
+import { createUniqueId } from "@/services/id";
 
 /**
  * Top-level application lifecycle machine.
@@ -57,10 +59,21 @@ const withManager = (
 ): GameContext => {
   const difficulty = submission.difficulty;
   const main = teamsMainCompetition(submission.team)(ctx);
+
   const manager: Manager = {
-    id: crypto.randomUUID(),
+    id: createUniqueId(),
+    kind: "human",
     name: submission.name,
     team: submission.team,
+    nationality: "FI",
+    attributes: {
+      charisma: 0,
+      luck: 0,
+      negotiation: 0,
+      resourcefulness: 0,
+      specialTeams: 0,
+      strategy: 0
+    },
     difficulty,
     pranksExecuted: 0,
     services: {
@@ -76,16 +89,26 @@ const withManager = (
     flags: {}
   };
 
+  return produce(ctx, (draft) => {
+    draft.managers.push(manager);
+    draft.manager.managers.push(manager.id);
+    draft.manager.active = manager.id;
+
+    draft.teams[submission.team].manager = manager.id;
+  });
+
+  /*
   return {
     ...ctx,
     manager: {
       active: manager.id,
-      managers: { ...ctx.manager.managers, [manager.id]: manager }
+      managers: { ...ctx.manager.managers, []: manager }
     },
     teams: ctx.teams.map((t) =>
       t.id === submission.team ? { ...t, manager: manager.id } : t
     )
   };
+  */
 };
 
 export const appMachine = setup({

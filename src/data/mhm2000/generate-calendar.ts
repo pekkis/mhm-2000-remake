@@ -192,7 +192,9 @@ const stringArray = (xs: string[]): string =>
   xs.length === 0 ? "[]" : `[${xs.map((s) => JSON.stringify(s)).join(", ")}]`;
 
 const seedArray = (seeds: SeedTuple[]): string => {
-  if (seeds.length === 0) return "[]";
+  if (seeds.length === 0) {
+    return "[]";
+  }
   const items = seeds
     .map(
       (s) =>

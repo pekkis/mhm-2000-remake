@@ -55,6 +55,7 @@ import eventsMap from "@/game/new-events/table";
 import { runGala } from "@/machines/parts/gala";
 import { runGameday } from "@/machines/parts/gameday";
 import { runSeasonStart } from "@/machines/parts/season-start";
+import { createUniqueId } from "@/services/id";
 
 // Parlay payout multipliers moved to src/machines/bet.ts (where the
 // payout is now computed). The bet actor reaches `resolved` and emits
@@ -128,7 +129,7 @@ export type ManagerSubmission = {
   name: string;
   arena: string;
   difficulty: number;
-  team: number;
+  team: string;
 };
 
 // One small alias to avoid repeating the generics
@@ -297,7 +298,7 @@ export const gameMachine = setup({
           }
           draft.betting.championBets.push(
             spawn("championBet", {
-              id: `champion-bet-${crypto.randomUUID()}`,
+              id: `champion-bet-${createUniqueId()}`,
               input: {
                 manager: params.manager,
                 team: params.team,
@@ -334,7 +335,7 @@ export const gameMachine = setup({
               )
             ) {
               fresh.push({
-                id: crypto.randomUUID(),
+                id: createUniqueId(),
                 manager: managerId,
                 tournament: t,
                 accepted: false
@@ -364,7 +365,7 @@ export const gameMachine = setup({
           }
           draft.betting.parlayBets.push(
             spawn("bet", {
-              id: `bet-${crypto.randomUUID()}`,
+              id: `bet-${createUniqueId()}`,
               input: {
                 manager: params.manager,
                 coupon: params.coupon,
@@ -954,7 +955,7 @@ export const gameMachine = setup({
         }
       ) => ({
         type: "PUSH" as const,
-        notification: { id: crypto.randomUUID(), ...params.notification }
+        notification: { id: createUniqueId(), ...params.notification }
       })
     )
   },

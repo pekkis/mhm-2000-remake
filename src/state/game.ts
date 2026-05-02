@@ -1,6 +1,6 @@
 import type { Competition, CompetitionId } from "@/types/competitions";
-import type { ManagerDefinition } from "@/data/managers";
 import type { Arena } from "@/data/mhm2000/teams";
+import type { Manager } from "@/state/manager";
 
 export type TeamEffect = {
   parameter: string[];
@@ -10,7 +10,8 @@ export type TeamEffect = {
 };
 
 export type Team = {
-  id: number;
+  id: string;
+  legacyId: number;
   name: string;
   city: string;
   arena: Arena;
@@ -21,7 +22,7 @@ export type Team = {
   readiness: number;
   effects: TeamEffect[];
   opponentEffects: TeamEffect[];
-  manager?: string;
+  manager?: number;
 };
 
 export type GameFlags = {
@@ -45,8 +46,8 @@ export type GameState = {
   turn: { season: number; round: number; phase: string | undefined };
   flags: GameFlags;
   serviceBasePrices: Record<string, number>;
-  managers: ManagerDefinition[];
+  managers: Record<string, Manager>;
   competitions: Record<CompetitionId, Competition>;
-  teams: Team[];
+  teams: Record<string, Team>;
   worldChampionshipResults: WorldChampionshipEntry[] | undefined;
 };

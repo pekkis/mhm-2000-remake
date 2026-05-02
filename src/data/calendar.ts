@@ -39,7 +39,8 @@ const entries: RawCalendarEntry[] = [
       { competition: "division", phase: 0 },
       { competition: "mutasarja", phase: 0 },
       { competition: "ehl", phase: 0 },
-      { competition: "practice", phase: 0 }
+      { competition: "practice", phase: 0 },
+      { competition: "cup", phase: 0 }
     ],
     gamedays: [],
     crisisMeeting: true,
@@ -59,12 +60,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: false,
     pranks: false,
-    tags: [
-      "preseason",
-      "preRound:bors-init",
-      "preRound:cup-draw",
-      "todo:wire-bors-mass-gen"
-    ]
+    tags: ["preseason", "preRound:bors-init", "todo:wire-bors-mass-gen"]
   },
   // round 1 (KIERO.M2K row 2, type 99) — preseason: sponsorit (sponsor draw)
   {
@@ -291,7 +287,7 @@ const entries: RawCalendarEntry[] = [
     pranks: true,
     tags: []
   },
-  // round 14 (KIERO.M2K row 15, type 3) — cup gameday
+  // round 14 (KIERO.M2K row 15, type 3) — cup gameday (phase 0 leg 2) + cuparpo (R32 draw)
   {
     phases: [
       "action",
@@ -304,14 +300,14 @@ const entries: RawCalendarEntry[] = [
       "seed"
     ],
     gamedays: ["cup"],
-    seed: [],
+    seed: [{ competition: "cup", phase: 1 }],
     transferMarket: true,
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["cup-draw"]
   },
-  // round 15 (KIERO.M2K row 16, type 2) — EHL gameday + cuparpo (cup draw)
+  // round 15 (KIERO.M2K row 16, type 2) — EHL gameday
   {
     phases: ["action", "gameday", "event", "news"],
     gamedays: ["ehl"],
@@ -320,7 +316,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["preRound:cup-draw"]
+    tags: []
   },
   // round 16 (KIERO.M2K row 17, type 96) — vapaa viikonloppu (free weekend)
   {
@@ -548,7 +544,7 @@ const entries: RawCalendarEntry[] = [
     pranks: true,
     tags: []
   },
-  // round 29 (KIERO.M2K row 30, type 3) — cup gameday
+  // round 29 (KIERO.M2K row 30, type 3) — cup gameday (phase 1 leg 2) + cuparpo (R16 draw)
   {
     phases: [
       "action",
@@ -561,14 +557,14 @@ const entries: RawCalendarEntry[] = [
       "seed"
     ],
     gamedays: ["cup"],
-    seed: [],
+    seed: [{ competition: "cup", phase: 2 }],
     transferMarket: true,
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["cup-draw"]
   },
-  // round 30 (KIERO.M2K row 31, type 2) — EHL gameday + cuparpo
+  // round 30 (KIERO.M2K row 31, type 2) — EHL gameday
   {
     phases: ["action", "gameday", "event", "news"],
     gamedays: ["ehl"],
@@ -577,7 +573,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["preRound:cup-draw"]
+    tags: []
   },
   // round 31 (KIERO.M2K row 32, type 1) — regular gameday 12
   {
@@ -724,9 +720,9 @@ const entries: RawCalendarEntry[] = [
   },
   // round 39 (KIERO.M2K row 40, type 2) — EHL gameday
   {
-    phases: ["action", "gameday", "event", "news"],
+    phases: ["action", "gameday", "event", "news", "seed"],
     gamedays: ["ehl"],
-    seed: [],
+    seed: [{ competition: "ehl", phase: 1 }],
     transferMarket: true,
     crisisMeeting: true,
     createRandomEvent: true,
@@ -786,7 +782,7 @@ const entries: RawCalendarEntry[] = [
       "seed"
     ],
     gamedays: ["phl", "division", "mutasarja"],
-    seed: [],
+    seed: [{ competition: "tournaments", phase: 0 }],
     transferMarket: true,
     crisisMeeting: true,
     createRandomEvent: true,
@@ -856,6 +852,7 @@ const entries: RawCalendarEntry[] = [
   // round 46 (KIERO.M2K row 47, type 98) — kutsuturnaus (Christmas invitation tournaments window)
   {
     title: "Kutsuturnaukset",
+    seed: [],
     phases: [
       "action",
       "prank",
@@ -867,7 +864,6 @@ const entries: RawCalendarEntry[] = [
       "seed"
     ],
     gamedays: ["tournaments"],
-    seed: [{ competition: "tournaments", phase: 0 }],
     transferMarket: true,
     crisisMeeting: true,
     createRandomEvent: true,
@@ -906,7 +902,7 @@ const entries: RawCalendarEntry[] = [
     pranks: true,
     tags: ["preRound:budget", "todo:wire-budget"]
   },
-  // round 49 (KIERO.M2K row 50, type 3) — cup gameday
+  // round 49 (KIERO.M2K row 50, type 3) — cup gameday (phase 2 leg 2) + cuparpo (QF draw)
   {
     phases: [
       "action",
@@ -919,14 +915,14 @@ const entries: RawCalendarEntry[] = [
       "seed"
     ],
     gamedays: ["cup"],
-    seed: [],
+    seed: [{ competition: "cup", phase: 3 }],
     transferMarket: true,
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["cup-draw"]
   },
-  // round 50 (KIERO.M2K row 51, type 1) — regular gameday 24 + cuparpo
+  // round 50 (KIERO.M2K row 51, type 1) — regular gameday 24
   {
     phases: [
       "action",
@@ -944,7 +940,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["preRound:cup-draw"]
+    tags: []
   },
   // round 51 (KIERO.M2K row 52, type 1) — regular gameday 25
   {
@@ -1118,7 +1114,7 @@ const entries: RawCalendarEntry[] = [
     pranks: true,
     tags: []
   },
-  // round 60 (KIERO.M2K row 61, type 3) — cup gameday
+  // round 60 (KIERO.M2K row 61, type 3) — cup gameday (phase 3 leg 2) + cuparpo (SF draw)
   {
     phases: [
       "action",
@@ -1131,14 +1127,14 @@ const entries: RawCalendarEntry[] = [
       "seed"
     ],
     gamedays: ["cup"],
-    seed: [],
+    seed: [{ competition: "cup", phase: 4 }],
     transferMarket: false,
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["cup-draw"]
   },
-  // round 61 (KIERO.M2K row 62, type 1) — regular gameday 32 + cuparpo
+  // round 61 (KIERO.M2K row 62, type 1) — regular gameday 32
   {
     phases: [
       "action",
@@ -1156,7 +1152,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["preRound:cup-draw"]
+    tags: []
   },
   // round 62 (KIERO.M2K row 63, type 1) — regular gameday 33
   {
@@ -1350,7 +1346,7 @@ const entries: RawCalendarEntry[] = [
     pranks: true,
     tags: []
   },
-  // round 72 (KIERO.M2K row 73, type 3) — cup gameday
+  // round 72 (KIERO.M2K row 73, type 3) — cup gameday (phase 4 leg 2) + cuparpo (Final draw)
   {
     phases: [
       "action",
@@ -1363,14 +1359,14 @@ const entries: RawCalendarEntry[] = [
       "seed"
     ],
     gamedays: ["cup"],
-    seed: [],
+    seed: [{ competition: "cup", phase: 5 }],
     transferMarket: false,
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["cup-draw"]
   },
-  // round 73 (KIERO.M2K row 74, type 1) — regular gameday 41 + cuparpo
+  // round 73 (KIERO.M2K row 74, type 1) — regular gameday 41
   {
     phases: [
       "action",
@@ -1388,7 +1384,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["preRound:cup-draw"]
+    tags: []
   },
   // round 74 (KIERO.M2K row 75, type 1) — regular gameday 42
   {
@@ -1818,7 +1814,7 @@ const entries: RawCalendarEntry[] = [
     pranks: true,
     tags: ["cup-final-leg-1"]
   },
-  // round 96 (KIERO.M2K row 97, type 3) — Pekkalan Cup final, leg 2
+  // round 96 (KIERO.M2K row 97, type 3) — Pekkalan Cup final, leg 2 + cupjuhla (trophy ceremony)
   {
     phases: [
       "action",
@@ -1836,9 +1832,9 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["cup-final-leg-2"]
+    tags: ["cup-final-leg-2", "cup-celebration"]
   },
-  // round 97 (KIERO.M2K row 98, type 47) — PHL juhlagaala (season-end gala) + cuparpo for next season
+  // round 97 (KIERO.M2K row 98, type 47) — PHL juhlagaala (season-end gala)
   {
     title: "PHL:n juhlagaala",
     phases: ["action", "event", "news", "gala"],
@@ -1848,7 +1844,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: false,
     pranks: false,
-    tags: ["season-end-gala", "preRound:cup-draw"]
+    tags: ["season-end-gala"]
   },
   // round 98 (KIERO.M2K row 99, type 48) — uusikausi (rollover marker)
   {

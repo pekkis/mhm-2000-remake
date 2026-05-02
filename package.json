@@ -37,6 +37,7 @@
     "@xstate/store-react": "^1.0.1",
     "clsx": "^2.1.1",
     "immer": "^11.1.4",
+    "nanoid": "^5.1.9",
     "random-js": "^2.1.0",
     "react": "19.2.5",
     "react-dom": "19.2.5",

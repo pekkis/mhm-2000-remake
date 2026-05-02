@@ -77,19 +77,7 @@ export type RoundType =
   | 98 // invitation tournament
   | 99; // preseason filler
 
-export type PreRoundTrigger =
-  | 0
-  | 1
-  | 2
-  | 3
-  | 4
-  | 5
-  | 6
-  | 7
-  | 10
-  | 11
-  | 49
-  | 99;
+export type PreRoundTrigger = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 10 | 11 | 49 | 99;
 
 export type RawCalendarEntry = {
   /** 1-based file index (1..99) — for cross-referencing KIERO.M2K. */

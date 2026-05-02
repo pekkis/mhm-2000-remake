@@ -1,3 +1,4 @@
+import type { CountryIso } from "@/data/countries";
 import { legacyNationalityToIso } from "@/services/country";
 
 /**
@@ -72,7 +73,7 @@ export type ManagerDefinition = {
   id: number;
   name: string;
   /** ISO 3166-1 alpha-2 country code. */
-  nationality: string;
+  nationality: CountryIso;
   attributes: ManagerAttributes;
 };
 

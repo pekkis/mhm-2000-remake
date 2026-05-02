@@ -5,40 +5,59 @@ import { rawCalendar } from "@/data/mhm2000/calendar";
 /**
  * MHM 2000 calendar tests.
  *
- * Source of truth: KIERO.M2K (99 records, three CSV columns), decoded
- * verbatim into `src/data/mhm2000/calendar.ts` and transformed into
- * runtime `CalendarEntry`s by `parse-calendar.ts`. These tests assert
- * the structural shape we expect from that pipeline and a handful of
- * known landmarks (rounds we've cross-referenced against the QB SUBs).
+ * Source of truth: KIERO.M2K (99 records) + a hand-added meta round 0
+ * that performs the start-of-season seeding before any KIERO row runs.
+ * The meta round is currently a workaround for the round/phase model;
+ * once phases can do the seeding themselves, it'll go away. Until
+ * then, **every KIERO index N maps to calendar index N+1**.
  *
  * If a test here fails, decide carefully:
- *   - Is the parser wrong?      → fix parse-calendar.ts
- *   - Is the decoded data wrong? → fix mhm2000/calendar.ts
- *   - Is the test wrong?         → fix the test (only with QB evidence)
+ *   - Is the parser wrong?       → fix generate-calendar.ts
+ *   - Is the decoded data wrong?  → fix mhm2000/calendar.ts
+ *   - Is the test wrong?           → fix the test (only with QB evidence)
  */
 describe("MHM 2000 calendar", () => {
-  it("has 99 rounds, indexed 0..98", () => {
-    expect(calendar).toHaveLength(99);
+  it("has 100 rounds (1 meta seed round + 99 KIERO rows), indexed 0..99", () => {
+    expect(calendar).toHaveLength(100);
     calendar.forEach((entry, i) => {
       expect(entry.round).toBe(i);
     });
   });
 
-  it("matches the raw KIERO.M2K record count one-for-one", () => {
-    expect(calendar).toHaveLength(rawCalendar.length);
+  it("matches the raw KIERO.M2K record count + 1 meta round", () => {
+    expect(calendar).toHaveLength(rawCalendar.length + 1);
   });
 
-  describe("preseason (rounds 0..9)", () => {
-    it("rounds 0..5 are preseason filler (type 99) with no gamedays", () => {
-      for (let i = 0; i <= 5; i++) {
+  describe("meta seed round", () => {
+    it("round 0 seeds phase 0 of every season-long competition", () => {
+      const seedIds = calendar[0].seed.map((s) => s.competition);
+      expect(seedIds).toEqual(
+        expect.arrayContaining([
+          "phl",
+          "division",
+          "mutasarja",
+          "ehl",
+          "practice"
+        ])
+      );
+    });
+
+    it("round 0 plays no games", () => {
+      expect(calendar[0].gamedays).toEqual([]);
+    });
+  });
+
+  describe("preseason (rounds 1..10)", () => {
+    it("rounds 1..6 are preseason filler (type 99) with no gamedays", () => {
+      for (let i = 1; i <= 6; i++) {
         const entry = calendar[i];
         expect(entry.gamedays).toEqual([]);
         expect(entry.transferMarket).toBe(true);
       }
     });
 
-    it("rounds 6..9 are training matches (type 4) with `practice` gameday", () => {
-      for (let i = 6; i <= 9; i++) {
+    it("rounds 7..10 are training matches (type 4) with `practice` gameday", () => {
+      for (let i = 7; i <= 10; i++) {
         const entry = calendar[i];
         expect(entry.gamedays).toEqual(["practice"]);
       }
@@ -46,40 +65,39 @@ describe("MHM 2000 calendar", () => {
   });
 
   describe("regular season", () => {
-    it("round 10 is the first PHL/Divisioona/Mutasarja gameday", () => {
-      expect(calendar[10].gamedays).toEqual(["phl", "division", "mutasarja"]);
+    it("round 11 is the first PHL/Divisioona/Mutasarja gameday", () => {
+      expect(calendar[11].gamedays).toEqual(["phl", "division", "mutasarja"]);
     });
 
     it("EHL gamedays appear at known regular-season positions", () => {
-      // From the decoded KIERO.M2K (qbIndex offset by +9), kiero=2 sits
-      // at indices 15, 19, 23, 30, 34, 39 (and 55 = type 22 final tournament).
-      const ehlRegularRounds = [15, 19, 23, 30, 34, 39];
+      // KIERO indices 15, 19, 23, 30, 34, 39 → calendar 16, 20, 24, 31, 35, 40.
+      const ehlRegularRounds = [16, 20, 24, 31, 35, 40];
       for (const round of ehlRegularRounds) {
         expect(calendar[round].gamedays).toEqual(["ehl"]);
       }
     });
 
-    it("round 55 is the EHL final tournament (type 22)", () => {
-      expect(calendar[55].gamedays).toEqual(["ehl"]);
-      expect(calendar[55].title).toBe("EHL:n lopputurnaus");
+    it("round 56 is the EHL final tournament (type 22)", () => {
+      expect(calendar[56].gamedays).toEqual(["ehl"]);
+      expect(calendar[56].title).toBe("EHL:n lopputurnaus");
     });
 
-    it("round 46 is the Christmas invitation tournament window", () => {
-      const entry = calendar[46];
+    it("round 47 is the Christmas invitation tournament window", () => {
+      const entry = calendar[47];
       expect(entry.gamedays).toEqual(["tournaments"]);
       expect(entry.title).toBe("Kutsuturnaukset");
     });
   });
 
   describe("transfer market", () => {
-    it("is open for rounds 0..56 (preseason + first half)", () => {
-      for (let i = 0; i <= 56; i++) {
+    it("is open for rounds 0..57 (meta + preseason + first half)", () => {
+      for (let i = 0; i <= 57; i++) {
         expect(calendar[i].transferMarket).toBe(true);
       }
     });
 
-    it("is closed from round 57 onward", () => {
-      for (let i = 57; i < calendar.length; i++) {
+    it("is closed from round 58 onward", () => {
+      for (let i = 58; i < calendar.length; i++) {
         expect(calendar[i].transferMarket).toBe(false);
       }
     });
@@ -94,61 +112,49 @@ describe("MHM 2000 calendar", () => {
   });
 
   describe("playoffs", () => {
-    it("round 77 is the QF draw — no games", () => {
-      expect(calendar[77].gamedays).toEqual([]);
-      expect(calendar[77].title).toBe("Puolivälieräpläjäys");
+    it("round 78 is the QF draw — no games", () => {
+      expect(calendar[78].gamedays).toEqual([]);
+      expect(calendar[78].title).toBe("Puolivälieräpläjäys");
     });
 
-    it("rounds 78..82 are the five QF games (best-of-5)", () => {
-      for (let i = 78; i <= 82; i++) {
-        expect(calendar[i].gamedays).toEqual([
-          "phl",
-          "division",
-          "mutasarja"
-        ]);
+    it("rounds 79..83 are the five QF games (best-of-5)", () => {
+      for (let i = 79; i <= 83; i++) {
+        expect(calendar[i].gamedays).toEqual(["phl", "division", "mutasarja"]);
       }
     });
 
-    it("round 83 is the SF draw, rounds 84..88 are the five SF games", () => {
-      expect(calendar[83].gamedays).toEqual([]);
-      expect(calendar[83].title).toBe("Välieräpläjäys");
-      for (let i = 84; i <= 88; i++) {
-        expect(calendar[i].gamedays).toEqual([
-          "phl",
-          "division",
-          "mutasarja"
-        ]);
+    it("round 84 is the SF draw, rounds 85..89 are the five SF games", () => {
+      expect(calendar[84].gamedays).toEqual([]);
+      expect(calendar[84].title).toBe("Välieräpläjäys");
+      for (let i = 85; i <= 89; i++) {
+        expect(calendar[i].gamedays).toEqual(["phl", "division", "mutasarja"]);
       }
     });
 
-    it("round 89 is the Final draw, rounds 90..94 are the five Final games", () => {
-      expect(calendar[89].gamedays).toEqual([]);
-      expect(calendar[89].title).toBe("Finaalipläjäys");
-      for (let i = 90; i <= 94; i++) {
-        expect(calendar[i].gamedays).toEqual([
-          "phl",
-          "division",
-          "mutasarja"
-        ]);
+    it("round 90 is the Final draw, rounds 91..95 are the five Final games", () => {
+      expect(calendar[90].gamedays).toEqual([]);
+      expect(calendar[90].title).toBe("Finaalipläjäys");
+      for (let i = 91; i <= 95; i++) {
+        expect(calendar[i].gamedays).toEqual(["phl", "division", "mutasarja"]);
       }
     });
   });
 
   describe("end of season", () => {
-    it("rounds 95 and 96 are the two-leg Pekkalan Cup final", () => {
-      expect(calendar[95].gamedays).toEqual(["cup"]);
+    it("rounds 96 and 97 are the two-leg Pekkalan Cup final", () => {
       expect(calendar[96].gamedays).toEqual(["cup"]);
+      expect(calendar[97].gamedays).toEqual(["cup"]);
     });
 
-    it("round 97 is the season-end gala (type 47)", () => {
-      const entry = calendar[97];
+    it("round 98 is the season-end gala (type 47)", () => {
+      const entry = calendar[98];
       expect(entry.title).toBe("PHL:n juhlagaala");
       expect(entry.gamedays).toEqual([]);
       expect(entry.phases).toContain("gala");
     });
 
-    it("round 98 is the season rollover (type 48)", () => {
-      const entry = calendar[98];
+    it("round 99 is the season rollover (type 48)", () => {
+      const entry = calendar[99];
       expect(entry.title).toBe("Uusi kausi");
       expect(entry.gamedays).toEqual([]);
       expect(entry.phases).toContain("end_of_season");
@@ -167,24 +173,25 @@ describe("MHM 2000 calendar", () => {
 
     it("are false on draws / breaks / gala / rollover (no gamedays)", () => {
       const noEventTypes = [41, 43, 45, 47, 48, 96, 97, 99];
+      // KIERO row N → calendar index N+1 (meta round 0 inserted).
       rawCalendar.forEach((raw, i) => {
         if (noEventTypes.includes(raw.type)) {
-          expect(calendar[i].createRandomEvent).toBe(false);
-          expect(calendar[i].pranks).toBe(false);
+          expect(calendar[i + 1].createRandomEvent).toBe(false);
+          expect(calendar[i + 1].pranks).toBe(false);
         }
       });
     });
   });
 
   describe("tags", () => {
-    it("flag the three unidentified preRound=3 rounds (indices 20..22)", () => {
-      for (const i of [20, 21, 22]) {
+    it("flag the three unidentified preRound=3 rounds (KIERO 20..22 → calendar 21..23)", () => {
+      for (const i of [21, 22, 23]) {
         expect(calendar[i].tags).toContain("unknown:preRound=3");
       }
     });
 
     it("mark the playoffs", () => {
-      for (let i = 77; i <= 94; i++) {
+      for (let i = 78; i <= 95; i++) {
         expect(calendar[i].tags).toContain("playoffs");
       }
     });

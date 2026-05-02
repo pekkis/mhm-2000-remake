@@ -13,7 +13,7 @@ import type {
  *
  * Bracket size: 64 in round 1.
  *   PHL (12) + Divisioona (12) + Mutasarja (24) = 48 managed teams.
- *   Plus 16 random amateurs from `TEAMS.ALA` to fill the bracket.
+ *   Plus 16 amateurs from `TEAMS.ALA` (state.teams ids 118..133).
  *
  * Phases (each = one bracket round, 2 calendar gamedays):
  *   0  R64 → R32   (1. kierros)
@@ -23,14 +23,9 @@ import type {
  *   4   R4 → F     (välierät)
  *   5    F         (finaali, 2 legs at calendar 95-96)
  *
- * Calendar wiring (kiero3=2 cup-draw triggers): preseason seeds
- * phase 0; rounds 15, 30, 50, 61, 73, 97 each fire `cuparpo` to
- * produce the next phase's bracket from the previous phase's victors.
- *
- * TODO: amateur teams (`origin: "amateur"` in `light-teams.ts`) are
- * not yet seeded into `state.teams`. Until they are, the round-1
- * bracket holds only the 48 managed teams — still functional, just
- * misses 16 first-round bye-fodder amateurs.
+ * Calendar wiring: phase 0 seeded preseason; phases 1..5 seeded on the
+ * leg-2 cup gameday immediately after the previous phase resolves
+ * (rounds 14, 29, 49, 60, 72).
  */
 
 const PHASE_NAMES = [
@@ -101,14 +96,15 @@ const cup: CompetitionDefinition = {
   },
 
   seed: [
-    // Phase 0: round of 64. Pool = PHL + Divisioona + Mutasarja
-    // (+ 16 random amateurs once they're available in state.teams).
+    // Phase 0: round of 64. Pool = PHL + Divisioona + Mutasarja + 16
+    // amateur clubs (state.teams ids 118..133, see state/defaults.ts).
     (competitions: Record<string, Competition>) => {
+      const AMATEUR_IDS = Array.from({ length: 16 }, (_, i) => 118 + i);
       const pool = [
         ...competitions.phl.teams,
         ...competitions.division.teams,
-        ...competitions.mutasarja.teams
-        // TODO: + 16 random amateur ids once amateurs are in state.teams.
+        ...competitions.mutasarja.teams,
+        ...AMATEUR_IDS
       ];
       const teams = shuffle(pool);
       const matchups = cupPairs(teams.length);

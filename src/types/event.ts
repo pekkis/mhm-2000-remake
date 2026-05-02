@@ -28,7 +28,7 @@ import type { EventEffect } from "@/game/event-effects";
  *
  * The interpreter (the machine's `event_creation` + `event` actions)
  * owns:
- *   - assigning `id` (via `crypto.randomUUID()`) on creation
+ *   - assigning `id` (via `createUniqueId()`) on creation
  *   - setting `resolved: false` on creation, flipping to `true` after
  *     `resolve` runs
  *   - setting `processed: true` after the effect list is applied

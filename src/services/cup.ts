@@ -23,7 +23,9 @@ export const cupMatchups = (group: CupGroup): CupMatchupStat[] => {
 
     for (const round of group.schedule) {
       const game = round[i];
-      if (!game || !game.result) continue;
+      if (!game || !game.result) {
+        continue;
+      }
       played += 1;
       // matchup-team-A is the home team in leg 1, away team in leg 2.
       if (game.home === teamAIdx) {

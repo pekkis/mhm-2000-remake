@@ -1,3 +1,6 @@
+import type { CountryIso } from "@/data/countries";
+import type { ManagerAttributes } from "@/data/managers";
+
 export type ManagerArena = {
   name: string;
   level: number;
@@ -10,21 +13,36 @@ export type ManagerServices = {
   cheer: boolean;
 };
 
-export type Manager = {
+export type Manager = HumanManager | AIManager;
+
+export type AIManager = {
   id: string;
+  kind: "ai";
   name: string;
+  nationality: CountryIso;
+  attributes: ManagerAttributes;
+  team?: string;
+};
+
+export type HumanManager = {
+  id: string;
+  kind: "human";
+  name: string;
+  nationality: CountryIso;
   difficulty: number;
-  pranksExecuted: number;
-  services: ManagerServices;
+  attributes: ManagerAttributes;
+  team?: string;
   balance: number;
   arena: ManagerArena;
+  services: ManagerServices;
+  pranksExecuted: number;
   extra: number;
   insuranceExtra: number;
   flags: Record<string, boolean>;
-  team?: number;
 };
 
 export type ManagerState = {
   active: string | undefined;
-  managers: Record<string, Manager>;
+  managers: string[];
+  // peckingOrder: string[]; maybe? or is the managers enough.
 };

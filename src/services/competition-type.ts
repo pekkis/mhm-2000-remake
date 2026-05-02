@@ -71,10 +71,14 @@ const competitionTypes: { [K in Group["type"]]: CompetitionType<K> } = {
      * the two legs.
      */
     overtime: (result, group, round, matchupIdx) => {
-      if (round === 0) return false;
+      if (round === 0) {
+        return false;
+      }
       const cup = group as CupGroup;
       const leg1 = cup.schedule[0]?.[matchupIdx]?.result;
-      if (!leg1) return false;
+      if (!leg1) {
+        return false;
+      }
       // Leg 1: home = matchup[0]. Leg 2: home = matchup[1].
       // Aggregate per matchup-team:
       //   teamA = leg1.home + leg2.away

@@ -3,6 +3,7 @@ import {
   notificationMachine,
   type NotificationData
 } from "@/machines/notification";
+import { createUniqueId } from "@/services/id";
 
 const MAX_NOTIFICATIONS = 3;
 
@@ -25,7 +26,7 @@ type NotificationsEvents =
 
 /**
  * Build a typed `PUSH` event for the notifications actor. Centralises
- * the `id: crypto.randomUUID()` and `type: "PUSH"` boilerplate, and —
+ * the `id: createUniqueId()` and `type: "PUSH"` boilerplate, and —
  * more usefully — gives call sites real type-checking on the
  * notification payload (the bare `enqueue.sendTo("notifications", ...)`
  * form has no way to infer the event shape from the string target).
@@ -34,7 +35,7 @@ export const pushNotification = (
   notification: Omit<NotificationData, "id"> & { timeout?: number }
 ): { type: "PUSH"; notification: NotificationPayload } => ({
   type: "PUSH",
-  notification: { id: crypto.randomUUID(), ...notification }
+  notification: { id: createUniqueId(), ...notification }
 });
 
 /**

@@ -1,7 +1,31 @@
 import type { CountrySeries } from "@/state/country";
 
+export type CountryIso =
+  | "FI"
+  | "SE"
+  | "DE"
+  | "IT"
+  | "RU"
+  | "CZ"
+  | "EE"
+  | "LV"
+  | "CA"
+  | "US"
+  | "CH"
+  | "SK"
+  | "JP"
+  | "NO"
+  | "FR"
+  | "AT"
+  | "PL"
+  | "BR"
+  | "ZW"
+  | "ES"
+  | "XX"
+  | "KP";
+
 type Country = {
-  iso: string;
+  iso: CountryIso;
   name: string;
   series: CountrySeries;
   level: number;
@@ -175,7 +199,7 @@ const countriesArray: Country[] = [
   }
 ];
 
-type CountriesMap = Record<string, Country>;
+type CountriesMap = Record<CountryIso, Country>;
 
 export const countries: CountriesMap = Object.fromEntries(
   countriesArray.map((c) => [c.iso, c])

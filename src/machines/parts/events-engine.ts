@@ -5,6 +5,7 @@ import type { NotifyFn, SpawnEventFn } from "@/game/event-effects";
 import type { GameContext } from "@/state";
 import { produce, type Draft } from "immer";
 import type { NotificationData } from "@/machines/notification";
+import { createUniqueId } from "@/services/id";
 
 // Heterogeneous registry lookup — `newEvents` is `as const` for per-event
 // payload typing at known keys; the interpreter looks events up by string
@@ -30,7 +31,7 @@ export const spawnEvent: SpawnEventFn = (draft, eventId, seed) => {
   if (!payload) {
     return;
   }
-  const id = crypto.randomUUID();
+  const id = createUniqueId();
   draft.event.events[id] = { ...payload, id };
 };
 
@@ -84,7 +85,7 @@ export function runInterpreter(
   for (const n of pending) {
     enqueue.sendTo("notifications", {
       type: "PUSH" as const,
-      notification: { id: crypto.randomUUID(), ...n }
+      notification: { id: createUniqueId(), ...n }
     });
   }
 }
