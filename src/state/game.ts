@@ -22,7 +22,7 @@ export type Team = {
   readiness: number;
   effects: TeamEffect[];
   opponentEffects: TeamEffect[];
-  manager?: number;
+  manager?: string;
 };
 
 export type GameFlags = {
@@ -46,7 +46,7 @@ export type GameState = {
   turn: { season: number; round: number; phase: string | undefined };
   flags: GameFlags;
   serviceBasePrices: Record<string, number>;
-  managers: Manager[];
+  managers: Record<string, Manager>;
   competitions: Record<CompetitionId, Competition>;
   teams: Team[];
   worldChampionshipResults: WorldChampionshipEntry[] | undefined;

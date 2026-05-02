@@ -46,6 +46,8 @@ export type LeagueTier = "phl" | "divisioona" | "mutasarja";
  */
 export type ManagedTeamDefinition = {
   kind: "managed";
+  /** 0-based id. Original QB indices were 1-based (1..48). */
+  id: number;
   /** Original team name; cp850 → UTF-8. */
   name: string;
   /** Home city. */

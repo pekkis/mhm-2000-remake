@@ -10,7 +10,7 @@
  * deterministic seed mechanism (`VITE_RANDOM_SEED`) still works.
  */
 
-import { entries, values } from "remeda";
+import { entries, fromEntries, values } from "remeda";
 
 import { teams as managedTeamDefs } from "@/data/mhm2000/teams";
 import {
@@ -160,7 +160,12 @@ export const createDefaultGameContext = (): GameContext => ({
   // bare `managerDefs` does not. Position in the context object also
   // matters with the bare ref (last is least-bad), but a fresh ref makes
   // position irrelevant. See AGENTS.md for the bisect.
-  managers: managerDefs.map((def, i) => managerFromDefinition(def, i)),
+  managers: fromEntries(
+    managerDefs.map((def) => {
+      const manager = managerFromDefinition(def);
+      return [manager.id, manager];
+    })
+  ),
 
   competitions: Object.fromEntries(
     entries(competitionList).map(([key, def]) => [

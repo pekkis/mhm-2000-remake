@@ -224,7 +224,7 @@ export const randomRankedTeam =
     f: (t: Team) => boolean = () => true
   ): ContextSelector<Team | false> =>
   (ctx) => {
-    const managerIds = keys(ctx.manager.managers);
+    const managerIds = ctx.manager.managers;
 
     const groups = ctx.competitions[competitionId].phases[phaseId].groups;
 

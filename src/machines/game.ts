@@ -129,7 +129,7 @@ export type ManagerSubmission = {
   name: string;
   arena: string;
   difficulty: number;
-  team: string;
+  team: number;
 };
 
 // One small alias to avoid repeating the generics
