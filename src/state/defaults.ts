@@ -30,15 +30,27 @@ import type { Competition, CompetitionId } from "@/types/competitions";
 // so we renumber on transplant so each tier occupies a contiguous id
 // range.
 //
-// Foreign clubs land at slots 48..64 (17 European clubs from TEAMS.FOR)
-// so the season-start EHL seed (`draft.teams.slice(48, 48 + 17)`) finds
-// the foreign roster cleanly.
+// Foreign clubs land at slots 48..117 (all 70 European clubs from
+// TEAMS.FOR). The season-start EHL seed still pulls `slice(48, 48 + 17)`
+// which lines up with the first 17 cleanly. The wide pool means the three
+// tournament filters in `src/data/tournaments.ts` always find enough
+// candidates each season.
+//
+// Strength is still a placeholder (real per-roster attribute model lands
+// later). Values are picked so:
+//   * Tournament filters all resolve (`>200`, `150..225`, `<=175`).
+//   * Turmio gets a 200 special so we can validate Mutasarja->Divisioona
+//     promotion without waiting for the attribute model.
 const phlSource = managedTeamDefs.filter((t) => t.league === "phl");
 const divisioonaSource = managedTeamDefs.filter(
   (t) => t.league === "divisioona"
 );
 const mutasarjaSource = managedTeamDefs.filter((t) => t.league === "mutasarja");
-const ehlForeign = foreignLightTeams.slice(0, 17);
+const ehlForeign = foreignLightTeams;
+
+// Cycled across the foreign list so each of the three tournament filter
+// buckets has plenty of eligible candidates (>200, 150..225, <=175).
+const FOREIGN_PLACEHOLDER_STRENGTHS = [230, 180, 150];
 
 const seedTeams = (): Team[] => [
   ...phlSource.map((t, i) => ({
@@ -46,7 +58,7 @@ const seedTeams = (): Team[] => [
     name: t.name,
     city: t.city,
     arena: t.arena,
-    strength: 100,
+    strength: 250,
     domestic: true,
     morale: 0,
     strategy: 2,
@@ -59,7 +71,7 @@ const seedTeams = (): Team[] => [
     name: t.name,
     city: t.city,
     arena: t.arena,
-    strength: 100,
+    strength: 175,
     domestic: true,
     morale: 0,
     strategy: 2,
@@ -72,7 +84,7 @@ const seedTeams = (): Team[] => [
     name: t.name,
     city: t.city,
     arena: t.arena,
-    strength: 100,
+    strength: t.name === "Turmio" ? 200 : 100,
     domestic: true,
     morale: 0,
     strategy: 2,
@@ -85,7 +97,8 @@ const seedTeams = (): Team[] => [
     name: t.name,
     city: t.city,
     arena: t.arena,
-    strength: 100,
+    strength:
+      FOREIGN_PLACEHOLDER_STRENGTHS[i % FOREIGN_PLACEHOLDER_STRENGTHS.length],
     domestic: false,
     morale: 0,
     strategy: 2,

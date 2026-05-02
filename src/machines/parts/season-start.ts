@@ -23,11 +23,16 @@ import random from "@/services/random";
 export function runSeasonStart(draft: Draft<GameContext>): void {
   const season = draft.turn.season;
 
-  // Re-strength European teams (indices 24+). Hardcoded to 100 during
-  // the MHM 2000 transplant — proper per-team strength roll lands when
-  // the new attribute model is wired in.
-  for (let i = 24; i < draft.teams.length; i++) {
-    draft.teams[i].strength = 100;
+  // Re-strength foreign teams (slots 48+ after the MHM 2000 transplant).
+  // Cycled across [230, 180, 150] so all three tournament filter buckets
+  // (>200, 150..225, <=175) keep finding plenty of candidates each season.
+  // Real per-roster attribute model lands later.
+  const FOREIGN_PLACEHOLDER_STRENGTHS = [230, 180, 150];
+  for (let i = 48; i < draft.teams.length; i++) {
+    draft.teams[i].strength =
+      FOREIGN_PLACEHOLDER_STRENGTHS[
+        (i - 48) % FOREIGN_PLACEHOLDER_STRENGTHS.length
+      ];
   }
 
   // Reset per-team season state.
