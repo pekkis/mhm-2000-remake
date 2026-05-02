@@ -638,7 +638,7 @@ const surnames: readonly string[] = [
   "Keskitalo",
   "Keskinen",
   "Palo",
-  "Österman",
+  "Österman"
 ];
 
 export default surnames;

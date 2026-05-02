@@ -1,4 +1,8 @@
-import { teamLevels, type TeamLevelDefinition, type TeamStrength } from "@/data/levels";
+import {
+  teamLevels,
+  type TeamLevelDefinition,
+  type TeamStrength
+} from "@/data/levels";
 import { default as defaultRandom, type RandomService } from "./random";
 
 /**
@@ -39,13 +43,30 @@ const materialTiers: readonly string[] = [
  * levels 41..58 all saturate at tier 20 ("TAIVAALLISEN MESSIAANINEN").
  */
 const levelToTier: readonly number[] = [
-  1, 1, 1, 1, 1, 1, 1, 1, // 1..8
-  2, 2, 2, // 9..11
-  3, 3, 3, // 12..14
-  4, 4, 4, // 15..17
-  5, 5, 5, // 18..20
-  6, 6, // 21..22
-  7, 7, // 23..24
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1, // 1..8
+  2,
+  2,
+  2, // 9..11
+  3,
+  3,
+  3, // 12..14
+  4,
+  4,
+  4, // 15..17
+  5,
+  5,
+  5, // 18..20
+  6,
+  6, // 21..22
+  7,
+  7, // 23..24
   8, // 25
   9, // 26
   10, // 27
@@ -55,10 +76,31 @@ const levelToTier: readonly number[] = [
   14, // 31
   15, // 32
   16, // 33
-  17, 17, // 34..35
-  18, 18, // 36..37
-  19, 19, 19, // 38..40
-  20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20 // 41..58
+  17,
+  17, // 34..35
+  18,
+  18, // 36..37
+  19,
+  19,
+  19, // 38..40
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20,
+  20 // 41..58
 ];
 
 export function getMaterialTier(level: number): string {

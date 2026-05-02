@@ -21,7 +21,9 @@ import SE from "./SE";
 import SK from "./SK";
 import US from "./US";
 
-export const surnamesByNationality: Readonly<Record<string, readonly string[]>> = {
+export const surnamesByNationality: Readonly<
+  Record<string, readonly string[]>
+> = {
   AT,
   CA,
   CH,

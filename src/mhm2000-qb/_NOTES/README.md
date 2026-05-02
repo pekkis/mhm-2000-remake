@@ -43,6 +43,9 @@ mhm2k first" → bail to mhm2k.
 
 - **[STATUS.md](STATUS.md) — START HERE.** Current state, what's
   decoded, what's open, recommended next session order.
+- [MHM2K-FLOW.md](MHM2K-FLOW.md) — full decode of `MHM2K.BAS`: title
+  splash, slot menu, new-game wizard, world generation, save-file
+  layout, modern XState mapping. Read before touching new-game code.
 - [VARIABLES.md](VARIABLES.md) — decoder ring for `MHM2K.BI` globals,
   bucketed by domain. `❓ TODO` markers everywhere I'm guessing.
 - [SUBS.md](SUBS.md) — every `SUB` / `FUNCTION` across mhm2k, ilex5,

@@ -346,7 +346,7 @@ const surnames: readonly string[] = [
   "Åkerberg",
   "Öblom",
   "Öst",
-  "Östman",
+  "Östman"
 ];
 
 export default surnames;

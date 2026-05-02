@@ -114,7 +114,7 @@ const surnames: readonly string[] = [
   "Amoruso",
   "Serena",
   "Sottil",
-  "Padalino",
+  "Padalino"
 ];
 
 export default surnames;

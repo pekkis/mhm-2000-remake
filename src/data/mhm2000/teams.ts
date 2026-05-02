@@ -921,7 +921,7 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 16
     }
-  },
+  }
 ];
 
 /**
@@ -934,18 +934,22 @@ export const teams: ManagedTeamDefinition[] = [
  *
  * Upgrade cost (per QB ILES5.BAS:465): (newPpiste - oldPpiste) * 20_000 mk.
  */
-export const arenaUnitCosts: Record<ArenaLevel, { standing: number; seated: number; box: number }> = {
+export const arenaUnitCosts: Record<
+  ArenaLevel,
+  { standing: number; seated: number; box: number }
+> = {
   1: { standing: 1, seated: 4, box: -1 },
   2: { standing: 2, seated: 5, box: -1 },
   3: { standing: 3, seated: 6, box: -1 },
   4: { standing: 4, seated: 7, box: 20 },
   5: { standing: 5, seated: 8, box: 20 },
-  6: { standing: 6, seated: 9, box: 20 },
+  6: { standing: 6, seated: 9, box: 20 }
 };
 
 /** Total arena-value points (ppiste in QB). Pure derivation; matches the stored Arena.valuePoints for all 48 base teams. */
 export const arenaValuePoints = (arena: Arena): number => {
   const cost = arenaUnitCosts[arena.level];
-  const base = arena.standingCount * cost.standing + arena.seatedCount * cost.seated;
+  const base =
+    arena.standingCount * cost.standing + arena.seatedCount * cost.seated;
   return arena.hasBoxes ? Math.round(base * 1.2) : base;
 };

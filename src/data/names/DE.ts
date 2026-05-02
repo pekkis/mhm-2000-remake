@@ -96,7 +96,7 @@ const surnames: readonly string[] = [
   "Zerletti",
   "Stannek",
   "Kohler",
-  "Kroller",
+  "Kroller"
 ];
 
 export default surnames;

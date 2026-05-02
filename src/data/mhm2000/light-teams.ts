@@ -308,7 +308,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 936
     }
-  },
+  }
 ];
 
 /**
@@ -1365,7 +1365,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 243
     }
-  },
+  }
 ];
 
 /**
@@ -1612,8 +1612,12 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 7
     }
-  },
+  }
 ];
 
 /** All light teams concatenated. Useful for unified iteration. */
-export const lightTeams: LightTeamDefinition[] = [...nhlTeams, ...foreignTeams, ...amateurTeams];
+export const lightTeams: LightTeamDefinition[] = [
+  ...nhlTeams,
+  ...foreignTeams,
+  ...amateurTeams
+];

@@ -90,8 +90,7 @@ export const createAttributeRollService = (
 
 const defaultService = createAttributeRollService();
 export const attributeRoll = defaultService.attributeRoll;
-export const attributeRollProbability =
-  defaultService.attributeRollProbability;
+export const attributeRollProbability = defaultService.attributeRollProbability;
 
 /**
  * Re-export of the QB → key index map, for sites that mechanically

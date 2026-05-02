@@ -736,7 +736,7 @@ const surnames: readonly string[] = [
   "Simon",
   "Tinordi",
   "Toms",
-  "Witt",
+  "Witt"
 ];
 
 export default surnames;

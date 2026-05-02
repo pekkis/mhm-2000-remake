@@ -113,7 +113,7 @@ const surnames: readonly string[] = [
   "Hasek",
   "Janecky",
   "Stastny",
-  "Benda",
+  "Benda"
 ];
 
 export default surnames;

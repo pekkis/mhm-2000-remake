@@ -114,7 +114,7 @@ const surnames: readonly string[] = [
   "Mazda",
   "Mitsubishi",
   "Sony",
-  "Panasonic",
+  "Panasonic"
 ];
 
 export default surnames;

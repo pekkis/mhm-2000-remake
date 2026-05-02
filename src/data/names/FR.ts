@@ -102,7 +102,7 @@ const surnames: readonly string[] = [
   "Durand",
   "Romano",
   "Dubois",
-  "Bouisset",
+  "Bouisset"
 ];
 
 export default surnames;

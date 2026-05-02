@@ -51,10 +51,7 @@ describe("attributeRoll", () => {
   it("matches QB mafia luck check distribution", () => {
     // tarko(u(pv), 6, 15, 0) with luck = 3 ⇒ threshold = 45 ⇒ 44%
     const lucky: ManagerAttributes = { ...baseAttrs, luck: 3 };
-    expect(attributeRollProbability(lucky, "luck", 15, 0)).toBeCloseTo(
-      0.44,
-      5
-    );
+    expect(attributeRollProbability(lucky, "luck", 15, 0)).toBeCloseTo(0.44, 5);
     // luck = -3 ⇒ threshold = -45 ⇒ 0%
     const cursed: ManagerAttributes = { ...baseAttrs, luck: -3 };
     expect(attributeRollProbability(cursed, "luck", 15, 0)).toBe(0);
@@ -67,7 +64,7 @@ describe("attributeRoll", () => {
     let hits = 0;
     const trials = 10000;
     for (let i = 0; i < trials; i++) {
-      if (attributeRoll(pasolini, "charisma", 30, 0)) hits++;
+      if (attributeRoll(pasolini, "charisma", 30, 0)) {hits++;}
     }
     const empirical = hits / trials;
     // 29% expected; allow 2pp tolerance

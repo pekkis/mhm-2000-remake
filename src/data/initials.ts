@@ -19,8 +19,29 @@
 // Note: X, Q and V are deliberately absent from both pools.
 
 export const initialsAll: readonly string[] = [
-  "A", "E", "I", "O", "U", "Y", "R", "T", "P", "S", "H", "J", "K", "L", "N", "M",
-  "C", "D", "B", "W", "Z", "G", "F"
+  "A",
+  "E",
+  "I",
+  "O",
+  "U",
+  "Y",
+  "R",
+  "T",
+  "P",
+  "S",
+  "H",
+  "J",
+  "K",
+  "L",
+  "N",
+  "M",
+  "C",
+  "D",
+  "B",
+  "W",
+  "Z",
+  "G",
+  "F"
 ];
 
 /** First 16 entries of `initialsAll`. Used for Pekkalandian (FI) players. */

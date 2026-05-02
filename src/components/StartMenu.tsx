@@ -21,10 +21,7 @@ const StartMenu = () => {
       <Stack gap="lg">
         <Box>
           <Stack align="center" gap="md">
-            <ResponsiveImage
-              src={title}
-              alt="MHM 2000"
-            />
+            <ResponsiveImage src={title} alt="MHM 2000" />
             <Box textAlign="center">
               <Stack gap="sm">
                 <Heading level={1}>MHM 2000</Heading>
@@ -51,36 +48,35 @@ const StartMenu = () => {
                 Lataa peli
               </Button>
             </Cluster>
-              <h3>Alkuperäinen suunnittelu & ohjelmointi</h3>
-              <ul>
-                <li>Mikko Forsström</li>
-              </ul>
-              <h3>Remaken suunnittelu & ohjelmointi</h3>
-              <ul>
-                <li>Mikko Forsström</li>
-                <li>Jean-Claude van Copilot</li>
-              </ul>
-              <h3>Grafiikka</h3>
-              <ul>
-                <li>Santtu Huotilainen</li>
-                <li>Mikko Forsström</li>
-                <li>Jean-Claude van Copilot</li>
-              </ul>
-              <h3>Alkuperäinen laadunvalvonta</h3>
-              <ul>
-                <li>Aki Haviala</li>
-                <li>Sami Kytömäki</li>
-                <li>Markus Lummi</li>
-                <li>Matias Lofman</li>
-                <li>Jussi Myllykoski</li>
-                <li>Lauri Pihlman</li>
-                <li>Toni Syvänen</li>
-              </ul>
-              <h3>Remaken laadunvalvonta</h3>
-              <ul>
-                <li>Erno Vanhala</li>
-              </ul>
-
+            <h3>Alkuperäinen suunnittelu & ohjelmointi</h3>
+            <ul>
+              <li>Mikko Forsström</li>
+            </ul>
+            <h3>Remaken suunnittelu & ohjelmointi</h3>
+            <ul>
+              <li>Mikko Forsström</li>
+              <li>Jean-Claude van Copilot</li>
+            </ul>
+            <h3>Grafiikka</h3>
+            <ul>
+              <li>Santtu Huotilainen</li>
+              <li>Mikko Forsström</li>
+              <li>Jean-Claude van Copilot</li>
+            </ul>
+            <h3>Alkuperäinen laadunvalvonta</h3>
+            <ul>
+              <li>Aki Haviala</li>
+              <li>Sami Kytömäki</li>
+              <li>Markus Lummi</li>
+              <li>Matias Lofman</li>
+              <li>Jussi Myllykoski</li>
+              <li>Lauri Pihlman</li>
+              <li>Toni Syvänen</li>
+            </ul>
+            <h3>Remaken laadunvalvonta</h3>
+            <ul>
+              <li>Erno Vanhala</li>
+            </ul>
           </Box>
         )}
 

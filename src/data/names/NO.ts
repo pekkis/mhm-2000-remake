@@ -103,7 +103,7 @@ const surnames: readonly string[] = [
   "Seeberg",
   "Kjolner",
   "Kihle",
-  "Kokkim",
+  "Kokkim"
 ];
 
 export default surnames;

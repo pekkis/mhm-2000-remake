@@ -27,7 +27,11 @@ describe("rollTeamStrength", () => {
     const r = createRandomWithEngine(MersenneTwister19937.seed(1));
     const { rollTeamStrength } = createTeamStrengthService(r);
     const base = getTeamLevel(30);
-    const seen = { goalie: new Set<number>(), defence: new Set<number>(), attack: new Set<number>() };
+    const seen = {
+      goalie: new Set<number>(),
+      defence: new Set<number>(),
+      attack: new Set<number>()
+    };
     for (let i = 0; i < 5000; i++) {
       const s = rollTeamStrength(30);
       seen.goalie.add(s.goalie);

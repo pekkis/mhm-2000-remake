@@ -12,6 +12,14 @@ We're reverse-engineering MHM 2000's QuickBASIC 4.5 source (in
 it's the inherited MHM 97 remake foundation. New game logic ports onto
 it sub-by-sub.
 
+## Sub-decode docs
+
+- [MHM2K-FLOW.md](MHM2K-FLOW.md) — `MHM2K.BAS` end-to-end: title
+  splash, 8-slot menu, new-game wizard (`alku` / `alku2`),
+  world-generation pipeline (`oppnas2` → `vihat`), save-file layout,
+  XState mapping cheat sheet. **Required reading before touching the
+  new-game flow.**
+
 ## What we already know (verified)
 
 ### Architecture

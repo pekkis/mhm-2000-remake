@@ -110,7 +110,7 @@ const surnames: readonly string[] = [
   "Barkov",
   "Gonchar",
   "Nikolishin",
-  "Svejkovsky",
+  "Svejkovsky"
 ];
 
 export default surnames;

@@ -102,7 +102,7 @@ const surnames: readonly string[] = [
   "Pawlak",
   "Lenart",
   "Bendkowski",
-  "Soszynski",
+  "Soszynski"
 ];
 
 export default surnames;

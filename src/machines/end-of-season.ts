@@ -196,7 +196,8 @@ const roundRobinAwards: Award[] = [
   createAward(
     400000,
     7,
-    (d) => `__${d.name}__ saa runkosarjan toisesta sijasta ${currency(d.amount)}!`
+    (d) =>
+      `__${d.name}__ saa runkosarjan toisesta sijasta ${currency(d.amount)}!`
   ),
   createAward(
     300000,

@@ -139,7 +139,7 @@ const surnames: readonly string[] = [
   "Zuberbuhl",
   "Gren",
   "Vega",
-  "Thuler",
+  "Thuler"
 ];
 
 export default surnames;

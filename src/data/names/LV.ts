@@ -64,7 +64,7 @@ const surnames: readonly string[] = [
   "Erglis",
   "Bogdans",
   "Krogeris",
-  "Shvans",
+  "Shvans"
 ];
 
 export default surnames;

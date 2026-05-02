@@ -50,7 +50,11 @@ describe("seatAllocationPoints", () => {
       // and ppiste=353 (= 294 × 1.2). Level 3 doesn't actually allow boxes
       // (tila(3,3) = -1), so our derivation correctly produces 294. Bug in
       // the original v1.2 source data; preserved verbatim. See issue #38.
-      if (team.kind === "light" && team.origin === "foreign" && team.name === "Leksand") {
+      if (
+        team.kind === "light" &&
+        team.origin === "foreign" &&
+        team.name === "Leksand"
+      ) {
         continue;
       }
       const points = seatAllocationPoints(
@@ -64,7 +68,9 @@ describe("seatAllocationPoints", () => {
   });
 
   it("ignores boxes at levels where they're unavailable", () => {
-    expect(seatAllocationPoints(3, 10, 10, true)).toBe(seatAllocationPoints(3, 10, 10, false));
+    expect(seatAllocationPoints(3, 10, 10, true)).toBe(
+      seatAllocationPoints(3, 10, 10, false)
+    );
   });
 });
 
@@ -99,17 +105,29 @@ describe("renovationCost", () => {
 
 describe("renovationMaxValuePoints", () => {
   it("clean 10% growth on round value points", () => {
-    expect(renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 1000 })).toBe(1100);
-    expect(renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 1032 })).toBe(1135);
+    expect(
+      renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 1000 })
+    ).toBe(1100);
+    expect(
+      renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 1032 })
+    ).toBe(1135);
   });
 
   it("uses banker's rounding on .5 boundaries (diverges from Math.round)", () => {
     // 1.1 * 15 = 16.5 → CINT picks 16 (even); Math.round would give 17.
-    expect(renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 15 })).toBe(16);
-    expect(renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 25 })).toBe(28);
-    expect(renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 35 })).toBe(38);
+    expect(
+      renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 15 })
+    ).toBe(16);
+    expect(
+      renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 25 })
+    ).toBe(28);
+    expect(
+      renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 35 })
+    ).toBe(38);
     // 1.1 * 45 = 49.5 → CINT picks 50 (even).
-    expect(renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 45 })).toBe(50);
+    expect(
+      renovationMaxValuePoints({ ...teams[0]!.arena, valuePoints: 45 })
+    ).toBe(50);
   });
 });
 
@@ -160,21 +178,39 @@ describe("constructionRounds / roundPayment", () => {
 
 describe("tickConstruction (vetää lonkkaa, ILEX5.BAS:5485-5493)", () => {
   it("rank 1 (työllistetyt): slack on d≤2, progress on d≥2 → only d=1 stalls", () => {
-    expect(tickConstruction(1, 1)).toEqual({ slacked: true, progressed: false });
+    expect(tickConstruction(1, 1)).toEqual({
+      slacked: true,
+      progressed: false
+    });
     expect(tickConstruction(1, 2)).toEqual({ slacked: true, progressed: true });
-    expect(tickConstruction(1, 3)).toEqual({ slacked: false, progressed: true });
-    expect(tickConstruction(1, 100)).toEqual({ slacked: false, progressed: true });
+    expect(tickConstruction(1, 3)).toEqual({
+      slacked: false,
+      progressed: true
+    });
+    expect(tickConstruction(1, 100)).toEqual({
+      slacked: false,
+      progressed: true
+    });
   });
 
   it("rank 2 (vakituiset): slacks at d=1 but always progresses", () => {
     expect(tickConstruction(2, 1)).toEqual({ slacked: true, progressed: true });
-    expect(tickConstruction(2, 2)).toEqual({ slacked: false, progressed: true });
-    expect(tickConstruction(2, 100)).toEqual({ slacked: false, progressed: true });
+    expect(tickConstruction(2, 2)).toEqual({
+      slacked: false,
+      progressed: true
+    });
+    expect(tickConstruction(2, 100)).toEqual({
+      slacked: false,
+      progressed: true
+    });
   });
 
   it("rank 3 (Ranen): never slacks, never stalls", () => {
     for (const roll of [1, 2, 3, 50, 100]) {
-      expect(tickConstruction(3, roll)).toEqual({ slacked: false, progressed: true });
+      expect(tickConstruction(3, roll)).toEqual({
+        slacked: false,
+        progressed: true
+      });
     }
   });
 });
@@ -187,7 +223,10 @@ describe("arenaFreePoints", () => {
   });
 
   it("positive when the envelope exceeds the allocation", () => {
-    const arena = { ...teams[0]!.arena, valuePoints: teams[0]!.arena.valuePoints + 50 };
+    const arena = {
+      ...teams[0]!.arena,
+      valuePoints: teams[0]!.arena.valuePoints + 50
+    };
     expect(arenaFreePoints(arena)).toBe(50);
   });
 });

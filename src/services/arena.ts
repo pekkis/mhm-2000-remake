@@ -1,4 +1,8 @@
-import { arenaUnitCosts, type Arena, type ArenaLevel } from "@/data/mhm2000/teams";
+import {
+  arenaUnitCosts,
+  type Arena,
+  type ArenaLevel
+} from "@/data/mhm2000/teams";
 
 /**
  * Arena economics — ported from QB `remppa(rampa%)` SUB at
@@ -61,8 +65,8 @@ import { arenaUnitCosts, type Arena, type ArenaLevel } from "@/data/mhm2000/team
 export const qbCint = (value: number): number => {
   const floor = Math.floor(value);
   const frac = value - floor;
-  if (frac < 0.5) return floor;
-  if (frac > 0.5) return floor + 1;
+  if (frac < 0.5) {return floor;}
+  if (frac > 0.5) {return floor + 1;}
   // Exactly .5 — pick the even neighbour.
   return floor % 2 === 0 ? floor : floor + 1;
 };

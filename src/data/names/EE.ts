@@ -56,7 +56,7 @@ const surnames: readonly string[] = [
   "Hepner",
   "Ude",
   "Kitto",
-  "Belski",
+  "Belski"
 ];
 
 export default surnames;
