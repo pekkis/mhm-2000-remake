@@ -1,10 +1,10 @@
 import { amount as a, currency } from "@/services/format";
-import type { Manager, ManagerServices } from "@/state/manager";
+import type { HumanManager, ManagerServices } from "@/state/manager";
 
 export type ServiceDefinition = {
   name: string;
   description: (price: number) => string;
-  price: (basePrice: number, manager: Manager) => number;
+  price: (basePrice: number, manager: HumanManager) => number;
   effect: (competition: string, phase: number) => number;
 };
 

@@ -5,7 +5,8 @@ import r from "@/services/random";
 import type {
   Competition,
   CompetitionDefinition,
-  PlayoffGroup
+  PlayoffGroup,
+  RoundRobinGroup
 } from "@/types/competitions";
 
 const phl: CompetitionDefinition = {
@@ -81,7 +82,9 @@ const phl: CompetitionDefinition = {
       };
     },
     (competitions: Record<string, Competition>) => {
-      const stats = competitions.phl.phases[0].groups[0].stats;
+      const group = competitions.phl.phases[0].groups[0] as RoundRobinGroup;
+
+      const stats = group.stats;
       const teams = stats.slice(0, 8).map((e) => e.id);
 
       const winsToAdvance = 3;

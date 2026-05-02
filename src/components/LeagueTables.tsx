@@ -8,9 +8,10 @@ import Tabs, { type TabItem } from "@/components/ui/Tabs";
 import LeagueTable from "@/components/league-table/LeagueTable";
 import { useGameContext } from "@/context/game-machine-context";
 import ManagerInfo from "@/components/ManagerInfo";
+import { humanManagers } from "@/machines/selectors";
 
 const LeagueTables = () => {
-  const managers = useGameContext((ctx) => ctx.manager.managers);
+  const managers = useGameContext(humanManagers);
   const teams = useGameContext((ctx) => ctx.teams);
   const competitions = useGameContext((ctx) => ctx.competitions);
 

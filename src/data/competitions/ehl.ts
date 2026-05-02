@@ -188,10 +188,15 @@ const ehl: CompetitionDefinition = {
         continue;
       }
       const award = ehlAwards[ranking];
-      const m = draft.manager.managers[team.manager];
+      const m = draft.managers[team.manager];
       if (!m) {
         continue;
       }
+
+      if (m.kind === "ai") {
+        continue;
+      }
+
       m.balance += award.amount;
       if (!draft.news.announcements[m.id]) {
         draft.news.announcements[m.id] = [];

@@ -1,12 +1,14 @@
 import type { Draft } from "immer";
 
 import difficultyLevels from "@/data/difficulty-levels";
-import type { GameContext } from "@/state";
+import type { GameContext, ManagerServices } from "@/state";
 import type { GameFlags, Team, TeamEffect } from "@/state/game";
 import type { CompetitionId } from "@/types/competitions";
 import type { BaseEventCreationFields } from "@/types/base";
 import type { NotificationData } from "@/machines/notification";
 import { computeStats } from "@/services/competition-type";
+import { humanManagerById } from "@/machines/selectors";
+import type { CountryIso } from "@/data/countries";
 
 /**
  * Look up the morale clamp for a team. Mirrors `getMoraleMinMax` in
@@ -18,7 +20,19 @@ function moraleClamp(
   team: Draft<Team>
 ): { min: number; max: number } {
   const managerId = team.manager;
-  const manager = managerId ? draft.manager.managers[managerId] : undefined;
+  const manager = managerId ? draft.managers[managerId] : undefined;
+
+  if (!manager) {
+    throw new Error(`Teaim ${team.name} has no manager`);
+  }
+
+  if (manager.kind === "ai") {
+    return {
+      min: -10,
+      max: 10
+    };
+  }
+
   const difficulty = manager ? manager.difficulty : 2;
   return {
     min: difficultyLevels[difficulty].moraleMin,
@@ -83,7 +97,12 @@ export type EventEffect =
   | { type: "setExtra"; manager: string; extra: number }
   | { type: "incrementInsuranceExtra"; manager: string; amount: number }
   | { type: "setInsuranceExtra"; manager: string; extra: number }
-  | { type: "setService"; manager: string; service: string; value: boolean }
+  | {
+      type: "setService";
+      manager: string;
+      service: keyof ManagerServices;
+      value: boolean;
+    }
   | { type: "hireManager"; manager: string; team: number }
 
   // ── Team strength / morale / readiness / strategy ──
@@ -126,7 +145,7 @@ export type EventEffect =
   | { type: "incrementServiceBasePrice"; service: string; amount: number }
 
   // ── Country strength (used by attitude-canada / attitude-usa) ──
-  | { type: "alterCountryStrength"; country: string; amount: number }
+  | { type: "alterCountryStrength"; country: CountryIso; amount: number }
 
   // ── News (events sometimes push announcements during process) ──
   | { type: "addAnnouncement"; manager: string; text: string }
@@ -173,21 +192,21 @@ export function applyEffect(
   switch (effect.type) {
     // ── Manager balance ──
     case "incrementBalance": {
-      const m = draft.manager.managers[effect.manager];
+      const m = humanManagerById(effect.manager)(draft);
       if (m) {
         m.balance += effect.amount;
       }
       return;
     }
     case "decrementBalance": {
-      const m = draft.manager.managers[effect.manager];
+      const m = humanManagerById(effect.manager)(draft);
       if (m) {
         m.balance -= effect.amount;
       }
       return;
     }
     case "setBalance": {
-      const m = draft.manager.managers[effect.manager];
+      const m = humanManagerById(effect.manager)(draft);
       if (m) {
         m.balance = effect.amount;
       }
@@ -196,42 +215,42 @@ export function applyEffect(
 
     // ── Manager arena / extras / services ──
     case "setArenaLevel": {
-      const m = draft.manager.managers[effect.manager];
+      const m = humanManagerById(effect.manager)(draft);
       if (m) {
         m.arena.level = effect.level;
       }
       return;
     }
     case "renameArena": {
-      const m = draft.manager.managers[effect.manager];
+      const m = humanManagerById(effect.manager)(draft);
       if (m) {
         m.arena.name = effect.name;
       }
       return;
     }
     case "setExtra": {
-      const m = draft.manager.managers[effect.manager];
+      const m = humanManagerById(effect.manager)(draft);
       if (m) {
         m.extra = effect.extra;
       }
       return;
     }
     case "incrementInsuranceExtra": {
-      const m = draft.manager.managers[effect.manager];
+      const m = humanManagerById(effect.manager)(draft);
       if (m) {
         m.insuranceExtra += effect.amount;
       }
       return;
     }
     case "setInsuranceExtra": {
-      const m = draft.manager.managers[effect.manager];
+      const m = humanManagerById(effect.manager)(draft);
       if (m) {
         m.insuranceExtra = effect.extra;
       }
       return;
     }
     case "setService": {
-      const m = draft.manager.managers[effect.manager];
+      const m = humanManagerById(effect.manager)(draft);
       if (m) {
         m.services[effect.service] = effect.value;
       }
@@ -240,7 +259,7 @@ export function applyEffect(
     case "hireManager": {
       // Atomic: detach from current team, attach to new team.
       // 1-1 port of `hireManager` saga in src/sagas/manager.ts.
-      const m = draft.manager.managers[effect.manager];
+      const m = humanManagerById(effect.manager)(draft);
       if (!m) {
         return;
       }
@@ -365,7 +384,7 @@ export function applyEffect(
       return;
     }
     case "setManagerFlag": {
-      const m = draft.manager.managers[effect.manager];
+      const m = humanManagerById(effect.manager)(draft);
       if (m) {
         m.flags[effect.flag] = effect.value;
       }

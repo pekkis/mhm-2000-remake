@@ -148,9 +148,14 @@ const tournaments: CompetitionDefinition = {
       if (team.manager === undefined) {
         continue;
       }
-      const m = draft.manager.managers[team.manager];
+      const m = draft.managers[team.manager];
+
       if (!m) {
         continue;
+      }
+
+      if (m.kind === "ai") {
+        return;
       }
       m.balance += award;
       if (!draft.news.announcements[m.id]) {

@@ -1,6 +1,6 @@
 import {
+  humanManagerById,
   managerHasService,
-  managerObject,
   managersDifficulty
 } from "@/machines/selectors";
 import { currency } from "@/services/format";
@@ -39,7 +39,7 @@ const embezzlement: DeclarativeEvent<EmbezzlementData> = {
   type: "manager",
 
   create: (ctx, { manager }) => {
-    const m = managerObject(manager)(ctx);
+    const m = humanManagerById(manager)(ctx);
     if (!m || m.balance < 100000) {
       return null;
     }

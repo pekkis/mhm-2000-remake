@@ -7,10 +7,11 @@ import { useGameContext } from "@/context/game-machine-context";
 import Heading from "@/components/ui/Heading";
 import Stack from "@/components/ui/Stack";
 import Results from "@/components/gameday/Results";
+import { humanManagers } from "@/machines/selectors";
 
 const GamedayResults = () => {
   const turn = useGameContext((ctx) => ctx.turn);
-  const managers = useGameContext((ctx) => ctx.manager.managers);
+  const managers = useGameContext(humanManagers);
   const teams = useGameContext((ctx) => ctx.teams);
   const competitions = useGameContext((ctx) => ctx.competitions);
 

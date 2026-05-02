@@ -31,7 +31,7 @@ export type GameFlags = {
   canada: boolean;
   haanperaMarried: boolean;
   mauto: boolean;
-  psycho: number | undefined;
+  psycho: string | undefined;
 };
 
 export type WorldChampionshipEntry = {

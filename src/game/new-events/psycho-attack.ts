@@ -8,7 +8,7 @@ export type PsychoAttackData = {
   eventId: typeof eventId;
   manager: string;
   resolved: true;
-  otherManagerId: number;
+  otherManagerId: string;
   otherManager: string;
 };
 

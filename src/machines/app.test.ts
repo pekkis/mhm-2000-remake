@@ -63,7 +63,7 @@ describe("appMachine", () => {
       const gameCtx = snap.context.gameRef!.getSnapshot().context;
       const activeId = gameCtx.manager.active;
       expect(activeId).toBeDefined();
-      expect(gameCtx.manager.managers[activeId!].name).toBe(submission.name);
+      expect(gameCtx.managers[activeId!].name).toBe(submission.name);
       expect(gameCtx.teams[submission.team].manager).toBe(activeId);
     });
 

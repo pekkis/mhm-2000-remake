@@ -3,11 +3,11 @@ import Button from "@/components/ui/Button";
 import Stack from "@/components/ui/Stack";
 import pranks from "@/game/pranks";
 import { currency as c } from "@/services/format";
-import type { Manager } from "@/state/manager";
+import type { HumanManager } from "@/state/manager";
 import { entries } from "remeda";
 
 type SelectTypeProps = {
-  manager: Manager;
+  manager: HumanManager;
   selectType: (type: string) => void;
   competition: string;
   enabled: boolean;

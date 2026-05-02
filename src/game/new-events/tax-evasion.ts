@@ -19,7 +19,7 @@ export type TaxEvasionData = {
   manager: string;
   amount: number;
   resolved: boolean;
-  otherManager: number;
+  otherManager: string;
   otherManagerName: string;
   team: number;
   teamName: string;

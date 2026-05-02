@@ -23,7 +23,7 @@
 
 import r from "@/services/random";
 import { victors } from "@/services/playoffs";
-import { entries, keys, pick, values } from "remeda";
+import { entries, keys, mapValues, pick, pickBy, values } from "remeda";
 import arenas from "@/data/arenas";
 import difficultyLevels from "@/data/difficulty-levels";
 import calendar from "@/data/calendar";
@@ -33,7 +33,6 @@ import type { gameMachine } from "./game";
 import type {
   GameContext,
   Manager,
-  ManagerDefinition,
   ManagerServices,
   Team,
   GameFlags
@@ -44,6 +43,7 @@ import type {
   PlayoffGroup,
   TeamStat
 } from "@/types/competitions";
+import type { HumanManager } from "@/state/manager";
 
 // ---------------------------------------------------------------------------
 // Helper types
@@ -129,7 +129,7 @@ export const teamsManager =
   (team: number): ContextSelector<Manager | undefined> =>
   (ctx) => {
     const managerId = ctx.teams[team]?.manager;
-    return managerId ? ctx.manager.managers[managerId] : undefined;
+    return managerId ? ctx.managers[managerId] : undefined;
   };
 
 export const teamsMainCompetition =
@@ -195,7 +195,7 @@ export const teamWasPromoted =
 export const teamsPositionInRoundRobin =
   (
     team: number,
-    competitionId: string,
+    competitionId: CompetitionId,
     phase: number
   ): ContextSelector<number | false> =>
   (ctx) => {
@@ -218,7 +218,7 @@ export const teamsPositionInRoundRobin =
 
 export const randomRankedTeam =
   (
-    competitionId: string,
+    competitionId: CompetitionId,
     phaseId: number,
     range: number[],
     f: (t: Team) => boolean = () => true
@@ -274,7 +274,8 @@ export const randomTeamOrNullFrom =
     f: (t: Team) => boolean = () => true
   ): ContextSelector<Team | null> =>
   (ctx) => {
-    const managersTeams: number[] = values(ctx.manager.managers)
+    const managersTeams: number[] = values(ctx.managers)
+      .filter((m) => m.kind === "human")
       .map((p) => p.team)
       .filter((t): t is number => t !== undefined);
 
@@ -298,14 +299,42 @@ export const randomTeamOrNullFrom =
 // Managers
 // ---------------------------------------------------------------------------
 
-export const activeManager: ContextSelector<Manager> = (ctx) => {
+export const activeManager: ContextSelector<HumanManager> = (ctx) => {
   const activeId = ctx.manager.active;
 
   if (!activeId) {
     throw new Error("No manager is active");
   }
 
-  return ctx.manager.managers[activeId];
+  const manager = ctx.managers[activeId];
+
+  if (manager.kind === "ai") {
+    throw new Error("Active manager is AI");
+  }
+
+  return manager;
+};
+
+export const humanManagerById =
+  (id: string): ContextSelector<HumanManager> =>
+  (ctx) => {
+    const manager = managerById(id)(ctx);
+
+    if (!manager) {
+      throw new Error(`Manager #${id} not found`);
+    }
+
+    if (manager.kind === "ai") {
+      throw new Error(`Manager #${id} is AI`);
+    }
+
+    return manager;
+  };
+
+export const humanManagers: ContextSelector<Record<string, HumanManager>> = (
+  ctx
+) => {
+  return pickBy(ctx.managers, (manager) => manager.kind === "human");
 };
 
 export const activeManagersTeam: ContextSelector<Team> = (ctx) => {
@@ -316,7 +345,7 @@ export const activeManagersTeam: ContextSelector<Team> = (ctx) => {
 export const managerObject =
   (manager: string): ContextSelector<Manager | undefined> =>
   (ctx) => {
-    const managerObj = ctx.manager.managers[manager];
+    const managerObj = ctx.managers[manager];
     if (!managerObj) {
       throw new Error(`Manager #${manager} not found`);
     }
@@ -326,7 +355,7 @@ export const managerObject =
 export const managerById =
   (manager: string): ContextSelector<Manager | undefined> =>
   (ctx) =>
-    ctx.manager.managers[manager];
+    ctx.managers[manager];
 
 /**
  * True iff `manager` can afford the next arena upgrade and isn't already at
@@ -336,10 +365,15 @@ export const managerById =
 export const canImproveArena =
   (manager: string): ContextSelector<boolean> =>
   (ctx) => {
-    const m = ctx.manager.managers[manager];
+    const m = ctx.managers[manager];
     if (!m) {
       return false;
     }
+
+    if (m.kind === "ai") {
+      return false;
+    }
+
     const next = arenas[m.arena.level + 1];
     if (!next) {
       return false;
@@ -359,10 +393,15 @@ export const canImproveArena =
 export const canOrderPrank =
   (manager: string, price?: number): ContextSelector<boolean> =>
   (ctx) => {
-    const m = ctx.manager.managers[manager];
+    const m = ctx.managers[manager];
     if (!m) {
       return false;
     }
+
+    if (m.kind === "ai") {
+      return false;
+    }
+
     const round = calendar[ctx.turn.round];
     if (!round?.pranks) {
       return false;
@@ -385,10 +424,15 @@ export const canOrderPrank =
 export const canBuyPlayer =
   (manager: string, price?: number): ContextSelector<boolean> =>
   (ctx) => {
-    const m = ctx.manager.managers[manager];
+    const m = ctx.managers[manager];
     if (!m) {
       return false;
     }
+
+    if (m.kind === "ai") {
+      return false;
+    }
+
     if (price !== undefined && m.balance < price) {
       return false;
     }
@@ -405,7 +449,7 @@ export const canBuyPlayer =
 export const canSellPlayer =
   (manager: string): ContextSelector<boolean> =>
   (ctx) => {
-    const m = ctx.manager.managers[manager];
+    const m = ctx.managers[manager];
     if (!m || m.team === undefined) {
       return false;
     }
@@ -424,10 +468,15 @@ export const canSellPlayer =
 export const canCrisisMeeting =
   (manager: string): ContextSelector<boolean> =>
   (ctx) => {
-    const m = ctx.manager.managers[manager];
+    const m = ctx.managers[manager];
     if (!m || m.team === undefined) {
       return false;
     }
+
+    if (m.kind === "ai") {
+      return false;
+    }
+
     if (!calendar[ctx.turn.round]?.crisisMeeting) {
       return false;
     }
@@ -444,7 +493,7 @@ export const canCrisisMeeting =
 export const managerWithId =
   (id: string): ContextSelector<Manager | undefined> =>
   (ctx) =>
-    ctx.manager.managers[id];
+    ctx.managers[id];
 
 export const managersMainCompetition =
   (manager: string): ContextSelector<string> =>
@@ -456,7 +505,7 @@ export const managersMainCompetition =
 export const managersCompetitions =
   (manager: string): ContextSelector<Record<string, Competition>> =>
   (ctx) => {
-    const team = ctx.manager.managers[manager]?.team;
+    const team = ctx.managers[manager]?.team;
     if (team === undefined) {
       return {};
     }
@@ -475,12 +524,19 @@ export const managerCompetesIn =
 export const managersTeam =
   (manager: string): ContextSelector<Team> =>
   (ctx) =>
-    ctx.teams[ctx.manager.managers[manager]?.team!];
+    ctx.teams[ctx.managers[manager]?.team!];
 
 export const managersBalance =
   (manager: string): ContextSelector<number> =>
-  (ctx) =>
-    ctx.manager.managers[manager].balance;
+  (ctx) => {
+    const m = ctx.managers[manager];
+
+    if (m.kind === "ai") {
+      return 0;
+    }
+
+    return m.balance;
+  };
 
 export const managersTeamId =
   (manager: string): ContextSelector<number> =>
@@ -490,40 +546,40 @@ export const managersTeamId =
 export const managersDifficulty =
   (manager: string): ContextSelector<number> =>
   (ctx) =>
-    ctx.manager.managers[manager]?.difficulty as number;
+    humanManagerById(manager)(ctx).difficulty;
 
 export const managersArena =
-  (manager: string): ContextSelector<Manager["arena"] | undefined> =>
+  (manager: string): ContextSelector<HumanManager["arena"] | undefined> =>
   (ctx) =>
-    ctx.manager.managers[manager]?.arena;
+    humanManagerById(manager)(ctx).arena;
 
 export const managerHasService =
   (manager: string, service: keyof ManagerServices): ContextSelector<boolean> =>
   (ctx) =>
-    ctx.manager.managers[manager]?.services?.[service];
+    humanManagerById(manager)(ctx).services[service];
 
 export const managerHasEnoughMoney =
   (manager: string, neededAmount: number): ContextSelector<boolean> =>
   (ctx) => {
-    const amount = ctx.manager.managers[manager].balance;
+    const amount = humanManagerById(manager)(ctx).balance;
     return neededAmount <= amount;
   };
 
 export const managerWhoControlsTeam =
   (id: number): ContextSelector<Manager | undefined> =>
   (ctx) =>
-    values(ctx.manager.managers).find((p) => p.team === id);
+    values(ctx.managers).find((p) => p.team === id);
 
 export const managerFlag =
   (manager: string, flag: string): ContextSelector<boolean | undefined> =>
   (ctx) =>
-    ctx.manager.managers[manager]?.flags?.[flag];
+    humanManagerById(manager)(ctx).flags?.[flag];
 
 export const randomManager =
-  (exclude: number[] = []): ContextSelector<ManagerDefinition> =>
+  (exclude: string[] = []): ContextSelector<Manager> =>
   (ctx) => {
     const psycho = flag("psycho")(ctx);
-    const mgrs = ctx.managers
+    const mgrs = values(ctx.managers)
       .filter((m) => m.id !== psycho)
       .filter((m) => !exclude.includes(m.id));
 

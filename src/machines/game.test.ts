@@ -2,12 +2,24 @@ import { describe, it, expect } from "vitest";
 import { createActor } from "xstate";
 import { gameMachine } from "@/machines/game";
 import { createDefaultGameContext } from "@/state";
-import type { GameContext, Manager } from "@/state";
+import type { GameContext } from "@/state";
+import type { HumanManager } from "@/state/manager";
+import { humanManagerById } from "@/machines/selectors";
 
 const buildContextWithManager = (): GameContext => {
   const ctx = createDefaultGameContext();
-  const manager: Manager = {
+  const manager: HumanManager = {
     id: "pasolini",
+    kind: "human",
+    nationality: "IT",
+    attributes: {
+      charisma: 3,
+      luck: 3,
+      negotiation: 3,
+      resourcefulness: 3,
+      specialTeams: 3,
+      strategy: 3
+    },
     name: "Pier Paolo Pasolini",
     team: 12,
     difficulty: 1,
@@ -26,7 +38,10 @@ const buildContextWithManager = (): GameContext => {
   };
   return {
     ...ctx,
-    manager: { active: manager.id, managers: { [manager.id]: manager } },
+    managers: {
+      pasolini: manager
+    },
+    manager: { active: manager.id, managers: [manager.id] },
     teams: ctx.teams.map((t) =>
       t.id === 12 ? { ...t, manager: manager.id } : t
     )
@@ -120,10 +135,10 @@ describe("gameMachine", () => {
       });
 
       const after = actor.getSnapshot().context;
-      const m = after.manager.managers[activeId];
+      const m = humanManagerById(activeId)(after);
       expect(m.pranksExecuted).toBe(1);
       expect(m.balance).toBe(
-        before.manager.managers[activeId].balance - 150000
+        humanManagerById(activeId)(before).balance - 150000
       );
       expect(after.prank.pranks).toEqual([
         { manager: activeId, type: "fixedMatch", victim: 7 }
@@ -133,15 +148,16 @@ describe("gameMachine", () => {
     it("free pranks (protest) leave balance untouched", () => {
       const actor = createTestActor();
       const activeId = actor.getSnapshot().context.manager.active!;
-      const beforeBalance =
-        actor.getSnapshot().context.manager.managers[activeId].balance;
+      const beforeBalance = humanManagerById(activeId)(
+        actor.getSnapshot().context
+      );
 
       actor.send({
         type: "ORDER_PRANK",
         payload: { manager: activeId, type: "protest", victim: 3 }
       });
 
-      const m = actor.getSnapshot().context.manager.managers[activeId];
+      const m = humanManagerById(activeId)(actor.getSnapshot().context);
       expect(m.balance).toBe(beforeBalance);
       expect(m.pranksExecuted).toBe(1);
     });

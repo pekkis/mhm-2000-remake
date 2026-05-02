@@ -5,7 +5,7 @@ import type { Draft } from "immer";
 
 export const runGala = (draft: Draft<GameContext>) => {
   const teams = draft.teams;
-  const managers = draft.manager.managers;
+  const managers = draft.managers;
 
   const phlRegularSeason = draft.competitions.phl.phases[0].groups[0];
   const phlFinals = draft.competitions.phl.phases[3].groups[0];

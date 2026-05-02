@@ -10,7 +10,7 @@
  */
 
 import type { Draft } from "immer";
-import type { GameContext } from "@/state";
+import type { GameContext, Manager } from "@/state";
 import type { Team, WorldChampionshipEntry } from "@/state/game";
 import type {
   PlayoffGroup,
@@ -50,8 +50,14 @@ const ensureCurrentSeason = (draft: Draft<GameContext>): void => {
 const findManagerControlling = (
   draft: Draft<GameContext>,
   teamId: number
-): Draft<GameContext>["manager"]["managers"][string] | undefined => {
-  return values(draft.manager.managers).find((m) => m.team === teamId);
+): Manager => {
+  const manager = values(draft.managers).find((m) => m.team === teamId);
+
+  if (!manager) {
+    throw new Error("Manager not found");
+  }
+
+  return manager;
 };
 
 const teamCompetesIn = (
@@ -228,7 +234,7 @@ const yieldAwards = (
     const data = award.data(team);
     const manager = findManagerControlling(draft, teamId);
 
-    if (manager) {
+    if (manager.kind === "human") {
       manager.balance += data.amount;
     } else {
       draft.teams[data.id].strength += data.strength;
@@ -636,7 +642,7 @@ const managersMainCompetition = (
   draft: Draft<GameContext>,
   managerId: string
 ): CompetitionId => {
-  const team = draft.manager.managers[managerId]?.team;
+  const team = draft.managers[managerId]?.team;
   if (team !== undefined && draft.competitions.phl.teams.includes(team)) {
     return "phl";
   }
@@ -674,12 +680,13 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
   }
 
   // Per-manager stories.
-  for (const [managerId, manager] of Object.entries(draft.manager.managers)) {
-    const teamId = manager.team;
+  for (const manager of draft.manager.managers) {
+    const teamId = draft.managers[manager].team;
+
     if (teamId === undefined) {
       continue;
     }
-    const mainCompetition = managersMainCompetition(draft, managerId);
+    const mainCompetition = managersMainCompetition(draft, manager);
     const competition = draft.competitions[mainCompetition];
     const group = competition.phases[0].groups[0];
     const ranking = (group.stats as TeamStat[]).findIndex(
@@ -687,7 +694,7 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
     );
     const stat = (group.stats as TeamStat[])[ranking];
 
-    cs.stories[managerId] = {
+    cs.stories[manager] = {
       mainCompetition,
       mainCompetitionStat: stat,
       ranking,

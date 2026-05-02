@@ -135,10 +135,10 @@ export function runGameday(draft: Draft<GameContext>): void {
           home,
           away,
           homeManager: home.manager
-            ? draft.manager.managers[home.manager]
+            ? draft.managers[home.manager]
             : (undefined as unknown as Manager),
           awayManager: away.manager
-            ? draft.manager.managers[away.manager]
+            ? draft.managers[away.manager]
             : (undefined as unknown as Manager),
           phaseId: comp.phase,
           competitionId
