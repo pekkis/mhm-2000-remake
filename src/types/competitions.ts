@@ -87,12 +87,31 @@ export type PlayoffGroup = {
   stats: MatchupStat[];
 };
 
-export type Group = RoundRobinGroup | TournamentGroup | PlayoffGroup;
+/**
+ * A bag of unrelated games played on the same calendar day. No
+ * standings, no penalties, no colors — every match is its own little
+ * universe. Used for practice / friendly matches (`harjoitusottelu`)
+ * during preseason.
+ */
+export type IndependentGamesGroup = {
+  type: "independent-games";
+  round: number;
+  name: string;
+  teams: number[];
+  schedule: Pairing[][];
+  stats: never[];
+};
+
+export type Group =
+  | RoundRobinGroup
+  | TournamentGroup
+  | PlayoffGroup
+  | IndependentGamesGroup;
 
 // --- Phase ---
 
 export type Phase = {
-  type: "round-robin" | "playoffs" | "tournament";
+  type: "round-robin" | "playoffs" | "tournament" | "independent-games";
   name: string;
   teams: number[];
   groups: Group[];
@@ -105,7 +124,11 @@ export type CompetitionId =
   | "division"
   | "mutasarja"
   | "ehl"
-  | "tournaments";
+  | "tournaments"
+  // MHM 2000 calendar references these gameday ids; CompetitionDefinitions
+  // for them are not built yet — see src/data/mhm2000/parse-calendar.ts.
+  | "cup"
+  | "practice";
 
 export type Competition = {
   id: CompetitionId;

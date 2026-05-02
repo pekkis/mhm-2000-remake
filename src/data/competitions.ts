@@ -3,6 +3,8 @@ import phl from "./competitions/phl";
 import division from "./competitions/division";
 import mutasarja from "./competitions/mutasarja";
 import tournaments from "./competitions/tournaments";
+import cup from "./competitions/cup";
+import practice from "./competitions/practice";
 import type {
   CompetitionDefinition,
   CompetitionId
@@ -13,7 +15,9 @@ const competitionEntries: [CompetitionId, CompetitionDefinition][] = [
   ["division", division],
   ["mutasarja", mutasarja],
   ["ehl", ehl],
-  ["tournaments", tournaments]
+  ["tournaments", tournaments],
+  ["cup", cup],
+  ["practice", practice]
 ];
 
 // Sort by weight (ascending) to match the original Immutable Map.sortBy behavior

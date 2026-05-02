@@ -43,6 +43,11 @@ const competitionTypes: { [K in Group["type"]]: CompetitionType<K> } = {
       return true;
     },
     overtime: (result) => result.home === result.away
+  },
+  "independent-games": {
+    playMatch: () => true,
+    overtime: () => false,
+    stats: () => []
   }
 };
 
