@@ -20,7 +20,7 @@ const division: CompetitionDefinition = {
     phases: []
   },
 
-  relegateTo: false,
+  relegateTo: "mutasarja",
   promoteTo: "phl",
 
   gameBalance: (_phase, facts, manager) => {

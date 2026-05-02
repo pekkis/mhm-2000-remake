@@ -53,7 +53,7 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
   // EHL: previous season's medalists (or the seeded default first season)
   // plus 17 foreign teams, shuffled.
   const ehlSeeds = draft.stats.seasons[season - 1]?.medalists ?? [2, 3, 5];
-  const foreignIds = draft.teams.slice(24, 24 + 17).map((t) => t.id);
+  const foreignIds = draft.teams.slice(48, 48 + 17).map((t) => t.id);
   draft.competitions.ehl.teams = [...ehlSeeds, ...foreignIds].toSorted(
     () => random.real(1, 10000) - 5000
   );

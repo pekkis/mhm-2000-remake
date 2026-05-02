@@ -108,7 +108,7 @@ export const foreignTeams: ContextSelector<Team[]> = (ctx) =>
   ctx.teams.filter((t) => !t.domestic);
 
 export const pekkalandianTeams: ContextSelector<Team[]> = (ctx) =>
-  ctx.teams.slice(0, 24);
+  ctx.teams.slice(0, 48);
 
 export const teamsStrength =
   (team: number): ContextSelector<number> =>

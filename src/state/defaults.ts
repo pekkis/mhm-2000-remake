@@ -26,17 +26,18 @@ import type { Competition, CompetitionId } from "@/types/competitions";
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
 // order (id 12 is mutasarja, etc.). The runtime competitions hard-code
-// team-id arrays (PHL = 0..11, Divisioona = 12..23), so we renumber on
-// transplant so each tier occupies a contiguous id range.
+// team-id arrays (PHL = 0..11, Divisioona = 12..23, Mutasarja = 24..47),
+// so we renumber on transplant so each tier occupies a contiguous id
+// range.
 //
-// For now only PHL + Divisioona are wired; Mutasarja (TEAMS.PLN's
-// remaining 24 teams) lands in the next pass. Slots 24..40 are padded
-// with 17 European clubs from TEAMS.FOR so the existing season-start EHL
-// seed (`draft.teams.slice(24, 24 + 17)`) keeps working.
+// Foreign clubs land at slots 48..64 (17 European clubs from TEAMS.FOR)
+// so the season-start EHL seed (`draft.teams.slice(48, 48 + 17)`) finds
+// the foreign roster cleanly.
 const phlSource = managedTeamDefs.filter((t) => t.league === "phl");
 const divisioonaSource = managedTeamDefs.filter(
   (t) => t.league === "divisioona"
 );
+const mutasarjaSource = managedTeamDefs.filter((t) => t.league === "mutasarja");
 const ehlForeign = foreignLightTeams.slice(0, 17);
 
 const seedTeams = (): Team[] => [
@@ -66,8 +67,21 @@ const seedTeams = (): Team[] => [
     effects: [],
     opponentEffects: []
   })),
-  ...ehlForeign.map((t, i) => ({
+  ...mutasarjaSource.map((t, i) => ({
     id: 24 + i,
+    name: t.name,
+    city: t.city,
+    arena: t.arena,
+    strength: 100,
+    domestic: true,
+    morale: 0,
+    strategy: 2,
+    readiness: 0,
+    effects: [],
+    opponentEffects: []
+  })),
+  ...ehlForeign.map((t, i) => ({
+    id: 48 + i,
     name: t.name,
     city: t.city,
     arena: t.arena,
