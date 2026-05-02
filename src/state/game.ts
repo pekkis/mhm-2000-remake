@@ -10,8 +10,8 @@ export type TeamEffect = {
 };
 
 export type Team = {
-  id: string;
-  legacyId: number;
+  id: number;
+  uid: string;
   name: string;
   city: string;
   arena: Arena;
@@ -46,8 +46,8 @@ export type GameState = {
   turn: { season: number; round: number; phase: string | undefined };
   flags: GameFlags;
   serviceBasePrices: Record<string, number>;
-  managers: Record<string, Manager>;
+  managers: Manager[];
   competitions: Record<CompetitionId, Competition>;
-  teams: Record<string, Team>;
+  teams: Team[];
   worldChampionshipResults: WorldChampionshipEntry[] | undefined;
 };

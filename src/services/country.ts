@@ -1,4 +1,4 @@
-import { countriesArray } from "@/data/countries";
+import { countriesArray, type CountryIso } from "@/data/countries";
 
 /**
  * Mapping from the QB nationality index (1-based, matches row order in
@@ -12,7 +12,7 @@ import { countriesArray } from "@/data/countries";
  * The order below is the literal order of KANSAT.M2K. Do not reorder
  * — that's the contract.
  */
-const legacyNationalityIsoOrder: readonly string[] = [
+const legacyNationalityIsoOrder: readonly CountryIso[] = [
   "FI", // 1  PEKKALANDIA
   "SE", // 2  RUOTSI
   "DE", // 3  SAKSA
@@ -42,7 +42,7 @@ const legacyIdByIso: Record<string, number> = Object.fromEntries(
   legacyNationalityIsoOrder.map((iso, i) => [iso, i + 1])
 );
 
-export function legacyNationalityToIso(legacyId: number): string {
+export function legacyNationalityToIso(legacyId: number): CountryIso {
   const iso = legacyNationalityIsoOrder[legacyId - 1];
   if (iso === undefined) {
     throw new Error(

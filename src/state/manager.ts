@@ -16,22 +16,24 @@ export type ManagerServices = {
 export type Manager = HumanManager | AIManager;
 
 export type AIManager = {
-  id: string;
+  id: number;
+  uid: string;
   kind: "ai";
   name: string;
   nationality: CountryIso;
   attributes: ManagerAttributes;
-  team?: string;
+  team?: number;
 };
 
 export type HumanManager = {
-  id: string;
+  id: number;
+  uid: string;
   kind: "human";
   name: string;
   nationality: CountryIso;
   difficulty: number;
   attributes: ManagerAttributes;
-  team?: string;
+  team?: number;
   balance: number;
   arena: ManagerArena;
   services: ManagerServices;
@@ -43,6 +45,6 @@ export type HumanManager = {
 
 export type ManagerState = {
   active: string | undefined;
-  managers: string[];
+  managers: number[];
   // peckingOrder: string[]; maybe? or is the managers enough.
 };
