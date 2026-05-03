@@ -187,11 +187,7 @@ const tagsByName: Record<string, string[]> = {
   // flat curve — Tasainen Puurto — which is behaviourally identical
   // (`tre = 1.0` either way, since `mtaito(1, 0) = 0` zeroes the bonus
   // for `valm = 0`) but lets the type be `StrategyId`, not `0 | StrategyId`.
-  "Pier Paolo Proxy Pasolini": [
-    "proxy",
-    "light",
-    "strategy:tasainen-puurto"
-  ]
+  "Pier Paolo Proxy Pasolini": ["proxy", "light", "strategy:tasainen-puurto"]
 };
 
 const managers: ManagerDefinition[] = raw.map(

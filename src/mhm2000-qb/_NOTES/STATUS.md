@@ -33,7 +33,7 @@ with overtime markers, save/load surviving the new shape.
   Encapsulates QB's `man(49..86) = 0` + `mtaito(*, 0)` zero-row pattern
   into a single Manager reference, eliminating `Manager | undefined`
   branching downstream. See GLOSSARY.md `light team` + `Pier Paolo Proxy
-  Pasolini` rows for the rationale and a full list of QB sites this
+Pasolini` rows for the rationale and a full list of QB sites this
   collapses.
 - **UI.** Both [src/components/gameday/Results.tsx](../../components/gameday/Results.tsx)
   and [src/components/gameday/Games.tsx](../../components/gameday/Games.tsx)
@@ -45,6 +45,42 @@ with overtime markers, save/load surviving the new shape.
 roster effects (extremelyFat, daddyPays), `jaynax(2/6)` prank wiring,
 league comeback handicap ([ILEX5.BAS:3754-3762](../ILEX5.BAS)),
 tournament-match path. All TODO-tagged inline in the port.
+
+### Season-arc readiness (DONE)
+
+`valm` / `tre` system fully decoded and wired:
+
+- **`valm(team)`** ∈ {1, 2, 3, 0} — chosen season strategy per team.
+  1 = JURI SIMONOV (peak late), 2 = KAIKKI PELIIN! (peak early),
+  3 = TASAINEN PUURTO (flat), 0 = light team (no strategy).
+  Strings come from DATAX.M2K rows 46-48 (mislabel in earlier
+  DATA-FILES.md fixed: these are season-strategy labels, **not**
+  trainer-class labels).
+- **`tre(team)`** — the per-team season-arc multiplier (~0.7..1.3,
+  centered on 1.0). Initialised by `SUB tremaar` ([ILEX5.BAS:7457](../ILEX5.BAS)),
+  drifts ±0.0025 per regular-season runkosarja gameday at
+  [ILEX5.BAS:1574](../ILEX5.BAS) — and ONLY on `kiero(kr) = 1` rounds
+  (verified: 44 such rounds in KIERO.M2K, matched 1:1 by the
+  `readiness-tick` tag in [src/data/calendar.ts](../../data/calendar.ts)).
+  EHL / cup / playoff / training / preseason rounds do NOT drift `tre`.
+- **Hard-coded picks** generalised via manager `tags`:
+  `"strategy:simonov"` (Juri Simonov, mirroring QB's
+  `IF man = 33 THEN mahd(1) = 100` at [MHM2K.BAS:2497](../MHM2K.BAS) /
+  [ILEZ5.BAS:2030](../ILEZ5.BAS)) and `"strategy:tasainen-puurto"`
+  (Pier Paolo Proxy Pasolini for all light teams).
+- **Ported to:** [src/data/mhm2000/strategies.ts](../../data/mhm2000/strategies.ts)
+  (`Strategy` definitions, `READINESS_TICK_TAG`,
+  `forcedStrategyForManager`, `initialReadinessFor`),
+  [src/components/SelectStrategy.tsx](../../components/SelectStrategy.tsx),
+  `selectStrategy` action and `executeCalculations` in
+  [src/machines/game.ts](../../machines/game.ts),
+  [src/machines/parts/season-start.ts](../../machines/parts/season-start.ts).
+- **Still TODO:** the AI `mahd()` strength-rank distribution at
+  [MHM2K.BAS:2470-2503](../MHM2K.BAS) — currently every untagged AI
+  manager defaults to Tasainen Puurto. Also: MHM 97-era
+  `simonovSuccess` / `allgoSuccess` / `strategySuccess` events still
+  emit integer `incrementReadiness` deltas — wrong scale for the
+  multiplier semantics, needs rebalancing.
 
 ## Sub-decode docs
 

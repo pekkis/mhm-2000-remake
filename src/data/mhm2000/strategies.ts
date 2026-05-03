@@ -135,7 +135,10 @@ export const initialReadinessFor = (
   managerStrategySkill: number
 ): number => {
   const def = strategies[strategy];
-  return def.initialReadiness() + managerStrategySkill * def.managerSkillBonusCoefficient;
+  return (
+    def.initialReadiness() +
+    managerStrategySkill * def.managerSkillBonusCoefficient
+  );
 };
 
 const strategies: Record<StrategyId, Strategy> = {

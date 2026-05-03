@@ -59,9 +59,7 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
     t.morale = 0;
 
     const manager = t.manager ? draft.managers[t.manager] : undefined;
-    const forced = manager
-      ? forcedStrategyForManager(manager.tags)
-      : undefined;
+    const forced = manager ? forcedStrategyForManager(manager.tags) : undefined;
     const strategy: StrategyId = forced ?? 3;
     t.strategy = strategy;
     t.readiness = initialReadinessFor(
