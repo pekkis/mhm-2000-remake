@@ -16,6 +16,7 @@
 import defaultRandom, { type RandomService } from "@/services/random";
 import {
   simulateMatch,
+  type MatchContext,
   type MatchResult,
   type MatchRound,
   type MatchSide
@@ -44,6 +45,7 @@ import type { GameResult } from "@/types/competitions";
 export type MHM2000GameInput = {
   home: MatchSide;
   away: MatchSide;
+  context: MatchContext;
   round: MatchRound;
 };
 
@@ -77,7 +79,7 @@ export const createMHM2000GameService = (
   random: RandomService = defaultRandom
 ): MHM2000GameService => {
   const simulate = (game: MHM2000GameInput): MatchResult =>
-    simulateMatch(game.home, game.away, game.round, random);
+    simulateMatch(game.home, game.away, game.context, random);
 
   return { simulate };
 };

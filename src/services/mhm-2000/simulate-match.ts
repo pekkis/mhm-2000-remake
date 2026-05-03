@@ -73,6 +73,7 @@
 import defaultRandom, { type RandomService } from "@/services/random";
 import { calculateStrength } from "@/services/team";
 import type { Manager, Team } from "@/state/game";
+import type { CompetitionDefinition, Group } from "@/types/competitions";
 
 /**
  * One side of the match — a Team (AI or human) plus the Manager that
@@ -101,6 +102,8 @@ export type MatchSide = {
   team: Team;
   manager: Manager;
 };
+
+export type Overtime = "none" | "regular" | "sudden-death";
 
 /**
  * Round type — the `kiero(kr)` value of the current round. Only the
@@ -362,6 +365,10 @@ const overtimeAttempt = (
   return null;
 };
 
+export type MatchContext = {
+  competitionType: Group["type"];
+};
+
 // ─── public API ──────────────────────────────────────────────────────
 
 /**
@@ -377,7 +384,7 @@ const overtimeAttempt = (
 export const simulateMatch = (
   home: MatchSide,
   away: MatchSide,
-  round: MatchRound,
+  context: MatchContext,
   random: RandomService = defaultRandom
 ): MatchResult => {
   // 1. Round-type baseline etu, then morale tweak per side.
