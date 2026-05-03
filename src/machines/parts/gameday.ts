@@ -149,7 +149,7 @@ export function runGameday(draft: Draft<GameContext>): void {
             competition: comp,
             phase,
             group,
-            round,
+            round: groupRound,
             matchup: x
           }
         });

@@ -104,9 +104,7 @@ const sideFromTier = (
  * branch reads them (leg-1 aggregate lookup), and we don't simulate
  * cup matches here.
  */
-const makeContext = (
-  phaseType: "round-robin" | "playoffs"
-): MatchContext => {
+const makeContext = (phaseType: "round-robin" | "playoffs"): MatchContext => {
   const competition = competitionDefinitions.phl.data;
   const phase: Phase = {
     type: phaseType,

@@ -32,7 +32,14 @@ type CompetitionType<T extends Group["type"]> = {
 const competitionTypes: { [K in Group["type"]]: CompetitionType<K> } = {
   "round-robin": {
     playMatch: () => true,
-    overtime: () => "regular",
+    overtime: (result) => {
+      if (result.home === result.away) {
+        return "regular";
+      }
+
+      return "none";
+    },
+
     stats: (group) => table(group)
   },
   tournament: {
@@ -84,6 +91,13 @@ const competitionTypes: { [K in Group["type"]]: CompetitionType<K> } = {
      * the two legs.
      */
     overtime: (result, group, round, matchupIdx) => {
+      console.log({
+        result,
+        group,
+        round,
+        matchupIdx
+      });
+
       if (round === 0) {
         return "none";
       }

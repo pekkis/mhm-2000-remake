@@ -323,10 +323,7 @@ const overtimeAttempt = (
   away: SideStrength,
   random: RandomService
 ): "home" | "away" | null => {
-  const sides = [
-    ["home", home, away] as const,
-    ["away", away, home] as const
-  ];
+  const sides = [["home", home, away] as const, ["away", away, home] as const];
   for (const [key, b, c] of sides) {
     if (b.attack * rnd(random) > c.defence * rnd(random)) {
       if (b.attack * rnd(random) > c.goalie * rnd(random) + c.defence / 3) {
@@ -410,6 +407,8 @@ export const simulateMatch = (
   //    Per-competition dispatch lives in `competition-type.ts`.
   const type = competitionTypes[phase.type];
   const overtime = type.overtime(result, group, round, matchup);
+
+  console.log("OVERTIME", overtime);
 
   if (overtime !== "none") {
     const isSuddenDeath = overtime === "sudden-death";
