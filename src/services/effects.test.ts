@@ -1,11 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { getEffective, getEffectiveOpponent } from "@/services/effects";
-import type { Team, TeamEffect } from "@/state/game";
+import type { AITeam, TeamEffect } from "@/state/game";
+import { rollTeamStrength } from "@/services/levels";
 
-const makeTeam = (overrides: Partial<Team> = {}): Team => ({
+const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => ({
   id: 0,
   uid: "salo",
   kind: "ai",
+  tier: 30,
+  strengthObj: rollTeamStrength(30),
   name: "Pier Paolo Pasolini FC",
   city: "Bologna",
   tags: [],
