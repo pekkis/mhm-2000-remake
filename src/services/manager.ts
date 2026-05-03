@@ -9,6 +9,7 @@ export const managerFromDefinition = (def: ManagerDefinition): Manager => {
     attributes: def.attributes,
     name: def.name,
     kind: "ai",
-    nationality: def.nationality
+    nationality: def.nationality,
+    difficulty: 2
   };
 };

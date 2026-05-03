@@ -23,6 +23,7 @@ export type AIManager = {
   attributes: ManagerAttributes;
   team?: number;
   tags: string[];
+  difficulty: 2;
 };
 
 export type HumanManager = {

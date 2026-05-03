@@ -26,14 +26,8 @@ function moraleClamp(
     throw new Error(`Teaim ${team.name} has no manager`);
   }
 
-  if (manager.kind === "ai") {
-    return {
-      min: -10,
-      max: 10
-    };
-  }
+  const difficulty = manager.difficulty;
 
-  const difficulty = manager ? manager.difficulty : 2;
   return {
     min: difficultyLevels[difficulty].moraleMin,
     max: difficultyLevels[difficulty].moraleMax

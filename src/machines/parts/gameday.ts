@@ -160,7 +160,7 @@ export function runGameday(draft: Draft<GameContext>): void {
       // 3. Per-manager bookkeeping for the round we just played.
       //    1-1 port of `afterGameday()` in src/sagas/manager.ts.
       for (const [managerId, manager] of entries(draft.managers)) {
-        if (!manager.team) {
+        if (manager.team === undefined) {
           continue;
         }
 
@@ -241,18 +241,14 @@ export function runGameday(draft: Draft<GameContext>): void {
         if (readinessDelta) {
           team.readiness += readinessDelta;
         }
-        if (manager.kind === "human") {
-          if (moraleDelta) {
-            // Morale clamp uses the team's manager's difficulty
-            // (defaults to 2 / Pasolini-mode for unmanaged teams).
-            const diffIdx = manager.difficulty;
-            const min = difficultyLevels[diffIdx].moraleMin;
-            const max = difficultyLevels[diffIdx].moraleMax;
-            team.morale = Math.min(
-              max,
-              Math.max(min, team.morale + moraleDelta)
-            );
-          }
+
+        if (moraleDelta) {
+          // Morale clamp uses the team's manager's difficulty
+          // (defaults to 2 / Pasolini-mode for unmanaged teams).
+          const diffIdx = manager.difficulty;
+          const min = difficultyLevels[diffIdx].moraleMin;
+          const max = difficultyLevels[diffIdx].moraleMax;
+          team.morale = Math.min(max, Math.max(min, team.morale + moraleDelta));
         }
       }
 
