@@ -29,7 +29,9 @@ const Games: FC<GamesProps> = ({ teams, context, round, managers }) => {
             away={teams[context.teams[pairing.away]]}
             score={
               pairing.result
-                ? `${pairing.result.home}–${pairing.result.away}`
+                ? `${pairing.result.home}–${pairing.result.away}${
+                    pairing.result.overtime ? " ja." : ""
+                  }`
                 : undefined
             }
             reserveScore
