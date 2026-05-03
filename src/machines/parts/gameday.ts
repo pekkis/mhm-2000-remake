@@ -2,7 +2,6 @@ import { entries } from "remeda";
 import type { Draft } from "immer";
 
 import type { GameContext } from "@/state";
-import type { AIManager, AITeam } from "@/state/game";
 import type { GameResult } from "@/types/competitions";
 import calendar from "@/data/calendar";
 import competitionData from "@/data/competitions";

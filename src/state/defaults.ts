@@ -254,25 +254,15 @@ export const createDefaultGameContext = (): GameContext => {
     }
   };
 
-  return produce(ctx, (draft) => {
-    const managers = values(draft.managers);
+  const managers = values(ctx.managers);
 
-    console.log("MANAHERS", managers);
-
-    for (let x = 0; x < draft.teams.length; x = x + 1) {
-      if (!draft.teams[x].tags.includes("light")) {
-        const copy = current(draft);
-
-        console.log("TEAM", {
-          x,
-          team: copy.teams[x]
-        });
-
-        draft.teams[x].manager = managers[x].id;
-      } else {
-      }
+  for (let x = 0; x < ctx.teams.length; x = x + 1) {
+    if (!ctx.teams[x].tags.includes("light")) {
+      ctx.teams[x].manager = managers[x].id;
     }
-  });
+  }
+
+  return ctx;
 };
 
 //

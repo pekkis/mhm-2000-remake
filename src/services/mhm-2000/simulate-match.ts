@@ -1,25 +1,28 @@
 /**
- * MHM 2000 — isolated AI-vs-AI match simulator.
+ * MHM 2000 — isolated match simulator.
  *
- * Faithful port of `SUB ottpel` ([ILEX5.BAS:3709-4017](../../mhm2000-qb/ILEX5.BAS))
- * restricted to the **two-AI-base-team** case (both teams managed by the
- * computer, both inside `od(z) < 49` so neither is a light NHL/foreign/
- * amateur side, and neither has a human manager).
+ * Faithful port of `SUB ottpel` ([ILEX5.BAS:3709-4017](../../mhm2000-qb/ILEX5.BAS)),
+ * accepting both human- and AI-managed base teams. Per-side strength
+ * comes from `calculateStrength(team)` ([../team.ts](../team.ts)),
+ * which already discriminates AI (TASOT.M2K-derived `strengthObj`) from
+ * human (roster-derived) — so this engine doesn't need to care.
  *
  * This is the smallest end-to-end vertical slice of the simulation: in →
- * two team strengths + a round type, out → a final score. Nothing is
- * wired into machines, state, or the calendar yet. The function is pure
+ * two sides + a round type, out → a final score. The function is pure
  * (modulo the injected RandomService).
  *
  * QB context recap (read these notes BEFORE editing):
  *
  *   - `od(1)` = home team id, `od(2)` = away team id.
  *   - `mw(team)` / `pw(team)` / `hw(team)` = goalie / defence / attack
- *     base figures, set once per season at `tasomaar` from TASOT.M2K
- *     `lvl(tazo).maz / .puz / .hyz` plus per-match noise (±1 / ±2 / ±4).
- *     For our purposes the caller passes the post-noise values.
+ *     base figures. AI base teams: set once per season at `tasomaar`
+ *     from TASOT.M2K `lvl(tazo).maz / .puz / .hyz` plus per-match
+ *     noise (±1 / ±2 / ±4). Human teams: computed from the actual
+ *     roster (QB `orgamaar`). Both flows feed the same triple — the
+ *     engine consumes whichever the team-strength service returns.
  *   - `yw(team)` / `aw(team)` = power-play / penalty-kill weights.
- *     For AI base teams these are computed by the per-round shadow at
+ *     For managed base teams (both AI and human) these are computed
+ *     by the per-round shadow at
  *     [ILEX5.BAS:328-329](../../mhm2000-qb/ILEX5.BAS):
  *
  *       yw(xx) = ((hw + tauti(2)) / 3.3 + (pw + tauti(3)) / 2.5)
@@ -31,11 +34,14 @@
  *     (TODO: not modelled here, defaulted to 0).
  *     `mtaito(2, man)` = manager's `specialTeams` attribute, range -3..+3.
  *   - `mo(team)` = team morale, clamped to -10..+10 by `SUB mor`.
- *   - `ohj(team) = 0` everywhere in this function — both teams are CPU.
  *
  * What this function intentionally does NOT model (yet) — every one of
  * these gets a TODO at its call site below:
  *
+ *   - Light teams (`od(z) >= 49` — TEAMS.NHL / FOR / ALA): they take a
+ *     simpler path in QB (no `specialTeams` multiplier, no roster
+ *     scan, no `tre`/`tautip`). Add an explicit branch when EHL /
+ *     cup pairings against light teams come online.
  *   - `erik(1..4, team)` services (faniryhmä, alkoholi, doping,
  *     travel) — only human managers buy these; AI `erik = 0`.
  *   - `tre(team)` trainer multiplier — TODO confirm AI-team default
@@ -59,9 +65,9 @@
  *     pity bump. Needs a season-state input we don't have here yet.
  *   - The "0 goals → forced 12-0 result" branch at
  *     [ILEX5.BAS:3856-3860]. Triggers only when one of the `ode`
- *     stats is non-positive after multipliers, which can't happen in
- *     the clean two-AI case (mw/pw/hw are always >= 0 and the
- *     multipliers we apply are >= 0.7).
+ *     stats is non-positive after multipliers, which can't happen
+ *     here yet (mw/pw/hw are always >= 0 and the multipliers we apply
+ *     are >= 0.7).
  */
 
 import defaultRandom, { type RandomService } from "@/services/random";
@@ -69,14 +75,16 @@ import { calculateStrength } from "@/services/team";
 import type { Manager, Team } from "@/state/game";
 
 /**
- * One side of the match — the AITeam plus the manager that controls it.
+ * One side of the match — a Team (AI or human) plus the Manager that
+ * controls it.
  *
- * The match engine reads three things from the team and one from the
- * manager:
+ * The match engine reads three things:
  *
- *   - `team.strengthObj.{goalie, defence, attack}` — the QB
- *     `mw / pw / hw` triple. Already includes the per-season noise
- *     applied by `rollTeamStrength()` in [src/services/levels.ts](../levels.ts).
+ *   - `calculateStrength(team)` — yields the `{ goalie, defence,
+ *     attack }` triple, the QB `mw / pw / hw`. AI teams read this
+ *     directly from `team.strengthObj` (TASOT.M2K-derived); human
+ *     teams compute it from the roster. The discrimination lives in
+ *     [../team.ts](../team.ts) — this engine just calls and consumes.
  *   - `team.morale` — QB `mo(team)`, clamped to -10..+10 elsewhere.
  *   - `manager.attributes.specialTeams` — QB `mtaito(2, man(team))`,
  *     range -3..+3. Multiplier on PP/PK weights:
@@ -86,10 +94,10 @@ import type { Manager, Team } from "@/state/game";
  *     Only applied for managed base teams (`od(z) < 49`); light teams
  *     (NHL / foreign / amateur, `od(z) >= 49`) skip it — see the
  *     SELECT CASE at [ILEX5.BAS:326-334](../../mhm2000-qb/ILEX5.BAS).
- *     Both teams here are AI base teams by construction, so the
- *     multiplier always applies.
+ *     Light-team support is TODO; for now both sides are assumed to
+ *     be managed base teams.
  */
-export type AiMatchSide = {
+export type MatchSide = {
   team: Team;
   manager: Manager;
 };
@@ -102,7 +110,7 @@ export type AiMatchSide = {
  * See [src/data/mhm2000/calendar.ts](../../data/mhm2000/calendar.ts) for
  * the full kiero table.
  */
-export type AiMatchRoundType =
+export type MatchRoundType =
   | 1 // regular gameday (PHL / Divisioona / Mutasarja)
   | 2 // EHL gameday
   | 3 // cup gameday — same etu shape as 1
@@ -115,11 +123,11 @@ export type AiMatchRoundType =
  * Per-round flags bundled together so we don't grow the function
  * signature every time a new mechanic is decoded.
  */
-export type AiMatchRound = {
-  type: AiMatchRoundType;
+export type MatchRound = {
+  type: MatchRoundType;
 };
 
-export type AiMatchResult = {
+export type MatchResult = {
   /** Final score. */
   homeGoals: number;
   awayGoals: number;
@@ -146,12 +154,13 @@ const rnd = (random: RandomService): number => random.real(0, 1);
 /**
  * Compute the home/away `etu` (advantage) multipliers for a round.
  *
- * Mirrors the SELECT CASE at [ILEX5.BAS:3711-3749] for the two-AI-base
- * subset. Cases collapse heavily because every `erik(1, …)` /
- * `erik(4, …)` term is 0 for AI teams and every `od(z) >= 49` branch
- * is unreachable when both sides are managed base teams.
+ * Mirrors the SELECT CASE at [ILEX5.BAS:3711-3749] for the
+ * managed-base-team subset. Cases collapse because every
+ * `erik(1, …)` / `erik(4, …)` term is currently 0 (services not
+ * modelled — TODO) and every `od(z) >= 49` branch is unreachable
+ * (light teams not modelled — TODO).
  */
-const computeEtu = (round: AiMatchRound): { home: number; away: number } => {
+const computeEtu = (round: MatchRound): { home: number; away: number } => {
   switch (round.type) {
     case 1: // regular
     case 2: // EHL — same shape as 1 once both teams are managed base teams
@@ -159,7 +168,7 @@ const computeEtu = (round: AiMatchRound): { home: number; away: number } => {
     case 42: // playoff QF
     case 44: // playoff SF
     case 46: // playoff Final
-      // QB: etu(1)=1, etu(2)=.85; the +0.02*erik(...) terms are 0 for AI.
+      // QB: etu(1)=1, etu(2)=.85; the +0.02*erik(...) terms are 0 for now.
       return { home: 1.0, away: 0.85 };
 
     case 4: // training match
@@ -201,11 +210,12 @@ type SideStrength = {
 /**
  * Prep one side's `ode(*, z)` + `yw` / `aw` for the possession loop.
  *
- * Mirrors lines [ILEX5.BAS:3764-3879] folded down to the two-AI case
- * (no services, no consumables, no pranks, no roster scan, no
- * doping). All the omitted bits are tagged TODO in the file header.
+ * Mirrors lines [ILEX5.BAS:3764-3879] folded down to the
+ * managed-base-team case (no services, no consumables, no pranks, no
+ * roster scan, no doping). All the omitted bits are tagged TODO in
+ * the file header.
  */
-const prepareSide = (side: AiMatchSide, etu: number): SideStrength => {
+const prepareSide = (side: MatchSide, etu: number): SideStrength => {
   // Pre-multiplier raw stats. QB:
   //   ode(1, z) = mw(od(z))
   //   ode(2, z) = pw(od(z))
@@ -218,7 +228,7 @@ const prepareSide = (side: AiMatchSide, etu: number): SideStrength => {
   let { goalie, defence, attack } = strength;
 
   // QB shadow at [ILEX5.BAS:328-329] — recomputed every gameday for
-  // every AI base team via the menu3 loop. Same formula here.
+  // every managed base team via the menu3 loop. Same formula here.
   // TODO: fold in `tauti(2)` / `tauti(3)` epidemic mods once modelled.
   const specialTeamsMult = 1 + side.manager.attributes.specialTeams * 0.04;
   let yw = (attack / 3.3 + defence / 2.5) * specialTeamsMult;
@@ -226,8 +236,8 @@ const prepareSide = (side: AiMatchSide, etu: number): SideStrength => {
 
   // QB lines 3844-3851: tautip and tre multipliers for od(z) < 49.
   // TODO: model `tautip(team)` (epidemic) and `tre(team)` (trainer).
-  //       Both default to 1.0 in the AI case (assumed; needs decode of
-  //       `orgamaar` / `tasomaar` initialisation).
+  //       Both default to 1.0 (assumed; needs decode of `orgamaar` /
+  //       `tasomaar` initialisation).
   const tautip = 1.0;
   const tre = 1.0;
   yw *= tautip * tre;
@@ -238,8 +248,9 @@ const prepareSide = (side: AiMatchSide, etu: number): SideStrength => {
   aw *= etu;
 
   // ode floors and final etu/tautip/tre scaling (QB lines 3853-3870).
-  // The "ode <= 0 → forced 12-0" branch is unreachable in the clean
-  // two-AI case; we don't replicate it.
+  // The "ode <= 0 → forced 12-0" branch is unreachable in the
+  // managed-base-team case; we don't replicate it (TODO if/when
+  // light teams or zeroing pranks come online).
   const scale = (raw: number): number => {
     let v = raw < 0 ? 0 : raw;
     v *= tautip;
@@ -275,7 +286,7 @@ const prepareSide = (side: AiMatchSide, etu: number): SideStrength => {
  * call sites use four independent `RND`s per attempt.
  *
  * The `gnome` / `jaynax(2)` shenanigans collapse to "always attempt"
- * for two clean AI teams.
+ * here — pranks are not modelled yet (TODO).
  */
 const evenStrengthPossession = (
   home: SideStrength,
@@ -354,19 +365,21 @@ const overtimeAttempt = (
 // ─── public API ──────────────────────────────────────────────────────
 
 /**
- * Simulate a single match between two AI-controlled base teams.
+ * Simulate a single match between two managed base teams (AI or
+ * human; the engine is symmetric over the two).
  *
  * Pure function modulo the RandomService. Faithful port of `SUB ottpel`
- * for the AI-vs-AI sub-case; see the module docstring for the long
- * list of TODOs that need decoded inputs before the human-managed and
- * light-team cases come online.
+ * for the managed-base-team sub-case; see the module docstring for
+ * the list of TODOs that need decoded inputs before light-team
+ * matches and the human-only mechanics (services, consumables,
+ * pranks) come online.
  */
-export const simulateAiMatch = (
-  home: AiMatchSide,
-  away: AiMatchSide,
-  round: AiMatchRound,
+export const simulateMatch = (
+  home: MatchSide,
+  away: MatchSide,
+  round: MatchRound,
   random: RandomService = defaultRandom
-): AiMatchResult => {
+): MatchResult => {
   // 1. Round-type baseline etu, then morale tweak per side.
   //    QB: SELECT CASE kiero(kr) [3711], then mo(...) tweak [3771-3772].
   const etuBase = computeEtu(round);

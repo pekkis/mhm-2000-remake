@@ -1,5 +1,5 @@
 /**
- * Sanity tests for `simulateAiMatch`.
+ * Sanity tests for `simulateMatch`.
  *
  * These are NOT a full validation of the QB port — that needs a
  * statistical fixture against the original game. They're shape /
@@ -9,9 +9,9 @@
 import { describe, expect, it } from "vitest";
 import { createRandom } from "@/services/random";
 import {
-  simulateAiMatch,
-  type AiMatchSide
-} from "@/services/mhm-2000/simulate-ai-match";
+  simulateMatch,
+  type MatchSide
+} from "@/services/mhm-2000/simulate-match";
 import { teamLevels } from "@/data/levels";
 import type { AIManager, AITeam } from "@/state/game";
 
@@ -74,7 +74,7 @@ const sideFromTier = (
   tier: number,
   morale = 0,
   specialTeams = 0
-): AiMatchSide => ({
+): MatchSide => ({
   team: makeTeam({ id, name, tier, morale }),
   manager: makeManager({
     id: `mgr-${id}`,
@@ -89,13 +89,13 @@ const sideFromTier = (
   })
 });
 
-describe("simulateAiMatch", () => {
+describe("simulateMatch", () => {
   it("is deterministic for a given seed", () => {
     const home = sideFromTier(1, "TPS", 34);
     const away = sideFromTier(2, "HIFK", 31);
 
-    const a = simulateAiMatch(home, away, { type: 1 }, createRandom(42));
-    const b = simulateAiMatch(home, away, { type: 1 }, createRandom(42));
+    const a = simulateMatch(home, away, { type: 1 }, createRandom(42));
+    const b = simulateMatch(home, away, { type: 1 }, createRandom(42));
     expect(a).toEqual(b);
   });
 
@@ -106,7 +106,7 @@ describe("simulateAiMatch", () => {
 
     const totals: number[] = [];
     for (let i = 0; i < 100; i += 1) {
-      const r = simulateAiMatch(home, away, { type: 1 }, random);
+      const r = simulateMatch(home, away, { type: 1 }, random);
       totals.push(r.homeGoals + r.awayGoals);
     }
     const avg = totals.reduce((a, b) => a + b, 0) / totals.length;
@@ -121,7 +121,7 @@ describe("simulateAiMatch", () => {
     const away = sideFromTier(2, "HIFK", 31);
     const random = createRandom(7);
     for (let i = 0; i < 50; i += 1) {
-      const r = simulateAiMatch(home, away, { type: 42 }, random);
+      const r = simulateMatch(home, away, { type: 42 }, random);
       expect(r.homeGoals).not.toEqual(r.awayGoals);
     }
   });
@@ -133,7 +133,7 @@ describe("simulateAiMatch", () => {
     const random = createRandom(13);
     let tieSeen = false;
     for (let i = 0; i < 200; i += 1) {
-      const r = simulateAiMatch(home, away, { type: 1 }, random);
+      const r = simulateMatch(home, away, { type: 1 }, random);
       if (r.homeGoals === r.awayGoals) {
         tieSeen = true;
         expect(r.overtime).toBe(true);
@@ -148,7 +148,7 @@ describe("simulateAiMatch", () => {
     // Heavily mismatched teams to make a decisive result very likely.
     const strong = sideFromTier(1, "Strong", 50);
     const weak = sideFromTier(2, "Weak", 5);
-    const r = simulateAiMatch(strong, weak, { type: 1 }, createRandom(99));
+    const r = simulateMatch(strong, weak, { type: 1 }, createRandom(99));
     expect(r.homeGoals).toBeGreaterThan(r.awayGoals);
     expect(r.homeMoraleChange).toBe(1);
     expect(r.awayMoraleChange).toBe(-1);
@@ -161,7 +161,7 @@ describe("simulateAiMatch", () => {
     let homeWins = 0;
     let awayWins = 0;
     for (let i = 0; i < 500; i += 1) {
-      const r = simulateAiMatch(home, away, { type: 1 }, random);
+      const r = simulateMatch(home, away, { type: 1 }, random);
       if (r.homeGoals > r.awayGoals) {
         homeWins += 1;
       } else if (r.awayGoals > r.homeGoals) {
@@ -182,7 +182,7 @@ describe("simulateAiMatch", () => {
     let homeWins = 0;
     let awayWins = 0;
     for (let i = 0; i < 500; i += 1) {
-      const r = simulateAiMatch(home, away, { type: 1 }, random);
+      const r = simulateMatch(home, away, { type: 1 }, random);
       if (r.homeGoals > r.awayGoals) {
         homeWins += 1;
       } else if (r.awayGoals > r.homeGoals) {
