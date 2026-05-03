@@ -236,7 +236,7 @@ const mutasarja: CompetitionDefinition = {
         [0, 3],
         [1, 2]
       ];
-      const winsToAdvance = 4;
+      const winsToAdvance = 3;
 
       return {
         name: "noususarja",

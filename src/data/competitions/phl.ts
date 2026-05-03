@@ -158,7 +158,7 @@ const phl: CompetitionDefinition = {
         [2, 3]
       ];
 
-      const winsToAdvance = 4;
+      const winsToAdvance = 3;
 
       return {
         name: "finals",

@@ -980,7 +980,11 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["readiness-tick", "preRound:wch-start", "todo:wire-world-championships"]
+    tags: [
+      "readiness-tick",
+      "preRound:wch-start",
+      "todo:wire-world-championships"
+    ]
   },
   // round 53 (KIERO.M2K row 54, type 1) — regular gameday 27
   {
@@ -1449,7 +1453,7 @@ const entries: RawCalendarEntry[] = [
   // round 77 (KIERO.M2K row 78, type 41) — QF draw
   {
     title: "Puolivälieräpläjäys",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "prank", "event_creation", "event", "news", "seed"],
     gamedays: [],
     seed: [
       { competition: "phl", phase: 1 },
@@ -1565,7 +1569,7 @@ const entries: RawCalendarEntry[] = [
   // round 83 (KIERO.M2K row 84, type 43) — SF draw
   {
     title: "Välieräpläjäys",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "prank", "event_creation", "event", "news", "seed"],
     gamedays: [],
     seed: [
       { competition: "phl", phase: 2 },
@@ -1681,7 +1685,7 @@ const entries: RawCalendarEntry[] = [
   // round 89 (KIERO.M2K row 90, type 45) — Final draw
   {
     title: "Finaalipläjäys",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "prank", "event_creation", "event", "news", "seed"],
     gamedays: [],
     seed: [
       { competition: "phl", phase: 3 },

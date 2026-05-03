@@ -19,6 +19,14 @@ const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => ({
     hasBoxes: false,
     valuePoints: 0
   },
+  budget: {
+    coaching: 3,
+    benefits: 3,
+    goalieCoaching: 3,
+    health: 3,
+    juniors: 3
+  },
+
   domestic: true,
   morale: 50,
   strategy: 0,

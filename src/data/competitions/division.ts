@@ -163,7 +163,7 @@ const division: CompetitionDefinition = {
 
       const matchupList: [number, number][] = [[0, 1]];
 
-      const winsToAdvance = 4;
+      const winsToAdvance = 3;
 
       return {
         name: "finaalit",

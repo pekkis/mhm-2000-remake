@@ -28,6 +28,7 @@ import type { Competition, CompetitionId } from "@/types/competitions";
 import { managerFromDefinition } from "@/services/manager";
 import { createUniqueId } from "@/services/id";
 import { rollTeamStrength } from "@/services/levels";
+import { initialBudgetForRankings } from "@/data/mhm2000/budget";
 
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
@@ -55,10 +56,6 @@ const mutasarjaSource = managedTeamDefs.filter((t) => t.league === "mutasarja");
 const ehlForeign = foreignLightTeams;
 const amateurs = amateurLightTeams;
 
-// Cycled across the foreign list so each of the three tournament filter
-// buckets has plenty of eligible candidates (>200, 150..225, <=175).
-const FOREIGN_PLACEHOLDER_STRENGTHS = [230, 180, 150];
-
 const seedTeams = (): Team[] => {
   const seedables = [
     ...phlSource.map((t) => ({
@@ -66,7 +63,6 @@ const seedTeams = (): Team[] => {
       name: t.name,
       city: t.city,
       arena: t.arena,
-      strength: 250,
       domestic: true,
       morale: 0,
       strategy: 2,
@@ -74,14 +70,14 @@ const seedTeams = (): Team[] => {
       effects: [],
       opponentEffects: [],
       tags: t.tags,
-      tier: t.tier
+      tier: t.tier,
+      previousRankings: t.previousRankings
     })),
     ...divisioonaSource.map((t) => ({
       uid: createUniqueId(),
       name: t.name,
       city: t.city,
       arena: t.arena,
-      strength: 175,
       domestic: true,
       morale: 0,
       strategy: 2,
@@ -89,14 +85,14 @@ const seedTeams = (): Team[] => {
       effects: [],
       opponentEffects: [],
       tags: t.tags,
-      tier: t.tier
+      tier: t.tier,
+      previousRankings: t.previousRankings
     })),
     ...mutasarjaSource.map((t) => ({
       uid: createUniqueId(),
       name: t.name,
       city: t.city,
       arena: t.arena,
-      strength: t.name === "Turmio" ? 200 : 100,
       domestic: true,
       morale: 0,
       strategy: 2,
@@ -104,17 +100,14 @@ const seedTeams = (): Team[] => {
       effects: [],
       opponentEffects: [],
       tags: t.tags,
-      tier: t.tier
+      tier: t.tier,
+      previousRankings: t.previousRankings
     })),
     ...ehlForeign.map((t) => ({
       uid: createUniqueId(),
       name: t.name,
       city: t.city,
       arena: t.arena,
-      strength:
-        FOREIGN_PLACEHOLDER_STRENGTHS[
-          t.id % FOREIGN_PLACEHOLDER_STRENGTHS.length
-        ],
       domestic: false,
       morale: 0,
       strategy: 2,
@@ -122,7 +115,8 @@ const seedTeams = (): Team[] => {
       effects: [],
       opponentEffects: [],
       tags: t.tags,
-      tier: t.tier
+      tier: t.tier,
+      previousRankings: undefined
     })),
     // Finnish amateur clubs (TEAMS.ALA) at ids 118..133. They participate
     // only in the PA Cup first round (16 first-round bye-fodder teams).
@@ -131,7 +125,6 @@ const seedTeams = (): Team[] => {
       name: t.name,
       city: t.city,
       arena: t.arena,
-      strength: 50,
       domestic: true,
       morale: 0,
       strategy: 2,
@@ -139,16 +132,28 @@ const seedTeams = (): Team[] => {
       effects: [],
       opponentEffects: [],
       tags: t.tags,
-      tier: t.tier
+      tier: t.tier,
+      previousRankings: undefined
     }))
   ];
 
   return seedables.map((seedable, id) => {
+    const rankedData = seedable.previousRankings
+      ? {
+          budget: initialBudgetForRankings(seedable.previousRankings),
+          previousRankings: seedable.previousRankings
+        }
+      : {
+          previousRankings: undefined,
+          budget: undefined
+        };
+
     return {
       ...seedable,
       id,
       kind: "ai",
-      strengthObj: rollTeamStrength(seedable.tier)
+      strengthObj: rollTeamStrength(seedable.tier),
+      ...rankedData
     };
   });
 };

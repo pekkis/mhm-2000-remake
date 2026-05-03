@@ -34,6 +34,14 @@ const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => {
       defence: lvl.defence,
       attack: lvl.attack
     },
+    budget: {
+      coaching: 3,
+      benefits: 3,
+      goalieCoaching: 3,
+      health: 3,
+      juniors: 3
+    },
+
     arena: {
       level: 1,
       standingCount: 0,

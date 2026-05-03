@@ -9,21 +9,23 @@
  * Saga side is REFERENCE-ONLY post-pivot.
  */
 
-import type { Draft } from "immer";
+import { current, type Draft } from "immer";
 import type { GameContext } from "@/state";
 import type { WorldChampionshipEntry } from "@/state/game";
 import type {
   PlayoffGroup,
   TeamStat,
   Phase,
-  CompetitionId
+  CompetitionId,
+  RoundRobinGroup
 } from "@/types/competitions";
 import type { RandomService } from "@/services/random";
 
-import { values } from "remeda";
+import { takeLast, values } from "remeda";
 import { victors, eliminated } from "@/services/playoffs";
 import competitionData from "@/data/competitions";
 import { managersMainCompetition } from "@/machines/selectors";
+import { sortStats } from "@/services/league";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -113,6 +115,7 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
   ensureCurrentSeason(draft);
   const phl = draft.competitions.phl;
   const division = draft.competitions.division;
+  const mutasarja = draft.competitions.mutasarja;
 
   const phlFinals = phl.phases[3].groups[0] as PlayoffGroup;
   const divFinals = division.phases[3].groups[0] as PlayoffGroup;
@@ -123,7 +126,10 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
   const presidentsTrophy = (phl.phases[0].groups[0].stats[0] as TeamStat).id;
   const phlStats = phl.phases[0].groups[0].stats as TeamStat[];
   const phlLoser = phlStats[phlStats.length - 1].id;
+
   const divisionVictor = victors(divFinals)[0].id;
+
+  const divisionLosers = eliminated(divFinals);
 
   const medalists = [
     phlVictors[0],
@@ -138,6 +144,66 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
     cs.relegated = phlLoser;
     cs.promoted = divisionVictor;
   }
+
+  console.log("PRAAT PROOT");
+
+  const mutasarja1 = draft.competitions.mutasarja.phases[0]
+    .groups[0] as RoundRobinGroup;
+  const mutasarja2 = draft.competitions.mutasarja.phases[0]
+    .groups[1] as RoundRobinGroup;
+
+  const combinedMutasarja = [
+    ...takeLast(mutasarja1.stats, 6),
+    ...takeLast(mutasarja2.stats, 6)
+  ];
+
+  const worstOfTheWorst = sortStats(combinedMutasarja).map((w) => w.id);
+
+  console.log("WORST OF THE WORST", worstOfTheWorst);
+
+  const ranking = [
+    ...medalists,
+    phlLosers[1].id,
+
+    ...eliminated(phl.phases[1].groups[0] as PlayoffGroup).map((t) => t.id),
+
+    ...(phl.phases[0].groups[0] as RoundRobinGroup).stats
+      .slice(8, 11)
+      .map((s) => s.id),
+
+    divisionVictor,
+    divisionLosers[0].id,
+
+    ...eliminated(division.phases[2].groups[0] as PlayoffGroup).map(
+      (t) => t.id
+    ),
+
+    ...eliminated(division.phases[1].groups[0] as PlayoffGroup).map(
+      (t) => t.id
+    ),
+
+    ...(division.phases[0].groups[0] as RoundRobinGroup).stats
+      .slice(6, 10)
+      .map((t) => t.id),
+
+    ...victors(mutasarja.phases[3].groups[0] as PlayoffGroup).map((t) => t.id),
+
+    ...eliminated(mutasarja.phases[3].groups[0] as PlayoffGroup).map(
+      (t) => t.id
+    ),
+
+    ...eliminated(mutasarja.phases[2].groups[0] as PlayoffGroup).map(
+      (t) => t.id
+    ),
+
+    ...eliminated(mutasarja.phases[1].groups[0] as PlayoffGroup).map(
+      (t) => t.id
+    ),
+
+    ...worstOfTheWorst
+  ];
+
+  console.log("RANKING", ranking);
 
   // Per-manager stories.
   for (const manager of draft.human.order) {

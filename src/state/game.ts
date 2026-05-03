@@ -3,6 +3,7 @@ import type { Arena } from "@/data/mhm2000/teams";
 import type { CountryIso } from "@/data/countries";
 import type { ManagerAttributes } from "@/data/managers";
 import type { TeamStrength } from "@/data/levels";
+import type { BudgetCategoryName, BudgetLevel } from "@/data/mhm2000/budget";
 
 /* The free players in the player market */
 export type BorssiPlayer = {};
@@ -63,6 +64,8 @@ export type TeamEffect = {
   extra?: Record<string, unknown>;
 };
 
+type TeamBudget = Record<BudgetCategoryName, BudgetLevel>;
+
 type BaseTeam = {
   id: number;
   uid: string;
@@ -78,6 +81,8 @@ type BaseTeam = {
   manager?: string;
   tags: string[];
   tier: number;
+  budget?: TeamBudget;
+  previousRankings?: [number, number, number];
 };
 
 export type AITeam = BaseTeam & {

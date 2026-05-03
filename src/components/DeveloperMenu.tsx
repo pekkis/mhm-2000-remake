@@ -58,8 +58,6 @@ const DeveloperMenu = () => {
                       <Th>Joukkue</Th>
                       <Th>Manageri</Th>
                       <Th>Strategia</Th>
-                      <Th>O-voima</Th>
-                      <Th>E-voima</Th>
                       <Th>E-moraali</Th>
                       <Th>P-valmius</Th>
                       <Th>E-valmius</Th>
