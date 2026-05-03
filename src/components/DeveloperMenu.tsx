@@ -61,6 +61,7 @@ const DeveloperMenu = () => {
                       <Th>E-moraali</Th>
                       <Th>P-valmius</Th>
                       <Th>E-valmius</Th>
+                      <Th>previous</Th>
                     </tr>
                   </thead>
 
@@ -85,6 +86,7 @@ const DeveloperMenu = () => {
                             <Td>{e.morale}</Td>
                             <Td>{fmt(team.readiness)}</Td>
                             <Td>{fmt(e.readiness)}</Td>
+                            <Td>{JSON.stringify(e.previousRankings)}</Td>
                           </tr>
                         );
                       })}

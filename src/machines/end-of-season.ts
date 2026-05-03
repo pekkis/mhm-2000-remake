@@ -9,7 +9,7 @@
  * Saga side is REFERENCE-ONLY post-pivot.
  */
 
-import { current, type Draft } from "immer";
+import { type Draft } from "immer";
 import type { GameContext } from "@/state";
 import type { WorldChampionshipEntry } from "@/state/game";
 import type {
@@ -26,6 +26,7 @@ import { victors, eliminated } from "@/services/playoffs";
 import competitionData from "@/data/competitions";
 import { managersMainCompetition } from "@/machines/selectors";
 import { sortStats } from "@/services/league";
+import { initialBudgetForRankings } from "@/data/mhm2000/budget";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -203,7 +204,23 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
     ...worstOfTheWorst
   ];
 
-  console.log("RANKING", ranking);
+  // Roll forward `previousRankings` for every Pekkalandian team. Every
+  // team that started the game with `previousRankings` keeps a rolling
+  // window of the three most recent finishes; light teams (NHL/foreign/
+  // amateur) never had them and are skipped. The AI budget recompute
+  // that depends on this window happens later in `runSeasonEnd`, after
+  // any end-of-season manager changes have been applied.
+  for (let i = 0; i < ranking.length; i = i + 1) {
+    const teamId = ranking[i];
+    const team = draft.teams[teamId];
+    const newRanking = i + 1;
+
+    if (team.previousRankings === undefined) {
+      continue;
+    }
+    const [latest, prev] = team.previousRankings;
+    team.previousRankings = [newRanking, latest, prev];
+  }
 
   // Per-manager stories.
   for (const manager of draft.human.order) {
@@ -375,4 +392,29 @@ export const runSeasonEnd = (draft: Draft<GameContext>): void => {
   // season to begin at round 0, so set to -1 and let advanceRound increment.
   draft.turn.season += 1;
   draft.turn.round = -1;
+
+  // New-season AI budget recompute. Mirrors QB ILEZ5.BAS:530-535
+  // (`orgamaar` inside `IF ohj(xx) = 0`). Runs at the boundary between
+  // seasons so that any end-of-season manager changes (player or AI;
+  // MHM 2000 future work) are already reflected in `human.order` by
+  // the time we decide who's AI and who's not.
+  //
+  // AI teams re-derive their spend from the freshly shifted
+  // `previousRankings`. Human-managed teams keep their hand-tuned
+  // sliders — we don't second-guess them.
+  const humanTeamIds = new Set(
+    draft.human.order
+      .map((managerId) => draft.managers[managerId].team)
+      .filter((teamId): teamId is number => teamId !== undefined)
+  );
+
+  for (const team of values(draft.teams)) {
+    if (team.previousRankings === undefined) {
+      continue;
+    }
+    if (humanTeamIds.has(team.id)) {
+      continue;
+    }
+    team.budget = initialBudgetForRankings(team.previousRankings);
+  }
 };
