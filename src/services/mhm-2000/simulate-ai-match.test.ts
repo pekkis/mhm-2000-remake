@@ -10,33 +10,89 @@ import { describe, expect, it } from "vitest";
 import { createRandom } from "@/services/random";
 import {
   simulateAiMatch,
-  type AiMatchTeam
+  type AiMatchSide
 } from "@/services/mhm-2000/simulate-ai-match";
 import { teamLevels } from "@/data/levels";
+import type { AIManager, AITeam } from "@/state/game";
 
-const teamFromTier = (
+const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => {
+  const tier = overrides.tier ?? 30;
+  const lvl = teamLevels[tier - 1];
+  return {
+    id: 0,
+    uid: "test-team",
+    name: "Pasolini United",
+    city: "Bologna",
+    kind: "ai",
+    tags: [],
+    tier,
+    strengthObj: {
+      goalie: lvl.goalie,
+      defence: lvl.defence,
+      attack: lvl.attack
+    },
+    arena: {
+      level: 1,
+      standingCount: 0,
+      seatedCount: 0,
+      hasBoxes: false,
+      valuePoints: 0
+    },
+    strength: 50,
+    domestic: true,
+    morale: 0,
+    strategy: 0,
+    readiness: 10,
+    effects: [],
+    opponentEffects: [],
+    manager: undefined,
+    ...overrides
+  };
+};
+
+const makeManager = (overrides: Partial<AIManager> = {}): AIManager => ({
+  id: "ai-manager",
+  name: "AI Manager",
+  nationality: "FI",
+  attributes: {
+    strategy: 0,
+    specialTeams: 0,
+    negotiation: 0,
+    resourcefulness: 0,
+    charisma: 0,
+    luck: 0
+  },
+  tags: [],
+  kind: "ai",
+  difficulty: 2,
+  ...overrides
+});
+
+const sideFromTier = (
   id: number,
   name: string,
   tier: number,
   morale = 0,
   specialTeams = 0
-): AiMatchTeam => {
-  const lvl = teamLevels[tier - 1];
-  return {
-    id,
-    name,
-    goalie: lvl.goalie,
-    defence: lvl.defence,
-    attack: lvl.attack,
-    specialTeams,
-    morale
-  };
-};
+): AiMatchSide => ({
+  team: makeTeam({ id, name, tier, morale }),
+  manager: makeManager({
+    id: `mgr-${id}`,
+    attributes: {
+      strategy: 0,
+      specialTeams,
+      negotiation: 0,
+      resourcefulness: 0,
+      charisma: 0,
+      luck: 0
+    }
+  })
+});
 
 describe("simulateAiMatch", () => {
   it("is deterministic for a given seed", () => {
-    const home = teamFromTier(1, "TPS", 34);
-    const away = teamFromTier(2, "HIFK", 31);
+    const home = sideFromTier(1, "TPS", 34);
+    const away = sideFromTier(2, "HIFK", 31);
 
     const a = simulateAiMatch(home, away, { type: 1 }, createRandom(42));
     const b = simulateAiMatch(home, away, { type: 1 }, createRandom(42));
@@ -44,8 +100,8 @@ describe("simulateAiMatch", () => {
   });
 
   it("produces a sane regular-season score range", () => {
-    const home = teamFromTier(1, "TPS", 34);
-    const away = teamFromTier(2, "HIFK", 31);
+    const home = sideFromTier(1, "TPS", 34);
+    const away = sideFromTier(2, "HIFK", 31);
     const random = createRandom(1);
 
     const totals: number[] = [];
@@ -61,8 +117,8 @@ describe("simulateAiMatch", () => {
   });
 
   it("playoff matches always have a winner (sudden death overtime)", () => {
-    const home = teamFromTier(1, "TPS", 34);
-    const away = teamFromTier(2, "HIFK", 31);
+    const home = sideFromTier(1, "TPS", 34);
+    const away = sideFromTier(2, "HIFK", 31);
     const random = createRandom(7);
     for (let i = 0; i < 50; i += 1) {
       const r = simulateAiMatch(home, away, { type: 42 }, random);
@@ -72,8 +128,8 @@ describe("simulateAiMatch", () => {
 
   it("regular-season ties are allowed (single OT attempt may not score)", () => {
     // Two evenly-matched low-tier teams ⇒ low-scoring ⇒ OT-tie possible.
-    const home = teamFromTier(1, "Pasolini PHL", 8);
-    const away = teamFromTier(2, "Pasolini Reserves", 8);
+    const home = sideFromTier(1, "Pasolini PHL", 8);
+    const away = sideFromTier(2, "Pasolini Reserves", 8);
     const random = createRandom(13);
     let tieSeen = false;
     for (let i = 0; i < 200; i += 1) {
@@ -90,8 +146,8 @@ describe("simulateAiMatch", () => {
 
   it("winner gets +1 morale, loser -1", () => {
     // Heavily mismatched teams to make a decisive result very likely.
-    const strong = teamFromTier(1, "Strong", 50);
-    const weak = teamFromTier(2, "Weak", 5);
+    const strong = sideFromTier(1, "Strong", 50);
+    const weak = sideFromTier(2, "Weak", 5);
     const r = simulateAiMatch(strong, weak, { type: 1 }, createRandom(99));
     expect(r.homeGoals).toBeGreaterThan(r.awayGoals);
     expect(r.homeMoraleChange).toBe(1);
@@ -99,8 +155,8 @@ describe("simulateAiMatch", () => {
   });
 
   it("home advantage shows up over many samples", () => {
-    const home = teamFromTier(1, "Home", 25);
-    const away = teamFromTier(2, "Away", 25);
+    const home = sideFromTier(1, "Home", 25);
+    const away = sideFromTier(2, "Away", 25);
     const random = createRandom(2026);
     let homeWins = 0;
     let awayWins = 0;
@@ -114,5 +170,25 @@ describe("simulateAiMatch", () => {
     }
     // QB etu: 1.0 vs 0.85 — home wins should clearly outpace away wins.
     expect(homeWins).toBeGreaterThan(awayWins);
+  });
+
+  it("manager specialTeams attribute boosts PP/PK weights", () => {
+    // Same tier, but home has +3 specialTeams, away has -3.
+    // Over many samples, home should win clearly more often than the
+    // pure home-advantage delta alone would predict.
+    const home = sideFromTier(1, "Home", 25, 0, 3);
+    const away = sideFromTier(2, "Away", 25, 0, -3);
+    const random = createRandom(31337);
+    let homeWins = 0;
+    let awayWins = 0;
+    for (let i = 0; i < 500; i += 1) {
+      const r = simulateAiMatch(home, away, { type: 1 }, random);
+      if (r.homeGoals > r.awayGoals) {
+        homeWins += 1;
+      } else if (r.awayGoals > r.homeGoals) {
+        awayWins += 1;
+      }
+    }
+    expect(homeWins).toBeGreaterThan(awayWins * 2);
   });
 });

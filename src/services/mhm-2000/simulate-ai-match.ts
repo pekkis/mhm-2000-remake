@@ -65,56 +65,32 @@
  */
 
 import defaultRandom, { type RandomService } from "@/services/random";
+import type { AIManager, AITeam } from "@/state/game";
 
 /**
- * One AI team as seen by the match engine. All fields trace back to a
- * specific QB array; comments mark the exact one.
+ * One side of the match — the AITeam plus the manager that controls it.
+ *
+ * The match engine reads three things from the team and one from the
+ * manager:
+ *
+ *   - `team.strengthObj.{goalie, defence, attack}` — the QB
+ *     `mw / pw / hw` triple. Already includes the per-season noise
+ *     applied by `rollTeamStrength()` in [src/services/levels.ts](../levels.ts).
+ *   - `team.morale` — QB `mo(team)`, clamped to -10..+10 elsewhere.
+ *   - `manager.attributes.specialTeams` — QB `mtaito(2, man(team))`,
+ *     range -3..+3. Multiplier on PP/PK weights:
+ *     `yw *= 1 + 0.04 * specialTeams` (and same for `aw`). Per-team
+ *     stat in QB; per-manager in TS, dereferenced on call.
+ *
+ *     Only applied for managed base teams (`od(z) < 49`); light teams
+ *     (NHL / foreign / amateur, `od(z) >= 49`) skip it — see the
+ *     SELECT CASE at [ILEX5.BAS:326-334](../../mhm2000-qb/ILEX5.BAS).
+ *     Both teams here are AI base teams by construction, so the
+ *     multiplier always applies.
  */
-export type AiMatchTeam = {
-  /** `od(z)` — team id. Used only for logging / equality, no math. */
-  id: number;
-
-  /** Display name. Not consumed by the math. */
-  name: string;
-
-  /**
-   * `mw(team)` — goalie base. Already includes the per-season
-   * `INT(3*RND) - 1` noise from `tasomaar`.
-   */
-  goalie: number;
-
-  /**
-   * `pw(team)` — defence base. Already includes the per-season
-   * `INT(5*RND) - 2` noise.
-   */
-  defence: number;
-
-  /**
-   * `hw(team)` — attack base. Already includes the per-season
-   * `INT(9*RND) - 4` noise.
-   */
-  attack: number;
-
-  /**
-   * `mtaito(2, man(team))` — the team manager's `specialTeams`
-   * attribute, range -3..+3. Multiplier on PP/PK weights:
-   * `yw *= 1 + 0.04 * specialTeams` (and same for `aw`).
-   *
-   * Only applied for managed base teams (`od(z) < 49`); light teams
-   * (NHL / foreign / amateur, `od(z) >= 49`) skip it — see the
-   * SELECT CASE at [ILEX5.BAS:326-334].
-   */
-  specialTeams: number;
-
-  /**
-   * `mo(team)` — current team morale, clamped to -10..+10 by `SUB mor`
-   * ([ILEX5.BAS:3361]). Tweaks `etu` per the asymmetric formula at
-   * [ILEX5.BAS:3771-3772]:
-   *   - `mo < 0` → `etu += mo / 125`
-   *   - `mo > 0` → `etu += mo / 155`
-   * (Negative morale hurts more than positive morale helps.)
-   */
-  morale: number;
+export type AiMatchSide = {
+  team: AITeam;
+  manager: AIManager;
 };
 
 /**
@@ -228,21 +204,21 @@ type SideStrength = {
  * (no services, no consumables, no pranks, no roster scan, no
  * doping). All the omitted bits are tagged TODO in the file header.
  */
-const prepareSide = (team: AiMatchTeam, etu: number): SideStrength => {
+const prepareSide = (side: AiMatchSide, etu: number): SideStrength => {
   // Pre-multiplier raw stats. QB:
   //   ode(1, z) = mw(od(z))
   //   ode(2, z) = pw(od(z))
   //   ode(3, z) = hw(od(z))
   // TODO: add `tauti(1..3, tox(team))` epidemic mods once we model
   //       per-team illness. For now these are 0.
-  let goalie = team.goalie;
-  let defence = team.defence;
-  let attack = team.attack;
+  let goalie = side.team.strengthObj.goalie;
+  let defence = side.team.strengthObj.defence;
+  let attack = side.team.strengthObj.attack;
 
   // QB shadow at [ILEX5.BAS:328-329] — recomputed every gameday for
   // every AI base team via the menu3 loop. Same formula here.
   // TODO: fold in `tauti(2)` / `tauti(3)` epidemic mods once modelled.
-  const specialTeamsMult = 1 + team.specialTeams * 0.04;
+  const specialTeamsMult = 1 + side.manager.attributes.specialTeams * 0.04;
   let yw = (attack / 3.3 + defence / 2.5) * specialTeamsMult;
   let aw = (attack / 4.4 + defence / 2.5) * specialTeamsMult;
 
@@ -384,16 +360,16 @@ const overtimeAttempt = (
  * light-team cases come online.
  */
 export const simulateAiMatch = (
-  home: AiMatchTeam,
-  away: AiMatchTeam,
+  home: AiMatchSide,
+  away: AiMatchSide,
   round: AiMatchRound,
   random: RandomService = defaultRandom
 ): AiMatchResult => {
   // 1. Round-type baseline etu, then morale tweak per side.
   //    QB: SELECT CASE kiero(kr) [3711], then mo(...) tweak [3771-3772].
   const etuBase = computeEtu(round);
-  const etuHome = applyMoraleEtu(etuBase.home, home.morale);
-  const etuAway = applyMoraleEtu(etuBase.away, away.morale);
+  const etuHome = applyMoraleEtu(etuBase.home, home.team.morale);
+  const etuAway = applyMoraleEtu(etuBase.away, away.team.morale);
 
   // TODO: league comeback handicap [ILEX5.BAS:3754-3762] — needs
   // standings position `s(team)` and season match counter `ot`. Skip.
