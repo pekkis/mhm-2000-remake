@@ -36,6 +36,13 @@ const practice: CompetitionDefinition = {
     phases: []
   },
 
+  homeAndAwayTeamAdvantages: (_phase) => {
+    return {
+      home: 1.0,
+      away: 0.95
+    };
+  },
+
   relegateTo: false,
   promoteTo: false,
 

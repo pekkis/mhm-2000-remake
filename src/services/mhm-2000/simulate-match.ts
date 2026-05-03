@@ -70,10 +70,20 @@
  *     are >= 0.7).
  */
 
+import competitions from "@/data/competitions";
+import competitionTypes from "@/services/competition-type";
 import defaultRandom, { type RandomService } from "@/services/random";
 import { calculateStrength } from "@/services/team";
 import type { Manager, Team } from "@/state/game";
-import type { CompetitionDefinition, Group } from "@/types/competitions";
+import type {
+  Competition,
+  CompetitionDefinition,
+  CompetitionId,
+  GameResult,
+  Group,
+  HomeAndAwayTeamAdvantages,
+  Phase
+} from "@/types/competitions";
 
 /**
  * One side of the match — a Team (AI or human) plus the Manager that
@@ -163,20 +173,9 @@ const rnd = (random: RandomService): number => random.real(0, 1);
  * modelled — TODO) and every `od(z) >= 49` branch is unreachable
  * (light teams not modelled — TODO).
  */
-const computeEtu = (round: MatchRound): { home: number; away: number } => {
-  switch (round.type) {
-    case 1: // regular
-    case 2: // EHL — same shape as 1 once both teams are managed base teams
-    case 3: // cup
-    case 42: // playoff QF
-    case 44: // playoff SF
-    case 46: // playoff Final
-      // QB: etu(1)=1, etu(2)=.85; the +0.02*erik(...) terms are 0 for now.
-      return { home: 1.0, away: 0.85 };
-
-    case 4: // training match
-      return { home: 1.0, away: 0.95 };
-  }
+const computeEtu = (context: MatchContext): HomeAndAwayTeamAdvantages => {
+  const def = competitions[context.competition.id];
+  return def.homeAndAwayTeamAdvantages(context.competition.phase);
 };
 
 /**
@@ -366,7 +365,11 @@ const overtimeAttempt = (
 };
 
 export type MatchContext = {
-  competitionType: Group["type"];
+  competition: Competition;
+  phase: Phase;
+  group: Group;
+  round: number;
+  matchup: number;
 };
 
 // ─── public API ──────────────────────────────────────────────────────
@@ -387,9 +390,11 @@ export const simulateMatch = (
   context: MatchContext,
   random: RandomService = defaultRandom
 ): MatchResult => {
+  const { phase, group, round, matchup } = context;
+
   // 1. Round-type baseline etu, then morale tweak per side.
   //    QB: SELECT CASE kiero(kr) [3711], then mo(...) tweak [3771-3772].
-  const etuBase = computeEtu(round);
+  const etuBase = computeEtu(context);
   const etuHome = applyMoraleEtu(etuBase.home, home.team.morale);
   const etuAway = applyMoraleEtu(etuBase.away, away.team.morale);
 
@@ -420,17 +425,21 @@ export const simulateMatch = (
     }
   }
 
-  // 4. Overtime if tied. Regular / EHL → single one-round attempt
-  //    (`gnome = 1` branch). Cup / playoff → sudden death (`gnome = 2`).
-  //    QB: SELECT CASE kiero(kr) [3936-3950] + jatkoaika: [3961-3975].
-  let overtime = false;
-  if (homeGoals === awayGoals) {
-    overtime = true;
-    const isSuddenDeath =
-      round.type === 3 ||
-      round.type === 42 ||
-      round.type === 44 ||
-      round.type === 46;
+  const result: GameResult = {
+    home: homeGoals,
+    away: awayGoals,
+    overtime: false
+  };
+
+  // const def = competitions[context.competition.id];
+
+  const type = competitionTypes[phase.type];
+
+  const overtime = type.overtime(result, group, round, matchup);
+
+  if (overtime !== "none") {
+    const isSuddenDeath = overtime === "sudden-death";
+
     if (isSuddenDeath) {
       // Loop forever until someone scores. ode values are strictly
       // positive (mw/pw/hw rolls + multipliers) so this terminates
@@ -460,6 +469,10 @@ export const simulateMatch = (
     }
   }
 
+  // 4. Overtime if tied. Regular / EHL → single one-round attempt
+  //    (`gnome = 1` branch). Cup / playoff → sudden death (`gnome = 2`).
+  //    QB: SELECT CASE kiero(kr) [3936-3950] + jatkoaika: [3961-3975].
+
   // 5. Morale deltas. QB `morttivertti:` [3953-3960]:
   //      winner: mor team, +1
   //      loser:  mor team, -1
@@ -479,7 +492,7 @@ export const simulateMatch = (
   return {
     homeGoals,
     awayGoals,
-    overtime,
+    overtime: overtime !== "none",
     homeMoraleChange,
     awayMoraleChange
   };

@@ -20,6 +20,13 @@ const division: CompetitionDefinition = {
     phases: []
   },
 
+  homeAndAwayTeamAdvantages: (_phase) => {
+    return {
+      home: 1.0,
+      away: 0.85
+    };
+  },
+
   relegateTo: "mutasarja",
   promoteTo: "phl",
 

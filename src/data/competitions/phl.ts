@@ -20,6 +20,13 @@ const phl: CompetitionDefinition = {
     phases: []
   },
 
+  homeAndAwayTeamAdvantages: (_phase) => {
+    return {
+      home: 1.0,
+      away: 0.85
+    };
+  },
+
   gameBalance: (_phase, facts, manager) => {
     const arenaLevel = manager.arena.level + 1;
     if (facts.isLoss) {

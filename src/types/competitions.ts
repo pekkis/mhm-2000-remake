@@ -197,11 +197,19 @@ export type GameFacts = {
   isLoss: boolean;
 };
 
+export type HomeAndAwayTeamAdvantages = {
+  home: number;
+  away: number;
+};
+
 export type CompetitionDefinition = {
   data: Competition;
   relegateTo: string | false;
   promoteTo: string | false;
   parameters: CompetitionParameters;
+
+  homeAndAwayTeamAdvantages: (phase: number) => HomeAndAwayTeamAdvantages;
+
   gameBalance: (
     phase: number,
     facts: GameFacts,

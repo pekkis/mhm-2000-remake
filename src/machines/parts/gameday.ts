@@ -145,7 +145,13 @@ export function runGameday(draft: Draft<GameContext>): void {
             team: away
           },
 
-          context: {},
+          context: {
+            competition: comp,
+            phase,
+            group,
+            round,
+            matchup: x
+          },
 
           round: {
             // TODO: use the competition types.
