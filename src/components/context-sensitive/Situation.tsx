@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import Streaks from "@/components/Streaks";
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import type { Competition } from "@/types/competitions";
 import Box from "@/components/ui/Box";
 import Heading from "@/components/ui/Heading";

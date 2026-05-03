@@ -680,7 +680,7 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
   }
 
   // Per-manager stories.
-  for (const manager of draft.manager.managers) {
+  for (const manager of draft.human.order) {
     const teamId = draft.managers[manager].team;
 
     if (teamId === undefined) {

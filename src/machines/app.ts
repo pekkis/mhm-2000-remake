@@ -92,8 +92,8 @@ const withManager = (
 
   return produce(ctx, (draft) => {
     draft.managers[manager.id] = manager;
-    draft.manager.managers.push(manager.id);
-    draft.manager.active = manager.id;
+    draft.human.order.push(manager.id);
+    draft.human.active = manager.id;
 
     draft.teams[submission.team].manager = manager.id;
   });

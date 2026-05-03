@@ -3,7 +3,7 @@ import Stack from "@/components/ui/Stack";
 import Button from "@/components/ui/Button";
 import pranks from "@/game/pranks";
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import Box from "@/components/ui/Box";
 
 type ConfirmPrankProps = {

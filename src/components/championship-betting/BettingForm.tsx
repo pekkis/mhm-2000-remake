@@ -5,7 +5,7 @@ import { currency } from "@/services/format";
 import odds from "@/data/championship-betting";
 import Button from "@/components/ui/Button";
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import type { Competition } from "@/types/competitions";
 import Box from "@/components/ui/Box";
 import Heading from "@/components/ui/Heading";

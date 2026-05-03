@@ -1,5 +1,5 @@
 import { amount as a, currency } from "@/services/format";
-import type { HumanManager, ManagerServices } from "@/state/manager";
+import type { HumanManager, ManagerServices } from "@/state/game";
 
 export type ServiceDefinition = {
   name: string;

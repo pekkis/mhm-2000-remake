@@ -2,7 +2,7 @@ import { setup, assign, sendTo, enqueueActions, stopChild } from "xstate";
 import { produce, type Draft } from "immer";
 
 import type { GameContext } from "@/state";
-import type { ManagerServices } from "@/state/manager";
+import type { ManagerServices } from "@/state/game";
 import {
   managerCompetesIn,
   canImproveArena,
@@ -329,7 +329,7 @@ export const gameMachine = setup({
     executeInvitationsCreate: assign(({ context }) =>
       produce(context, (draft) => {
         const fresh: typeof draft.invitation.invitations = [];
-        for (const managerId of Object.keys(draft.manager.managers)) {
+        for (const managerId of draft.human.order) {
           for (let t = 0; t < tournamentList.length; t++) {
             const { competitionId, maxRanking } = tournamentList[t].eligibility;
             if (
@@ -1206,7 +1206,7 @@ export const gameMachine = setup({
         type: "notify",
         params: ({ context }) => ({
           notification: {
-            manager: context.manager.active!,
+            manager: context.human.active!,
             message: "Peli tallennettiin.",
             type: "info"
           }

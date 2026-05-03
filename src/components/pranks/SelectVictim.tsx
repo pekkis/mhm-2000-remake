@@ -2,7 +2,7 @@ import type { FC } from "react";
 import Button from "@/components/ui/Button";
 import Stack from "@/components/ui/Stack";
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import type { Competition } from "@/types/competitions";
 import Heading from "@/components/ui/Heading";
 

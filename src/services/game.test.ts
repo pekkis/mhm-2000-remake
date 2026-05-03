@@ -4,7 +4,7 @@ import { createGameService } from "@/services/game";
 import { createRandom } from "@/services/random";
 import type { GameInput } from "@/services/game";
 import type { Team } from "@/state/game";
-import type { HumanManager } from "@/state/manager";
+import type { HumanManager } from "@/state/game";
 import type { GameResult } from "@/types/competitions";
 
 const makeTeam = (overrides: Partial<Team> = {}): Team => ({

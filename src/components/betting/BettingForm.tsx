@@ -5,7 +5,7 @@ import { currency } from "@/services/format";
 import Button from "@/components/ui/Button";
 import TeamName from "@/components/team/Name";
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import type { Competition } from "@/types/competitions";
 import { entries } from "remeda";
 import Stack from "@/components/ui/Stack";

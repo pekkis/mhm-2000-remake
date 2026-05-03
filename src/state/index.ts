@@ -11,14 +11,14 @@ export type {
   TeamEffect,
   GameFlags,
   WorldChampionshipEntry,
-  GameState
-} from "./game";
-export type {
+  GameState,
   Manager,
+  HumanManager,
+  AIManager,
   ManagerArena,
-  ManagerServices,
-  ManagerState
-} from "./manager";
+  ManagerServices
+} from "./game";
+export type { HumanState } from "./human";
 export type { StoredEvent, EventState } from "./event";
 export type { Invitation, InvitationState } from "./invitation";
 export type { MetaManager, MetaState } from "./meta";

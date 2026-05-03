@@ -46,7 +46,7 @@ describe("appMachine", () => {
       const snap = actor.getSnapshot();
       expect(snap.value).toBe("starting");
       expect(snap.context.pending).toBeDefined();
-      expect(snap.context.pending!.manager.active).toBeUndefined();
+      expect(snap.context.pending!.human.active).toBeUndefined();
     });
 
     it("ADD_MANAGER refines context and transitions to playing", () => {
@@ -61,7 +61,7 @@ describe("appMachine", () => {
       expect(snap.context.pending).toBeUndefined();
 
       const gameCtx = snap.context.gameRef!.getSnapshot().context;
-      const activeId = gameCtx.manager.active;
+      const activeId = gameCtx.human.active;
       expect(activeId).toBeDefined();
       expect(gameCtx.managers[activeId!].name).toBe(submission.name);
       expect(gameCtx.teams[submission.team].manager).toBe(activeId);
@@ -85,9 +85,9 @@ describe("appMachine", () => {
       const gameRef = actor.getSnapshot().context.gameRef!;
       const gameSnap = gameRef.getSnapshot();
       expect(gameSnap.matches("in_game")).toBe(true);
-      expect(gameSnap.context.manager.active).toBeDefined();
+      expect(gameSnap.context.human.active).toBeDefined();
       expect(gameSnap.context.teams[submission.team].manager).toBe(
-        gameSnap.context.manager.active
+        gameSnap.context.human.active
       );
     });
 

@@ -43,7 +43,7 @@ import type {
   PlayoffGroup,
   TeamStat
 } from "@/types/competitions";
-import type { HumanManager } from "@/state/manager";
+import type { HumanManager } from "@/state/game";
 
 // ---------------------------------------------------------------------------
 // Helper types
@@ -224,7 +224,7 @@ export const randomRankedTeam =
     f: (t: Team) => boolean = () => true
   ): ContextSelector<Team | false> =>
   (ctx) => {
-    const managerIds = ctx.manager.managers;
+    const managerIds = ctx.human.order;
 
     const groups = ctx.competitions[competitionId].phases[phaseId].groups;
 
@@ -300,7 +300,7 @@ export const randomTeamOrNullFrom =
 // ---------------------------------------------------------------------------
 
 export const activeManager: ContextSelector<HumanManager> = (ctx) => {
-  const activeId = ctx.manager.active;
+  const activeId = ctx.human.active;
 
   if (!activeId) {
     throw new Error("No manager is active");

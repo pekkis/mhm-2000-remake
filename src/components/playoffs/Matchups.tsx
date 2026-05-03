@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import type { PlayoffGroup, MatchupStat } from "@/types/competitions";
 import { Table } from "@/components/ui/Table";
 import MatchRow from "@/components/team/MatchRow";

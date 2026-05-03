@@ -3,7 +3,7 @@ import Tabs from "@/components/ui/Tabs";
 import { Table, Td, Th } from "@/components/ui/Table";
 import Story from "./Story";
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import type { StatsState } from "@/state/stats";
 import type { Competition } from "@/types/competitions";
 

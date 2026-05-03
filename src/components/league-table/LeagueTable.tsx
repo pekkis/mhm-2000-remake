@@ -5,7 +5,7 @@ import { Table, Td, Th } from "@/components/ui/Table";
 import * as styles from "./LeagueTable.css";
 
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import type { Group, TeamStat } from "@/types/competitions";
 
 type TableProps = {

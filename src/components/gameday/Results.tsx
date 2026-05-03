@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { Table } from "@/components/ui/Table";
 import MatchRow from "@/components/team/MatchRow";
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import type { Group } from "@/types/competitions";
 
 type ResultsProps = {

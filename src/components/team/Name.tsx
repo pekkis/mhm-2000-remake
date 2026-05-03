@@ -2,7 +2,7 @@ import type { FC } from "react";
 import clsx from "clsx";
 import * as styles from "./Name.css";
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import { values } from "remeda";
 
 type NameProps = {

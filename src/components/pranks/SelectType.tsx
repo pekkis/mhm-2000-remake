@@ -3,7 +3,7 @@ import Button from "@/components/ui/Button";
 import Stack from "@/components/ui/Stack";
 import pranks from "@/game/pranks";
 import { currency as c } from "@/services/format";
-import type { HumanManager } from "@/state/manager";
+import type { HumanManager } from "@/state/game";
 import { entries } from "remeda";
 
 type SelectTypeProps = {

@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import { Td } from "@/components/ui/Table";
 import TeamName from "@/components/team/Name";
 import * as styles from "./MatchRow.css";

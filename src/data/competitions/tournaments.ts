@@ -7,7 +7,7 @@ import type {
 } from "@/types/competitions";
 import tournamentScheduler from "@/services/tournament";
 import { currency } from "@/services/format";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 import type { Invitation } from "@/state/invitation";
 import { foreignTeams } from "@/machines/selectors";
 import tournamentList from "@/data/tournaments";
@@ -128,7 +128,7 @@ const tournaments: CompetitionDefinition = {
   seedContext: [
     (ctx) => ({
       teams: foreignTeams(ctx),
-      managers: ctx.manager.managers,
+      managers: ctx.human.order,
       invitations: ctx.invitation.invitations.filter((i) => i.accepted)
     })
   ],

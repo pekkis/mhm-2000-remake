@@ -193,7 +193,7 @@ export const createDefaultGameContext = (): GameContext => ({
 
   worldChampionshipResults: undefined,
 
-  manager: { active: undefined, managers: [] },
+  human: { active: undefined, order: [] },
 
   // betting — parlay + championship bet actors plus the transient
   // last-round coupon used to bridge `executeGameday` and `resolveParlayBets`.

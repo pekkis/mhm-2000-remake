@@ -3,7 +3,7 @@ import { createActor } from "xstate";
 import { gameMachine } from "@/machines/game";
 import { createDefaultGameContext } from "@/state";
 import type { GameContext } from "@/state";
-import type { HumanManager } from "@/state/manager";
+import type { HumanManager } from "@/state/game";
 import { humanManagerById } from "@/machines/selectors";
 
 const buildContextWithManager = (): GameContext => {
@@ -42,7 +42,7 @@ const buildContextWithManager = (): GameContext => {
     managers: {
       pasolini: manager
     },
-    manager: { active: manager.id, managers: [manager.id] },
+    human: { active: manager.id, order: [manager.id] },
     teams: ctx.teams.map((t) =>
       t.id === 12 ? { ...t, manager: manager.id } : t
     )
@@ -61,7 +61,7 @@ describe("gameMachine", () => {
       const actor = createTestActor();
       const snap = actor.getSnapshot();
       expect(snap.matches("in_game")).toBe(true);
-      expect(snap.context.manager.active).toBe("pasolini");
+      expect(snap.context.human.active).toBe("pasolini");
     });
   });
 
@@ -80,7 +80,7 @@ describe("gameMachine", () => {
 
     it("ADVANCE past championship_betting auto-runs seed and lands in round 1's action", () => {
       const actor = createTestActor();
-      const activeId = actor.getSnapshot().context.manager.active!;
+      const activeId = actor.getSnapshot().context.human.active!;
       actor.send({
         type: "SELECT_STRATEGY",
         payload: { manager: activeId, strategy: 2 }
@@ -106,7 +106,7 @@ describe("gameMachine", () => {
 
     it("seed phase populates competitions[*].phases", () => {
       const actor = createTestActor();
-      const activeId = actor.getSnapshot().context.manager.active!;
+      const activeId = actor.getSnapshot().context.human.active!;
       actor.send({
         type: "SELECT_STRATEGY",
         payload: { manager: activeId, strategy: 2 }
@@ -126,7 +126,7 @@ describe("gameMachine", () => {
   describe("ORDER_PRANK", () => {
     it("debits the manager, queues the prank, and bumps pranksExecuted", () => {
       const actor = createTestActor();
-      const activeId = actor.getSnapshot().context.manager.active!;
+      const activeId = actor.getSnapshot().context.human.active!;
 
       // Pasolini coaches team 12 → division. fixedMatch on division: 150000.
       const before = actor.getSnapshot().context;
@@ -148,7 +148,7 @@ describe("gameMachine", () => {
 
     it("free pranks (protest) leave balance untouched", () => {
       const actor = createTestActor();
-      const activeId = actor.getSnapshot().context.manager.active!;
+      const activeId = actor.getSnapshot().context.human.active!;
       const beforeBalance = humanManagerById(activeId)(
         actor.getSnapshot().context
       ).balance;

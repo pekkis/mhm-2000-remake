@@ -9,7 +9,7 @@ import type {
   GameFacts,
   GamedayAdvantage
 } from "@/types/competitions";
-import type { Manager } from "@/state/manager";
+import type { Manager } from "@/state/game";
 
 export type GameInput = {
   home: Team;
