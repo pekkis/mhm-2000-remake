@@ -52,6 +52,59 @@ that appear in the source. **Confirm against actual rendering.**
 ❓ TODO: confirm exact COLOR numbers for each token from `colchk` /
 `actionprint` / `lt` SUBs in ilex5.
 
+### Porting tokens to Markdown (the canonical mapping)
+
+When a string ports into TS-land it's rendered through our `Markdown`
+component ([src/components/Markdown.tsx](../../components/Markdown.tsx)).
+The QB DOS color soup collapses into a small number of semantic
+intents the renderer already supports out of the box:
+
+| QB token  | Markdown                  | Why                                                  |
+| --------- | ------------------------- | ---------------------------------------------------- |
+| `$b`      | _(end span)_              | Closes whatever the previous opener started.         |
+| `$j…$b`   | `**…**` (bold)            | Proper nouns / manager names — same intent as bold.  |
+| `$n…$b`   | `**…**` (bold)            | Numeric / key-verb emphasis — collapse to bold.      |
+| `$f…$b`   | `**…**` (bold)            | "Dramatic" — bold reads correctly in modern UIs.     |
+| `$o…$b`   | `_…_` (italic)            | Single-letter accent — italic reads as accent.       |
+| `$h…$b`   | use a heading element     | Header style — wrap the line in `## …` if isolated.  |
+| `$d…$b`   | `_…_` (italic)            | Rare, treat as soft emphasis until proven otherwise. |
+| `@4` (€)  | `€{n.toLocaleString(…)}`  | Money — go through proper currency formatting.       |
+| Other `@` | template-literal substitution | Replace with the appropriate runtime value.      |
+
+**Rules of thumb**
+
+- **Don't preserve the QB tokens in the ported string.** Translate them
+  at port time so the renderer sees clean Markdown. Keeping `$j…$b`
+  around defers a decision and pollutes search.
+- **Bold is the default fallback** for any "this should pop" intent.
+  Modern UIs don't have DOS's color palette and forcing brand colors
+  for emphasis is uglier than just bolding the word.
+- **Italic for tone**, bold for structure. If the QB used a color to
+  signal accent / quote / aside, prefer italic.
+- **Currency always goes through a formatter.** Never render raw
+  numbers next to a `€`. Use the locale-aware formatter so 1234567
+  becomes `1 234 567 €`. Same applies to `@4 euroa` and `@4 euron` —
+  the unit ("euroa" / "euron" / "eurolla") may need to be supplied
+  separately from the formatted number to keep Finnish inflection
+  intact.
+- **Preserve the prose verbatim.** The QB original is the canonical
+  text — translate the *tokens*, never the *words*. See AGENTS.md
+  ("Preserve the prose").
+
+Worked example — strategy descriptions ([src/data/mhm2000/strategies.ts](../../data/mhm2000/strategies.ts)):
+
+```text
+QB:       Kuuluisan venäläismanageri $jJuri Simonovin$b aikoinaan kehittämä …
+Ported:   Kuuluisan venäläismanageri **Juri Simonovin** aikoinaan kehittämä …
+
+QB:       Kaudella $n1994-1995$b manageri $jPer von Bachman$b yllätti …
+Ported:   Kaudella **1994-1995** manageri **Per von Bachman** yllätti …
+```
+
+Both `$j` (name) and `$n` (number) collapse to `**…**` — they were
+distinct in the DOS palette but represent the same "draw the eye"
+intent in modern typography.
+
 ### Substitution placeholders (`@N`)
 
 | Token | Best guess      | Source                                                  |

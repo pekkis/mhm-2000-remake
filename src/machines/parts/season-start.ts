@@ -9,6 +9,10 @@ import {
   initialReadinessFor,
   type StrategyId
 } from "@/data/mhm2000/strategies";
+import {
+  distributeAIStrategies,
+  STRATEGY_COMPETITION_IDS
+} from "@/services/strategy";
 import random from "@/services/random";
 
 /**
@@ -43,13 +47,12 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
   // Reset per-team season state.
   //
   // Strategy + readiness defaults: TASAINEN PUURTO (`valm = 3`) is the
-  // safe baseline. The QB original picks AI strategies in a separate
-  // pass right after this (ILEZ5.BAS:1990-2046, the proxy/mahd
-  // distribution). We don't yet port that distribution — for now,
-  // every AI team that isn't tagged with a forced `strategy:*` value
-  // stays on Tasainen. Tagged managers (Simonov, Pier Paolo proxy)
-  // get their hard-coded pick. Human managers later overwrite via
-  // `selectStrategy` from the UI.
+  // safe baseline for non-Finnish-league teams. The QB original picks
+  // AI strategies in a separate pass right after this for PHL /
+  // Divisioona / Mutasarja AI teams (ILEZ5.BAS:1990-2046, the
+  // proxy/`mahd` distribution — see `services/strategy.ts`). Tagged
+  // managers (Simonov, Pier Paolo proxy) get their hard-coded pick.
+  // Human managers later overwrite via `selectStrategy` from the UI.
   //
   // QB cross-ref: `SUB tremaar` (ILEX5.BAS:7458-7464) writes the
   // initial `tre()` based on the chosen `valm`.
@@ -66,6 +69,38 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
       strategy,
       manager?.attributes.strategy ?? 0
     );
+  }
+
+  // AI strategy distribution — port of QB `SUB valitsestrattie`
+  // (MHM2K.BAS:2470-2503 / ILEZ5.BAS:1990-2034). Loops PHL /
+  // Divisioona / Mutasarja, computes per-competition strength
+  // averages over AI teams only, then rolls each AI team's `valm`
+  // from the `mahd()` weighted lottery. Forced-strategy managers
+  // (Simonov, Pasolini-proxied light teams) keep their tag-driven
+  // pick — `distributeAIStrategies` honours that internally.
+  for (const competitionId of STRATEGY_COMPETITION_IDS) {
+    const competition = draft.competitions[competitionId];
+    if (!competition) {
+      continue;
+    }
+    // Only AI-managed teams participate in the QB roll
+    // (`IF ohj(x(xx)) = 0 THEN ...` skips human-controlled teams).
+    const aiTeams = competition.teams
+      .map((idx) => draft.teams[idx])
+      .filter((team) => team !== undefined && team.kind === "ai");
+    const picks = distributeAIStrategies(aiTeams, draft.managers, random);
+    for (const [teamId, strategy] of picks) {
+      const team = draft.teams[teamId];
+      if (!team) {
+        continue;
+      }
+      team.strategy = strategy;
+      const manager = team.manager ? draft.managers[team.manager] : undefined;
+      team.readiness = initialReadinessFor(
+        strategy,
+        manager?.attributes.strategy ?? 0
+      );
+    }
   }
 
   draft.flags.jarko = false;

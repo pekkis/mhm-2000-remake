@@ -230,7 +230,7 @@ CHAINs from ilex5:
 | 1322 | `palkmaar`        | salaries for next season             |      |
 | 1333 | `pelaajasiirrot`  | player transfers                     |      |
 | 1832 | `tasomuut`        | level changes (promote/relegate)     |      |
-| 1980 | `valitsestrattie` | next-season strategy                 |      |
+| 1980 | `valitsestrattie` | next-season strategy — proxy/`mahd()` distribution. Per AI manager in PHL/Divisioona/Mutasarja: compute `proxy(4) = mean(mw/koko1, pw/koko2, hw/koko3)` (own components vs the competition's AI-only averages), look up an 8-band weighted lottery, override Simonov to 100% SIMONOV. Ported to [src/services/strategy.ts](../../services/strategy.ts) with 50 parity tests. | DONE |
 
 (Plus the same standard helpers: `aaargh`, `borsinit`, `colchk`, `ku`,
 `klear`, `klearstat`, `wnd`, `lt`, `lentti`, `mahmax`, `pjn`, `poispel`,

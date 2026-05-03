@@ -4,6 +4,7 @@ import strategies from "@/data/mhm2000/strategies";
 import Button from "./ui/Button";
 import Paragraph from "./ui/Paragraph";
 import Heading from "./ui/Heading";
+import Markdown from "./Markdown";
 import Stack from "./ui/Stack";
 import { activeManager } from "@/machines/selectors";
 import { GameMachineContext } from "@/context/game-machine-context";
@@ -29,7 +30,7 @@ const SelectStrategy = () => {
         {values(strategies).map((strategy) => (
           <Stack key={strategy.id} gap="sm">
             <Heading level={3}>{strategy.name}</Heading>
-            <Paragraph>{strategy.description}</Paragraph>
+            <Markdown>{strategy.description}</Markdown>
             <Button
               block
               onClick={() =>

@@ -48,11 +48,7 @@ const eventsMap: Record<number, string> = {
   69: "embezzlement",
   100: "masotv",
   200: "masotv",
-  301: "jobofferPHL",
-  138: "jobofferPHL",
   146: "undqvist",
-  111: "jobofferDivision",
-  43: "jobofferDivision",
   306: "fever",
   307: "fever",
   303: "haanperaMarries",
@@ -136,10 +132,6 @@ const eventsMap: Record<number, string> = {
   210: "grossman",
   179: "bloodbath",
   114: "book",
-  137: "allgoSuccess",
-  168: "simonovSuccess",
-  110: "strategyFailure",
-  262: "strategySuccess",
   124: "foreignLegion",
   234: "incredibleFeeling"
 };

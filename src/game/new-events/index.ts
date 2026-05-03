@@ -22,7 +22,6 @@
  */
 
 import abcd from "./abcd";
-import allgoSuccess from "./allgo-success";
 import arenaBurns from "./arena-burns";
 import arilander from "./arilander";
 import attitudeCanada from "./attitude-canada";
@@ -60,8 +59,6 @@ import jaralahti from "./jaralahti";
 import jarasvuo from "./jarasvuo";
 import jarko from "./jarko";
 import jatovrel from "./jatovrel";
-import jobofferDivision from "./joboffer-division";
-import jobofferPHL from "./joboffer-phl";
 import juznetsov from "./juznetsov";
 import karijurri from "./karijurri";
 import kasino from "./kasino";
@@ -99,11 +96,8 @@ import russianAgent from "./russian-agent";
 import saunailta from "./saunailta";
 import scoreboard from "./scoreboard";
 import sellNarcotics from "./sell-narcotics";
-import simonovSuccess from "./simonov-success";
 import sopupeli from "./sopupeli";
 import stalking from "./stalking";
-import strategyFailure from "./strategy-failure";
-import strategySuccess from "./strategy-success";
 import suddenDeath from "./sudden-death";
 import swedenTransfer from "./sweden-transfer";
 import taxEvasion from "./tax-evasion";
@@ -120,7 +114,6 @@ import youStalk from "./you-stalk";
 
 const newEvents = {
   abcd,
-  allgoSuccess,
   arenaBurns,
   arilander,
   attitudeCanada,
@@ -158,8 +151,6 @@ const newEvents = {
   jarasvuo,
   jarko,
   jatovrel,
-  jobofferDivision,
-  jobofferPHL,
   juznetsov,
   karijurri,
   kasino,
@@ -197,11 +188,8 @@ const newEvents = {
   saunailta,
   scoreboard,
   sellNarcotics,
-  simonovSuccess,
   sopupeli,
   stalking,
-  strategyFailure,
-  strategySuccess,
   suddenDeath,
   swedenTransfer,
   taxEvasion,

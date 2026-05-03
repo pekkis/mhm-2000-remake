@@ -269,8 +269,14 @@ export const createDefaultGameContext = (): GameContext => {
   for (let x = 0; x < ctx.teams.length; x = x + 1) {
     if (ctx.teams[x].tags.includes("light")) {
       ctx.teams[x].manager = pasolini.id;
+      // Intentionally do NOT write `pasolini.team` — he proxies dozens of
+      // light teams; a single back-pointer would be a lie. Consumers that
+      // need "which teams does this manager run" should reverse-lookup
+      // through `team.manager`.
     } else {
-      ctx.teams[x].manager = managers[x].id;
+      const manager = managers[x];
+      ctx.teams[x].manager = manager.id;
+      manager.team = x;
     }
   }
 

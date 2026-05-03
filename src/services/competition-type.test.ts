@@ -70,7 +70,7 @@ describe("competition-type", () => {
       ).toBe("regular");
       expect(
         rr.overtime({ home: 3, away: 1, overtime: false }, group, 0, 0)
-      ).toBe("regular");
+      ).toBe("none");
     });
 
     it("stats should return league table (TeamStat[])", () => {

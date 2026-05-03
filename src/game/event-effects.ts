@@ -104,9 +104,7 @@ export type EventEffect =
   | { type: "decrementStrength"; team: number; amount: number }
   | { type: "incrementMorale"; team: number; amount: number }
   | { type: "decrementMorale"; team: number; amount: number }
-  | { type: "incrementReadiness"; team: number; amount: number }
   | { type: "setMorale"; team: number; value: number }
-  | { type: "setReadiness"; team: number; value: number }
   | { type: "setStrategy"; team: number; value: number }
   | { type: "renameTeam"; team: number; name: string }
 
@@ -302,25 +300,11 @@ export function applyEffect(
       }
       return;
     }
-    case "incrementReadiness": {
-      const t = draft.teams[effect.team];
-      if (t) {
-        t.readiness += effect.amount;
-      }
-      return;
-    }
     case "setMorale": {
       const t = draft.teams[effect.team];
       if (t) {
         const { min, max } = moraleClamp(draft, t);
         t.morale = Math.min(max, Math.max(min, effect.value));
-      }
-      return;
-    }
-    case "setReadiness": {
-      const t = draft.teams[effect.team];
-      if (t) {
-        t.readiness = effect.value;
       }
       return;
     }

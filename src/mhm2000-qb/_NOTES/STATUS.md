@@ -75,12 +75,40 @@ tournament-match path. All TODO-tagged inline in the port.
   `selectStrategy` action and `executeCalculations` in
   [src/machines/game.ts](../../machines/game.ts),
   [src/machines/parts/season-start.ts](../../machines/parts/season-start.ts).
-- **Still TODO:** the AI `mahd()` strength-rank distribution at
-  [MHM2K.BAS:2470-2503](../MHM2K.BAS) — currently every untagged AI
-  manager defaults to Tasainen Puurto. Also: MHM 97-era
-  `simonovSuccess` / `allgoSuccess` / `strategySuccess` events still
-  emit integer `incrementReadiness` deltas — wrong scale for the
-  multiplier semantics, needs rebalancing.
+- **MHM 97-era readiness/joboffer events deleted.** The four
+  integer-delta readiness events (`simonovSuccess`, `allgoSuccess`,
+  `strategySuccess`, `strategyFailure`) and the two MHM 97 job-offer
+  events (`jobofferPHL`, `jobofferDivision`) were removed wholesale —
+  wrong scale for the new multiplier semantics, and MHM 2000's job-offer
+  flow is structurally different anyway. The `incrementReadiness` /
+  `setReadiness` `EventEffect` cases came out with them; the only path
+  that still touches `team.readiness` is the per-round drift in
+  `executeCalculations`. Roll-table ids 110/137/168/262 (readiness) and
+  43/111/138/301 (job offers) now silently no-op like other unported ids.
+- **Still TODO:** none for the season-arc readiness arc itself — the
+  AI `mahd()` strength-rank distribution at
+  [MHM2K.BAS:2470-2503](../MHM2K.BAS) is now ported in
+  [src/services/strategy.ts](../../services/strategy.ts), wired in
+  [src/machines/parts/season-start.ts](../../machines/parts/season-start.ts),
+  and covered by 50 parity tests in
+  [src/services/strategy.test.ts](../../services/strategy.test.ts).
+  Per-team `proxy(4)` (mean of goalie/defence/attack ratios vs the
+  competition's AI-only averages) selects one of 8 weighted bands;
+  `strategy:*` manager tags short-circuit the lottery (Simonov, Pasolini-
+  proxied light teams, … — same hook as the QB `IF man = 33` override).
+  `proxy(1..3)` are computed in QB but never read after `proxy(4)` is
+  derived — we mirror the QB by exposing `proxy(4)` only.
+
+  - **`Per von Bachman` is NOT hard-coded** to KAIKKI PELIIN! despite
+    being name-checked in the strategy help text (`DATA/X.MHM`). His
+    "putoajaksi tuomitun ryhmänsä" lore lives in flavor text only —
+    the simulator rolls him through `mahd()` like any other AI. Only
+    Simonov gets a real override (`IF man = 33` at MHM2K.BAS:2493 /
+    ILEZ5.BAS:2026).
+  - **Strategy descriptions** are now ported verbatim from `DATA/X.MHM`
+    (cp850 → UTF-8, `$j…$b` and `$n…$b` → Markdown `**bold**`). See
+    [DATA-FILES.md](DATA-FILES.md) for the canonical token-rewrite
+    table.
 
 ## Sub-decode docs
 

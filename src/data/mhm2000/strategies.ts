@@ -142,11 +142,17 @@ export const initialReadinessFor = (
 };
 
 const strategies: Record<StrategyId, Strategy> = {
+  // Strategy descriptions are verbatim ports of the in-game help text from
+  // `DATA/X.MHM` (cp850 → UTF-8). Token rewrite: QB `$j…$b` (manager / proper
+  // noun highlight) and `$n…$b` (numeric / emphasis highlight) both map to
+  // Markdown `**bold**` for our Markdown renderer. Per AGENTS.md: preserve
+  // verbatim, including the now-historical references to the 1994-1995 PHL
+  // season — that's the soul of the game.
   1: {
     id: 1,
     name: "JURI SIMONOV",
     description:
-      "Joukkue treenaa rajusti koko kesän ja syksyn, ja peliesitykset kärsivät. Talven mittaan pelaajien uskomaton kuntopohja alkaa kuitenkin kantaa hedelmää, ja keväällä joukkuetta ei pysäytä mikään.",
+      "Kuuluisan venäläismanageri **Juri Simonovin** aikoinaan kehittämä ovela strategia. Joukkue treenaa rajusti koko kesän ja syksyn, ja peliesitykset kärsivät. Talven mittaan pelaajien uskomaton kuntopohja alkaa kuitenkin kantaa hedelmää, ja keväällä joukkuetta ei pysäytä mikään.",
     initialReadiness: () => 0.945,
     incrementReadiness: () => 0.0025,
     managerSkillBonusCoefficient: 0.007
@@ -155,7 +161,7 @@ const strategies: Record<StrategyId, Strategy> = {
     id: 2,
     name: "KAIKKI PELIIN!",
     description:
-      "Joukkue on vahvimmillaan kauden alussa, ja heikkenee sen edetessä. Tahti on kova, mutta pojat hiipuvat kevättä kohden melkoisesti.",
+      "Kaikki voimavarat laitetaan peliin heti kauden alusta alkaen! Kaudella **1994-1995** manageri **Per von Bachman** yllätti kaikki putoajaksi tuomitun ryhmänsä kanssa ja ylsi miltei Play-Offeihin fantastisen alkukauden ansiosta.",
     initialReadiness: () => 1.055,
     incrementReadiness: () => -0.0025,
     managerSkillBonusCoefficient: 0.007
@@ -163,7 +169,8 @@ const strategies: Record<StrategyId, Strategy> = {
   3: {
     id: 3,
     name: "TASAINEN PUURTO",
-    description: "Tasainen suoritus läpi kauden, ei pahempia heilahteluja.",
+    description:
+      "Strategia perustuu tasaisen kunnon ylläpitämiseen koko pitkän kauden ajan. Junnaavilla valmennusmenetelmillä saavutetaan aito **puurtamisen** meininki!",
     initialReadiness: () => 1,
     incrementReadiness: () => 0,
     managerSkillBonusCoefficient: 0
