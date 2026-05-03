@@ -150,7 +150,7 @@ describe("gameMachine", () => {
       const activeId = actor.getSnapshot().context.manager.active!;
       const beforeBalance = humanManagerById(activeId)(
         actor.getSnapshot().context
-      );
+      ).balance;
 
       actor.send({
         type: "ORDER_PRANK",
