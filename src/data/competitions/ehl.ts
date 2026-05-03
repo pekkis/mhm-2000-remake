@@ -67,6 +67,14 @@ const ehl: CompetitionDefinition = {
     phases: []
   },
 
+  // TODO: check. I have a remembrance of these being different for EHL vs others.
+  homeAndAwayTeamAdvantages: (_phase) => {
+    return {
+      home: 1.0,
+      away: 0.85
+    };
+  },
+
   relegateTo: false,
   promoteTo: false,
 

@@ -77,8 +77,6 @@ import { calculateStrength } from "@/services/team";
 import type { Manager, Team } from "@/state/game";
 import type {
   Competition,
-  CompetitionDefinition,
-  CompetitionId,
   GameResult,
   Group,
   HomeAndAwayTeamAdvantages,
