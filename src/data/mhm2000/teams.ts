@@ -65,6 +65,8 @@ export type ManagedTeamDefinition = {
    */
   tier: number;
   arena: Arena;
+
+  tags: string[];
 };
 
 /**
@@ -96,6 +98,8 @@ export type LightTeamDefinition = {
   tier: number;
   /** Arena has no name (the source data files don't include one). */
   arena: Arena;
+
+  tags: string[];
 };
 
 export type TeamDefinition = ManagedTeamDefinition | LightTeamDefinition;
@@ -121,7 +125,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 90,
       hasBoxes: true,
       valuePoints: 1032
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -138,7 +143,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 80,
       hasBoxes: true,
       valuePoints: 672
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -155,7 +161,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 20,
       hasBoxes: false,
       valuePoints: 210
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -172,7 +179,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 25,
       hasBoxes: false,
       valuePoints: 231
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -189,7 +197,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 137,
       hasBoxes: true,
       valuePoints: 1480
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -206,7 +215,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 68,
       hasBoxes: false,
       valuePoints: 524
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -223,7 +233,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 74,
       hasBoxes: true,
       valuePoints: 710
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -240,7 +251,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 22,
       hasBoxes: false,
       valuePoints: 210
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -257,7 +269,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 68,
       hasBoxes: false,
       valuePoints: 524
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -274,7 +287,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 40,
       hasBoxes: false,
       valuePoints: 315
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -291,7 +305,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 31,
       hasBoxes: false,
       valuePoints: 333
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -308,7 +323,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 30,
       hasBoxes: false,
       valuePoints: 243
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -325,7 +341,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 22,
       hasBoxes: false,
       valuePoints: 166
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -342,7 +359,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 56,
       hasBoxes: false,
       valuePoints: 396
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -359,7 +377,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 10,
       hasBoxes: false,
       valuePoints: 110
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -376,7 +395,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 29,
       hasBoxes: false,
       valuePoints: 273
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -393,7 +413,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 10,
       hasBoxes: false,
       valuePoints: 90
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -410,7 +431,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 22,
       hasBoxes: false,
       valuePoints: 210
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -427,7 +449,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 6,
       hasBoxes: false,
       valuePoints: 110
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -444,7 +467,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 8,
       hasBoxes: false,
       valuePoints: 80
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -461,7 +485,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 20,
       hasBoxes: false,
       valuePoints: 160
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -478,7 +503,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 10,
       hasBoxes: false,
       valuePoints: 50
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -495,7 +521,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 7,
       hasBoxes: false,
       valuePoints: 65
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -512,7 +539,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 10,
       hasBoxes: false,
       valuePoints: 74
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -529,7 +557,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 5,
       hasBoxes: false,
       valuePoints: 34
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -546,7 +575,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 18
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -563,7 +593,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 3,
       hasBoxes: false,
       valuePoints: 22
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -580,7 +611,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 3,
       hasBoxes: false,
       valuePoints: 35
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -597,7 +629,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 3,
       hasBoxes: false,
       valuePoints: 23
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -614,7 +647,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 24
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -631,7 +665,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 3,
       hasBoxes: false,
       valuePoints: 22
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -648,7 +683,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 16
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -665,7 +701,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 16
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -682,7 +719,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 15
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -699,7 +737,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 4,
       hasBoxes: false,
       valuePoints: 30
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -716,7 +755,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 18
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -733,7 +773,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 15
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -750,7 +791,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 15
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -767,7 +809,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 4,
       hasBoxes: false,
       valuePoints: 26
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -784,7 +827,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 3,
       hasBoxes: false,
       valuePoints: 19
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -801,7 +845,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 18
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -818,7 +863,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 14
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -835,7 +881,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 3,
       hasBoxes: false,
       valuePoints: 18
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -852,7 +899,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 3,
       hasBoxes: false,
       valuePoints: 18
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -869,7 +917,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 4,
       hasBoxes: false,
       valuePoints: 28
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -886,7 +935,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 38,
       hasBoxes: false,
       valuePoints: 294
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -903,7 +953,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 5,
       hasBoxes: false,
       valuePoints: 55
-    }
+    },
+    tags: []
   },
   {
     kind: "managed",
@@ -920,7 +971,8 @@ export const teams: ManagedTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 16
-    }
+    },
+    tags: []
   }
 ];
 

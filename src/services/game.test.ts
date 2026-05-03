@@ -10,6 +10,7 @@ import type { GameResult } from "@/types/competitions";
 const makeTeam = (overrides: Partial<Team> = {}): Team => ({
   id: 0,
   name: "Pasolini United",
+  tags: ["legend"],
   uid: "antifascist",
   city: "Bologna",
   arena: {
@@ -34,6 +35,7 @@ const makeManager = (overrides: Partial<HumanManager> = {}): HumanManager => ({
   id: "pier-paolo",
   name: "Pier Paolo Pasolini",
   nationality: "IT",
+  tags: ["renessaince_man"],
   kind: "human",
   attributes: {
     charisma: 3,

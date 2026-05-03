@@ -22,7 +22,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 136,
       hasBoxes: true,
       valuePoints: 1306
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -37,7 +38,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 147,
       hasBoxes: true,
       valuePoints: 1588
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -52,7 +54,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 152,
       hasBoxes: true,
       valuePoints: 1642
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -67,7 +70,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 119,
       hasBoxes: true,
       valuePoints: 1000
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -82,7 +86,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 130,
       hasBoxes: true,
       valuePoints: 1248
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -97,7 +102,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 116,
       hasBoxes: true,
       valuePoints: 1114
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -112,7 +118,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 179,
       hasBoxes: true,
       valuePoints: 1933
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -127,7 +134,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 190,
       hasBoxes: true,
       valuePoints: 2052
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -142,7 +150,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 100,
       hasBoxes: true,
       valuePoints: 936
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -157,7 +166,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 137,
       hasBoxes: true,
       valuePoints: 1151
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -172,7 +182,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 162,
       hasBoxes: true,
       valuePoints: 1750
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -187,7 +198,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 155,
       hasBoxes: true,
       valuePoints: 1488
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -202,7 +214,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 150,
       hasBoxes: true,
       valuePoints: 1440
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -217,7 +230,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 250,
       hasBoxes: true,
       valuePoints: 2700
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -232,7 +246,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 100,
       hasBoxes: true,
       valuePoints: 936
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -247,7 +262,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 100,
       hasBoxes: true,
       valuePoints: 936
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -262,7 +278,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 100,
       hasBoxes: true,
       valuePoints: 936
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -277,7 +294,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 100,
       hasBoxes: true,
       valuePoints: 936
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -292,7 +310,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 100,
       hasBoxes: true,
       valuePoints: 936
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -307,7 +326,8 @@ export const nhlTeams: LightTeamDefinition[] = [
       seatedCount: 100,
       hasBoxes: true,
       valuePoints: 936
-    }
+    },
+    tags: []
   }
 ];
 
@@ -329,7 +349,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 45,
       hasBoxes: false,
       valuePoints: 330
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -344,7 +365,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 50,
       hasBoxes: false,
       valuePoints: 330
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -359,7 +381,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 30,
       hasBoxes: false,
       valuePoints: 255
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -374,7 +397,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 125,
       hasBoxes: true,
       valuePoints: 1200
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -389,7 +413,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 125,
       hasBoxes: true,
       valuePoints: 1200
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -404,7 +429,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 25,
       hasBoxes: false,
       valuePoints: 185
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -419,7 +445,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 122,
       hasBoxes: true,
       valuePoints: 1171
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -434,7 +461,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 110,
       hasBoxes: true,
       valuePoints: 1056
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -449,7 +477,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 40,
       hasBoxes: false,
       valuePoints: 300
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -464,7 +493,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 43,
       hasBoxes: true,
       valuePoints: 353
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -479,7 +509,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 30,
       hasBoxes: false,
       valuePoints: 210
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -494,7 +525,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 35,
       hasBoxes: false,
       valuePoints: 270
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -509,7 +541,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 23,
       hasBoxes: false,
       valuePoints: 165
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -524,7 +557,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 50,
       hasBoxes: false,
       valuePoints: 330
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -539,7 +573,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 64,
       hasBoxes: false,
       valuePoints: 414
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -554,7 +589,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 65,
       hasBoxes: false,
       valuePoints: 420
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -569,7 +605,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 74,
       hasBoxes: false,
       valuePoints: 562
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -584,7 +621,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 40,
       hasBoxes: false,
       valuePoints: 306
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -599,7 +637,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 40,
       hasBoxes: false,
       valuePoints: 260
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -614,7 +653,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 38,
       hasBoxes: false,
       valuePoints: 303
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -629,7 +669,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 33,
       hasBoxes: false,
       valuePoints: 291
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -644,7 +685,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 23,
       hasBoxes: false,
       valuePoints: 215
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -659,7 +701,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 30,
       hasBoxes: false,
       valuePoints: 240
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -674,7 +717,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 38,
       hasBoxes: false,
       valuePoints: 366
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -689,7 +733,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 38,
       hasBoxes: false,
       valuePoints: 288
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -704,7 +749,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 40,
       hasBoxes: false,
       valuePoints: 321
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -719,7 +765,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 40,
       hasBoxes: false,
       valuePoints: 280
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -734,7 +781,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 40,
       hasBoxes: false,
       valuePoints: 280
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -749,7 +797,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 40,
       hasBoxes: false,
       valuePoints: 300
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -764,7 +813,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 46,
       hasBoxes: false,
       valuePoints: 357
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -779,7 +829,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 30,
       hasBoxes: false,
       valuePoints: 270
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -794,7 +845,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 29,
       hasBoxes: false,
       valuePoints: 217
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -809,7 +861,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 37,
       hasBoxes: false,
       valuePoints: 241
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -824,7 +877,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 39,
       hasBoxes: false,
       valuePoints: 243
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -839,7 +893,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 50,
       hasBoxes: false,
       valuePoints: 357
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -854,7 +909,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 60,
       hasBoxes: false,
       valuePoints: 484
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -869,7 +925,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 27,
       hasBoxes: false,
       valuePoints: 237
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -884,7 +941,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 17,
       hasBoxes: false,
       valuePoints: 165
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -899,7 +957,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 33,
       hasBoxes: false,
       valuePoints: 318
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -914,7 +973,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 34,
       hasBoxes: false,
       valuePoints: 279
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -929,7 +989,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 31,
       hasBoxes: false,
       valuePoints: 291
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -944,7 +1005,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 33,
       hasBoxes: false,
       valuePoints: 273
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -959,7 +1021,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 40,
       hasBoxes: false,
       valuePoints: 345
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -974,7 +1037,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 30,
       hasBoxes: false,
       valuePoints: 300
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -989,7 +1053,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 31,
       hasBoxes: false,
       valuePoints: 195
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1004,7 +1069,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 25,
       hasBoxes: false,
       valuePoints: 229
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1019,7 +1085,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 20,
       hasBoxes: false,
       valuePoints: 166
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1034,7 +1101,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 22,
       hasBoxes: false,
       valuePoints: 204
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1049,7 +1117,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 27,
       hasBoxes: false,
       valuePoints: 219
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1064,7 +1133,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 250,
       hasBoxes: true,
       valuePoints: 2700
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1079,7 +1149,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 125,
       hasBoxes: true,
       valuePoints: 1200
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1094,7 +1165,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 26,
       hasBoxes: false,
       valuePoints: 180
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1109,7 +1181,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 20,
       hasBoxes: false,
       valuePoints: 140
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1124,7 +1197,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 10,
       hasBoxes: false,
       valuePoints: 80
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1139,7 +1213,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 23,
       hasBoxes: false,
       valuePoints: 159
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1154,7 +1229,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 23,
       hasBoxes: false,
       valuePoints: 198
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1169,7 +1245,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 20,
       hasBoxes: false,
       valuePoints: 180
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1184,7 +1261,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 10,
       hasBoxes: false,
       valuePoints: 120
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1199,7 +1277,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 6,
       hasBoxes: false,
       valuePoints: 90
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1214,7 +1293,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 15,
       hasBoxes: false,
       valuePoints: 103
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1229,7 +1309,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 6,
       hasBoxes: false,
       valuePoints: 44
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1244,7 +1325,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 25,
       hasBoxes: false,
       valuePoints: 169
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1259,7 +1341,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 60,
       hasBoxes: false,
       valuePoints: 460
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1274,7 +1357,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 12,
       hasBoxes: false,
       valuePoints: 84
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1289,7 +1373,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 30,
       hasBoxes: false,
       valuePoints: 160
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1304,7 +1389,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 20,
       hasBoxes: false,
       valuePoints: 120
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1319,7 +1405,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 29,
       hasBoxes: false,
       valuePoints: 252
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1334,7 +1421,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 22,
       hasBoxes: false,
       valuePoints: 198
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1349,7 +1437,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 12,
       hasBoxes: false,
       valuePoints: 126
-    }
+    },
+    tags: []
   },
   {
     kind: "light",
@@ -1364,7 +1453,8 @@ export const foreignTeams: LightTeamDefinition[] = [
       seatedCount: 30,
       hasBoxes: false,
       valuePoints: 243
-    }
+    },
+    tags: []
   }
 ];
 
@@ -1386,7 +1476,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 5
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1401,7 +1492,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 1,
       hasBoxes: false,
       valuePoints: 8
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1416,7 +1508,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 4
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1431,7 +1524,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 11
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1446,7 +1540,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 7
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1461,7 +1556,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 5
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1476,7 +1572,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 5
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1491,7 +1588,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 2
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1506,7 +1604,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 6
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1521,7 +1620,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 5
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1536,7 +1636,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 5
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1551,7 +1652,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 4,
       hasBoxes: false,
       valuePoints: 22
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1566,7 +1668,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 6
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1581,7 +1684,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 8
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1596,7 +1700,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 2,
       hasBoxes: false,
       valuePoints: 14
-    }
+    },
+    tags: ["amateur"]
   },
   {
     kind: "light",
@@ -1611,7 +1716,8 @@ export const amateurTeams: LightTeamDefinition[] = [
       seatedCount: 0,
       hasBoxes: false,
       valuePoints: 7
-    }
+    },
+    tags: ["amateur"]
   }
 ];
 

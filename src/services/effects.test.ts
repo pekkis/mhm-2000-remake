@@ -7,6 +7,7 @@ const makeTeam = (overrides: Partial<Team> = {}): Team => ({
   uid: "salo",
   name: "Pier Paolo Pasolini FC",
   city: "Bologna",
+  tags: [],
   arena: {
     level: 1,
     standingCount: 0,

@@ -1,20 +1,32 @@
 import StickyMenu from "./StickyMenu";
 import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
 import { getEffective } from "@/services/effects";
-import { useGameContext } from "@/context/game-machine-context";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
 import { values } from "remeda";
 import { Table, Td, Th } from "./ui/Table";
 import Stack from "@/components/ui/Stack";
 import Heading from "@/components/ui/Heading";
+import Box from "@/components/ui/Box";
 
 const DeveloperMenu = () => {
   const teams = useGameContext((ctx) => ctx.teams);
   const competitions = useGameContext((ctx) => ctx.competitions);
 
+  const ctx = GameMachineContext.useSelector((snap) => snap.context);
+
   return (
     <AdvancedHeaderedPage stickyMenu={<StickyMenu back />}>
       <Stack gap="lg">
         <Heading level={2}>Devausinfo</Heading>
+
+        <Box>
+          <Heading level={3}>Context</Heading>
+
+          <pre>{JSON.stringify(ctx, undefined, 2)}</pre>
+        </Box>
 
         <Stack gap="md">
           {values(competitions).map((c) => {
@@ -40,7 +52,7 @@ const DeveloperMenu = () => {
                         const e = getEffective(team);
 
                         return (
-                          <tr key={team.id}>
+                          <tr key={team.name}>
                             <Td>{team.name}</Td>
                             <Td>{team.strength}</Td>
                             <Td>{e.strength}</Td>

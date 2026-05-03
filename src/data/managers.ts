@@ -75,6 +75,7 @@ export type ManagerDefinition = {
   /** ISO 3166-1 alpha-2 country code. */
   nationality: CountryIso;
   attributes: ManagerAttributes;
+  tags: string[];
 };
 
 type RawManager = readonly [
@@ -149,6 +150,10 @@ const raw: readonly RawManager[] = [
   ["Qimbo Tondvist", 1, -1, 0, 0, -1, 1, 1]
 ];
 
+const tagsByName: Record<string, string[]> = {
+  "Juri Simonov": ["match_with_karpat"]
+};
+
 const managers: ManagerDefinition[] = raw.map(
   (
     [
@@ -173,7 +178,8 @@ const managers: ManagerDefinition[] = raw.map(
       resourcefulness,
       charisma,
       luck
-    }
+    },
+    tags: tagsByName[name] || []
   })
 );
 

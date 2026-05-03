@@ -23,6 +23,7 @@ export type Team = {
   effects: TeamEffect[];
   opponentEffects: TeamEffect[];
   manager?: string;
+  tags: string[];
 };
 
 export type GameFlags = {

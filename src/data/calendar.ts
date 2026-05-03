@@ -1794,7 +1794,7 @@ const entries: RawCalendarEntry[] = [
     pranks: true,
     tags: ["playoffs"]
   },
-  // round 95 (KIERO.M2K row 96, type 3) — Pekkalan Cup final, leg 1
+  // round 95 (KIERO.M2K row 96, type 3) — PA Cup final, leg 1
   {
     phases: [
       "action",
@@ -1814,7 +1814,7 @@ const entries: RawCalendarEntry[] = [
     pranks: true,
     tags: ["cup-final-leg-1"]
   },
-  // round 96 (KIERO.M2K row 97, type 3) — Pekkalan Cup final, leg 2 + cupjuhla (trophy ceremony)
+  // round 96 (KIERO.M2K row 97, type 3) — PA Cup final, leg 2 + cupjuhla (trophy ceremony)
   {
     phases: [
       "action",

@@ -22,7 +22,7 @@
  *  |------|--------------------------------------------------------|
  *  |   1  | runkosarjapelipäivä (PHL + Divisioona + Mutasarja)     |
  *  |   2  | EHL-pelipäivä                                          |
- *  |   3  | cup-pelipäivä (Pekkalan Cup)                           |
+ *  |   3  | cup-pelipäivä (PA Cup)                           |
  *  |   4  | harjoitusottelu (training match)                       |
  *  |  22  | EHL:n lopputurnaus (EHL final tournament)              |
  *  |  41  | playoff QF draw (no games)                             |
@@ -208,8 +208,8 @@ export const rawCalendar: RawCalendarEntry[] = [
   { index: 94, fileIndex: 95, type: 46, transferMarket: false, preRound:  0, tags: ["playoffs"],                                                                           note: "Final game 5" },
 
   // ── Cup final + season close ─────────────────────────────────────────
-  { index: 95, fileIndex: 96, type:  3, transferMarket: false, preRound:  0, tags: ["cup-final-leg-1"],                                                                    note: "Pekkalan Cup final, leg 1" },
-  { index: 96, fileIndex: 97, type:  3, transferMarket: false, preRound:  0, tags: ["cup-final-leg-2"],                                                                    note: "Pekkalan Cup final, leg 2" },
+  { index: 95, fileIndex: 96, type:  3, transferMarket: false, preRound:  0, tags: ["cup-final-leg-1"],                                                                    note: "PA Cup final, leg 1" },
+  { index: 96, fileIndex: 97, type:  3, transferMarket: false, preRound:  0, tags: ["cup-final-leg-2"],                                                                    note: "PA Cup final, leg 2" },
   { index: 97, fileIndex: 98, type: 47, transferMarket: false, preRound:  2, tags: ["season-end-gala", "preRound:cup-draw"],                                               note: "PHL juhlagaala (season-end gala) + cuparpo for next season" },
   { index: 98, fileIndex: 99, type: 48, transferMarket: false, preRound:  0, tags: ["season-rollover"],                                                                    note: "uusikausi (rollover marker)" }
 ];

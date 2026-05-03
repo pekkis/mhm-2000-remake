@@ -7,7 +7,7 @@ import type {
 } from "@/types/competitions";
 
 /**
- * Pekkalan Cup — 6-round single-elimination cup, 2-leg matchups (each
+ * PA Cup — 6-round single-elimination cup, 2-leg matchups (each
  * team hosts once, aggregate goals decide). Pairings are random at
  * every draw — no pre-computed brackets.
  *
@@ -29,12 +29,12 @@ import type {
  */
 
 const PHASE_NAMES = [
-  "Pekkalan Cup, 1. kierros",
-  "Pekkalan Cup, 2. kierros",
-  "Pekkalan Cup, 3. kierros",
-  "Pekkalan Cup, puolivälierät",
-  "Pekkalan Cup, välierät",
-  "Pekkalan Cup, finaali"
+  "PA Cup, 1. kierros",
+  "PA Cup, 2. kierros",
+  "PA Cup, 3. kierros",
+  "PA Cup, puolivälierät",
+  "PA Cup, välierät",
+  "PA Cup, finaali"
 ];
 
 const shuffle = <T>(xs: readonly T[]): T[] =>
@@ -72,7 +72,7 @@ const cup: CompetitionDefinition = {
     weight: 1800,
     id: "cup",
     phase: -1,
-    name: "Pekkalan Cup",
+    name: "PA Cup",
     teams: [],
     phases: []
   },

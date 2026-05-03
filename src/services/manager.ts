@@ -5,6 +5,7 @@ import type { Manager } from "@/state/manager";
 export const managerFromDefinition = (def: ManagerDefinition): Manager => {
   return {
     id: createUniqueId(),
+    tags: def.tags,
     attributes: def.attributes,
     name: def.name,
     kind: "ai",

@@ -58,81 +58,92 @@ const amateurs = amateurLightTeams;
 // buckets has plenty of eligible candidates (>200, 150..225, <=175).
 const FOREIGN_PLACEHOLDER_STRENGTHS = [230, 180, 150];
 
-const seedTeams = (): Team[] => [
-  ...phlSource.map((t, i) => ({
-    id: i,
-    uid: createUniqueId(),
-    name: t.name,
-    city: t.city,
-    arena: t.arena,
-    strength: 250,
-    domestic: true,
-    morale: 0,
-    strategy: 2,
-    readiness: 0,
-    effects: [],
-    opponentEffects: []
-  })),
-  ...divisioonaSource.map((t, i) => ({
-    id: i,
-    uid: createUniqueId(),
-    name: t.name,
-    city: t.city,
-    arena: t.arena,
-    strength: 175,
-    domestic: true,
-    morale: 0,
-    strategy: 2,
-    readiness: 0,
-    effects: [],
-    opponentEffects: []
-  })),
-  ...mutasarjaSource.map((t, i) => ({
-    id: i,
-    uid: createUniqueId(),
-    name: t.name,
-    city: t.city,
-    arena: t.arena,
-    strength: t.name === "Turmio" ? 200 : 100,
-    domestic: true,
-    morale: 0,
-    strategy: 2,
-    readiness: 0,
-    effects: [],
-    opponentEffects: []
-  })),
-  ...ehlForeign.map((t, i) => ({
-    id: i,
-    uid: createUniqueId(),
-    name: t.name,
-    city: t.city,
-    arena: t.arena,
-    strength:
-      FOREIGN_PLACEHOLDER_STRENGTHS[i % FOREIGN_PLACEHOLDER_STRENGTHS.length],
-    domestic: false,
-    morale: 0,
-    strategy: 2,
-    readiness: 0,
-    effects: [],
-    opponentEffects: []
-  })),
-  // Finnish amateur clubs (TEAMS.ALA) at ids 118..133. They participate
-  // only in the Pekkalan Cup first round (16 first-round bye-fodder teams).
-  ...amateurs.map((t, i) => ({
-    id: i,
-    uid: createUniqueId(),
-    name: t.name,
-    city: t.city,
-    arena: t.arena,
-    strength: 50,
-    domestic: true,
-    morale: 0,
-    strategy: 2,
-    readiness: 0,
-    effects: [],
-    opponentEffects: []
-  }))
-];
+const seedTeams = (): Team[] => {
+  const seedables = [
+    ...phlSource.map((t) => ({
+      uid: createUniqueId(),
+      name: t.name,
+      city: t.city,
+      arena: t.arena,
+      strength: 250,
+      domestic: true,
+      morale: 0,
+      strategy: 2,
+      readiness: 0,
+      effects: [],
+      opponentEffects: [],
+      tags: t.tags
+    })),
+    ...divisioonaSource.map((t) => ({
+      uid: createUniqueId(),
+      name: t.name,
+      city: t.city,
+      arena: t.arena,
+      strength: 175,
+      domestic: true,
+      morale: 0,
+      strategy: 2,
+      readiness: 0,
+      effects: [],
+      opponentEffects: [],
+      tags: t.tags
+    })),
+    ...mutasarjaSource.map((t) => ({
+      uid: createUniqueId(),
+      name: t.name,
+      city: t.city,
+      arena: t.arena,
+      strength: t.name === "Turmio" ? 200 : 100,
+      domestic: true,
+      morale: 0,
+      strategy: 2,
+      readiness: 0,
+      effects: [],
+      opponentEffects: [],
+      tags: t.tags
+    })),
+    ...ehlForeign.map((t) => ({
+      uid: createUniqueId(),
+      name: t.name,
+      city: t.city,
+      arena: t.arena,
+      strength:
+        FOREIGN_PLACEHOLDER_STRENGTHS[
+          t.id % FOREIGN_PLACEHOLDER_STRENGTHS.length
+        ],
+      domestic: false,
+      morale: 0,
+      strategy: 2,
+      readiness: 0,
+      effects: [],
+      opponentEffects: [],
+      tags: t.tags
+    })),
+    // Finnish amateur clubs (TEAMS.ALA) at ids 118..133. They participate
+    // only in the PA Cup first round (16 first-round bye-fodder teams).
+    ...amateurs.map((t) => ({
+      uid: createUniqueId(),
+      name: t.name,
+      city: t.city,
+      arena: t.arena,
+      strength: 50,
+      domestic: true,
+      morale: 0,
+      strategy: 2,
+      readiness: 0,
+      effects: [],
+      opponentEffects: [],
+      tags: t.tags
+    }))
+  ];
+
+  return seedables.map((seedable, id) => {
+    return {
+      id,
+      ...seedable
+    };
+  });
+};
 
 export const createDefaultGameContext = (): GameContext => ({
   // game

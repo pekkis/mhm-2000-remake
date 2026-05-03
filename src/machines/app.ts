@@ -66,6 +66,7 @@ const withManager = (
     name: submission.name,
     team: submission.team,
     nationality: "FI",
+    tags: [],
     attributes: {
       charisma: 0,
       luck: 0,

@@ -141,7 +141,7 @@ describe("MHM 2000 calendar", () => {
   });
 
   describe("end of season", () => {
-    it("rounds 96 and 97 are the two-leg Pekkalan Cup final", () => {
+    it("rounds 96 and 97 are the two-leg PA Cup final", () => {
       expect(calendar[96].gamedays).toEqual(["cup"]);
       expect(calendar[97].gamedays).toEqual(["cup"]);
     });

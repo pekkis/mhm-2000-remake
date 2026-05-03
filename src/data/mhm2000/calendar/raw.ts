@@ -19,7 +19,7 @@
  *  |------|--------------------------------------------------------|
  *  |   1  | runkosarjapelipäivä (PHL + Divisioona + Mutasarja)     |
  *  |   2  | EHL-pelipäivä                                          |
- *  |   3  | cup-pelipäivä (Pekkalan Cup)                           |
+ *  |   3  | cup-pelipäivä (PA Cup)                           |
  *  |   4  | harjoitusottelu (training match)                       |
  *  |  22  | EHL:n lopputurnaus (EHL final tournament)              |
  *  |  41  | playoff QF draw (no games)                             |
@@ -200,8 +200,8 @@ export const rawCalendar: RawCalendarEntry[] = [
   { fileIndex: 95, qbIndex: 85, type: 46, transferMarket: false, preRound:  0, note: "Final game 5" },
 
   // ── Cup final + season close (kr 86..89) ─────────────────────────────
-  { fileIndex: 96, qbIndex: 86, type:  3, transferMarket: false, preRound:  0, note: "Pekkalan Cup final, leg 1" },
-  { fileIndex: 97, qbIndex: 87, type:  3, transferMarket: false, preRound:  0, note: "Pekkalan Cup final, leg 2" },
+  { fileIndex: 96, qbIndex: 86, type:  3, transferMarket: false, preRound:  0, note: "PA Cup final, leg 1" },
+  { fileIndex: 97, qbIndex: 87, type:  3, transferMarket: false, preRound:  0, note: "PA Cup final, leg 2" },
   { fileIndex: 98, qbIndex: 88, type: 47, transferMarket: false, preRound:  2, note: "PHL juhlagaala (season-end gala) + cuparpo for next season" },
   { fileIndex: 99, qbIndex: 89, type: 48, transferMarket: false, preRound:  0, note: "uusikausi (rollover marker)" }
 ];

@@ -22,6 +22,7 @@ export type AIManager = {
   nationality: CountryIso;
   attributes: ManagerAttributes;
   team?: number;
+  tags: string[];
 };
 
 export type HumanManager = {
@@ -39,6 +40,7 @@ export type HumanManager = {
   extra: number;
   insuranceExtra: number;
   flags: Record<string, boolean>;
+  tags: string[];
 };
 
 export type ManagerState = {

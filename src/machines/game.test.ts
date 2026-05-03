@@ -11,6 +11,7 @@ const buildContextWithManager = (): GameContext => {
   const manager: HumanManager = {
     id: "pasolini",
     kind: "human",
+    tags: ["poet", "director", "genious"],
     nationality: "IT",
     attributes: {
       charisma: 3,

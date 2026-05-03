@@ -119,7 +119,7 @@ export type CupMatchupStat = {
 };
 
 /**
- * One round of Pekkalan Cup. Two-leg matchups (each team hosts once).
+ * One round of PA Cup. Two-leg matchups (each team hosts once).
  * If aggregate goals are tied after the second leg, that leg goes to
  * sudden-death overtime — see `competitionTypes.cup.overtime` and
  * `services/cup.ts`. Stats track aggregate goals per matchup, not a
