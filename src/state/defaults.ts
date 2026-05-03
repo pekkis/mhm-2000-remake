@@ -27,6 +27,7 @@ import type { Team } from "./game";
 import type { Competition, CompetitionId } from "@/types/competitions";
 import { managerFromDefinition } from "@/services/manager";
 import { createUniqueId } from "@/services/id";
+import { rollTeamStrength } from "@/services/levels";
 
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
@@ -72,7 +73,8 @@ const seedTeams = (): Team[] => {
       readiness: 0,
       effects: [],
       opponentEffects: [],
-      tags: t.tags
+      tags: t.tags,
+      tier: t.tier
     })),
     ...divisioonaSource.map((t) => ({
       uid: createUniqueId(),
@@ -86,7 +88,8 @@ const seedTeams = (): Team[] => {
       readiness: 0,
       effects: [],
       opponentEffects: [],
-      tags: t.tags
+      tags: t.tags,
+      tier: t.tier
     })),
     ...mutasarjaSource.map((t) => ({
       uid: createUniqueId(),
@@ -100,7 +103,8 @@ const seedTeams = (): Team[] => {
       readiness: 0,
       effects: [],
       opponentEffects: [],
-      tags: t.tags
+      tags: t.tags,
+      tier: t.tier
     })),
     ...ehlForeign.map((t) => ({
       uid: createUniqueId(),
@@ -117,7 +121,8 @@ const seedTeams = (): Team[] => {
       readiness: 0,
       effects: [],
       opponentEffects: [],
-      tags: t.tags
+      tags: t.tags,
+      tier: t.tier
     })),
     // Finnish amateur clubs (TEAMS.ALA) at ids 118..133. They participate
     // only in the PA Cup first round (16 first-round bye-fodder teams).
@@ -133,14 +138,17 @@ const seedTeams = (): Team[] => {
       readiness: 0,
       effects: [],
       opponentEffects: [],
-      tags: t.tags
+      tags: t.tags,
+      tier: t.tier
     }))
   ];
 
   return seedables.map((seedable, id) => {
     return {
+      ...seedable,
       id,
-      ...seedable
+      kind: "ai",
+      strengthObj: rollTeamStrength(seedable.tier)
     };
   });
 };

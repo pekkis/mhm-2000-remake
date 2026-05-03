@@ -2,6 +2,16 @@ import type { Competition, CompetitionId } from "@/types/competitions";
 import type { Arena } from "@/data/mhm2000/teams";
 import type { CountryIso } from "@/data/countries";
 import type { ManagerAttributes } from "@/data/managers";
+import type { TeamStrength } from "@/data/levels";
+
+/* The free players in the player market */
+export type BorssiPlayer = {};
+
+/* Actual, hired players in a team */
+export type Player = {};
+
+/* the "players" of AI teams */
+export type AITeamMockPlayer = {};
 
 export type ManagerArena = {
   name: string;
@@ -17,25 +27,25 @@ export type ManagerServices = {
 
 export type Manager = HumanManager | AIManager;
 
-export type AIManager = {
+type BaseManager = {
   id: string;
-  kind: "ai";
   name: string;
   nationality: CountryIso;
   attributes: ManagerAttributes;
   team?: number;
   tags: string[];
+  difficulty: number;
+};
+
+export type AIManager = BaseManager & {
+  kind: "ai";
   difficulty: 2;
 };
 
-export type HumanManager = {
-  id: string;
+export type HumanManager = BaseManager & {
   kind: "human";
-  name: string;
-  nationality: CountryIso;
   difficulty: number;
   attributes: ManagerAttributes;
-  team?: number;
   balance: number;
   arena: ManagerArena;
   services: ManagerServices;
@@ -52,8 +62,7 @@ export type TeamEffect = {
   duration: number;
   extra?: Record<string, unknown>;
 };
-
-export type Team = {
+type BaseTeam = {
   id: number;
   uid: string;
   name: string;
@@ -68,7 +77,20 @@ export type Team = {
   opponentEffects: TeamEffect[];
   manager?: string;
   tags: string[];
+  tier: number;
 };
+
+export type AITeam = BaseTeam & {
+  kind: "ai";
+  strengthObj: TeamStrength;
+};
+
+export type HumanTeam = BaseTeam & {
+  kind: "human";
+  players: Record<string, Player>;
+};
+
+export type Team = HumanTeam | AITeam;
 
 export type GameFlags = {
   jarko: boolean;

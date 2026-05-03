@@ -3,16 +3,20 @@ import { resultFacts, gameFacts } from "@/services/game";
 import { createGameService } from "@/services/game";
 import { createRandom } from "@/services/random";
 import type { GameInput } from "@/services/game";
-import type { Team } from "@/state/game";
+import type { AITeam } from "@/state/game";
 import type { HumanManager } from "@/state/game";
 import type { GameResult } from "@/types/competitions";
+import { rollTeamStrength } from "@/services/levels";
 
-const makeTeam = (overrides: Partial<Team> = {}): Team => ({
+const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => ({
   id: 0,
   name: "Pasolini United",
+  kind: "ai",
   tags: ["legend"],
   uid: "antifascist",
   city: "Bologna",
+  tier: 30,
+  strengthObj: rollTeamStrength(30),
   arena: {
     level: 1,
     standingCount: 0,
