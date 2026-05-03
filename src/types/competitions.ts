@@ -1,6 +1,7 @@
 import type { Team } from "@/state/game";
 import type { GameContext } from "@/state";
 import type { Draft } from "immer";
+import type { HumanManager, Manager } from "@/state/manager";
 
 // --- Game result ---
 
@@ -201,9 +202,13 @@ export type CompetitionDefinition = {
   relegateTo: string | false;
   promoteTo: string | false;
   parameters: CompetitionParameters;
-  gameBalance: (phase: number, facts: GameFacts, manager: any) => number;
-  moraleBoost: (phase: number, facts: GameFacts, manager: any) => number;
-  readinessBoost: (phase: number, facts: GameFacts, manager: any) => number;
+  gameBalance: (
+    phase: number,
+    facts: GameFacts,
+    manager: HumanManager
+  ) => number;
+  moraleBoost: (phase: number, facts: GameFacts, manager: Manager) => number;
+  readinessBoost: (phase: number, facts: GameFacts, manager: Manager) => number;
   seed: Array<
     (competitions: Record<CompetitionId, Competition>, context?: any) => Phase
   >;

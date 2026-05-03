@@ -64,22 +64,25 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
   );
 
   // Per-manager: salary, insurance extra (skipped season 0), reset extra.
-  for (const manager of values(draft.manager.managers)) {
+  for (const manager of values(draft.managers)) {
     if (season > 0) {
       const team = draft.teams[manager.team!];
       const mainCompetition = managersMainCompetition(manager.id)(
         draft as GameContext
       );
-      const salaryPerStrength =
-        difficultyLevels[manager.difficulty].salary(mainCompetition);
-      manager.balance -= salaryPerStrength * team.strength;
 
-      if (manager.services.insurance) {
-        manager.insuranceExtra -= 50 * manager.arena.level;
+      if (manager.kind === "human") {
+        const salaryPerStrength =
+          difficultyLevels[manager.difficulty].salary(mainCompetition);
+        manager.balance -= salaryPerStrength * team.strength;
+
+        if (manager.services.insurance) {
+          manager.insuranceExtra -= 50 * manager.arena.level;
+        }
+
+        manager.extra = difficultyLevels[manager.difficulty].extra;
       }
     }
-
-    manager.extra = difficultyLevels[manager.difficulty].extra;
   }
 
   // Initialize currentSeason for stats accumulation. Saga side did

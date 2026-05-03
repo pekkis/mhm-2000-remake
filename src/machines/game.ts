@@ -10,7 +10,8 @@ import {
   canBuyPlayer,
   canSellPlayer,
   canCrisisMeeting,
-  allEventsResolved
+  allEventsResolved,
+  humanManagers
 } from "@/machines/selectors";
 import difficultyLevels from "@/data/difficulty-levels";
 import calendar from "@/data/calendar";
@@ -269,7 +270,7 @@ export const gameMachine = setup({
     selectStrategy: assign(
       ({ context }, params: { manager: string; strategy: number }) =>
         produce(context, (draft) => {
-          const team = draft.manager.managers[params.manager]?.team;
+          const team = draft.managers[params.manager]?.team;
           if (team === undefined) {
             return;
           }
@@ -292,7 +293,12 @@ export const gameMachine = setup({
         params: { manager: string; team: number; amount: number; odds: number }
       ) =>
         produce(context, (draft) => {
-          const m = draft.manager.managers[params.manager];
+          const m = draft.managers[params.manager];
+
+          if (m.kind === "ai") {
+            return;
+          }
+
           if (m) {
             m.balance -= params.amount;
           }
@@ -359,10 +365,17 @@ export const gameMachine = setup({
         params: { manager: string; coupon: string[]; amount: number }
       ) =>
         produce(context, (draft) => {
-          const m = draft.manager.managers[params.manager];
-          if (m) {
-            m.balance -= params.amount;
+          const m = draft.managers[params.manager];
+
+          if (!m) {
+            return;
           }
+
+          if (m.kind === "ai") {
+            return;
+          }
+
+          m.balance -= params.amount;
           draft.betting.parlayBets.push(
             spawn("bet", {
               id: `bet-${createUniqueId()}`,
@@ -435,10 +448,15 @@ export const gameMachine = setup({
           const targetCompetition = competesInPHL ? "phl" : "division";
           const price = prankTypes[params.type].price(targetCompetition);
 
-          const m = draft.manager.managers[params.manager];
+          const m = draft.managers[params.manager];
           if (!m) {
             return;
           }
+
+          if (m.kind !== "human") {
+            return;
+          }
+
           m.balance -= price;
           m.pranksExecuted += 1;
           draft.prank.pranks.push({
@@ -457,10 +475,15 @@ export const gameMachine = setup({
      */
     executeImproveArena: assign(({ context }, params: { manager: string }) =>
       produce(context, (draft) => {
-        const m = draft.manager.managers[params.manager];
+        const m = draft.managers[params.manager];
         if (!m) {
           return;
         }
+
+        if (m.kind === "ai") {
+          return;
+        }
+
         const nextLevel = m.arena.level + 1;
         const nextArena = arenas[nextLevel];
         if (!nextArena) {
@@ -490,10 +513,15 @@ export const gameMachine = setup({
         const skillGain = playerType.skill();
         enqueue.assign(
           produce(context, (draft) => {
-            const m = draft.manager.managers[params.manager];
+            const m = draft.managers[params.manager];
             if (!m || m.team === undefined) {
               return;
             }
+
+            if (m.kind === "ai") {
+              return;
+            }
+
             m.balance -= playerType.buy;
             draft.teams[m.team].strength += skillGain;
           })
@@ -525,10 +553,15 @@ export const gameMachine = setup({
         const skillLoss = playerType.skill();
         enqueue.assign(
           produce(context, (draft) => {
-            const m = draft.manager.managers[params.manager];
+            const m = draft.managers[params.manager];
             if (!m || m.team === undefined) {
               return;
             }
+
+            if (m.kind === "ai") {
+              return;
+            }
+
             m.balance += playerType.sell;
             draft.teams[m.team].strength -= skillLoss;
           })
@@ -558,10 +591,15 @@ export const gameMachine = setup({
      */
     executeCrisisMeeting: enqueueActions(
       ({ context, enqueue }, params: { manager: string }) => {
-        const m = context.manager.managers[params.manager];
+        const m = context.managers[params.manager];
         if (!m || m.team === undefined) {
           return;
         }
+
+        if (m.kind === "ai") {
+          return;
+        }
+
         const team = context.teams[m.team];
         const cost = context.competitions.division.teams.includes(team.id)
           ? CRISIS_COST / 2
@@ -571,10 +609,15 @@ export const gameMachine = setup({
 
         enqueue.assign(
           produce(context, (draft) => {
-            const dm = draft.manager.managers[params.manager];
+            const dm = draft.managers[params.manager];
             if (!dm || dm.team === undefined) {
               return;
             }
+
+            if (dm.kind === "ai") {
+              return;
+            }
+
             dm.balance -= cost;
             const dt = draft.teams[dm.team];
             dt.morale = Math.min(
@@ -606,8 +649,12 @@ export const gameMachine = setup({
         params: { manager: string; service: keyof ManagerServices }
       ) =>
         produce(context, (draft) => {
-          const m = draft.manager.managers[params.manager];
+          const m = draft.managers[params.manager];
           if (!m) {
+            return;
+          }
+
+          if (m.kind === "ai") {
             return;
           }
           m.services[params.service] = !m.services[params.service];
@@ -722,7 +769,7 @@ export const gameMachine = setup({
         }
 
         // Per-manager: pay for active services.
-        for (const manager of values(draft.manager.managers)) {
+        for (const manager of values(humanManagers(draft))) {
           let serviceCosts = 0;
           for (const [serviceId, active] of entries(manager.services)) {
             if (!active) {
@@ -769,7 +816,7 @@ export const gameMachine = setup({
      */
     executeEventCreation: assign(({ context }) =>
       produce(context, (draft) => {
-        for (const manager of values(draft.manager.managers)) {
+        for (const manager of values(humanManagers(draft))) {
           const eventNumber = random.cinteger(1, 335);
           const eventName = eventsMap[eventNumber];
 
@@ -1201,7 +1248,7 @@ export const gameMachine = setup({
       // 1-1 port of the legacy `acceptInvitation()` saga.
       actions: enqueueActions(({ context, enqueue, event }) => {
         const { manager, id } = event.payload;
-        const teamId = context.manager.managers[manager]?.team;
+        const teamId = context.managers[manager]?.team;
         runInterpreter(context, enqueue, (draft, notify) => {
           const idx = draft.invitation.invitations.findIndex(
             (i) => i.manager === manager && i.id === id

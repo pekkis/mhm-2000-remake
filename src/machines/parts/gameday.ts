@@ -159,7 +159,11 @@ export function runGameday(draft: Draft<GameContext>): void {
 
       // 3. Per-manager bookkeeping for the round we just played.
       //    1-1 port of `afterGameday()` in src/sagas/manager.ts.
-      for (const [managerId, manager] of entries(draft.manager.managers)) {
+      for (const [managerId, manager] of entries(draft.managers)) {
+        if (!manager.team) {
+          continue;
+        }
+
         const managersIndex = group.teams.findIndex((t) => t === manager.team);
         if (managersIndex === -1) {
           continue;
@@ -172,49 +176,46 @@ export function runGameday(draft: Draft<GameContext>): void {
           continue;
         }
 
-        // Microphone bust roll: PHL/division phase 0 only, 6%
-        // chance → 50000 fine + 4-point penalty (in the league
-        // group, hard-coded to phase 0 group 0).
-        if (
-          manager.services.microphone &&
-          (competitionId === "phl" || competitionId === "division") &&
-          comp.phase === 0
-        ) {
-          if (random.bool(0.06)) {
-            const fine = 50000;
-            const pointDeduction = -4;
-            manager.balance -= fine;
-            // Inline the penalty (port of `incurPenalty` saga +
-            // `teamIncurPenalty` reducer): only applies to
-            // round-robin groups, which the league always is.
-            const leagueGroup =
-              draft.competitions[competitionId].phases[0].groups[0];
-            if (leagueGroup.type === "round-robin") {
-              leagueGroup.penalties.push({
-                team: manager.team!,
-                penalty: pointDeduction
-              });
-              leagueGroup.stats = computeStats(leagueGroup);
+        if (manager.kind === "human") {
+          // Microphone bust roll: PHL/division phase 0 only, 6%
+          // chance → 50000 fine + 4-point penalty (in the league
+          // group, hard-coded to phase 0 group 0).
+          if (
+            manager.services.microphone &&
+            (competitionId === "phl" || competitionId === "division") &&
+            comp.phase === 0
+          ) {
+            if (random.bool(0.06)) {
+              const fine = 50000;
+              const pointDeduction = -4;
+              manager.balance -= fine;
+              // Inline the penalty (port of `incurPenalty` saga +
+              // `teamIncurPenalty` reducer): only applies to
+              // round-robin groups, which the league always is.
+              const leagueGroup =
+                draft.competitions[competitionId].phases[0].groups[0];
+              if (leagueGroup.type === "round-robin") {
+                leagueGroup.penalties.push({
+                  team: manager.team!,
+                  penalty: pointDeduction
+                });
+                leagueGroup.stats = computeStats(leagueGroup);
+              }
+              if (!draft.news.announcements[managerId]) {
+                draft.news.announcements[managerId] = [];
+              }
+              draft.news.announcements[managerId].push(
+                `"Salainen" mikrofonisi vastustajan vaihtoaitiossa on paljastunut. Teidät tuomitaan __${formatAmount(
+                  fine
+                )}__ pekan sakkoihin ja __${pointDeduction}__ pisteen menetykseen.`
+              );
             }
-            if (!draft.news.announcements[managerId]) {
-              draft.news.announcements[managerId] = [];
-            }
-            draft.news.announcements[managerId].push(
-              `"Salainen" mikrofonisi vastustajan vaihtoaitiossa on paljastunut. Teidät tuomitaan __${formatAmount(
-                fine
-              )}__ pekan sakkoihin ja __${pointDeduction}__ pisteen menetykseen.`
-            );
           }
         }
 
         const facts = gameFacts(game, managersIndex);
         const team = draft.teams[manager.team!];
 
-        const balanceDelta = competitionDef.gameBalance(
-          comp.phase,
-          facts,
-          manager
-        );
         const moraleDelta = competitionDef.moraleBoost(
           comp.phase,
           facts,
@@ -226,19 +227,32 @@ export function runGameday(draft: Draft<GameContext>): void {
           manager
         );
 
-        if (balanceDelta) {
-          manager.balance += balanceDelta;
+        if (manager.kind === "human") {
+          const balanceDelta = competitionDef.gameBalance(
+            comp.phase,
+            facts,
+            manager
+          );
+
+          if (balanceDelta) {
+            manager.balance += balanceDelta;
+          }
         }
         if (readinessDelta) {
           team.readiness += readinessDelta;
         }
-        if (moraleDelta) {
-          // Morale clamp uses the team's manager's difficulty
-          // (defaults to 2 / Pasolini-mode for unmanaged teams).
-          const diffIdx = manager.difficulty;
-          const min = difficultyLevels[diffIdx].moraleMin;
-          const max = difficultyLevels[diffIdx].moraleMax;
-          team.morale = Math.min(max, Math.max(min, team.morale + moraleDelta));
+        if (manager.kind === "human") {
+          if (moraleDelta) {
+            // Morale clamp uses the team's manager's difficulty
+            // (defaults to 2 / Pasolini-mode for unmanaged teams).
+            const diffIdx = manager.difficulty;
+            const min = difficultyLevels[diffIdx].moraleMin;
+            const max = difficultyLevels[diffIdx].moraleMax;
+            team.morale = Math.min(
+              max,
+              Math.max(min, team.morale + moraleDelta)
+            );
+          }
         }
       }
 

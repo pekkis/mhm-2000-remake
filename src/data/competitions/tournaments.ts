@@ -155,8 +155,9 @@ const tournaments: CompetitionDefinition = {
       }
 
       if (m.kind === "ai") {
-        return;
+        continue;
       }
+
       m.balance += award;
       if (!draft.news.announcements[m.id]) {
         draft.news.announcements[m.id] = [];

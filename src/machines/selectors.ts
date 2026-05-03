@@ -23,7 +23,7 @@
 
 import r from "@/services/random";
 import { victors } from "@/services/playoffs";
-import { entries, keys, mapValues, pick, pickBy, values } from "remeda";
+import { entries, keys, pick, pickBy, values } from "remeda";
 import arenas from "@/data/arenas";
 import difficultyLevels from "@/data/difficulty-levels";
 import calendar from "@/data/calendar";

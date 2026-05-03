@@ -4,12 +4,13 @@ import { createGameService } from "@/services/game";
 import { createRandom } from "@/services/random";
 import type { GameInput } from "@/services/game";
 import type { Team } from "@/state/game";
-import type { Manager } from "@/state/manager";
+import type { HumanManager } from "@/state/manager";
 import type { GameResult } from "@/types/competitions";
 
 const makeTeam = (overrides: Partial<Team> = {}): Team => ({
   id: 0,
   name: "Pasolini United",
+  uid: "antifascist",
   city: "Bologna",
   arena: {
     level: 1,
@@ -29,9 +30,20 @@ const makeTeam = (overrides: Partial<Team> = {}): Team => ({
   ...overrides
 });
 
-const makeManager = (overrides: Partial<Manager> = {}): Manager => ({
+const makeManager = (overrides: Partial<HumanManager> = {}): HumanManager => ({
   id: "pier-paolo",
   name: "Pier Paolo Pasolini",
+  nationality: "IT",
+  kind: "human",
+  attributes: {
+    charisma: 3,
+    luck: 3,
+    negotiation: 3,
+    resourcefulness: 3,
+    specialTeams: 3,
+    strategy: -3
+  },
+
   team: 0,
   difficulty: 0,
   pranksExecuted: 0,

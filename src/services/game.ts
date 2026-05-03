@@ -85,7 +85,7 @@ export const createGameService = (r: RandomService): GameService => {
     const managerEffectValues: Record<string, number> = {};
     for (const key of ["home", "away"] as const) {
       const manager = managers[key];
-      if (!manager) {
+      if (!manager || manager.kind === "ai") {
         managerEffectValues[key] = 0;
       } else {
         let total = 0;
