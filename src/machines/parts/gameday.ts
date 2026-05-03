@@ -151,11 +151,6 @@ export function runGameday(draft: Draft<GameContext>): void {
             group,
             round,
             matchup: x
-          },
-
-          round: {
-            // TODO: use the competition types.
-            type: 1
           }
         });
 

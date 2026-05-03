@@ -18,7 +18,6 @@ import {
   simulateMatch,
   type MatchContext,
   type MatchResult,
-  type MatchRound,
   type MatchSide
 } from "@/services/mhm-2000/simulate-match";
 import type { GameResult } from "@/types/competitions";
@@ -39,14 +38,13 @@ import type { GameResult } from "@/types/competitions";
  *     code carries the same information in a single integer.
  *
  * As more mechanics port in (services, consumables, pranks, league
- * comeback handicap, …) we expect to grow `MatchRound` and the
- * sides, never `MHM2000GameInput` itself.
+ * comeback handicap, …) we expect to grow `MatchSide` and
+ * `MatchContext`, never `MHM2000GameInput` itself.
  */
 export type MHM2000GameInput = {
   home: MatchSide;
   away: MatchSide;
   context: MatchContext;
-  round: MatchRound;
 };
 
 /**

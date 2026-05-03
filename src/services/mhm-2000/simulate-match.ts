@@ -113,31 +113,6 @@ export type MatchSide = {
 
 export type Overtime = "none" | "regular" | "sudden-death";
 
-/**
- * Round type — the `kiero(kr)` value of the current round. Only the
- * codes that actually run a match are listed here (i.e. not 47/48/96/97
- * etc, which are gala / rollover / break days and never reach `ottpel`).
- *
- * See [src/data/mhm2000/calendar.ts](../../data/mhm2000/calendar.ts) for
- * the full kiero table.
- */
-export type MatchRoundType =
-  | 1 // regular gameday (PHL / Divisioona / Mutasarja)
-  | 2 // EHL gameday
-  | 3 // cup gameday — same etu shape as 1
-  | 4 // training match (etu away = .95)
-  | 42 // playoff QF gameday
-  | 44 // playoff SF gameday
-  | 46; // playoff Final gameday
-
-/**
- * Per-round flags bundled together so we don't grow the function
- * signature every time a new mechanic is decoded.
- */
-export type MatchRound = {
-  type: MatchRoundType;
-};
-
 export type MatchResult = {
   /** Final score. */
   homeGoals: number;
@@ -294,9 +269,9 @@ const evenStrengthPossession = (
   random: RandomService
 ): { home: number; away: number } => {
   const tally = { home: 0, away: 0 };
-  const sides: Array<["home", SideStrength, SideStrength]> = [
-    ["home", home, away],
-    ["away" as "home", away, home] // QB iterates b=1,c=2 then b=2,c=1
+  const sides = [
+    ["home", home, away] as const,
+    ["away", away, home] as const // QB iterates b=1,c=2 then b=2,c=1
   ];
   for (const [key, b, c] of sides) {
     if (b.attack * rnd(random) > c.defence * rnd(random)) {
@@ -348,9 +323,9 @@ const overtimeAttempt = (
   away: SideStrength,
   random: RandomService
 ): "home" | "away" | null => {
-  const sides: Array<["home" | "away", SideStrength, SideStrength]> = [
-    ["home", home, away],
-    ["away", away, home]
+  const sides = [
+    ["home", home, away] as const,
+    ["away", away, home] as const
   ];
   for (const [key, b, c] of sides) {
     if (b.attack * rnd(random) > c.defence * rnd(random)) {
@@ -429,10 +404,11 @@ export const simulateMatch = (
     overtime: false
   };
 
-  // const def = competitions[context.competition.id];
-
+  // 4. Overtime if tied. Regular / EHL → single one-round attempt
+  //    (`gnome = 1` branch). Cup / playoff → sudden death (`gnome = 2`).
+  //    QB: SELECT CASE kiero(kr) [3936-3950] + jatkoaika: [3961-3975].
+  //    Per-competition dispatch lives in `competition-type.ts`.
   const type = competitionTypes[phase.type];
-
   const overtime = type.overtime(result, group, round, matchup);
 
   if (overtime !== "none") {
@@ -466,10 +442,6 @@ export const simulateMatch = (
       }
     }
   }
-
-  // 4. Overtime if tied. Regular / EHL → single one-round attempt
-  //    (`gnome = 1` branch). Cup / playoff → sudden death (`gnome = 2`).
-  //    QB: SELECT CASE kiero(kr) [3936-3950] + jatkoaika: [3961-3975].
 
   // 5. Morale deltas. QB `morttivertti:` [3953-3960]:
   //      winner: mor team, +1
