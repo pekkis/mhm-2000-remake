@@ -12,6 +12,40 @@ We're reverse-engineering MHM 2000's QuickBASIC 4.5 source (in
 it's the inherited MHM 97 remake foundation. New game logic ports onto
 it sub-by-sub.
 
+## Phase 2 progress (Port Pipeline Shakedown — IN PROGRESS)
+
+The first end-to-end vertical slice is up: `SUB ottpel` (managed-base-
+team subset) ported, wired into the gameday machine, scores rendered
+with overtime markers, save/load surviving the new shape.
+
+- **Match engine.** [src/services/mhm-2000/simulate-match.ts](../../services/mhm-2000/simulate-match.ts)
+  — pure faithful port of `SUB ottpel` (decode at SUBS.md `ottpel` row).
+  Consumes `MatchSide = { team: Team; manager: Manager }`, returns
+  `MatchResult` with `homeGoals / awayGoals / overtime / *MoraleChange`.
+  Symmetric over AI vs human via `calculateStrength(team)` from
+  [src/services/team.ts](../../services/team.ts).
+- **Service façade.** [src/services/mhm-2000/game.ts](../../services/mhm-2000/game.ts) —
+  `MHM2000GameService` mirrors the inherited `GameService` shape;
+  `toGameResult()` adapts to MHM 97's `GameResult`.
+- **Light-team handling.** Every light team carries the
+  `Pier Paolo Proxy Pasolini` proxy manager (singleton, all-zero
+  attributes, last row of [src/data/managers.ts](../../data/managers.ts)).
+  Encapsulates QB's `man(49..86) = 0` + `mtaito(*, 0)` zero-row pattern
+  into a single Manager reference, eliminating `Manager | undefined`
+  branching downstream. See GLOSSARY.md `light team` + `Pier Paolo Proxy
+  Pasolini` rows for the rationale and a full list of QB sites this
+  collapses.
+- **UI.** Both [src/components/gameday/Results.tsx](../../components/gameday/Results.tsx)
+  and [src/components/gameday/Games.tsx](../../components/gameday/Games.tsx)
+  now append the QB " ja." overtime marker to every score string when
+  `result.overtime`.
+
+**Still on the Phase-2 punch list:** `tre` / `tautip` / `erik` services,
+`inte` / `treeni` etu modifiers, `spx(3/4)` consumables, `pel(*).spe`
+roster effects (extremelyFat, daddyPays), `jaynax(2/6)` prank wiring,
+league comeback handicap ([ILEX5.BAS:3754-3762](../ILEX5.BAS)),
+tournament-match path. All TODO-tagged inline in the port.
+
 ## Sub-decode docs
 
 - [MHM2K-FLOW.md](MHM2K-FLOW.md) — `MHM2K.BAS` end-to-end: title
@@ -90,6 +124,8 @@ param`). MHM 2000 expanded MHM 97's 75-round calendar.
    record fires under which condition).
 2. **`ottpel` / `ottul` SUBs** — gameday simulation core. Untangling
    these gives us the match engine.
+   _(`ottpel` ported managed-base-team subset — see Phase 2 progress.
+   `ottul` still pending; check post-match logic for tournament path.)_
 3. **Runtime player random-access DB filename** — created on new game.
 4. **`borzzi` field meanings**: `na` (name, 13 chars, confirmed),
    `ma` ❓, `sy` ❓, `pi` ❓, `jo` ❓, `ka` ❓.

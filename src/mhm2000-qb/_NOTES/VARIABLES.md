@@ -295,7 +295,7 @@ player records live in a random-access file (database-style).
 
 | Var                                          | Type    | Meaning                       | TODO              |
 | -------------------------------------------- | ------- | ----------------------------- | ----------------- |
-| `mw() pw() hw()`                             | INTEGER | ❓ (main/power/home weights?) | TODO              |
+| `mw() pw() hw()`                             | INTEGER | **goalie / defence / attack base figures per team** — the QB `mw/pw/hw` triple consumed by `SUB ottpel` ([ILEX5.BAS:3765-3767](../ILEX5.BAS)) as `ode(1..3, z) = mw/pw/hw(od(z))`. For CPU base teams set per season at `tasomaar` from TASOT.M2K `lvl(tazo).maz/.puz/.hyz` plus per-match noise (±1/±2/±4). Human teams: derived from the actual roster by `orgamaar`. Light teams: same `mw/pw/hw` slots, set once from TASOT.M2K with no roster scan. The PP/PK shadow at [ILEX5.BAS:328-329](../ILEX5.BAS) recomputes `yw/aw` from these every round. **Naming origin:** likely `maalivähennys / puolustus / hyökkäys` weights but unconfirmed. Ported as the `TeamStrength` triple in [src/data/levels.ts](../../data/levels.ts) and consumed via `calculateStrength(team)` in [src/services/team.ts](../../services/team.ts). | confirmed         |
 | `mwnn pwnn hwnn mwmm pwmm hwmm`              | INTEGER | indexed by round/phase        | TODO              |
 | `mukp() muke() mukt() mukc() mukax() mukax%` | INTEGER | participation tiers           | TODO clarify each |
 | `emestari`                                   | INTEGER | European champion id          |                   |
