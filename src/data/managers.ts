@@ -147,11 +147,37 @@ const raw: readonly RawManager[] = [
   ["Ronadlo", 18, 0, 3, -3, -3, 3, 0],
   ["Ari Keloranta", 1, 1, -1, 0, -1, 0, 1],
   ["Bonatoli Agdanov", 5, 3, 0, -1, -1, -1, 0],
-  ["Qimbo Tondvist", 1, -1, 0, 0, -1, 1, 1]
+  ["Qimbo Tondvist", 1, -1, 0, 0, -1, 1, 1],
+  // — PROXY MANAGER —
+  // Pier Paolo Proxy Pasolini stands in for the absent manager of every
+  // "light" team (NHL / European / amateur — QB ids `>= 49`). In the
+  // QB original these teams have `man(team) = 0`, which silently reads
+  // the zero-row of `mtaito(*, 0)`. Every site that uses a manager
+  // attribute is then guarded by `IF od < 49 THEN …`. We collapse all
+  // that guarding into a single shared zero-attribute manager: the
+  // arithmetic is identical (`1 + 0 * 0.04 = 1`, `0 * X = 0`) and the
+  // type stays `Manager`, not `Manager | undefined`.
+  //
+  // See the QB notes in `_NOTES/SUBS.md` for every `< 49` branch this
+  // collapses. If anything later turns out to actually need a per-team
+  // distinct manager for light teams, we'll pivot — but the QB code
+  // itself shares one zero-row across all of them, so the singleton is
+  // the faithful port.
+  ["Pier Paolo Proxy Pasolini", 4, 0, 0, 0, 0, 0, 0]
 ];
 
+/**
+ * Manager id of the shared light-team proxy. Equal to the index of
+ * `Pier Paolo Proxy Pasolini` in `raw` above (= length - 1). Use this
+ * to look him up in `managerDefs` / `ctx.managers` without scanning by
+ * name. Exported as a const so future code can reference the proxy by
+ * a single import rather than re-hardcoding the index.
+ */
+export const PIER_PAOLO_PROXY_PASOLINI_INDEX = 54;
+
 const tagsByName: Record<string, string[]> = {
-  "Juri Simonov": ["match_with_karpat"]
+  "Juri Simonov": ["match_with_karpat"],
+  "Pier Paolo Proxy Pasolini": ["proxy", "light"]
 };
 
 const managers: ManagerDefinition[] = raw.map(

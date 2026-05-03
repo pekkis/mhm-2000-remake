@@ -17,7 +17,7 @@ import {
   foreignTeams as foreignLightTeams,
   amateurTeams as amateurLightTeams
 } from "@/data/mhm2000/light-teams";
-import managerDefs from "@/data/managers";
+import managerDefs, { PIER_PAOLO_PROXY_PASOLINI_INDEX } from "@/data/managers";
 import competitionList from "@/data/competitions";
 import { countries as countryList } from "@/data/countries";
 
@@ -28,7 +28,6 @@ import type { Competition, CompetitionId } from "@/types/competitions";
 import { managerFromDefinition } from "@/services/manager";
 import { createUniqueId } from "@/services/id";
 import { rollTeamStrength } from "@/services/levels";
-import { current, produce } from "immer";
 
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
@@ -256,8 +255,21 @@ export const createDefaultGameContext = (): GameContext => {
 
   const managers = values(ctx.managers);
 
+  // Pier Paolo Proxy Pasolini stands in for the absent manager of every
+  // light team (NHL / European / amateur). Faithful port of QB's shared
+  // zero-row `mtaito(*, 0)` behavior \u2014 same singleton, many teams.
+  // See `src/data/managers.ts` for the longer rationale.
+  const pasolini = managers.find((m) => m.tags.includes("proxy"));
+  if (!pasolini) {
+    throw new Error(
+      `Pier Paolo Proxy Pasolini missing from managers (expected at raw index ${PIER_PAOLO_PROXY_PASOLINI_INDEX}).`
+    );
+  }
+
   for (let x = 0; x < ctx.teams.length; x = x + 1) {
-    if (!ctx.teams[x].tags.includes("light")) {
+    if (ctx.teams[x].tags.includes("light")) {
+      ctx.teams[x].manager = pasolini.id;
+    } else {
       ctx.teams[x].manager = managers[x].id;
     }
   }
