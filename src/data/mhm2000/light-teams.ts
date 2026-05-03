@@ -23,7 +23,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1306
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -39,7 +39,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1588
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -55,7 +55,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1642
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -71,7 +71,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1000
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -87,7 +87,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1248
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -103,7 +103,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1114
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -119,7 +119,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1933
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -135,7 +135,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 2052
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -151,7 +151,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 936
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -167,7 +167,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1151
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -183,7 +183,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1750
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -199,7 +199,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1488
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -215,7 +215,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1440
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -231,7 +231,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 2700
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -247,7 +247,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 936
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -263,7 +263,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 936
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -279,7 +279,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 936
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -295,7 +295,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 936
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -311,7 +311,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 936
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -327,7 +327,7 @@ export const nhlTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 936
     },
-    tags: []
+    tags: ["light"]
   }
 ];
 
@@ -350,7 +350,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 330
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -366,7 +366,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 330
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -382,7 +382,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 255
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -398,7 +398,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1200
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -414,7 +414,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1200
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -430,7 +430,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 185
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -446,7 +446,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1171
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -462,7 +462,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1056
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -478,7 +478,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 300
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -494,7 +494,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 353
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -510,7 +510,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 210
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -526,7 +526,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 270
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -542,7 +542,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 165
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -558,7 +558,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 330
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -574,7 +574,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 414
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -590,7 +590,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 420
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -606,7 +606,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 562
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -622,7 +622,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 306
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -638,7 +638,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 260
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -654,7 +654,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 303
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -670,7 +670,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 291
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -686,7 +686,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 215
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -702,7 +702,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 240
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -718,7 +718,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 366
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -734,7 +734,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 288
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -750,7 +750,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 321
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -766,7 +766,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 280
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -782,7 +782,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 280
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -798,7 +798,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 300
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -814,7 +814,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 357
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -830,7 +830,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 270
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -846,7 +846,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 217
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -862,7 +862,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 241
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -878,7 +878,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 243
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -894,7 +894,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 357
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -910,7 +910,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 484
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -926,7 +926,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 237
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -942,7 +942,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 165
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -958,7 +958,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 318
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -974,7 +974,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 279
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -990,7 +990,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 291
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1006,7 +1006,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 273
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1022,7 +1022,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 345
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1038,7 +1038,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 300
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1054,7 +1054,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 195
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1070,7 +1070,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 229
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1086,7 +1086,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 166
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1102,7 +1102,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 204
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1118,7 +1118,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 219
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1134,7 +1134,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 2700
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1150,7 +1150,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1200
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1166,7 +1166,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 180
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1182,7 +1182,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 140
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1198,7 +1198,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 80
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1214,7 +1214,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 159
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1230,7 +1230,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 198
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1246,7 +1246,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 180
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1262,7 +1262,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 120
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1278,7 +1278,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 90
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1294,7 +1294,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 103
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1310,7 +1310,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 44
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1326,7 +1326,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 169
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1342,7 +1342,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 460
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1358,7 +1358,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 84
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1374,7 +1374,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 160
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1390,7 +1390,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 120
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1406,7 +1406,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 252
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1422,7 +1422,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 198
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1438,7 +1438,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 126
     },
-    tags: []
+    tags: ["light"]
   },
   {
     kind: "light",
@@ -1454,7 +1454,7 @@ export const foreignTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 243
     },
-    tags: []
+    tags: ["light"]
   }
 ];
 
@@ -1477,7 +1477,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 5
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1493,7 +1493,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 8
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1509,7 +1509,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 4
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1525,7 +1525,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 11
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1541,7 +1541,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 7
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1557,7 +1557,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 5
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1573,7 +1573,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 5
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1589,7 +1589,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 2
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1605,7 +1605,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 6
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1621,7 +1621,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 5
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1637,7 +1637,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 5
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1653,7 +1653,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 22
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1669,7 +1669,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 6
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1685,7 +1685,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 8
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1701,7 +1701,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 14
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   },
   {
     kind: "light",
@@ -1717,7 +1717,7 @@ export const amateurTeams: LightTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 7
     },
-    tags: ["amateur"]
+    tags: ["amateur", "light"]
   }
 ];
 

@@ -2,13 +2,14 @@ import { entries } from "remeda";
 import type { Draft } from "immer";
 
 import type { GameContext } from "@/state";
-import type { Manager } from "@/state/game";
+import type { AIManager, AITeam } from "@/state/game";
 import type { GameResult } from "@/types/competitions";
 import calendar from "@/data/calendar";
 import competitionData from "@/data/competitions";
 import competitionTypes from "@/services/competition-type";
 import { computeStats } from "@/services/competition-type";
-import { simulate, gameFacts, resultFacts } from "@/services/game";
+import { gameFacts, resultFacts } from "@/services/game";
+import { simulate, toGameResult } from "@/services/mhm-2000/game";
 import { amount as formatAmount } from "@/services/format";
 import difficultyLevels from "@/data/difficulty-levels";
 import random from "@/services/random";
@@ -114,10 +115,12 @@ export function runGameday(draft: Draft<GameContext>): void {
     const competitionDef = competitionData[competitionId];
 
     for (const [groupIdx, group] of phase.groups.entries()) {
+      /*
       const groupParams = competitionDef.parameters.gameday(
         comp.phase,
         groupIdx
       );
+      */
       const groupRound = group.round;
       const pairings = group.schedule[groupRound];
 
@@ -129,6 +132,26 @@ export function runGameday(draft: Draft<GameContext>): void {
         const pairing = pairings[x];
         const home = draft.teams[group.teams[pairing.home]];
         const away = draft.teams[group.teams[pairing.away]];
+
+        const homeManager = draft.managers[home.manager!];
+        const awayManager = draft.managers[away.manager!];
+
+        const result = simulate({
+          home: {
+            manager: homeManager,
+            team: home
+          },
+          away: {
+            manager: awayManager,
+            team: away
+          },
+          round: {
+            // TODO: use the competition types.
+            type: 1
+          }
+        });
+
+        /*
         const result = simulate({
           ...groupParams,
           overtime: (r) => ct.overtime(r, group, groupRound, x),
@@ -143,12 +166,16 @@ export function runGameday(draft: Draft<GameContext>): void {
           phaseId: comp.phase,
           competitionId
         });
-        pairing.result = result;
+        */
+
+        const legacyResult = toGameResult(result);
+
+        pairing.result = legacyResult;
 
         updateStreaks(draft, {
           competition: competitionId,
           phase: comp.phase,
-          result,
+          result: legacyResult,
           home: { team: home.id, manager: home.manager },
           away: { team: away.id, manager: away.manager }
         });

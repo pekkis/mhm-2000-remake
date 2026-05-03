@@ -28,6 +28,7 @@ import type { Competition, CompetitionId } from "@/types/competitions";
 import { managerFromDefinition } from "@/services/manager";
 import { createUniqueId } from "@/services/id";
 import { rollTeamStrength } from "@/services/levels";
+import { current, produce } from "immer";
 
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
@@ -153,103 +154,125 @@ const seedTeams = (): Team[] => {
   });
 };
 
-export const createDefaultGameContext = (): GameContext => ({
-  // game
-  turn: { season: 0, round: 0, phase: undefined },
-  flags: {
-    jarko: false,
-    usa: false,
-    canada: false,
-    haanperaMarried: false,
-    mauto: false,
-    psycho: undefined
-  },
-  serviceBasePrices: {
-    insurance: 1000,
-    coach: 3200,
-    microphone: 500,
-    cheer: 3000
-  },
+export const createDefaultGameContext = (): GameContext => {
+  const ctx = {
+    // game
+    turn: { season: 0, round: 0, phase: undefined },
+    flags: {
+      jarko: false,
+      usa: false,
+      canada: false,
+      haanperaMarried: false,
+      mauto: false,
+      psycho: undefined
+    },
+    serviceBasePrices: {
+      insurance: 1000,
+      coach: 3200,
+      microphone: 500,
+      cheer: 3000
+    },
 
-  // ⚠️ MUST be a fresh array reference (spread/slice), NOT the imported
-  // singleton `managerDefs`. Stately Inspector dedupes shared object refs
-  // across the snapshot — when it encounters the same array a second time
-  // it stubs items as `"[...]"` and the UI breaks with "invalid state".
-  // Empirically: any of `[...managerDefs]`, `managerDefs.slice()` works;
-  // bare `managerDefs` does not. Position in the context object also
-  // matters with the bare ref (last is least-bad), but a fresh ref makes
-  // position irrelevant. See AGENTS.md for the bisect.
-  managers: fromEntries(
-    managerDefs.map((def) => {
-      const manager = managerFromDefinition(def);
-      return [manager.id, manager];
-    })
-  ),
+    // ⚠️ MUST be a fresh array reference (spread/slice), NOT the imported
+    // singleton `managerDefs`. Stately Inspector dedupes shared object refs
+    // across the snapshot — when it encounters the same array a second time
+    // it stubs items as `"[...]"` and the UI breaks with "invalid state".
+    // Empirically: any of `[...managerDefs]`, `managerDefs.slice()` works;
+    // bare `managerDefs` does not. Position in the context object also
+    // matters with the bare ref (last is least-bad), but a fresh ref makes
+    // position irrelevant. See AGENTS.md for the bisect.
+    managers: fromEntries(
+      managerDefs.map((def) => {
+        const manager = managerFromDefinition(def);
+        return [manager.id, manager];
+      })
+    ),
 
-  competitions: Object.fromEntries(
-    entries(competitionList).map(([key, def]) => [
-      key,
-      // structuredClone (vs `{ ...def.data }`) gives a deep copy so that
-      // nested arrays like `teams: number[]` are fresh refs, not aliases
-      // back to the imported singleton. Same Stately Inspector dedup
-      // gotcha as `managers` above — kill it preemptively.
-      structuredClone(def.data)
-    ])
-  ) as Record<CompetitionId, Competition>,
+    competitions: Object.fromEntries(
+      entries(competitionList).map(([key, def]) => [
+        key,
+        // structuredClone (vs `{ ...def.data }`) gives a deep copy so that
+        // nested arrays like `teams: number[]` are fresh refs, not aliases
+        // back to the imported singleton. Same Stately Inspector dedup
+        // gotcha as `managers` above — kill it preemptively.
+        structuredClone(def.data)
+      ])
+    ) as Record<CompetitionId, Competition>,
 
-  teams: seedTeams(),
+    teams: seedTeams(),
 
-  worldChampionshipResults: undefined,
+    worldChampionshipResults: undefined,
 
-  human: { active: undefined, order: [] },
+    human: { active: undefined, order: [] },
 
-  // betting — parlay + championship bet actors plus the transient
-  // last-round coupon used to bridge `executeGameday` and `resolveParlayBets`.
-  betting: {
-    parlayBets: [],
-    championBets: [],
-    lastLeagueCoupon: undefined
-  },
+    // betting — parlay + championship bet actors plus the transient
+    // last-round coupon used to bridge `executeGameday` and `resolveParlayBets`.
+    betting: {
+      parlayBets: [],
+      championBets: [],
+      lastLeagueCoupon: undefined
+    },
 
-  // event
-  event: { events: {} },
+    // event
+    event: { events: {} },
 
-  // news
-  news: { news: [], announcements: {} },
+    // news
+    news: { news: [], announcements: {} },
 
-  // notification
-  notification: { notifications: [] },
+    // notification
+    notification: { notifications: [] },
 
-  // prank
-  prank: { pranks: [] },
+    // prank
+    prank: { pranks: [] },
 
-  // stats
-  stats: {
-    managers: {},
-    currentSeason: undefined,
-    seasons: [],
-    streaks: { team: {}, manager: {} }
-  },
+    // stats
+    stats: {
+      managers: {},
+      currentSeason: undefined,
+      seasons: [],
+      streaks: { team: {}, manager: {} }
+    },
 
-  // invitation
-  invitation: { invitations: [] },
+    // invitation
+    invitation: { invitations: [] },
 
-  // country
-  country: {
-    countries: values(countryList).reduce(
-      (acc, country) => {
-        acc[country.iso] = {
-          iso: country.iso,
-          name: country.name,
-          series: country.series,
-          level: country.level,
-          strength: country.strength()
-        };
-        return acc;
-      },
-      {} as Record<string, Country>
-    )
-  }
-});
+    // country
+    country: {
+      countries: values(countryList).reduce(
+        (acc, country) => {
+          acc[country.iso] = {
+            iso: country.iso,
+            name: country.name,
+            series: country.series,
+            level: country.level,
+            strength: country.strength()
+          };
+          return acc;
+        },
+        {} as Record<string, Country>
+      )
+    }
+  };
+
+  return produce(ctx, (draft) => {
+    const managers = values(draft.managers);
+
+    console.log("MANAHERS", managers);
+
+    for (let x = 0; x < draft.teams.length; x = x + 1) {
+      if (!draft.teams[x].tags.includes("light")) {
+        const copy = current(draft);
+
+        console.log("TEAM", {
+          x,
+          team: copy.teams[x]
+        });
+
+        draft.teams[x].manager = managers[x].id;
+      } else {
+      }
+    }
+  });
+};
 
 //

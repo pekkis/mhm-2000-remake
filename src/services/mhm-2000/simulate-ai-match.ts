@@ -65,7 +65,8 @@
  */
 
 import defaultRandom, { type RandomService } from "@/services/random";
-import type { AIManager, AITeam } from "@/state/game";
+import { calculateStrength } from "@/services/team";
+import type { Manager, Team } from "@/state/game";
 
 /**
  * One side of the match — the AITeam plus the manager that controls it.
@@ -89,8 +90,8 @@ import type { AIManager, AITeam } from "@/state/game";
  *     multiplier always applies.
  */
 export type AiMatchSide = {
-  team: AITeam;
-  manager: AIManager;
+  team: Team;
+  manager: Manager;
 };
 
 /**
@@ -211,9 +212,10 @@ const prepareSide = (side: AiMatchSide, etu: number): SideStrength => {
   //   ode(3, z) = hw(od(z))
   // TODO: add `tauti(1..3, tox(team))` epidemic mods once we model
   //       per-team illness. For now these are 0.
-  let goalie = side.team.strengthObj.goalie;
-  let defence = side.team.strengthObj.defence;
-  let attack = side.team.strengthObj.attack;
+
+  const strength = calculateStrength(side.team);
+
+  let { goalie, defence, attack } = strength;
 
   // QB shadow at [ILEX5.BAS:328-329] — recomputed every gameday for
   // every AI base team via the menu3 loop. Same formula here.
