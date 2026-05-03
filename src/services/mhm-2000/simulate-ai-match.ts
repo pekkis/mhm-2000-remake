@@ -196,8 +196,12 @@ const computeEtu = (round: AiMatchRound): { home: number; away: number } => {
  *   ELSE IF mo > 0 THEN etu += mo / 155
  */
 const applyMoraleEtu = (etu: number, morale: number): number => {
-  if (morale < 0) return etu + morale / 125;
-  if (morale > 0) return etu + morale / 155;
+  if (morale < 0) {
+    return etu + morale / 125;
+  }
+  if (morale > 0) {
+    return etu + morale / 155;
+  }
   return etu;
 };
 
@@ -450,8 +454,11 @@ export const simulateAiMatch = (
       // code accepts that and the tie stands (regular-season OT
       // ties were a thing in the late-90s SM-liiga before shootouts).
       const scorer = overtimeAttempt(homeSide, awaySide, random);
-      if (scorer === "home") homeGoals += 1;
-      else if (scorer === "away") awayGoals += 1;
+      if (scorer === "home") {
+        homeGoals += 1;
+      } else if (scorer === "away") {
+        awayGoals += 1;
+      }
     }
   }
 

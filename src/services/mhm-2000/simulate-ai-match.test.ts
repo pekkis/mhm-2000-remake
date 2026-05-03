@@ -106,8 +106,11 @@ describe("simulateAiMatch", () => {
     let awayWins = 0;
     for (let i = 0; i < 500; i += 1) {
       const r = simulateAiMatch(home, away, { type: 1 }, random);
-      if (r.homeGoals > r.awayGoals) homeWins += 1;
-      else if (r.awayGoals > r.homeGoals) awayWins += 1;
+      if (r.homeGoals > r.awayGoals) {
+        homeWins += 1;
+      } else if (r.awayGoals > r.homeGoals) {
+        awayWins += 1;
+      }
     }
     // QB etu: 1.0 vs 0.85 — home wins should clearly outpace away wins.
     expect(homeWins).toBeGreaterThan(awayWins);
