@@ -7,7 +7,7 @@
  */
 
 import type { GameState } from "./game";
-import type { ManagerState } from "./manager";
+import type { HumanState } from "./human";
 import type { EventState } from "./event";
 import type { InvitationState } from "./invitation";
 import type { NewsState } from "./news";
@@ -18,7 +18,7 @@ import type { PrankState } from "./prank";
 import type { BettingState } from "./betting";
 
 export type GameContext = GameState & {
-  manager: ManagerState;
+  human: HumanState;
   event: EventState;
   news: NewsState;
   notification: NotificationState;
