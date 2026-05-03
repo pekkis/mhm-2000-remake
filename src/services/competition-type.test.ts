@@ -63,14 +63,14 @@ describe("competition-type", () => {
       expect(rr.playMatch(group, 5, 3)).toBe(true);
     });
 
-    it("overtime should always return false (no overtime in round-robin)", () => {
+    it("overtime is always 'regular' — single-attempt OT, ties allowed", () => {
       const group = makeRoundRobinGroup();
       expect(
         rr.overtime({ home: 2, away: 2, overtime: false }, group, 0, 0)
-      ).toBe(false);
+      ).toBe("regular");
       expect(
         rr.overtime({ home: 3, away: 1, overtime: false }, group, 0, 0)
-      ).toBe(false);
+      ).toBe("regular");
     });
 
     it("stats should return league table (TeamStat[])", () => {
@@ -102,14 +102,17 @@ describe("competition-type", () => {
       expect(tourney.playMatch(group, 0, 0)).toBe(true);
     });
 
-    it("overtime should always return false", () => {
+    it("overtime is 'regular' on a draw, 'none' otherwise", () => {
       const group = {
         ...makeRoundRobinGroup(),
         type: "tournament" as const
       };
       expect(
         tourney.overtime({ home: 1, away: 1, overtime: false }, group, 0, 0)
-      ).toBe(false);
+      ).toBe("regular");
+      expect(
+        tourney.overtime({ home: 3, away: 1, overtime: false }, group, 0, 0)
+      ).toBe("none");
     });
 
     it("stats should return league table (same as round-robin)", () => {
@@ -125,21 +128,21 @@ describe("competition-type", () => {
   describe("playoffs", () => {
     const po = competitionTypes.playoffs;
 
-    it("overtime should return true when result is a draw", () => {
+    it("overtime is 'sudden-death' when result is a draw", () => {
       const group = makePlayoffGroup();
       expect(
         po.overtime({ home: 2, away: 2, overtime: false }, group, 0, 0)
-      ).toBe(true);
+      ).toBe("sudden-death");
     });
 
-    it("overtime should return false when result is not a draw", () => {
+    it("overtime is 'none' when result is not a draw", () => {
       const group = makePlayoffGroup();
       expect(
         po.overtime({ home: 3, away: 1, overtime: false }, group, 0, 0)
-      ).toBe(false);
+      ).toBe("none");
       expect(
         po.overtime({ home: 0, away: 1, overtime: false }, group, 0, 0)
-      ).toBe(false);
+      ).toBe("none");
     });
 
     it("playMatch should return true when neither team has enough wins", () => {
@@ -235,7 +238,7 @@ describe("competition-type", () => {
       // Even a tied result in leg 1 is fine — leg 2 sorts it out.
       expect(
         cup.overtime({ home: 2, away: 2, overtime: false }, group, 0, 0)
-      ).toBe(false);
+      ).toBe("none");
     });
 
     it("triggers overtime in leg 2 only when aggregate would be tied", () => {
@@ -255,7 +258,7 @@ describe("competition-type", () => {
       });
       expect(
         cup.overtime({ home: 2, away: 0, overtime: false }, group, 1, 0)
-      ).toBe(true);
+      ).toBe("sudden-death");
     });
 
     it("does not trigger overtime in leg 2 when aggregate is decisive", () => {
@@ -274,7 +277,7 @@ describe("competition-type", () => {
       });
       expect(
         cup.overtime({ home: 0, away: 1, overtime: false }, group, 1, 0)
-      ).toBe(false);
+      ).toBe("none");
     });
 
     it("stats returns CupMatchupStat[] with aggregated goals", () => {

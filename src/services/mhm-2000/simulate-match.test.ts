@@ -10,10 +10,13 @@ import { describe, expect, it } from "vitest";
 import { createRandom } from "@/services/random";
 import {
   simulateMatch,
+  type MatchContext,
   type MatchSide
 } from "@/services/mhm-2000/simulate-match";
 import { teamLevels } from "@/data/levels";
+import competitionDefinitions from "@/data/competitions";
 import type { AIManager, AITeam } from "@/state/game";
+import type { Group, Phase } from "@/types/competitions";
 
 const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => {
   const tier = overrides.tier ?? 30;
@@ -89,13 +92,62 @@ const sideFromTier = (
   })
 });
 
+/**
+ * Build a `MatchContext` for the engine. PHL is used as the carrier
+ * competition (etu 1.0 / 0.85) — the only thing the engine reads off
+ * `competition` is `homeAndAwayTeamAdvantages(phase)`, and PHL gives
+ * us a faithful regular-season slope. Playoffs reuse the same etu;
+ * the only behavioural difference is `phase.type` driving overtime
+ * mode in `competition-type.ts`.
+ *
+ * `group`/`round`/`matchup` are stub values — only the cup overtime
+ * branch reads them (leg-1 aggregate lookup), and we don't simulate
+ * cup matches here.
+ */
+const makeContext = (
+  phaseType: "round-robin" | "playoffs"
+): MatchContext => {
+  const competition = competitionDefinitions.phl.data;
+  const phase: Phase = {
+    type: phaseType,
+    name: "test-phase",
+    teams: [],
+    groups: []
+  };
+  const group: Group =
+    phaseType === "round-robin"
+      ? {
+          type: "round-robin",
+          round: 0,
+          name: "test-group",
+          teams: [],
+          schedule: [],
+          stats: [],
+          penalties: [],
+          colors: []
+        }
+      : {
+          type: "playoffs",
+          round: 0,
+          teams: [],
+          matchups: [],
+          winsToAdvance: 4,
+          schedule: [],
+          stats: []
+        };
+  return { competition, phase, group, round: 0, matchup: 0 };
+};
+
+const regularContext = makeContext("round-robin");
+const playoffContext = makeContext("playoffs");
+
 describe("simulateMatch", () => {
   it("is deterministic for a given seed", () => {
     const home = sideFromTier(1, "TPS", 34);
     const away = sideFromTier(2, "HIFK", 31);
 
-    const a = simulateMatch(home, away, { type: 1 }, createRandom(42));
-    const b = simulateMatch(home, away, { type: 1 }, createRandom(42));
+    const a = simulateMatch(home, away, regularContext, createRandom(42));
+    const b = simulateMatch(home, away, regularContext, createRandom(42));
     expect(a).toEqual(b);
   });
 
@@ -106,7 +158,7 @@ describe("simulateMatch", () => {
 
     const totals: number[] = [];
     for (let i = 0; i < 100; i += 1) {
-      const r = simulateMatch(home, away, { type: 1 }, random);
+      const r = simulateMatch(home, away, regularContext, random);
       totals.push(r.homeGoals + r.awayGoals);
     }
     const avg = totals.reduce((a, b) => a + b, 0) / totals.length;
@@ -121,7 +173,7 @@ describe("simulateMatch", () => {
     const away = sideFromTier(2, "HIFK", 31);
     const random = createRandom(7);
     for (let i = 0; i < 50; i += 1) {
-      const r = simulateMatch(home, away, { type: 42 }, random);
+      const r = simulateMatch(home, away, playoffContext, random);
       expect(r.homeGoals).not.toEqual(r.awayGoals);
     }
   });
@@ -133,7 +185,7 @@ describe("simulateMatch", () => {
     const random = createRandom(13);
     let tieSeen = false;
     for (let i = 0; i < 200; i += 1) {
-      const r = simulateMatch(home, away, { type: 1 }, random);
+      const r = simulateMatch(home, away, regularContext, random);
       if (r.homeGoals === r.awayGoals) {
         tieSeen = true;
         expect(r.overtime).toBe(true);
@@ -148,7 +200,7 @@ describe("simulateMatch", () => {
     // Heavily mismatched teams to make a decisive result very likely.
     const strong = sideFromTier(1, "Strong", 50);
     const weak = sideFromTier(2, "Weak", 5);
-    const r = simulateMatch(strong, weak, { type: 1 }, createRandom(99));
+    const r = simulateMatch(strong, weak, regularContext, createRandom(99));
     expect(r.homeGoals).toBeGreaterThan(r.awayGoals);
     expect(r.homeMoraleChange).toBe(1);
     expect(r.awayMoraleChange).toBe(-1);
@@ -161,7 +213,7 @@ describe("simulateMatch", () => {
     let homeWins = 0;
     let awayWins = 0;
     for (let i = 0; i < 500; i += 1) {
-      const r = simulateMatch(home, away, { type: 1 }, random);
+      const r = simulateMatch(home, away, regularContext, random);
       if (r.homeGoals > r.awayGoals) {
         homeWins += 1;
       } else if (r.awayGoals > r.homeGoals) {
@@ -182,7 +234,7 @@ describe("simulateMatch", () => {
     let homeWins = 0;
     let awayWins = 0;
     for (let i = 0; i < 500; i += 1) {
-      const r = simulateMatch(home, away, { type: 1 }, random);
+      const r = simulateMatch(home, away, regularContext, random);
       if (r.homeGoals > r.awayGoals) {
         homeWins += 1;
       } else if (r.awayGoals > r.homeGoals) {
