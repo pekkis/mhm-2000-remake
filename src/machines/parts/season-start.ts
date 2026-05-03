@@ -2,7 +2,6 @@ import type { Draft } from "immer";
 import { values } from "remeda";
 
 import type { GameContext } from "@/state";
-import { managersMainCompetition } from "@/machines/selectors";
 import difficultyLevels from "@/data/difficulty-levels";
 import {
   forcedStrategyForManager,
@@ -31,18 +30,6 @@ import random from "@/services/random";
  */
 export function runSeasonStart(draft: Draft<GameContext>): void {
   const season = draft.turn.season;
-
-  // Re-strength foreign teams (slots 48+ after the MHM 2000 transplant).
-  // Cycled across [230, 180, 150] so all three tournament filter buckets
-  // (>200, 150..225, <=175) keep finding plenty of candidates each season.
-  // Real per-roster attribute model lands later.
-  const FOREIGN_PLACEHOLDER_STRENGTHS = [230, 180, 150];
-  for (let i = 48; i < draft.teams.length; i++) {
-    draft.teams[i].strength =
-      FOREIGN_PLACEHOLDER_STRENGTHS[
-        (i - 48) % FOREIGN_PLACEHOLDER_STRENGTHS.length
-      ];
-  }
 
   // Reset per-team season state.
   //
@@ -125,16 +112,7 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
   // Per-manager: salary, insurance extra (skipped season 0), reset extra.
   for (const manager of values(draft.managers)) {
     if (season > 0) {
-      const team = draft.teams[manager.team!];
-      const mainCompetition = managersMainCompetition(manager.id)(
-        draft as GameContext
-      );
-
       if (manager.kind === "human") {
-        const salaryPerStrength =
-          difficultyLevels[manager.difficulty].salary(mainCompetition);
-        manager.balance -= salaryPerStrength * team.strength;
-
         if (manager.services.insurance) {
           manager.insuranceExtra -= 50 * manager.arena.level;
         }

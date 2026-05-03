@@ -17,7 +17,7 @@ const tournamentList: Tournament[] = [
     description: (amount) =>
       `__Christmas Cup__ on euroopan perinteisin, suurin ja seuratuin jokavuotinen kutsuturnaus. Mukana on seurajoukkueita monesta maasta, ja osallistumisesta on luvassa __${currency(amount)}__.`,
     eligibility: { competitionId: "phl", maxRanking: 5 },
-    filter: (t) => t.strength > 200
+    filter: (t) => t.tier > 1
   },
   {
     name: "Go-Go Cola Cup",
@@ -25,7 +25,7 @@ const tournamentList: Tournament[] = [
     description: (amount) =>
       `__GoGo Cola-Cup__ on ei-kovin-perinteikäs, miedosti tunnettu ja arvostettu joulunajan kutsuturnaus Kööpenhaminassa, Tanskassa, ja joukkuettasi on pyydetty mukaan. Osallistuminen kartuttaisi kassaa __${a(amount)}__ pekalla.`,
     eligibility: { competitionId: "phl", maxRanking: 9 },
-    filter: (t) => t.strength >= 150 && t.strength < 225
+    filter: (t) => t.tier > 10
   },
   {
     name: "Cacca Cup",
@@ -33,7 +33,7 @@ const tournamentList: Tournament[] = [
     description: (amount) =>
       `Sloveniassa järjestettävään __Cacca Cupiin__ osallistuvat monet maanosan ehdottomat rupuseurat! Järjestäjät etsivät uusia jännittäviä kökköjoukkueita surkuhupaisaan pikku turnaukseensa, ja osallistumisesta on luvassa __${a(amount)}__ pekan palkkio.`,
     eligibility: { competitionId: "division", maxRanking: 5 },
-    filter: (t) => t.strength <= 175
+    filter: (t) => t.tier > 20
   }
 ];
 

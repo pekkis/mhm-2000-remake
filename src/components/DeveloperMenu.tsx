@@ -68,7 +68,7 @@ const DeveloperMenu = () => {
 
                   <tbody>
                     {c.teams
-                      .toSorted((a, b) => teams[b].strength - teams[a].strength)
+                      .toSorted((a, b) => teams[b].tier - teams[a].tier)
                       .map((t) => {
                         const team = teams[t];
                         const e = getEffective(team);
@@ -84,8 +84,6 @@ const DeveloperMenu = () => {
                             <Td>{team.name}</Td>
                             <Td>{managerLabel}</Td>
                             <Td>{strategyName(team.strategy)}</Td>
-                            <Td>{team.strength}</Td>
-                            <Td>{e.strength}</Td>
                             <Td>{e.morale}</Td>
                             <Td>{fmt(team.readiness)}</Td>
                             <Td>{fmt(e.readiness)}</Td>

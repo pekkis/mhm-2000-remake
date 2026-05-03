@@ -47,7 +47,6 @@ import {
 } from "@/game/event-effects";
 import {
   runWorldChampionships,
-  runAwards,
   runFinalizeStats,
   runSeasonEnd
 } from "@/machines/end-of-season";
@@ -533,7 +532,7 @@ export const gameMachine = setup({
             }
 
             m.balance -= playerType.buy;
-            draft.teams[m.team].strength += skillGain;
+            // draft.teams[m.team].strength += skillGain;
           })
         );
         enqueue.sendTo(
@@ -573,7 +572,6 @@ export const gameMachine = setup({
             }
 
             m.balance += playerType.sell;
-            draft.teams[m.team].strength -= skillLoss;
           })
         );
         enqueue.sendTo(
@@ -907,18 +905,6 @@ export const gameMachine = setup({
     executeWorldChampionships: assign(({ context }) =>
       produce(context, (draft) => {
         runWorldChampionships(draft, random);
-      })
-    ),
-
-    /**
-     * End-of-season: pay PHL playoff medals + regular-season top-4 +
-     * playoff bonuses, then run ~21 random end-of-season events for
-     * every Pekkalandian team. All news lines push into `news.news`
-     * (cleared by `advanceRound` after the player advances out).
-     */
-    executeAwards: assign(({ context }) =>
-      produce(context, (draft) => {
-        runAwards(draft, random);
       })
     ),
 
@@ -1575,11 +1561,7 @@ export const gameMachine = setup({
               states: {
                 world_championships: {
                   entry: "executeWorldChampionships",
-                  on: { ADVANCE: "awards" }
-                },
-                awards: {
-                  entry: "executeAwards",
-                  always: "finalize_stats"
+                  on: { ADVANCE: "finalize_stats" }
                 },
                 finalize_stats: {
                   entry: "executeFinalizeSeasonStats",

@@ -251,11 +251,6 @@ export function runGameday(draft: Draft<GameContext>): void {
           facts,
           manager
         );
-        const readinessDelta = competitionDef.readinessBoost(
-          comp.phase,
-          facts,
-          manager
-        );
 
         if (manager.kind === "human") {
           const balanceDelta = competitionDef.gameBalance(
@@ -267,9 +262,6 @@ export function runGameday(draft: Draft<GameContext>): void {
           if (balanceDelta) {
             manager.balance += balanceDelta;
           }
-        }
-        if (readinessDelta) {
-          team.readiness += readinessDelta;
         }
 
         if (moraleDelta) {

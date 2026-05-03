@@ -62,13 +62,13 @@ export type TeamEffect = {
   duration: number;
   extra?: Record<string, unknown>;
 };
+
 type BaseTeam = {
   id: number;
   uid: string;
   name: string;
   city: string;
   arena: Arena;
-  strength: number;
   domestic: boolean;
   morale: number;
   strategy: number;

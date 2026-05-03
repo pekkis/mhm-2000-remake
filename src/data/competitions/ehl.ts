@@ -192,7 +192,6 @@ const ehl: CompetitionDefinition = {
       }
       team.readiness -= 2;
       if (team.manager === undefined) {
-        team.strength += ehlAwards[ranking].strength;
         continue;
       }
       const award = ehlAwards[ranking];

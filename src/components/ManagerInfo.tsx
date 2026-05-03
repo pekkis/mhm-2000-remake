@@ -32,11 +32,6 @@ const ManagerInfo = ({ details = false }: ManagerInfoProps) => {
             <Box>
               <Cluster gapInline="xl" gapBlock="sm">
                 <Stack direction="row" gap="sm">
-                  <div className={styles.title}>Voima</div>
-                  <div>{team.strength}</div>
-                </Stack>
-
-                <Stack direction="row" gap="sm">
                   <div className={styles.title}>Moraali</div>
                   <div>{team.morale}</div>
                 </Stack>

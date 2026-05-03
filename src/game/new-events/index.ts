@@ -21,13 +21,11 @@
  *   BASIC's `< 7`.
  */
 
-import abcd from "./abcd";
 import arenaBurns from "./arena-burns";
 import arilander from "./arilander";
 import attitudeCanada from "./attitude-canada";
 import attitudeUSA from "./attitude-usa";
 import bankMistake from "./bank-mistake";
-import bazookaStrike from "./bazooka-strike";
 import bestManagerEver from "./best-manager-ever";
 import bloodbath from "./bloodbath";
 import book from "./book";
@@ -44,21 +42,15 @@ import etelalaBonusFrenzy from "./etelala-bonusfrenzy";
 import etelalaDescends from "./etelala-descends";
 import etelalaGlitch from "./etelala-glitch";
 import fanMerchandise from "./fan-merchandise";
-import fever from "./fever";
 import florist from "./florist";
-import foreignLegion from "./foreign-legion";
 import fortuneTeller from "./fortune-teller";
 import grossman from "./grossman";
 import haanperaDivorce from "./haanpera-divorce";
-import haanperaMarries from "./haanpera-marries";
 import habadobo from "./habadobo";
 import hasselgren from "./hasselgren";
-import hirmukunto from "./hirmukunto";
-import incredibleFeeling from "./incredible-feeling";
 import jaralahti from "./jaralahti";
 import jarasvuo from "./jarasvuo";
 import jarko from "./jarko";
-import jatovrel from "./jatovrel";
 import juznetsov from "./juznetsov";
 import karijurri from "./karijurri";
 import kasino from "./kasino";
@@ -69,17 +61,13 @@ import limpenius from "./limpenius";
 import makrosoft from "./makrosoft";
 import masotv from "./masotv";
 import mauto from "./mauto";
-import mcHabadobo from "./mc-habadobo";
 import metterer from "./metterer";
-import moneyTroubles from "./money-troubles";
 import moreTaxes from "./more-taxes";
 import ogilny from "./ogilny";
 import onecky from "./onecky";
 import otsohalli from "./otsohalli";
-import paajanen from "./paajanen";
 import pakibetteri from "./pakibetteri";
 import pauligkahvi from "./pauligkahvi";
-import pekkiini from "./pekkiini";
 import pempers from "./pempers";
 import pertinPselit from "./pertin-pselit";
 import phlRally from "./phl-rally";
@@ -102,24 +90,20 @@ import suddenDeath from "./sudden-death";
 import swedenTransfer from "./sweden-transfer";
 import taxEvasion from "./tax-evasion";
 import topGame from "./top-game";
-import ultimateCruelty from "./ultimate-cruelty";
 import undqvist from "./undqvist";
 import urheiluruuttu from "./urheiluruuttu";
 import valiveto from "./valiveto";
 import voodoo from "./voodoo";
 import workPermits from "./work-permits";
 import worstManagerEver from "./worst-manager-ever";
-import yhteispeli from "./yhteispeli";
 import youStalk from "./you-stalk";
 
 const newEvents = {
-  abcd,
   arenaBurns,
   arilander,
   attitudeCanada,
   attitudeUSA,
   bankMistake,
-  bazookaStrike,
   bestManagerEver,
   bloodbath,
   book,
@@ -136,21 +120,15 @@ const newEvents = {
   etelalaDescends,
   etelalaGlitch,
   fanMerchandise,
-  fever,
   florist,
-  foreignLegion,
   fortuneTeller,
   grossman,
   haanperaDivorce,
-  haanperaMarries,
   habadobo,
   hasselgren,
-  hirmukunto,
-  incredibleFeeling,
   jaralahti,
   jarasvuo,
   jarko,
-  jatovrel,
   juznetsov,
   karijurri,
   kasino,
@@ -161,17 +139,13 @@ const newEvents = {
   makrosoft,
   masotv,
   mauto,
-  mcHabadobo,
   metterer,
-  moneyTroubles,
   moreTaxes,
   ogilny,
   onecky,
   otsohalli,
-  paajanen,
   pakibetteri,
   pauligkahvi,
-  pekkiini,
   pempers,
   pertinPselit,
   phlRally,
@@ -194,14 +168,12 @@ const newEvents = {
   swedenTransfer,
   taxEvasion,
   topGame,
-  ultimateCruelty,
   undqvist,
   urheiluruuttu,
   valiveto,
   voodoo,
   workPermits,
   worstManagerEver,
-  yhteispeli,
   youStalk
 } as const;
 

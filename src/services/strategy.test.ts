@@ -38,7 +38,6 @@ const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => ({
     hasBoxes: false,
     valuePoints: 0
   },
-  strength: 100,
   domestic: true,
   morale: 0,
   strategy: 0,
@@ -118,7 +117,6 @@ describe("strategy / valitsestrattie port", () => {
       // service reads strengthObj rather than the rolled-up `strength`.
       const teams = [
         makeTeam({
-          strength: 999,
           strengthObj: { goalie: 1, defence: 1, attack: 1 }
         })
       ];

@@ -269,21 +269,6 @@ export function applyEffect(
       return;
     }
 
-    // ── Team strength / morale / readiness / strategy ──
-    case "incrementStrength": {
-      const t = draft.teams[effect.team];
-      if (t) {
-        t.strength += effect.amount;
-      }
-      return;
-    }
-    case "decrementStrength": {
-      const t = draft.teams[effect.team];
-      if (t) {
-        t.strength -= effect.amount;
-      }
-      return;
-    }
     case "incrementMorale": {
       const t = draft.teams[effect.team];
       if (t) {

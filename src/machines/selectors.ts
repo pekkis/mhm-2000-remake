@@ -110,11 +110,6 @@ export const foreignTeams: ContextSelector<Team[]> = (ctx) =>
 export const pekkalandianTeams: ContextSelector<Team[]> = (ctx) =>
   ctx.teams.slice(0, 48);
 
-export const teamsStrength =
-  (team: number): ContextSelector<number> =>
-  (ctx) =>
-    ctx.teams[team].strength;
-
 export const teamHasActiveEffects =
   (team: number): ContextSelector<boolean> =>
   (ctx) =>
@@ -453,10 +448,8 @@ export const canSellPlayer =
     if (!m || m.team === undefined) {
       return false;
     }
-    const team = ctx.teams[m.team];
-    const competesInPHL = managerCompetesIn(manager, "phl")(ctx);
-    const minStrength = competesInPHL ? 130 : 50;
-    return team.strength > minStrength;
+
+    return true;
   };
 
 /**
@@ -496,7 +489,7 @@ export const managerWithId =
     ctx.managers[id];
 
 export const managersMainCompetition =
-  (manager: string): ContextSelector<string> =>
+  (manager: string): ContextSelector<CompetitionId> =>
   (ctx) => {
     const competesInPHL = managerCompetesIn(manager, "phl")(ctx);
     return competesInPHL ? "phl" : "division";

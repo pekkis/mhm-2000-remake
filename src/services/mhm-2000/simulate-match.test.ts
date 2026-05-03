@@ -41,7 +41,6 @@ const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => {
       hasBoxes: false,
       valuePoints: 0
     },
-    strength: 50,
     domestic: true,
     morale: 0,
     strategy: 0,
