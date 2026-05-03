@@ -225,7 +225,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 11 (KIERO.M2K row 12, type 1) — regular gameday 2
   {
@@ -245,7 +245,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 12 (KIERO.M2K row 13, type 3) — cup gameday
   {
@@ -285,7 +285,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 14 (KIERO.M2K row 15, type 3) — cup gameday (phase 0 leg 2) + cuparpo (R32 draw)
   {
@@ -348,7 +348,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 18 (KIERO.M2K row 19, type 1) — regular gameday 5
   {
@@ -368,7 +368,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 19 (KIERO.M2K row 20, type 2) — EHL gameday
   {
@@ -399,7 +399,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["unknown:preRound=3"]
+    tags: ["readiness-tick", "unknown:preRound=3"]
   },
   // round 21 (KIERO.M2K row 22, type 1) — regular gameday 7 + UNKNOWN kiero3=3
   {
@@ -419,7 +419,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["unknown:preRound=3"]
+    tags: ["readiness-tick", "unknown:preRound=3"]
   },
   // round 22 (KIERO.M2K row 23, type 1) — regular gameday 8 + UNKNOWN kiero3=3
   {
@@ -439,7 +439,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["unknown:preRound=3"]
+    tags: ["readiness-tick", "unknown:preRound=3"]
   },
   // round 23 (KIERO.M2K row 24, type 2) — EHL gameday + tarkistanhlc (NHL champion check)
   {
@@ -470,7 +470,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 25 (KIERO.M2K row 26, type 97) — maajoukkuetauko (national team break)
   {
@@ -502,7 +502,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 27 (KIERO.M2K row 28, type 3) — cup gameday
   {
@@ -542,7 +542,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 29 (KIERO.M2K row 30, type 3) — cup gameday (phase 1 leg 2) + cuparpo (R16 draw)
   {
@@ -593,7 +593,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 32 (KIERO.M2K row 33, type 1) — regular gameday 13
   {
@@ -613,7 +613,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 33 (KIERO.M2K row 34, type 1) — regular gameday 14
   {
@@ -633,7 +633,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 34 (KIERO.M2K row 35, type 2) — EHL gameday
   {
@@ -664,7 +664,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 36 (KIERO.M2K row 37, type 96) — vapaa viikonloppu
   {
@@ -696,7 +696,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 38 (KIERO.M2K row 39, type 1) — regular gameday 17
   {
@@ -716,7 +716,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 39 (KIERO.M2K row 40, type 2) — EHL gameday
   {
@@ -747,7 +747,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 41 (KIERO.M2K row 42, type 1) — regular gameday 19
   {
@@ -767,7 +767,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 42 (KIERO.M2K row 43, type 1) — regular gameday 20
   {
@@ -787,7 +787,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 43 (KIERO.M2K row 44, type 1) — regular gameday 21
   {
@@ -807,7 +807,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 44 (KIERO.M2K row 45, type 3) — cup gameday
   {
@@ -847,7 +847,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 46 (KIERO.M2K row 47, type 98) — kutsuturnaus (Christmas invitation tournaments window)
   {
@@ -900,7 +900,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["preRound:budget", "todo:wire-budget"]
+    tags: ["readiness-tick", "preRound:budget", "todo:wire-budget"]
   },
   // round 49 (KIERO.M2K row 50, type 3) — cup gameday (phase 2 leg 2) + cuparpo (QF draw)
   {
@@ -940,7 +940,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 51 (KIERO.M2K row 52, type 1) — regular gameday 25
   {
@@ -960,7 +960,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 52 (KIERO.M2K row 53, type 1) — regular gameday 26 + mmkisaalku (WCh starts)
   {
@@ -980,7 +980,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["preRound:wch-start", "todo:wire-world-championships"]
+    tags: ["readiness-tick", "preRound:wch-start", "todo:wire-world-championships"]
   },
   // round 53 (KIERO.M2K row 54, type 1) — regular gameday 27
   {
@@ -1000,7 +1000,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 54 (KIERO.M2K row 55, type 1) — regular gameday 28
   {
@@ -1020,7 +1020,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 55 (KIERO.M2K row 56, type 22) — EHL final tournament + mmkisaloppu (WCh ends)
   {
@@ -1052,7 +1052,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["last-round-with-market-open"]
+    tags: ["readiness-tick", "last-round-with-market-open"]
   },
   // round 57 (KIERO.M2K row 58, type 1) — regular gameday 30 — market just closed
   {
@@ -1072,7 +1072,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["market-closes-here"]
+    tags: ["readiness-tick", "market-closes-here"]
   },
   // round 58 (KIERO.M2K row 59, type 3) — cup gameday
   {
@@ -1112,7 +1112,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 60 (KIERO.M2K row 61, type 3) — cup gameday (phase 3 leg 2) + cuparpo (SF draw)
   {
@@ -1152,7 +1152,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 62 (KIERO.M2K row 63, type 1) — regular gameday 33
   {
@@ -1172,7 +1172,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 63 (KIERO.M2K row 64, type 97) — maajoukkuetauko
   {
@@ -1204,7 +1204,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 65 (KIERO.M2K row 66, type 1) — regular gameday 35
   {
@@ -1224,7 +1224,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 66 (KIERO.M2K row 67, type 1) — regular gameday 36
   {
@@ -1244,7 +1244,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 67 (KIERO.M2K row 68, type 1) — regular gameday 37
   {
@@ -1264,7 +1264,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 68 (KIERO.M2K row 69, type 1) — regular gameday 38
   {
@@ -1284,7 +1284,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 69 (KIERO.M2K row 70, type 1) — regular gameday 39
   {
@@ -1304,7 +1304,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 70 (KIERO.M2K row 71, type 3) — cup gameday
   {
@@ -1344,7 +1344,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 72 (KIERO.M2K row 73, type 3) — cup gameday (phase 4 leg 2) + cuparpo (Final draw)
   {
@@ -1384,7 +1384,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 74 (KIERO.M2K row 75, type 1) — regular gameday 42
   {
@@ -1404,7 +1404,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 75 (KIERO.M2K row 76, type 1) — regular gameday 43
   {
@@ -1424,7 +1424,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["readiness-tick"]
   },
   // round 76 (KIERO.M2K row 77, type 1) — regular gameday 44 — last regular gameday
   {
@@ -1444,7 +1444,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["last-regular-gameday"]
+    tags: ["readiness-tick", "last-regular-gameday"]
   },
   // round 77 (KIERO.M2K row 78, type 41) — QF draw
   {
@@ -1480,7 +1480,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 79 (KIERO.M2K row 80, type 42) — QF game 2
   {
@@ -1500,7 +1500,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 80 (KIERO.M2K row 81, type 42) — QF game 3
   {
@@ -1520,7 +1520,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 81 (KIERO.M2K row 82, type 42) — QF game 4
   {
@@ -1540,7 +1540,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 82 (KIERO.M2K row 83, type 42) — QF game 5
   {
@@ -1560,7 +1560,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 83 (KIERO.M2K row 84, type 43) — SF draw
   {
@@ -1596,7 +1596,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 85 (KIERO.M2K row 86, type 44) — SF game 2
   {
@@ -1616,7 +1616,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 86 (KIERO.M2K row 87, type 44) — SF game 3
   {
@@ -1636,7 +1636,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 87 (KIERO.M2K row 88, type 44) — SF game 4
   {
@@ -1656,7 +1656,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 88 (KIERO.M2K row 89, type 44) — SF game 5
   {
@@ -1676,7 +1676,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 89 (KIERO.M2K row 90, type 45) — Final draw
   {
@@ -1712,7 +1712,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 91 (KIERO.M2K row 92, type 46) — Final game 2
   {
@@ -1732,7 +1732,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 92 (KIERO.M2K row 93, type 46) — Final game 3
   {
@@ -1752,7 +1752,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 93 (KIERO.M2K row 94, type 46) — Final game 4
   {
@@ -1772,7 +1772,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 94 (KIERO.M2K row 95, type 46) — Final game 5
   {
@@ -1792,7 +1792,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["playoffs"]
+    tags: ["readiness-tick", "playoffs"]
   },
   // round 95 (KIERO.M2K row 96, type 3) — PA Cup final, leg 1
   {

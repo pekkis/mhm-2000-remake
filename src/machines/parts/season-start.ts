@@ -4,6 +4,11 @@ import { values } from "remeda";
 import type { GameContext } from "@/state";
 import { managersMainCompetition } from "@/machines/selectors";
 import difficultyLevels from "@/data/difficulty-levels";
+import {
+  forcedStrategyForManager,
+  initialReadinessFor,
+  type StrategyId
+} from "@/data/mhm2000/strategies";
 import random from "@/services/random";
 
 /**
@@ -36,12 +41,33 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
   }
 
   // Reset per-team season state.
+  //
+  // Strategy + readiness defaults: TASAINEN PUURTO (`valm = 3`) is the
+  // safe baseline. The QB original picks AI strategies in a separate
+  // pass right after this (ILEZ5.BAS:1990-2046, the proxy/mahd
+  // distribution). We don't yet port that distribution — for now,
+  // every AI team that isn't tagged with a forced `strategy:*` value
+  // stays on Tasainen. Tagged managers (Simonov, Pier Paolo proxy)
+  // get their hard-coded pick. Human managers later overwrite via
+  // `selectStrategy` from the UI.
+  //
+  // QB cross-ref: `SUB tremaar` (ILEX5.BAS:7458-7464) writes the
+  // initial `tre()` based on the chosen `valm`.
   for (const t of draft.teams) {
     t.effects = [];
     t.opponentEffects = [];
     t.morale = 0;
-    t.strategy = 2;
-    t.readiness = 0;
+
+    const manager = t.manager ? draft.managers[t.manager] : undefined;
+    const forced = manager
+      ? forcedStrategyForManager(manager.tags)
+      : undefined;
+    const strategy: StrategyId = forced ?? 3;
+    t.strategy = strategy;
+    t.readiness = initialReadinessFor(
+      strategy,
+      manager?.attributes.strategy ?? 0
+    );
   }
 
   draft.flags.jarko = false;

@@ -62,6 +62,82 @@ export type Strategy = {
   managerSkillBonusCoefficient: number;
 };
 
+/**
+ * Calendar-entry tag marking a round on which `tre()` drifts.
+ *
+ * QB: the increment block in ILEX5.BAS:1574 sits inside `CASE 1` of the
+ * `gameday` SUB's outer `SELECT CASE kiero(kr)` (ILEX5.BAS:1492). It runs
+ * exclusively on `kiero(kr) = 1` rounds — PHL/Divisioona/Mutasarja
+ * runkosarja gamedays. NOT on:
+ *   - `kiero = 4`  training matches (preseason)
+ *   - `kiero = 2`  EHL gamedays
+ *   - `kiero = 3`  cup gamedays
+ *   - `kiero = 22` EHL final tournament
+ *   - `kiero = 41..47` playoffs / gala
+ *   - `kiero = 96..99` free / national-team / invitation / preseason
+ *
+ * Every regular-season `kiero = 1` calendar entry in
+ * `src/data/calendar.ts` carries this tag. The `executeCalculations`
+ * action in `src/machines/game.ts` reads it as the gate.
+ */
+export const READINESS_TICK_TAG = "readiness-tick";
+
+/**
+ * Manager-tag prefix used to hard-code a season-strategy choice. When a
+ * manager carries `strategy:<slug>`, AI strategy selection MUST honour
+ * that pick (skipping the random `mahd()` distribution).
+ *
+ * QB precedent: ILEZ5.BAS:2030 / MHM2K.BAS:2497 hard-codes Juri Simonov
+ * (manager id 33) onto `valm = 1`. We generalise it to a tag so the same
+ * mechanism handles our shared light-team proxy (forced to Tasainen).
+ */
+const STRATEGY_TAG_PREFIX = "strategy:";
+
+const strategyByTagSlug: Record<string, StrategyId> = {
+  simonov: 1,
+  "kaikki-peliin": 2,
+  "tasainen-puurto": 3
+};
+
+/**
+ * Returns the strategy a manager is hard-coded to pick, or `undefined`
+ * if no `strategy:*` tag is present (let the AI distribution decide).
+ */
+export const forcedStrategyForManager = (
+  managerTags: readonly string[]
+): StrategyId | undefined => {
+  for (const tag of managerTags) {
+    if (!tag.startsWith(STRATEGY_TAG_PREFIX)) {
+      continue;
+    }
+    const slug = tag.slice(STRATEGY_TAG_PREFIX.length);
+    const strategy = strategyByTagSlug[slug];
+    if (strategy !== undefined) {
+      return strategy;
+    }
+  }
+  return undefined;
+};
+
+/**
+ * Computes the per-team initial readiness multiplier for a given
+ * strategy and the manager's STRATEGIAT attribute (`mtaito(1, man)`).
+ * 1-1 port of `SUB tremaar` (ILEX5.BAS:7458-7464):
+ *
+ *   tre = initialReadiness(strategy)
+ *   IF strategy <> 3 THEN tre += managerStrategySkill * 0.007
+ *
+ * For light-team / proxy managers `managerStrategySkill = 0` zeroes the
+ * bonus regardless of strategy.
+ */
+export const initialReadinessFor = (
+  strategy: StrategyId,
+  managerStrategySkill: number
+): number => {
+  const def = strategies[strategy];
+  return def.initialReadiness() + managerStrategySkill * def.managerSkillBonusCoefficient;
+};
+
 const strategies: Record<StrategyId, Strategy> = {
   1: {
     id: 1,

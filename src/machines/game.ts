@@ -20,7 +20,11 @@ import tournamentList from "@/data/tournaments";
 import { CRISIS_COST } from "@/data/constants";
 import { isInvitedToTournament } from "@/machines/tournament-eligibility";
 import { computeStats } from "@/services/competition-type";
-import strategies from "@/data/strategies";
+import strategies, {
+  READINESS_TICK_TAG,
+  initialReadinessFor,
+  type StrategyId
+} from "@/data/mhm2000/strategies";
 import services from "@/data/services";
 import prankTypes from "@/game/pranks";
 import arenas from "@/data/arenas";
@@ -148,7 +152,7 @@ export type GameMachineEvents =
   | { type: "ADVANCE" }
   | {
       type: "SELECT_STRATEGY";
-      payload: { manager: string; strategy: number };
+      payload: { manager: string; strategy: StrategyId };
     }
   | {
       type: "PLACE_CHAMPION_BET";
@@ -268,15 +272,21 @@ export const gameMachine = setup({
      * for the manager's team. 1-1 port of the legacy `selectStrategy()` saga.
      */
     selectStrategy: assign(
-      ({ context }, params: { manager: string; strategy: number }) =>
+      ({ context }, params: { manager: string; strategy: StrategyId }) =>
         produce(context, (draft) => {
-          const team = draft.managers[params.manager]?.team;
-          if (team === undefined) {
+          const manager = draft.managers[params.manager];
+          const teamIdx = manager?.team;
+          if (teamIdx === undefined) {
             return;
           }
-          draft.teams[team].strategy = params.strategy;
-          draft.teams[team].readiness =
-            strategies[params.strategy].initialReadiness();
+          // 1-1 with `SUB tremaar` (ILEX5.BAS:7458-7464): start tre()
+          // from the strategy curve, then add the manager's STRATEGIAT
+          // attribute bonus for non-flat strategies.
+          draft.teams[teamIdx].strategy = params.strategy;
+          draft.teams[teamIdx].readiness = initialReadinessFor(
+            params.strategy,
+            manager.attributes.strategy
+          );
         })
     ),
 
@@ -757,14 +767,21 @@ export const gameMachine = setup({
      */
     executeCalculations: assign(({ context }) =>
       produce(context, (draft) => {
-        const turn = draft.turn;
         const basePrices = draft.serviceBasePrices;
 
-        // Per-team: strategy-driven readiness drift.
-        for (const team of draft.teams) {
-          const delta = strategies[team.strategy].incrementReadiness(turn);
-          if (delta !== 0) {
-            team.readiness += delta;
+        // Per-team: strategy-driven readiness drift — ONLY on regular-
+        // season runkosarja gamedays. QB: ILEX5.BAS:1574 sits inside
+        // `CASE 1` of `SELECT CASE kiero(kr)`, so EHL/cup/playoff/
+        // training/preseason rounds get NO drift. Calendar entries
+        // mark eligible rounds with the `readiness-tick` tag.
+        const roundTags = calendar[draft.turn.round]?.tags ?? [];
+        if (roundTags.includes(READINESS_TICK_TAG)) {
+          for (const team of draft.teams) {
+            const strategy = team.strategy as StrategyId;
+            const delta = strategies[strategy]?.incrementReadiness() ?? 0;
+            if (delta !== 0) {
+              team.readiness += delta;
+            }
           }
         }
 

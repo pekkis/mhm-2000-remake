@@ -176,8 +176,22 @@ const raw: readonly RawManager[] = [
 export const PIER_PAOLO_PROXY_PASOLINI_INDEX = 54;
 
 const tagsByName: Record<string, string[]> = {
-  "Juri Simonov": ["match_with_karpat"],
-  "Pier Paolo Proxy Pasolini": ["proxy", "light"]
+  // Juri Simonov: hard-coded to always pick his own season strategy.
+  // QB: ILEZ5.BAS:2030 / MHM2K.BAS:2497 — `IF man(sort(xx)) = 33 THEN
+  // mahd(1) = 100`, forcing strategy `valm = 1` (JURI SIMONOV) with 100%
+  // probability for any AI team he manages.
+  "Juri Simonov": ["match_with_karpat", "strategy:simonov"],
+  // Pier Paolo Proxy Pasolini: stand-in for every absent (light-team)
+  // manager. In the QB original these teams have `man = 0` and `valm = 0`
+  // (no strategy). With our shared proxy we instead force them onto the
+  // flat curve — Tasainen Puurto — which is behaviourally identical
+  // (`tre = 1.0` either way, since `mtaito(1, 0) = 0` zeroes the bonus
+  // for `valm = 0`) but lets the type be `StrategyId`, not `0 | StrategyId`.
+  "Pier Paolo Proxy Pasolini": [
+    "proxy",
+    "light",
+    "strategy:tasainen-puurto"
+  ]
 };
 
 const managers: ManagerDefinition[] = raw.map(

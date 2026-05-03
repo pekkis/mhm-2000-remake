@@ -1,4 +1,6 @@
-import strategies from "@/data/strategies";
+import { values } from "remeda";
+
+import strategies from "@/data/mhm2000/strategies";
 import Button from "./ui/Button";
 import Paragraph from "./ui/Paragraph";
 import Heading from "./ui/Heading";
@@ -24,7 +26,7 @@ const SelectStrategy = () => {
       </Paragraph>
 
       <Stack>
-        {strategies.map((strategy) => (
+        {values(strategies).map((strategy) => (
           <Stack key={strategy.id} gap="sm">
             <Heading level={3}>{strategy.name}</Heading>
             <Paragraph>{strategy.description}</Paragraph>
