@@ -98,7 +98,6 @@ tournament-match path. All TODO-tagged inline in the port.
   proxied light teams, … — same hook as the QB `IF man = 33` override).
   `proxy(1..3)` are computed in QB but never read after `proxy(4)` is
   derived — we mirror the QB by exposing `proxy(4)` only.
-
   - **`Per von Bachman` is NOT hard-coded** to KAIKKI PELIIN! despite
     being name-checked in the strategy help text (`DATA/X.MHM`). His
     "putoajaksi tuomitun ryhmänsä" lore lives in flavor text only —

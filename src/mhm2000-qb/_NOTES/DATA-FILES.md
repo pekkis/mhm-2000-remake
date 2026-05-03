@@ -59,17 +59,17 @@ component ([src/components/Markdown.tsx](../../components/Markdown.tsx)).
 The QB DOS color soup collapses into a small number of semantic
 intents the renderer already supports out of the box:
 
-| QB token  | Markdown                  | Why                                                  |
-| --------- | ------------------------- | ---------------------------------------------------- |
-| `$b`      | _(end span)_              | Closes whatever the previous opener started.         |
-| `$j…$b`   | `**…**` (bold)            | Proper nouns / manager names — same intent as bold.  |
-| `$n…$b`   | `**…**` (bold)            | Numeric / key-verb emphasis — collapse to bold.      |
-| `$f…$b`   | `**…**` (bold)            | "Dramatic" — bold reads correctly in modern UIs.     |
-| `$o…$b`   | `_…_` (italic)            | Single-letter accent — italic reads as accent.       |
-| `$h…$b`   | use a heading element     | Header style — wrap the line in `## …` if isolated.  |
-| `$d…$b`   | `_…_` (italic)            | Rare, treat as soft emphasis until proven otherwise. |
-| `@4` (€)  | `€{n.toLocaleString(…)}`  | Money — go through proper currency formatting.       |
-| Other `@` | template-literal substitution | Replace with the appropriate runtime value.      |
+| QB token  | Markdown                      | Why                                                  |
+| --------- | ----------------------------- | ---------------------------------------------------- |
+| `$b`      | _(end span)_                  | Closes whatever the previous opener started.         |
+| `$j…$b`   | `**…**` (bold)                | Proper nouns / manager names — same intent as bold.  |
+| `$n…$b`   | `**…**` (bold)                | Numeric / key-verb emphasis — collapse to bold.      |
+| `$f…$b`   | `**…**` (bold)                | "Dramatic" — bold reads correctly in modern UIs.     |
+| `$o…$b`   | `_…_` (italic)                | Single-letter accent — italic reads as accent.       |
+| `$h…$b`   | use a heading element         | Header style — wrap the line in `## …` if isolated.  |
+| `$d…$b`   | `_…_` (italic)                | Rare, treat as soft emphasis until proven otherwise. |
+| `@4` (€)  | `€{n.toLocaleString(…)}`      | Money — go through proper currency formatting.       |
+| Other `@` | template-literal substitution | Replace with the appropriate runtime value.          |
 
 **Rules of thumb**
 
@@ -88,7 +88,7 @@ intents the renderer already supports out of the box:
   separately from the formatted number to keep Finnish inflection
   intact.
 - **Preserve the prose verbatim.** The QB original is the canonical
-  text — translate the *tokens*, never the *words*. See AGENTS.md
+  text — translate the _tokens_, never the _words_. See AGENTS.md
   ("Preserve the prose").
 
 Worked example — strategy descriptions ([src/data/mhm2000/strategies.ts](../../data/mhm2000/strategies.ts)):

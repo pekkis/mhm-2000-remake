@@ -19,9 +19,7 @@ import type { StrategyId } from "@/data/mhm2000/strategies";
  * MHM2K.BAS:2470-2503 / ILEZ5.BAS:1990-2034 throughout.
  */
 
-const makeStrength = (
-  overrides: Partial<TeamStrength> = {}
-): TeamStrength => ({
+const makeStrength = (overrides: Partial<TeamStrength> = {}): TeamStrength => ({
   goalie: 10,
   defence: 50,
   attack: 100,
@@ -82,7 +80,7 @@ const fixedRandom = (value: number): RandomService => ({
   integer: () => value,
   real: () => value,
   bool: () => false,
-  pick: <T,>(arr: T[]) => arr[0],
+  pick: <T>(arr: T[]) => arr[0],
   cinteger: () => value
 });
 
@@ -201,19 +199,14 @@ describe("strategy / valitsestrattie port", () => {
       [10.0, [100, 0, 0], "absurdly above"]
     ];
 
-    it.each(cases)(
-      "proxy(4)=%s → %j  (%s)",
-      (proxy, expected, _desc) => {
-        expect(strategyWeightsForProxy(proxy)).toEqual(expected);
-      }
-    );
+    it.each(cases)("proxy(4)=%s → %j  (%s)", (proxy, expected, _desc) => {
+      expect(strategyWeightsForProxy(proxy)).toEqual(expected);
+    });
 
     it("every band's weights sum to 100 (QB invariant)", () => {
       // QB writes mahd as percentages summing to 100; the rolling
       // helper does not assume it, but parity says we should.
-      for (const proxy of [
-        0, 0.7, 0.8, 0.9, 0.95, 1.0, 1.05, 1.1, 1.2, 5.0
-      ]) {
+      for (const proxy of [0, 0.7, 0.8, 0.9, 0.95, 1.0, 1.05, 1.1, 1.2, 5.0]) {
         const [a, b, c] = strategyWeightsForProxy(proxy);
         expect(a + b + c).toBe(100);
       }

@@ -135,11 +135,7 @@ export const proxyRatio = (
   own: TeamStrength,
   average: TeamStrength
 ): number => {
-  if (
-    average.goalie === 0 ||
-    average.defence === 0 ||
-    average.attack === 0
-  ) {
+  if (average.goalie === 0 || average.defence === 0 || average.attack === 0) {
     return 1;
   }
   return (
@@ -224,9 +220,7 @@ export const distributeAIStrategies = (
   }
   for (const team of aiTeamsInCompetition) {
     const manager = team.manager ? managers[team.manager] : undefined;
-    const forced = manager
-      ? forcedStrategyForManager(manager.tags)
-      : undefined;
+    const forced = manager ? forcedStrategyForManager(manager.tags) : undefined;
     if (forced !== undefined) {
       picks.set(team.id, forced);
       continue;
@@ -251,4 +245,8 @@ export const distributeAIStrategies = (
  * strategy concept (their participants come from these three pools
  * and reuse whatever `valm` was set there).
  */
-export const STRATEGY_COMPETITION_IDS = ["phl", "division", "mutasarja"] as const;
+export const STRATEGY_COMPETITION_IDS = [
+  "phl",
+  "division",
+  "mutasarja"
+] as const;
