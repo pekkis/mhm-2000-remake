@@ -32,8 +32,12 @@ import {
   difficultyLevels as mhm2kDifficulty,
   type DifficultyLevelId
 } from "@/data/mhm2000/difficulty-levels";
-import type { ManagerExperienceId } from "@/data/mhm2000/manager-experience";
+import {
+  managerExperienceById,
+  type ManagerExperienceId
+} from "@/data/mhm2000/manager-experience";
 import type { LeagueTier } from "@/data/mhm2000/teams";
+import type { GamesPlayedStats } from "@/state/game";
 
 /** Allowed team tiers per experience archetype. Mirrors QB's `sin1`-threshold gating. */
 export const tiersForExperience = (
@@ -47,6 +51,19 @@ export const tiersForExperience = (
     case "legend":
       return ["phl", "divisioona", "mutasarja"] as const;
   }
+};
+
+export const getGamesPlayedFromExperience = (
+  level: ManagerExperienceId
+): GamesPlayedStats => {
+  const { history } = managerExperienceById(level);
+  const result: GamesPlayedStats = {};
+  for (const [competitionId, record] of Object.entries(history)) {
+    result[competitionId as keyof typeof history] = {
+      0: { win: record.wins, draw: record.ties, loss: record.losses }
+    };
+  }
+  return result;
 };
 
 /** Custom-team override (the QB "OMA JOUKKUE" path). */

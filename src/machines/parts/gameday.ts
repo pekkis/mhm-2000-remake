@@ -61,9 +61,6 @@ function updateStreaks(
     if (manager) {
       const m = draft.managers[manager];
 
-      if (!m.stats) {
-        m.stats = { games: {} };
-      }
       if (!m.stats.games[params.competition]) {
         m.stats.games[params.competition] = {};
       }

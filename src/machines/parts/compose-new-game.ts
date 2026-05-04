@@ -11,14 +11,16 @@ import { produce } from "immer";
 
 import { createDefaultGameContext, type GameContext } from "@/state";
 import type { HumanManager } from "@/state/game";
-import type {
-  ManagerDraft,
-  NewGameOutput,
-  PeckingOrder
+import {
+  getGamesPlayedFromExperience,
+  type ManagerDraft,
+  type NewGameOutput,
+  type PeckingOrder
 } from "@/machines/new-game";
 import { createUniqueId } from "@/services/id";
 import difficultyLevels from "@/data/difficulty-levels";
 import random from "@/services/random";
+import { emptyAchievements } from "@/services/empties";
 
 const buildHumanManager = (draft: ManagerDraft): HumanManager => {
   // Convert MHM 2000 difficulty id (1..5) to the legacy 0-based index
@@ -27,7 +29,8 @@ const buildHumanManager = (draft: ManagerDraft): HumanManager => {
   return {
     id: createUniqueId(),
     stats: {
-      games: {}
+      games: getGamesPlayedFromExperience(draft.experience),
+      achievements: emptyAchievements()
     },
     kind: "human",
     name: draft.name,

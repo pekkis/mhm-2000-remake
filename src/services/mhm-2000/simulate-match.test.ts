@@ -17,6 +17,7 @@ import { teamLevels } from "@/data/levels";
 import competitionDefinitions from "@/data/competitions";
 import type { AIManager, AITeam } from "@/state/game";
 import type { Group, Phase } from "@/types/competitions";
+import { emptyAchievements } from "@/services/empties";
 
 const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => {
   const tier = overrides.tier ?? 30;
@@ -65,7 +66,8 @@ const makeManager = (overrides: Partial<AIManager> = {}): AIManager => ({
   name: "AI Manager",
   nationality: "FI",
   stats: {
-    games: {}
+    games: {},
+    achievements: emptyAchievements()
   },
   attributes: {
     strategy: 0,

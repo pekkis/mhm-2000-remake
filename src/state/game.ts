@@ -29,6 +29,21 @@ export type ManagerServices = {
 
 export type Manager = HumanManager | AIManager;
 
+export type GamesPlayedStats = Partial<
+  Record<CompetitionId, Record<number, GameRecord>>
+>;
+
+export type AchievementsStat = {
+  ehlChampion: number;
+  presidentsTrophy: number;
+  gold: number;
+  silver: number;
+  bronze: number;
+  fourth: number;
+  promoted: number;
+  relegated: number;
+};
+
 type BaseManager = {
   id: string;
   name: string;
@@ -37,7 +52,7 @@ type BaseManager = {
   team?: number;
   tags: string[];
   difficulty: number;
-  stats: { games: Partial<Record<CompetitionId, Record<number, GameRecord>>> };
+  stats: { games: GamesPlayedStats; achievements: AchievementsStat };
 };
 
 export type AIManager = BaseManager & {

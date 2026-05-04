@@ -13,6 +13,7 @@ import { createRandomWithEngine, type RandomService } from "@/services/random";
 import type { AIManager, AITeam, Manager } from "@/state/game";
 import type { TeamStrength } from "@/data/levels";
 import type { StrategyId } from "@/data/mhm2000/strategies";
+import { emptyAchievements } from "@/services/empties";
 
 /**
  * Tests for the QB `SUB valitsestrattie` port. Cross-references
@@ -64,7 +65,8 @@ const makeManager = (overrides: Partial<AIManager> = {}): AIManager => ({
   name: "Manager",
   nationality: "FI",
   stats: {
-    games: {}
+    games: {},
+    achievements: emptyAchievements()
   },
   attributes: {
     strategy: 0,

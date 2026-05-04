@@ -1,4 +1,5 @@
 import type { ManagerDefinition } from "@/data/managers";
+import { emptyAchievements } from "@/services/empties";
 import { createUniqueId } from "@/services/id";
 import type { Manager } from "@/state/game";
 
@@ -12,7 +13,8 @@ export const managerFromDefinition = (def: ManagerDefinition): Manager => {
     nationality: def.nationality,
     difficulty: 2,
     stats: {
-      games: {}
+      games: {},
+      achievements: emptyAchievements()
     }
   };
 };
