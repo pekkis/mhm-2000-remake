@@ -5,7 +5,7 @@
  * Three options: rookie / mid-career / legend. The choice prefills the
  * QB arrays `otte()`, `vsaldo()`, `saav()` (`MHM2K.BAS:2384-2438`),
  * which downstream feed the `sin1` strength score that gates which
- * teams the manager may pick (`MHM2K.BAS:1842-1868`).
+ * teams the manager may pick (`MHM2K.BAS:1842-1868` / `ILEZ5.BAS:1133`).
  *
  * QB shape recap:
  *   otte(competition, 1=games | 2=playoffs, manager)
@@ -13,46 +13,46 @@
  *   saav(achievementType, manager)
  *
  * Competition index (1..4):
- *   1 = PHL
- *   2 = Divisioona
- *   3 = Mutasarja
- *   4 = EHL (only the legend has any EHL history)
+ *   1 = PHL          → `phl`
+ *   2 = Divisioona   → `division`
+ *   3 = Mutasarja    → `mutasarja`
+ *   4 = EHL          → `ehl` (only the legend has any EHL history)
  *
  * Achievement index (1..7) — see `saav()` in VARIABLES.md:
- *   1 = SM gold, 2 = silver, 3 = bronze, 4 = EHL title,
- *   5 = promotion, 6 = relegation, 7 = cup win
+ *   1 = SM gold      → `gold`
+ *   2 = silver       → `silver`
+ *   3 = bronze       → `bronze`
+ *   4 = EHL title    → `ehl`
+ *   5 = promotion    → `promoted`
+ *   6 = relegation   → `relegated`
+ *   7 = cup win      → `cup`
  *
- * We don't yet write these into `StatsState` because the modern stats
- * shape doesn't 1:1 map to QB's pre-game prefill arrays. The wizard
- * stores the chosen experience id on the manager (so future stats /
- * history reconstruction can replay it), and the verbatim QB numbers
- * stay here for that future replay.
+ * The pre-fill is shaped directly as the modern `Manager.stats` blob, so
+ * the `sin1` algorithm doesn't care whether it's reading a freshly-built
+ * preset or a manager mid-career — same code path, same data shape.
+ *
+ * Phase convention (`GamesPlayedStats[competition][phase]`):
+ *   phase 0  = regular season
+ *   phase 1+ = playoff rounds (we collapse all playoff appearances into a
+ *              single phase 1 here, since QB pre-fills don't separate
+ *              quarters / semis / finals)
+ *
+ * Mapping QB pre-fill → phases:
+ *   regular-season W/T/L = vsaldo(c, *) (with the playoff games' L deducted)
+ *   playoff games        = otte(c, 2), distributed as all-losses (faithful
+ *                          to QB which never tracks playoff W/T/L per
+ *                          competition for sin1 purposes)
+ *
+ * The "playoffs are losses" fudge is harmless for `sin1` (which only sums
+ * games and reads vsaldo as a total). It does mean that if we ever surface
+ * a per-phase career table in the UI, the legend's preset PHL playoff line
+ * will read 0/0/93 — which is exactly the level of fidelity QB itself ships.
  */
 
 import type { CompetitionId } from "@/types/competitions";
+import type { AchievementsStat, GamesPlayedStats } from "@/state/game";
 
 export type ManagerExperienceId = "rookie" | "veteran" | "legend";
-
-/**
- * Per-competition prefilled record. `playoffs` mirrors `otte(c, 2, pv)` —
- * how many of those games were playoff games.
- *
- * `GamesPlayedStats` phase convention (PHL / Divisioona / Mutasarja):
- *   phase 0  = regular season
- *   phase 1+ = playoffs
- *
- * When implementing `sin1` at runtime:
- *   otte(c, 1) = sum of all phases (0 + 1 + 2 + …)
- *   otte(c, 2) = sum of phases 1+ (playoff games only)
- *   vsaldo(c, *) = phase 0 only (regular-season W/T/L for the win-rate modifier)
- */
-export type ExperienceCompetitionRecord = {
-  games: number;
-  playoffs: number;
-  wins: number;
-  ties: number;
-  losses: number;
-};
 
 export type ManagerExperience = {
   id: ManagerExperienceId;
@@ -60,108 +60,130 @@ export type ManagerExperience = {
   name: string;
   /** Non-canon English short description for the UI. */
   description: string;
-  /** Per-competition prefilled history. Keys are `CompetitionId`. */
-  history: Partial<Record<CompetitionId, ExperienceCompetitionRecord>>;
   /**
-   * Pre-game medal cabinet, indexed 1..7 to match QB's `saav(*, pv)`.
-   * Only nonzero entries are included.
+   * Pre-filled `Manager.stats` for this archetype. Drop straight into a
+   * fresh `HumanManager.stats` at game-build time.
    */
-  achievements: Partial<Record<1 | 2 | 3 | 4 | 5 | 6 | 7, number>>;
+  stats: { games: GamesPlayedStats; achievements: AchievementsStat };
 };
 
-// QB "season length" used to expand `44 * N` into a `games` count.
 const SEASON_GAMES = 44;
+
+const emptyAchievements = (): AchievementsStat => ({
+  gold: 0,
+  silver: 0,
+  bronze: 0,
+  ehl: 0,
+  cup: 0,
+  promoted: 0,
+  relegated: 0
+});
+
+/**
+ * Build a per-competition `Record<phase, GameRecord>` from QB pre-fill totals.
+ *
+ * `playoffs` games are stuffed into phase 1 as pure losses (see file header).
+ * Phase 0 carries the rest, with W/T preserved verbatim from the QB pre-fill
+ * and L reduced so that `phase0.win + phase0.draw + phase0.loss = totalGames - playoffs`.
+ *
+ * `_totalGames` is kept in the signature for documentation symmetry with the
+ * QB pre-fill (`otte(c, 1) = wins + ties + losses` already, so the param is
+ * redundant — passed in for readability against the source-call sites).
+ */
+const buildCompetitionRecord = (
+  _totalGames: number,
+  playoffGames: number,
+  totalWins: number,
+  totalTies: number,
+  totalLosses: number
+): Record<number, { win: number; draw: number; loss: number }> => {
+  const regularLosses = totalLosses - playoffGames;
+  const out: Record<number, { win: number; draw: number; loss: number }> = {
+    0: {
+      win: totalWins,
+      draw: totalTies,
+      loss: regularLosses < 0 ? 0 : regularLosses
+    }
+  };
+  if (playoffGames > 0) {
+    out[1] = { win: 0, draw: 0, loss: playoffGames };
+  }
+  return out;
+};
+
+/**
+ * EHL pre-fill is special: QB sets `otte(4, *)` but never `vsaldo(4, *)`.
+ * To preserve the game-count contribution to `sin1` we have to bottle the
+ * games somewhere in our W/T/L-strict shape — we use all-losses, same fudge
+ * as the regular playoff side.
+ */
+const buildEhlRecord = (
+  totalGames: number,
+  playoffGames: number
+): Record<number, { win: number; draw: number; loss: number }> => ({
+  0: { win: 0, draw: 0, loss: totalGames - playoffGames },
+  1: { win: 0, draw: 0, loss: playoffGames }
+});
+
+const veteranStats: {
+  games: GamesPlayedStats;
+  achievements: AchievementsStat;
+} = {
+  games: {
+    // MHM2K.BAS:2387-2407
+    phl: buildCompetitionRecord(SEASON_GAMES * 4, 16, 74, 17, 85),
+    division: buildCompetitionRecord(SEASON_GAMES * 3, 20, 83, 8, 41),
+    mutasarja: buildCompetitionRecord(SEASON_GAMES * 2, 16, 59, 6, 23)
+  },
+  achievements: {
+    ...emptyAchievements(),
+    // saav(3) = 1 (one SM bronze), saav(5) = 2 (two promotions)
+    bronze: 1,
+    promoted: 2
+  }
+};
+
+const legendStats: { games: GamesPlayedStats; achievements: AchievementsStat } =
+  {
+    games: {
+      // MHM2K.BAS:2409-2436
+      phl: buildCompetitionRecord(SEASON_GAMES * 15, 93, 343, 84, 233),
+      division: buildCompetitionRecord(SEASON_GAMES * 3, 20, 83, 8, 41),
+      mutasarja: buildCompetitionRecord(SEASON_GAMES * 2, 16, 59, 6, 23),
+      ehl: buildEhlRecord(48, 3)
+    },
+    achievements: {
+      ...emptyAchievements(),
+      // saav(1) = 3 (golds), saav(2) = 3 (silvers), saav(3) = 2 (bronzes),
+      // saav(4) = 1 (EHL title), saav(5) = 2 (promotions)
+      gold: 3,
+      silver: 3,
+      bronze: 2,
+      ehl: 1,
+      promoted: 2
+    }
+  };
 
 export const managerExperiences: readonly ManagerExperience[] = [
   {
     id: "rookie",
     name: "UUSI KASVO",
     description: "Ei aikaisempaa managerikokemusta.",
-    history: {},
-    achievements: {}
+    stats: { games: {}, achievements: emptyAchievements() }
   },
   {
     id: "veteran",
     name: "KOKENUT KONKARI",
     description: "Muutaman kauden takana, palkintokaapissa pari mitalia.",
-    // MHM2K.BAS:2387-2407
-    history: {
-      phl: {
-        games: SEASON_GAMES * 4,
-        playoffs: 16,
-        wins: 74,
-        ties: 17,
-        losses: 85
-      },
-      division: {
-        games: SEASON_GAMES * 3,
-        playoffs: 20,
-        wins: 83,
-        ties: 8,
-        losses: 41
-      },
-      mutasarja: {
-        games: SEASON_GAMES * 2,
-        playoffs: 16,
-        wins: 59,
-        ties: 6,
-        losses: 23
-      }
-    },
-    achievements: {
-      // saav(3) = 1 (one SM bronze), saav(5) = 2 (two promotions)
-      3: 1,
-      5: 2
-    }
+    stats: veteranStats
   },
   {
     id: "legend",
     name: "ELÄVÄ LEGENDA",
     description: "Pekkalandian managerien kummisetä, kaapissa kaikki.",
-    // MHM2K.BAS:2409-2436
-    history: {
-      phl: {
-        games: SEASON_GAMES * 15,
-        playoffs: 93,
-        wins: 343,
-        ties: 84,
-        losses: 233
-      },
-      division: {
-        games: SEASON_GAMES * 3,
-        playoffs: 20,
-        wins: 83,
-        ties: 8,
-        losses: 41
-      },
-      mutasarja: {
-        games: SEASON_GAMES * 2,
-        playoffs: 16,
-        wins: 59,
-        ties: 6,
-        losses: 23
-      },
-      ehl: {
-        games: 48,
-        playoffs: 3,
-        // QB doesn't write `vsaldo(4, *, pv)` for the legend — EHL record
-        // stays at 0/0/0 even though `otte(4, *, pv)` is set. Verbatim.
-        wins: 0,
-        ties: 0,
-        losses: 0
-      }
-    },
-    achievements: {
-      // saav(1) = 3 (golds), saav(2) = 3 (silvers), saav(3) = 2 (bronzes),
-      // saav(4) = 1 (EHL title), saav(5) = 2 (promotions)
-      1: 3,
-      2: 3,
-      3: 2,
-      4: 1,
-      5: 2
-    }
+    stats: legendStats
   }
-] as const;
+];
 
 export const managerExperienceById = (
   id: ManagerExperienceId
@@ -172,3 +194,7 @@ export const managerExperienceById = (
   }
   return found;
 };
+
+// Re-export so callers don't need to dig into `@/types/competitions` just to
+// destructure the keys we use here.
+export type { CompetitionId };

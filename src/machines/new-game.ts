@@ -38,163 +38,154 @@ import {
 } from "@/data/mhm2000/manager-experience";
 import type { ManagedTeamDefinition } from "@/data/mhm2000/teams";
 import type { AchievementsStat, GamesPlayedStats } from "@/state/game";
-import { emptyAchievements } from "@/services/empties";
 
 /**
- * Compute the manager strength score (`sin1`) from their career history,
- * then map it to the team-quality threshold `a` that gates team selection.
- *
- * Verbatim port of `SUB omasopimus` (`ILEZ5.BAS:1133`).
- *
- * `history`  — from `ExperienceCompetitionRecord` (new-game pre-fill) or
- *              accumulated `GamesPlayedStats` (live game).
- * `achievements` — from `AchievementsStat`.
- *
- * Phase convention for `GamesPlayedStats`:
- *   phase 0   = regular season  → contributes to win-rate (sin2) + flat
- *   phase 1+  = playoffs        → contribute flat bonus only (otte(c,2))
- *
- * Returns threshold `a`: only teams where
- * `average(previousRankings) >= a` are selectable.
- * Lower `a` = weaker manager = only bottom teams.
- * Higher `a` = stronger manager = top teams unlocked.
+ * Sum a per-competition phase map (or all of `GamesPlayedStats`) by phase.
+ * `phaseFilter`:
+ *   "all"      → every phase contributes
+ *   "regular"  → phase 0 only
+ *   "playoff"  → phases >= 1 only
  */
-export const computeTeamThreshold = (
-  experience: ManagerExperienceId
-): number => {
-  const { history, achievements } = managerExperienceById(experience);
-
-  // Per-competition: win-rate adjusted regular-season points, plus flat playoff bonus.
-  // Competition weights: PHL=0.3/1.0, Div=0.2/0.6, Muta=0.1/0.3, EHL flat only.
-  const comps = [
-    { record: history.phl, regWeight: 0.3, poWeight: 1.0 },
-    { record: history.division, regWeight: 0.2, poWeight: 0.6 },
-    { record: history.mutasarja, regWeight: 0.1, poWeight: 0.3 }
-  ] as const;
-
-  let sin1 = 0;
-
-  for (const { record, regWeight, poWeight } of comps) {
-    if (!record) {
-      continue;
-    }
-    const { games, playoffs, wins, ties } = record;
-    const regularGames = games - playoffs;
-    // sin2: points-% over regular season (win=1pt, tie=0.5pt). 0 if no games.
-    const sin2 =
-      regularGames === 0 ? 0 : ((wins + 0.5 * ties) / regularGames) * 100;
-    sin1 += regularGames * regWeight * (1 + (sin2 - 50) * 0.004);
-    sin1 += playoffs * poWeight;
+const sumGames = (
+  records:
+    | Record<number, { win: number; draw: number; loss: number }>
+    | undefined,
+  phaseFilter: "all" | "regular" | "playoff"
+): { games: number; wins: number; ties: number; losses: number } => {
+  const acc = { games: 0, wins: 0, ties: 0, losses: 0 };
+  if (!records) {return acc;}
+  for (const [phaseStr, rec] of Object.entries(records)) {
+    const phase = Number(phaseStr);
+    if (phaseFilter === "regular" && phase !== 0) {continue;}
+    if (phaseFilter === "playoff" && phase === 0) {continue;}
+    acc.wins += rec.win;
+    acc.ties += rec.draw;
+    acc.losses += rec.loss;
+    acc.games += rec.win + rec.draw + rec.loss;
   }
-
-  // EHL: flat bonus, no win-rate modifier.
-  if (history.ehl) {
-    const { games, playoffs } = history.ehl;
-    sin1 += games * 1.0;
-    sin1 += playoffs * 10.0;
-  }
-
-  // Achievement cabinet.
-  sin1 += (achievements[1] ?? 0) * 20; // gold
-  sin1 += (achievements[2] ?? 0) * 15; // silver
-  sin1 += (achievements[3] ?? 0) * 10; // bronze
-  sin1 += (achievements[4] ?? 0) * 20; // EHL title
-  sin1 += (achievements[5] ?? 0) * 10; // promotion
-  sin1 += (achievements[6] ?? 0) * -10; // relegation
-  sin1 += (achievements[7] ?? 0) * 15; // cup win
-
-  // Map sin1 to threshold `a` (SELECT CASE from MHM2K.BAS:1842/ILEZ5.BAS:1156).
-  // Teams with average(previousRankings) >= a are selectable.
-  if (sin1 <= 6) {
-    return 44;
-  }
-  if (sin1 <= 12) {
-    return 40;
-  }
-  if (sin1 <= 18) {
-    return 35;
-  }
-  if (sin1 <= 30) {
-    return 29;
-  }
-  if (sin1 <= 50) {
-    return 23;
-  }
-  if (sin1 <= 80) {
-    return 18;
-  }
-  if (sin1 <= 110) {
-    return 14;
-  }
-  if (sin1 <= 150) {
-    return 10;
-  }
-  if (sin1 <= 200) {
-    return 8;
-  }
-  if (sin1 <= 300) {
-    return 6;
-  }
-  if (sin1 <= 400) {
-    return 4;
-  }
-  if (sin1 <= 500) {
-    return 3;
-  }
-
-  return 1;
+  return acc;
 };
 
 /**
- * Returns true if a team is selectable for a manager with the given
- * experience archetype. Mirrors `(sed+sedd+seddd)/3 >= a` in QB.
+ * Compute the manager strength score `sin1` from accumulated stats.
+ *
+ * Verbatim port of `SUB omasopimus` (`ILEZ5.BAS:1133`) — also the function
+ * QB calls during the new-game team-selection screen and at every contract
+ * negotiation. Identical algorithm, identical inputs, identical output.
+ *
+ * QB shape (fed by either the experience pre-fill or live game state):
+ *   otte(c, 1)   = total games in competition c (regular + playoffs)
+ *   otte(c, 2)   = playoff games subset
+ *   vsaldo(c, *) = wins/ties/losses across the whole competition
+ *
+ * Phase convention for `GamesPlayedStats`:
+ *   phase 0   = regular season
+ *   phase 1+  = playoff rounds
+ *
+ * Mapping:
+ *   otte(c, 1)   = sumGames(stats.games[c], "all").games
+ *   otte(c, 2)   = sumGames(stats.games[c], "playoff").games
+ *   vsaldo(c, 1..3) = sumGames(stats.games[c], "all").{wins, ties, losses}
+ *
+ * Note: QB's `sin2` win-rate uses `otte(c, 1)` as the denominator — i.e.
+ * total games — not regular-season-only. Keep it that way to match.
+ */
+export const computeManagerStrength = (stats: {
+  games: GamesPlayedStats;
+  achievements: AchievementsStat;
+}): number => {
+  const comps = [
+    { id: "phl" as const, regWeight: 0.3, poWeight: 1.0 },
+    { id: "division" as const, regWeight: 0.2, poWeight: 0.6 },
+    { id: "mutasarja" as const, regWeight: 0.1, poWeight: 0.3 }
+  ];
+
+  let sin1 = 0;
+
+  for (const { id, regWeight, poWeight } of comps) {
+    const all = sumGames(stats.games[id], "all");
+    const po = sumGames(stats.games[id], "playoff");
+    // sin2: points-% (win=1pt, tie=0.5pt) over ALL games in the competition.
+    const sin2 =
+      all.games === 0 ? 0 : ((all.wins + 0.5 * all.ties) / all.games) * 100;
+    sin1 += all.games * regWeight * (1 + (sin2 - 50) * 0.004);
+    sin1 += po.games * poWeight;
+  }
+
+  // EHL: flat bonus, no win-rate modifier (QB ignores vsaldo(4, *)).
+  const ehlAll = sumGames(stats.games.ehl, "all");
+  const ehlPo = sumGames(stats.games.ehl, "playoff");
+  sin1 += ehlAll.games * 1.0;
+  sin1 += ehlPo.games * 10.0;
+
+  // Achievement cabinet (saav 1..7).
+  sin1 += stats.achievements.gold * 20;
+  sin1 += stats.achievements.silver * 15;
+  sin1 += stats.achievements.bronze * 10;
+  sin1 += stats.achievements.ehl * 20;
+  sin1 += stats.achievements.promoted * 10;
+  sin1 += stats.achievements.relegated * -10;
+  sin1 += stats.achievements.cup * 15;
+
+  return sin1;
+};
+
+/**
+ * Map `sin1` → team-quality threshold `a`.
+ *
+ * Verbatim `SELECT CASE` from `MHM2K.BAS:1842` / `ILEZ5.BAS:1156`.
+ * Note the two intentional gaps: sin1 ∈ {19, 20} and sin1 ∈ {111..120}
+ * fall through with `a = 0` (every team passes). Almost certainly a QB
+ * typo, but it's load-bearing weirdness — preserve it.
+ *
+ * Lower `a` = stronger manager (top teams unlocked).
+ * Higher `a` = weaker manager (only bottom teams selectable).
+ */
+export const sin1ToThreshold = (sin1: number): number => {
+  if (sin1 >= 0 && sin1 <= 6) {return 44;}
+  if (sin1 >= 7 && sin1 <= 12) {return 40;}
+  if (sin1 >= 13 && sin1 <= 18) {return 35;}
+  // sin1 in {19, 20}: falls through, a = 0
+  if (sin1 >= 21 && sin1 <= 30) {return 29;}
+  if (sin1 >= 31 && sin1 <= 50) {return 23;}
+  if (sin1 >= 51 && sin1 <= 80) {return 18;}
+  if (sin1 >= 81 && sin1 <= 110) {return 14;}
+  // sin1 in {111..120}: falls through, a = 0
+  if (sin1 >= 121 && sin1 <= 150) {return 10;}
+  if (sin1 >= 151 && sin1 <= 200) {return 8;}
+  if (sin1 >= 201 && sin1 <= 300) {return 6;}
+  if (sin1 >= 301 && sin1 <= 400) {return 4;}
+  if (sin1 >= 401 && sin1 <= 500) {return 3;}
+  if (sin1 >= 501) {return 1;}
+  return 0;
+};
+
+/**
+ * Convenience: stats → threshold in one call.
+ */
+export const computeTeamThreshold = (stats: {
+  games: GamesPlayedStats;
+  achievements: AchievementsStat;
+}): number => sin1ToThreshold(computeManagerStrength(stats));
+
+/**
+ * `(sed + sedd + seddd) / 3 >= a` — the QB team-gating predicate.
+ * Works on either a draft (preview during the wizard) or a live `Manager`.
  */
 export const isTeamSelectable = (
   team: ManagedTeamDefinition,
-  experience: ManagerExperienceId
+  stats: { games: GamesPlayedStats; achievements: AchievementsStat }
 ): boolean => {
-  const a = computeTeamThreshold(experience);
+  const a = computeTeamThreshold(stats);
   const [r1, r2, r3] = team.previousRankings;
   return (r1 + r2 + r3) / 3 >= a;
 };
 
-export const getGamesPlayedFromExperience = (
-  level: ManagerExperienceId
-): GamesPlayedStats => {
-  const { history } = managerExperienceById(level);
-  const result: GamesPlayedStats = {};
-  for (const [competitionId, record] of Object.entries(history)) {
-    result[competitionId as keyof typeof history] = {
-      0: { win: record.wins, draw: record.ties, loss: record.losses }
-    };
-  }
-  return result;
-};
-
-const saavToAchievement: Record<
-  1 | 2 | 3 | 4 | 5 | 6 | 7,
-  keyof AchievementsStat
-> = {
-  1: "gold",
-  2: "silver",
-  3: "bronze",
-  4: "ehl",
-  5: "promoted",
-  6: "relegated",
-  7: "cup"
-};
-
-export const getAchievementsFromExperience = (
-  level: ManagerExperienceId
-): AchievementsStat => {
-  const { achievements } = managerExperienceById(level);
-  const result = emptyAchievements();
-  for (const [key, value] of Object.entries(achievements)) {
-    const k = Number(key) as 1 | 2 | 3 | 4 | 5 | 6 | 7;
-    result[saavToAchievement[k]] = value;
-  }
-  return result;
-};
+/** Stats blob for a fresh manager built from one of the experience presets. */
+export const statsFromExperience = (
+  experience: ManagerExperienceId
+): { games: GamesPlayedStats; achievements: AchievementsStat } =>
+  managerExperienceById(experience).stats;
 
 /** Custom-team override (the QB "OMA JOUKKUE" path). */
 export type CustomTeamOverride = {

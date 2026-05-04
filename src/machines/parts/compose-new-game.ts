@@ -12,8 +12,7 @@ import { produce } from "immer";
 import { createDefaultGameContext, type GameContext } from "@/state";
 import type { HumanManager } from "@/state/game";
 import {
-  getAchievementsFromExperience,
-  getGamesPlayedFromExperience,
+  statsFromExperience,
   type ManagerDraft,
   type NewGameOutput,
   type PeckingOrder
@@ -28,10 +27,7 @@ const buildHumanManager = (draft: ManagerDraft): HumanManager => {
   const legacyDifficulty = draft.difficulty - 1;
   return {
     id: createUniqueId(),
-    stats: {
-      games: getGamesPlayedFromExperience(draft.experience),
-      achievements: getAchievementsFromExperience(draft.experience)
-    },
+    stats: statsFromExperience(draft.experience),
     kind: "human",
     name: draft.name,
     nationality: draft.nationality,

@@ -15,7 +15,11 @@ import {
   type ManagedTeamDefinition,
   type LeagueTier
 } from "@/data/mhm2000/teams";
-import { isTeamSelectable, type CustomTeamOverride } from "@/machines/new-game";
+import {
+  isTeamSelectable,
+  statsFromExperience,
+  type CustomTeamOverride
+} from "@/machines/new-game";
 import competitions from "@/data/competitions";
 import {
   TEAM_HEADLINE,
@@ -116,6 +120,7 @@ const TeamCard: FC<{
 
 const StepTeam: FC<WizardStepProps> = ({ actor }) => {
   const experience = useSelector(actor, (s) => s.context.current.experience);
+  const previewStats = experience ? statsFromExperience(experience) : undefined;
   // Block other humans from picking the same team.
   const takenTeams = useSelector(
     actor,
@@ -136,7 +141,7 @@ const StepTeam: FC<WizardStepProps> = ({ actor }) => {
         (t) =>
           t.league === g.league &&
           !takenTeams.has(t.id) &&
-          (experience ? isTeamSelectable(t, experience) : false)
+          (previewStats ? isTeamSelectable(t, previewStats) : false)
       )
     }))
     .filter((g) => g.teams.length > 0);
