@@ -98,7 +98,7 @@ const StepAttributes: FC<WizardStepProps> = ({ actor }) => {
         ))}
       </Stack>
       <Cluster gap="sm">
-        <Button onClick={submit} disabled={remaining !== 0 && pool > 0}>
+        <Button onClick={submit} disabled={remaining !== 0}>
           Vahvista
         </Button>
         <Button secondary onClick={() => actor.send({ type: "BACK" })}>

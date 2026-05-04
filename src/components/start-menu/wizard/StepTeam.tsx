@@ -16,6 +16,12 @@ import {
   type CustomTeamOverride
 } from "@/machines/new-game";
 
+// QB `omajoukkue` field-length caps. Mirror the original input limits so
+// the rendered name/city/arena fit on the legacy-styled UI.
+const MAX_TEAM_NAME_LENGTH = 10;
+const MAX_CITY_NAME_LENGTH = 12;
+const MAX_ARENA_NAME_LENGTH = 26;
+
 const tierLabel = {
   phl: "PHL",
   divisioona: "Divisioona",
@@ -50,9 +56,10 @@ const StepTeam: FC<WizardStepProps> = ({ actor }) => {
       return;
     }
     const override: CustomTeamOverride = {
-      name: customName.trim().slice(0, 10) || "OMA JOUKKUE",
-      city: customCity.trim().slice(0, 12) || "Hirvikoski",
-      arena: customArena.trim().slice(0, 26) || "MHM 2000 Areena"
+      name: customName.trim().slice(0, MAX_TEAM_NAME_LENGTH) || "OMA JOUKKUE",
+      city: customCity.trim().slice(0, MAX_CITY_NAME_LENGTH) || "Hirvikoski",
+      arena:
+        customArena.trim().slice(0, MAX_ARENA_NAME_LENGTH) || "MHM 2000 Areena"
     };
     actor.send({ type: "SET_TEAM", team: displaceTeam, customTeam: override });
   };
@@ -76,29 +83,29 @@ const StepTeam: FC<WizardStepProps> = ({ actor }) => {
           ))}
         </Cluster>
         <Field>
-          <Label>Joukkueen nimi (max 10 merkkiä)</Label>
+          <Label>Joukkueen nimi (max {MAX_TEAM_NAME_LENGTH} merkkiä)</Label>
           <Input
             block
             value={customName}
-            maxLength={10}
+            maxLength={MAX_TEAM_NAME_LENGTH}
             onChange={(e) => setCustomName(e.target.value)}
           />
         </Field>
         <Field>
-          <Label>Kotikaupunki (max 12 merkkiä)</Label>
+          <Label>Kotikaupunki (max {MAX_CITY_NAME_LENGTH} merkkiä)</Label>
           <Input
             block
             value={customCity}
-            maxLength={12}
+            maxLength={MAX_CITY_NAME_LENGTH}
             onChange={(e) => setCustomCity(e.target.value)}
           />
         </Field>
         <Field>
-          <Label>Areenan nimi (max 26 merkkiä)</Label>
+          <Label>Areenan nimi (max {MAX_ARENA_NAME_LENGTH} merkkiä)</Label>
           <Input
             block
             value={customArena}
-            maxLength={26}
+            maxLength={MAX_ARENA_NAME_LENGTH}
             onChange={(e) => setCustomArena(e.target.value)}
           />
         </Field>
