@@ -14,10 +14,7 @@ const slotLabel = (slot: SlotInfo): string => {
   }
   const { managers, year } = slot.metadata;
   const head = managers
-    .map(
-      (m) =>
-        `${m.name} · ${m.teamName || "?"} (${m.league.toUpperCase()})`
-    )
+    .map((m) => `${m.name} · ${m.teamName || "?"} (${m.league.toUpperCase()})`)
     .join(" / ");
   return `${head} — ${year}`;
 };
@@ -52,9 +49,7 @@ const SlotCard: FC<{ slot: SlotInfo; selected: boolean }> = ({
           {isFull ? (
             <>
               <Button
-                onClick={() =>
-                  app.send({ type: "LOAD_SLOT", slot: slot.slot })
-                }
+                onClick={() => app.send({ type: "LOAD_SLOT", slot: slot.slot })}
               >
                 Lataa
               </Button>

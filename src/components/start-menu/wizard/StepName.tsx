@@ -30,7 +30,9 @@ const StepName: FC<WizardStepProps> = ({ actor }) => {
           maxLength={21}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") submit();
+            if (e.key === "Enter") {
+              submit();
+            }
           }}
         />
       </Field>

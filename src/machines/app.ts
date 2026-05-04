@@ -70,7 +70,9 @@ export type AppMachineEvents =
 const buildSlotMetadata = (ctx: GameContext): SlotMetadata => {
   const managers = ctx.human.order.flatMap((id) => {
     const m = ctx.managers[id];
-    if (!m) return [];
+    if (!m) {
+      return [];
+    }
     const teamId = m.team;
     const team = teamId !== undefined ? ctx.teams[teamId] : undefined;
     // Pick the most prestigious competition the team appears in.
@@ -105,10 +107,15 @@ export const appMachine = setup({
   },
   actors: {
     newGame: newGameMachine,
-    loadSlots: fromPromise<{ slots: SlotInfo[]; lastSlot: number }>(async () => {
-      const [slots, lastSlot] = await Promise.all([listSlots(), getLastSlot()]);
-      return { slots, lastSlot: lastSlot ?? 1 };
-    }),
+    loadSlots: fromPromise<{ slots: SlotInfo[]; lastSlot: number }>(
+      async () => {
+        const [slots, lastSlot] = await Promise.all([
+          listSlots(),
+          getLastSlot()
+        ]);
+        return { slots, lastSlot: lastSlot ?? 1 };
+      }
+    ),
     loadFromStorage: fromPromise<Snapshot<unknown>, { slot: number }>(
       async ({ input }) => {
         const record = await loadSlot(input.slot);

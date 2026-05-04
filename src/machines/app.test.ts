@@ -71,9 +71,7 @@ describe("appMachine — slot menu", () => {
   it("REQUEST_CLEAR_SLOT moves to confirmingClear; CANCEL_CLEAR_SLOT returns", async () => {
     const actor = await startApp();
     actor.send({ type: "REQUEST_CLEAR_SLOT", slot: 2 });
-    expect(actor.getSnapshot().matches({ menu: "confirmingClear" })).toBe(
-      true
-    );
+    expect(actor.getSnapshot().matches({ menu: "confirmingClear" })).toBe(true);
     expect(actor.getSnapshot().context.pendingClearSlot).toBe(2);
     actor.send({ type: "CANCEL_CLEAR_SLOT" });
     expect(actor.getSnapshot().matches({ menu: "slotList" })).toBe(true);

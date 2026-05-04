@@ -46,7 +46,9 @@ const StepTeam: FC<WizardStepProps> = ({ actor }) => {
   };
 
   const submitCustom = () => {
-    if (displaceTeam === undefined) return;
+    if (displaceTeam === undefined) {
+      return;
+    }
     const override: CustomTeamOverride = {
       name: customName.trim().slice(0, 10) || "OMA JOUKKUE",
       city: customCity.trim().slice(0, 12) || "Hirvikoski",
@@ -120,11 +122,7 @@ const StepTeam: FC<WizardStepProps> = ({ actor }) => {
       </Paragraph>
       <Cluster gap="sm">
         {eligible.map((t) => (
-          <Button
-            key={t.id}
-            secondary
-            onClick={() => submitNormal(t.id)}
-          >
+          <Button key={t.id} secondary onClick={() => submitNormal(t.id)}>
             {t.name} ({tierLabel[t.league]})
           </Button>
         ))}

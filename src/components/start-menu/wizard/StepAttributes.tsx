@@ -7,10 +7,7 @@ import Heading from "@/components/ui/Heading";
 import Paragraph from "@/components/ui/Paragraph";
 import Button from "@/components/ui/Button";
 import type { WizardStepProps } from "@/components/start-menu/wizard/types";
-import type {
-  ManagerAttributes,
-  ManagerAttributeKey
-} from "@/data/managers";
+import type { ManagerAttributes, ManagerAttributeKey } from "@/data/managers";
 import { characterPointsForDifficulty } from "@/machines/new-game";
 
 const ATTRIBUTE_LABELS: Record<ManagerAttributeKey, string> = {
@@ -57,10 +54,14 @@ const StepAttributes: FC<WizardStepProps> = ({ actor }) => {
   const adjust = (key: ManagerAttributeKey, delta: number) => {
     const current = attrs[key];
     const next = current + delta;
-    if (next < -3 || next > 3) return;
+    if (next < -3 || next > 3) {
+      return;
+    }
     // Spending check: each tick costs |new| - |current|.
     const cost = Math.abs(next) - Math.abs(current);
-    if (cost > remaining) return;
+    if (cost > remaining) {
+      return;
+    }
     setAttrs({ ...attrs, [key]: next });
   };
 

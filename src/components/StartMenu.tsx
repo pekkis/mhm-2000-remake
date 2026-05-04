@@ -9,7 +9,9 @@ import SlotMenu from "@/components/start-menu/SlotMenu";
 import { CreatingGame } from "@/components/start-menu/CreatingGame";
 
 const StartMenu = () => {
-  const inMenu = AppMachineContext.useSelector((state) => state.matches("menu"));
+  const inMenu = AppMachineContext.useSelector((state) =>
+    state.matches("menu")
+  );
   const creating = AppMachineContext.useSelector((state) =>
     state.matches("creatingGame")
   );

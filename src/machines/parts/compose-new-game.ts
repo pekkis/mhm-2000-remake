@@ -51,7 +51,7 @@ const buildHumanManager = (draft: ManagerDraft): HumanManager => {
   };
 };
 
-const fisherYatesShuffle = <T,>(items: readonly T[]): T[] => {
+const fisherYatesShuffle = <T>(items: readonly T[]): T[] => {
   const arr = [...items];
   for (let i = arr.length - 1; i > 0; i--) {
     const j = random.integer(0, i);

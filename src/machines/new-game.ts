@@ -128,32 +128,29 @@ const initialAttributes = (): ManagerAttributes => ({
 const finishCurrentDraft = (
   ctx: NewGameContext
 ): { drafts: ManagerDraft[]; current: Partial<ManagerDraft> } =>
-  produce(
-    { drafts: ctx.drafts, current: ctx.current },
-    (draft) => {
-      // Defensive: only append when all required fields are present.
-      const c = draft.current;
-      if (
-        c.name &&
-        c.nationality &&
-        c.experience &&
-        c.difficulty &&
-        c.team !== undefined &&
-        c.attributes
-      ) {
-        draft.drafts.push({
-          name: c.name,
-          nationality: c.nationality,
-          experience: c.experience,
-          difficulty: c.difficulty,
-          team: c.team,
-          attributes: c.attributes,
-          ...(c.customTeam ? { customTeam: c.customTeam } : {})
-        });
-        draft.current = {};
-      }
+  produce({ drafts: ctx.drafts, current: ctx.current }, (draft) => {
+    // Defensive: only append when all required fields are present.
+    const c = draft.current;
+    if (
+      c.name &&
+      c.nationality &&
+      c.experience &&
+      c.difficulty &&
+      c.team !== undefined &&
+      c.attributes
+    ) {
+      draft.drafts.push({
+        name: c.name,
+        nationality: c.nationality,
+        experience: c.experience,
+        difficulty: c.difficulty,
+        team: c.team,
+        attributes: c.attributes,
+        ...(c.customTeam ? { customTeam: c.customTeam } : {})
+      });
+      draft.current = {};
     }
-  );
+  });
 
 export const newGameMachine = setup({
   types: {
