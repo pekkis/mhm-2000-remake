@@ -611,7 +611,7 @@ export const activeManagersInvitations: ContextSelector<
 export const totalGamesPlayed =
   (
     manager: string,
-    competition: string,
+    competition: CompetitionId,
     phase: number
   ): ContextSelector<number | undefined> =>
   (ctx) => {

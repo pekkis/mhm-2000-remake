@@ -2,7 +2,7 @@ import { entries } from "remeda";
 import type { Draft } from "immer";
 
 import type { GameContext } from "@/state";
-import type { GameResult } from "@/types/competitions";
+import type { CompetitionId, GameResult } from "@/types/competitions";
 import calendar from "@/data/calendar";
 import competitionData from "@/data/competitions";
 import competitionTypes from "@/services/competition-type";
@@ -28,7 +28,7 @@ const emptyGameRecord = { win: 0, draw: 0, loss: 0 } as const;
 function updateStreaks(
   draft: Draft<GameContext>,
   params: {
-    competition: string;
+    competition: CompetitionId;
     phase: number;
     result: GameResult;
     home: { team: number; manager: string | undefined };
