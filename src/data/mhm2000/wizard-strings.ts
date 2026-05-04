@@ -8,17 +8,9 @@
  *
  * Token rewrite follows AGENTS.md "Porting tokens to Markdown": `$j…$b`
  * and `$n…$b` and `$f…$b` collapse to Markdown `**…**`. Surrounding
- * `$b` (body / reset) tokens are dropped. Render through `Markdown.tsx`
- * (or strip with `stripQbMarkdown` for plain-text surfaces like
- * <Heading>).
+ * `$b` (body / reset) tokens are dropped. Long-form blurbs render
+ * through `Markdown.tsx`; short headings are kept marker-free already.
  */
-
-/**
- * Strip Markdown bold markers (`**…**`) from a wizard string so it can
- * be rendered inside a heading or button label that doesn't accept
- * inline formatting. Plain-text only, no further cleanup.
- */
-export const stripQbMarkdown = (s: string): string => s.replace(/\*\*/g, "");
 
 // ---------------------------------------------------------------------------
 // Step 1 — manager count

@@ -151,7 +151,9 @@ const StepTeam: FC<WizardStepProps> = ({ actor }) => {
       return;
     }
     const override: CustomTeamOverride = {
-      name: customName.trim().slice(0, MAX_TEAM_NAME_LENGTH) || "OMA JOUKKUE",
+      // QB cap is 10 chars; our fallback ("OMAT") fits comfortably.
+      // The original game uses team initials so a short marker is on-brand.
+      name: customName.trim().slice(0, MAX_TEAM_NAME_LENGTH) || "OMAT",
       city: customCity.trim().slice(0, MAX_CITY_NAME_LENGTH) || "Hirvikoski",
       arena:
         customArena.trim().slice(0, MAX_ARENA_NAME_LENGTH) || "MHM 2000 Areena"
