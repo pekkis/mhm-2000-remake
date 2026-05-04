@@ -9,6 +9,7 @@ import Label from "@/components/ui/form/Label";
 import Input from "@/components/ui/form/Input";
 import Button from "@/components/ui/Button";
 import type { WizardStepProps } from "@/components/start-menu/wizard/types";
+import { NAME_HEADLINE } from "@/data/mhm2000/wizard-strings";
 
 const StepName: FC<WizardStepProps> = ({ actor }) => {
   const drafts = useSelector(actor, (s) => s.context.drafts.length);
@@ -21,7 +22,7 @@ const StepName: FC<WizardStepProps> = ({ actor }) => {
 
   return (
     <Stack gap="md">
-      <Heading level={2}>Manageri {drafts + 1} — Nimi</Heading>
+      <Heading level={2}>{NAME_HEADLINE(drafts + 1)}</Heading>
       <Field>
         <Label>Managerin nimi</Label>
         <Input

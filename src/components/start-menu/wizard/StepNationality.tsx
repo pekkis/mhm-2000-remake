@@ -5,11 +5,12 @@ import Heading from "@/components/ui/Heading";
 import Button from "@/components/ui/Button";
 import type { WizardStepProps } from "@/components/start-menu/wizard/types";
 import { countriesArray } from "@/data/countries";
+import { NATIONALITY_HEADLINE } from "@/data/mhm2000/wizard-strings";
 
 const StepNationality: FC<WizardStepProps> = ({ actor }) => {
   return (
     <Stack gap="md">
-      <Heading level={2}>Kansallisuus</Heading>
+      <Heading level={2}>{NATIONALITY_HEADLINE}</Heading>
       <Cluster gap="sm">
         {countriesArray.map((c) => (
           <Button

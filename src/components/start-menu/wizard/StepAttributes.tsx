@@ -4,20 +4,17 @@ import { useSelector } from "@xstate/react";
 import Stack from "@/components/ui/Stack";
 import Cluster from "@/components/ui/Cluster";
 import Heading from "@/components/ui/Heading";
-import Paragraph from "@/components/ui/Paragraph";
 import Button from "@/components/ui/Button";
+import Markdown from "@/components/Markdown";
 import type { WizardStepProps } from "@/components/start-menu/wizard/types";
 import type { ManagerAttributes, ManagerAttributeKey } from "@/data/managers";
 import { characterPointsForDifficulty } from "@/machines/new-game";
-
-const ATTRIBUTE_LABELS: Record<ManagerAttributeKey, string> = {
-  strategy: "Strategiat",
-  specialTeams: "Erikoistilanteet",
-  negotiation: "Neuvottelutaito",
-  resourcefulness: "Neuvokkuus",
-  charisma: "Karisma",
-  luck: "Onnekkuus"
-};
+import {
+  ATTRIBUTES_INTRO,
+  ATTRIBUTES_POINTS_LABEL,
+  ATTRIBUTE_HELP,
+  ATTRIBUTE_LABELS
+} from "@/data/mhm2000/wizard-strings";
 
 const ATTRIBUTE_KEYS: readonly ManagerAttributeKey[] = [
   "strategy",
@@ -48,6 +45,7 @@ const StepAttributes: FC<WizardStepProps> = ({ actor }) => {
   );
 
   const [attrs, setAttrs] = useState<ManagerAttributes>(ZERO_ATTRS);
+  const [focused, setFocused] = useState<ManagerAttributeKey>("strategy");
   const spent = sumAbs(attrs);
   const remaining = pool - spent;
 
@@ -62,6 +60,7 @@ const StepAttributes: FC<WizardStepProps> = ({ actor }) => {
     if (cost > remaining) {
       return;
     }
+    setFocused(key);
     setAttrs({ ...attrs, [key]: next });
   };
 
@@ -71,11 +70,10 @@ const StepAttributes: FC<WizardStepProps> = ({ actor }) => {
 
   return (
     <Stack gap="md">
-      <Heading level={2}>Ominaisuudet</Heading>
-      <Paragraph>
-        Käytä luonteenpisteet (välillä −3..+3 per ominaisuus). Pisteitä
-        jäljellä: <strong>{remaining}</strong> / {pool}.
-      </Paragraph>
+      <Markdown>{ATTRIBUTES_INTRO}</Markdown>
+      <Heading level={3}>
+        {ATTRIBUTES_POINTS_LABEL}: <strong>{remaining}</strong> / {pool}
+      </Heading>
       <Stack gap="sm">
         {ATTRIBUTE_KEYS.map((k) => (
           <Cluster key={k} gap="sm" justify="space-between">
@@ -87,16 +85,31 @@ const StepAttributes: FC<WizardStepProps> = ({ actor }) => {
               </strong>
             </span>
             <Cluster gap="xs">
-              <Button secondary terse onClick={() => adjust(k, -1)}>
+              <Button
+                secondary
+                terse
+                onClick={() => {
+                  setFocused(k);
+                  adjust(k, -1);
+                }}
+              >
                 −
               </Button>
-              <Button secondary terse onClick={() => adjust(k, 1)}>
+              <Button
+                secondary
+                terse
+                onClick={() => {
+                  setFocused(k);
+                  adjust(k, 1);
+                }}
+              >
                 +
               </Button>
             </Cluster>
           </Cluster>
         ))}
       </Stack>
+      <Markdown>{ATTRIBUTE_HELP[focused]}</Markdown>
       <Cluster gap="sm">
         <Button onClick={submit} disabled={remaining !== 0}>
           Vahvista
