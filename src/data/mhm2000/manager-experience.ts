@@ -19,8 +19,8 @@
  *   4 = EHL (only the legend has any EHL history)
  *
  * Achievement index (1..7) — see `saav()` in VARIABLES.md:
- *   1 = SM gold, 2 = silver, 3 = bronze, 4 = President's Trophy,
- *   5 = top-4 finishes, 6 = wooden-spoon, 7 = EHL trophies
+ *   1 = SM gold, 2 = silver, 3 = bronze, 4 = EHL title,
+ *   5 = promotion, 6 = relegation, 7 = cup win
  *
  * We don't yet write these into `StatsState` because the modern stats
  * shape doesn't 1:1 map to QB's pre-game prefill arrays. The wizard
@@ -100,7 +100,7 @@ export const managerExperiences: readonly ManagerExperience[] = [
       }
     },
     achievements: {
-      // saav(3) = 1 (one SM bronze), saav(5) = 2 (two top-4 finishes)
+      // saav(3) = 1 (one SM bronze), saav(5) = 2 (two promotions)
       3: 1,
       5: 2
     }
@@ -144,7 +144,7 @@ export const managerExperiences: readonly ManagerExperience[] = [
     },
     achievements: {
       // saav(1) = 3 (golds), saav(2) = 3 (silvers), saav(3) = 2 (bronzes),
-      // saav(4) = 1 (President's Trophy), saav(5) = 2 (top-4)
+      // saav(4) = 1 (EHL title), saav(5) = 2 (promotions)
       1: 3,
       2: 3,
       3: 2,

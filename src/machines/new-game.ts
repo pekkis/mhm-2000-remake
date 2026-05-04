@@ -37,7 +37,8 @@ import {
   type ManagerExperienceId
 } from "@/data/mhm2000/manager-experience";
 import type { LeagueTier } from "@/data/mhm2000/teams";
-import type { GamesPlayedStats } from "@/state/game";
+import type { AchievementsStat, GamesPlayedStats } from "@/state/game";
+import { emptyAchievements } from "@/services/empties";
 
 /** Allowed team tiers per experience archetype. Mirrors QB's `sin1`-threshold gating. */
 export const tiersForExperience = (
@@ -62,6 +63,31 @@ export const getGamesPlayedFromExperience = (
     result[competitionId as keyof typeof history] = {
       0: { win: record.wins, draw: record.ties, loss: record.losses }
     };
+  }
+  return result;
+};
+
+const saavToAchievement: Record<
+  1 | 2 | 3 | 4 | 5 | 6 | 7,
+  keyof AchievementsStat
+> = {
+  1: "gold",
+  2: "silver",
+  3: "bronze",
+  4: "ehl",
+  5: "promoted",
+  6: "relegated",
+  7: "cup"
+};
+
+export const getAchievementsFromExperience = (
+  level: ManagerExperienceId
+): AchievementsStat => {
+  const { achievements } = managerExperienceById(level);
+  const result = emptyAchievements();
+  for (const [key, value] of Object.entries(achievements)) {
+    const k = Number(key) as 1 | 2 | 3 | 4 | 5 | 6 | 7;
+    result[saavToAchievement[k]] = value;
   }
   return result;
 };

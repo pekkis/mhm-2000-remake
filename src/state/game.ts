@@ -34,12 +34,11 @@ export type GamesPlayedStats = Partial<
 >;
 
 export type AchievementsStat = {
-  ehlChampion: number;
-  presidentsTrophy: number;
+  ehl: number;
   gold: number;
   silver: number;
   bronze: number;
-  fourth: number;
+  cup: number;
   promoted: number;
   relegated: number;
 };
