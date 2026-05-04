@@ -1,115 +1,101 @@
-import { setup, assign, fromPromise, createActor, sendTo } from "xstate";
-import type { Actor, Snapshot } from "xstate";
+/**
+ * Top-level application lifecycle machine — MHM 2000 edition.
+ *
+ *   menu                 — slot menu (8 cards), reads slot list async on entry
+ *     loadingSlots
+ *     slotList
+ *     confirmingClear    — T-press confirmation (QB `tyhjennalokero`)
+ *   creatingGame         — `newGameMachine` invoked as a child
+ *   loading              — read snapshot from IndexedDB
+ *   playing              — game actor running
+ *
+ * The `playing` state owns the spawned `gameMachine` actor; it's
+ * created with `createActor()` (rather than `spawn()`) so we can pass
+ * a persisted snapshot when loading. The wizard is `invoke`d so its
+ * lifecycle is tied to `creatingGame`.
+ */
 
 import {
-  createDefaultGameContext,
-  type GameContext,
-  type Manager
-} from "@/state";
-import { loadSnapshot, saveSnapshot } from "@/services/persistence";
+  setup,
+  assign,
+  fromPromise,
+  createActor,
+  sendTo,
+  type Actor,
+  type Snapshot
+} from "xstate";
+
 import { gameMachine } from "@/machines/game";
-import type { ManagerSubmission } from "@/machines/game";
-import { teamsMainCompetition } from "@/machines/selectors";
-import difficultyLevels from "@/data/difficulty-levels";
-import { produce } from "immer";
-import { createUniqueId } from "@/services/id";
-
-/**
- * Top-level application lifecycle machine.
- *
- * Owns the menu ↔ game shell. Holds a *pending* `GameContext` only
- * during `starting` — i.e. while the new-game wizard is refining the
- * context that will be handed to a spawned `gameMachine` on entry to
- * `playing`. The `loading` path holds a persisted `snapshot` instead and
- * spawns the game from it. Once spawned, the game owns its state fully;
- * app drops the reference on `QUIT`.
- *
- * The same flow scales to a richer wizard (MHM 2000): each step refines
- * `pending`, the final step spawns the game with the finished context.
- */
-
-/**
- * Currently only slot 1 is wired up. The save/load UI will pick a slot
- * later (MHM 2000 had 6); for now everything funnels through this constant.
- */
-const CURRENT_SLOT = 1;
+import { newGameMachine, type NewGameOutput } from "@/machines/new-game";
+import {
+  loadSlot,
+  saveSlot,
+  clearSlot,
+  listSlots,
+  getLastSlot,
+  setLastSlot,
+  type SlotInfo,
+  type SlotMetadata
+} from "@/services/persistence";
+import { composeNewGameContext } from "@/machines/parts/compose-new-game";
+import type { GameContext } from "@/state";
 
 export type AppContext = {
-  pending: GameContext | undefined;
+  /** All 8 slot cards, populated on entry to `menu`. */
+  slots: SlotInfo[];
+  /** Highlighted slot in the menu. Persisted across sessions. */
+  selectedSlot: number;
+  /** Slot the user is currently confirming clear for. */
+  pendingClearSlot: number | undefined;
+  /** Slot the new-game wizard is targeting. */
+  newGameSlot: number | undefined;
+  /** Snapshot loaded from IndexedDB, awaiting `playing` entry. */
   snapshot: Snapshot<unknown> | undefined;
+  /** GameContext built by the new-game wizard, awaiting `playing` entry. */
+  pending: GameContext | undefined;
+  /** Live game actor while in `playing`. */
   gameRef: Actor<typeof gameMachine> | undefined;
 };
 
 export type AppMachineEvents =
-  | { type: "START_GAME" }
-  | { type: "LOAD_GAME" }
-  | { type: "ADD_MANAGER"; payload: ManagerSubmission }
+  | { type: "SELECT_SLOT"; slot: number }
+  | { type: "START_NEW_GAME"; slot: number }
+  | { type: "LOAD_SLOT"; slot: number }
+  | { type: "REQUEST_CLEAR_SLOT"; slot: number }
+  | { type: "CONFIRM_CLEAR_SLOT" }
+  | { type: "CANCEL_CLEAR_SLOT" }
   | { type: "SAVE_GAME" }
   | { type: "QUIT" };
 
-/**
- * Pure refinement: take the current pending `GameContext` and the wizard's
- * manager submission, return a `GameContext` with the manager installed and
- * the chosen team flagged. 1-1 port of the legacy `buildManager` +
- * `assignManager` action that used to live in `gameMachine`.
- */
-const withManager = (
-  ctx: GameContext,
-  submission: ManagerSubmission
-): GameContext => {
-  const difficulty = submission.difficulty;
-  const main = teamsMainCompetition(submission.team)(ctx);
-
-  const manager: Manager = {
-    id: createUniqueId(),
-    kind: "human",
-    name: submission.name,
-    team: submission.team,
-    nationality: "FI",
-    tags: [],
-    attributes: {
-      charisma: 0,
-      luck: 0,
-      negotiation: 0,
-      resourcefulness: 0,
-      specialTeams: 0,
-      strategy: 0
-    },
-    difficulty,
-    pranksExecuted: 0,
-    services: {
-      coach: false,
-      insurance: false,
-      microphone: false,
-      cheer: false
-    },
-    balance: difficultyLevels[difficulty].startBalance,
-    arena: { name: submission.arena, level: main === "phl" ? 3 : 0 },
-    extra: 0,
-    insuranceExtra: 0,
-    flags: {}
-  };
-
-  return produce(ctx, (draft) => {
-    draft.managers[manager.id] = manager;
-    draft.human.order.push(manager.id);
-    draft.human.active = manager.id;
-
-    draft.teams[submission.team].manager = manager.id;
+const buildSlotMetadata = (ctx: GameContext): SlotMetadata => {
+  const managers = ctx.human.order.flatMap((id) => {
+    const m = ctx.managers[id];
+    if (!m) return [];
+    const teamId = m.team;
+    const team = teamId !== undefined ? ctx.teams[teamId] : undefined;
+    // Pick the most prestigious competition the team appears in.
+    const phlIds = (ctx.competitions.phl?.teams ?? []) as number[];
+    const divIds = (ctx.competitions.division?.teams ?? []) as number[];
+    const league =
+      teamId !== undefined && phlIds.includes(teamId)
+        ? "phl"
+        : teamId !== undefined && divIds.includes(teamId)
+          ? "divisioona"
+          : "mutasarja";
+    return [
+      {
+        name: m.name,
+        teamName: team?.name ?? "",
+        league: league as SlotMetadata["managers"][number]["league"]
+      }
+    ];
   });
-
-  /*
   return {
-    ...ctx,
-    manager: {
-      active: manager.id,
-      managers: { ...ctx.manager.managers, []: manager }
-    },
-    teams: ctx.teams.map((t) =>
-      t.id === submission.team ? { ...t, manager: manager.id } : t
-    )
+    managerCount: managers.length,
+    year: 1998 + (ctx.turn.season ?? 0),
+    managers,
+    savedAt: Date.now()
   };
-  */
 };
 
 export const appMachine = setup({
@@ -118,40 +104,63 @@ export const appMachine = setup({
     events: {} as AppMachineEvents
   },
   actors: {
-    load_from_storage: fromPromise<Snapshot<unknown>>(async () => {
-      const loaded = loadSnapshot(CURRENT_SLOT);
-      if (!loaded) {
-        throw new Error("no saved game");
+    newGame: newGameMachine,
+    loadSlots: fromPromise<{ slots: SlotInfo[]; lastSlot: number }>(async () => {
+      const [slots, lastSlot] = await Promise.all([listSlots(), getLastSlot()]);
+      return { slots, lastSlot: lastSlot ?? 1 };
+    }),
+    loadFromStorage: fromPromise<Snapshot<unknown>, { slot: number }>(
+      async ({ input }) => {
+        const record = await loadSlot(input.slot);
+        if (!record) {
+          throw new Error(`no saved game in slot ${input.slot}`);
+        }
+        return record.snapshot as Snapshot<unknown>;
       }
-      return loaded as Snapshot<unknown>;
+    ),
+    persistSlot: fromPromise<
+      void,
+      { slot: number; snapshot: Snapshot<unknown>; metadata: SlotMetadata }
+    >(async ({ input }) => {
+      await saveSlot(input.slot, input.snapshot, input.metadata);
+      await setLastSlot(input.slot);
+    }),
+    clearSlot: fromPromise<void, { slot: number }>(async ({ input }) => {
+      await clearSlot(input.slot);
     })
   },
   actions: {
-    persistSnapshot: (_, params: { snapshot: Snapshot<unknown> }) => {
-      saveSnapshot(CURRENT_SLOT, params.snapshot);
+    persistLastSlot: (_, params: { slot: number }) => {
+      // Fire-and-forget: the menu UI doesn't need to wait on it.
+      void setLastSlot(params.slot);
     }
   }
 }).createMachine({
   id: "app",
   initial: "menu",
-  context: { pending: undefined, snapshot: undefined, gameRef: undefined },
+  context: {
+    slots: [],
+    selectedSlot: 1,
+    pendingClearSlot: undefined,
+    newGameSlot: undefined,
+    snapshot: undefined,
+    pending: undefined,
+    gameRef: undefined
+  },
   on: {
     SAVE_GAME: {
       guard: ({ context }) => context.gameRef !== undefined,
-      // Two steps:
-      //   1. Imperative IO via a `params`-driven action object — keeps the
-      //      `assign()`/`createActor()` factories that fire later (e.g. when
-      //      the SAVED handshake spawns a notification child) from being
-      //      mistaken for "called inside a custom action" by XState's
-      //      dev-mode `executingCustomAction` flag.
-      //   2. `sendTo` — built-in primitive — to nudge the game so it can
-      //      surface its own "Peli tallennettiin." notification.
+      // Two steps: persist the snapshot (with metadata) and nudge the
+      // game so it can render its own "Peli tallennettiin." notification.
       actions: [
-        {
-          type: "persistSnapshot",
-          params: ({ context }) => ({
-            snapshot: context.gameRef!.getPersistedSnapshot()
-          })
+        ({ context }) => {
+          const ref = context.gameRef!;
+          const snapshot = ref.getPersistedSnapshot() as Snapshot<unknown>;
+          const liveCtx = ref.getSnapshot().context as GameContext;
+          const slot = context.newGameSlot ?? context.selectedSlot;
+          void saveSlot(slot, snapshot, buildSlotMetadata(liveCtx)).then(() =>
+            setLastSlot(slot)
+          );
         },
         sendTo(({ context }) => context.gameRef!, { type: "SAVED" })
       ]
@@ -159,32 +168,114 @@ export const appMachine = setup({
   },
   states: {
     menu: {
-      on: {
-        START_GAME: {
-          target: "starting",
-          actions: assign({ pending: () => createDefaultGameContext() })
+      initial: "loadingSlots",
+      states: {
+        loadingSlots: {
+          invoke: {
+            src: "loadSlots",
+            onDone: {
+              target: "slotList",
+              actions: assign({
+                slots: ({ event }) => event.output.slots,
+                selectedSlot: ({ event }) => event.output.lastSlot
+              })
+            },
+            onError: {
+              target: "slotList",
+              actions: assign({
+                slots: ({ context }) => context.slots
+              })
+            }
+          }
         },
-        LOAD_GAME: { target: "loading" }
+        slotList: {
+          on: {
+            SELECT_SLOT: {
+              actions: [
+                assign({
+                  selectedSlot: ({ event }) => event.slot
+                }),
+                {
+                  type: "persistLastSlot",
+                  params: ({ event }) => ({ slot: event.slot })
+                }
+              ]
+            },
+            START_NEW_GAME: {
+              target: "#app.creatingGame",
+              actions: assign({
+                newGameSlot: ({ event }) => event.slot,
+                selectedSlot: ({ event }) => event.slot
+              })
+            },
+            LOAD_SLOT: {
+              target: "#app.loading",
+              actions: assign({
+                newGameSlot: ({ event }) => event.slot,
+                selectedSlot: ({ event }) => event.slot
+              })
+            },
+            REQUEST_CLEAR_SLOT: {
+              target: "confirmingClear",
+              actions: assign({
+                pendingClearSlot: ({ event }) => event.slot
+              })
+            }
+          }
+        },
+        confirmingClear: {
+          on: {
+            CONFIRM_CLEAR_SLOT: { target: "clearingSlot" },
+            CANCEL_CLEAR_SLOT: {
+              target: "slotList",
+              actions: assign({ pendingClearSlot: undefined })
+            }
+          }
+        },
+        clearingSlot: {
+          invoke: {
+            src: "clearSlot",
+            input: ({ context }) => ({ slot: context.pendingClearSlot! }),
+            onDone: {
+              target: "loadingSlots",
+              actions: assign({ pendingClearSlot: undefined })
+            },
+            onError: {
+              target: "slotList",
+              actions: assign({ pendingClearSlot: undefined })
+            }
+          }
+        }
       }
     },
-    starting: {
-      on: {
-        ADD_MANAGER: {
+    creatingGame: {
+      invoke: {
+        id: "newGame",
+        src: "newGame",
+        input: ({ context }) => ({ slot: context.newGameSlot! }),
+        onDone: {
           target: "playing",
           actions: assign({
-            pending: ({ context, event }) =>
-              withManager(context.pending!, event.payload)
+            pending: ({ event }) =>
+              composeNewGameContext(event.output as NewGameOutput)
           })
         },
+        onError: {
+          target: "menu",
+          actions: assign({ newGameSlot: undefined })
+        }
+      },
+      on: {
         QUIT: {
           target: "menu",
-          actions: assign({ pending: undefined })
+          actions: assign({ newGameSlot: undefined })
         }
       }
     },
     loading: {
       invoke: {
-        src: "load_from_storage",
+        src: "loadFromStorage",
+        input: ({ context }) => ({ slot: context.newGameSlot! }),
         onDone: {
           target: "playing",
           actions: assign({ snapshot: ({ event }) => event.output })
@@ -193,21 +284,13 @@ export const appMachine = setup({
       }
     },
     playing: {
-      // Hydrate from `snapshot` if we came via load, otherwise from `pending`
-      // (new-game wizard). We use `createActor` rather than `spawn` because
-      // `spawn` can't accept a persisted snapshot in XState 5 — only the
-      // root-level `createActor` can. The trade-off is that the game lives
-      // in its own actor system rather than as a child of the app actor.
-      // It's fine: the game is fully self-contained and we own its lifecycle
-      // through the gameRef stored in context.
+      // Hydrate from `snapshot` if we came via load, otherwise from
+      // `pending` (new-game wizard). `createActor` (vs `spawn`) is the
+      // only API that accepts `snapshot` in XState 5.
       entry: assign(({ context }) => {
         const game =
           context.snapshot !== undefined
-            ? // gameMachine declares `input` as required, but XState ignores
-              // `input` when `snapshot` is provided — the persisted snapshot
-              // already carries the full context. Cast around the type
-              // requirement.
-              createActor(gameMachine, {
+            ? createActor(gameMachine, {
                 snapshot: context.snapshot,
                 systemId: "game"
               } as Parameters<typeof createActor<typeof gameMachine>>[1])
@@ -227,7 +310,8 @@ export const appMachine = setup({
         assign({
           pending: undefined,
           snapshot: undefined,
-          gameRef: undefined
+          gameRef: undefined,
+          newGameSlot: undefined
         })
       ],
       on: {
