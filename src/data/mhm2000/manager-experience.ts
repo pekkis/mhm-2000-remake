@@ -36,6 +36,15 @@ export type ManagerExperienceId = "rookie" | "veteran" | "legend";
 /**
  * Per-competition prefilled record. `playoffs` mirrors `otte(c, 2, pv)` —
  * how many of those games were playoff games.
+ *
+ * `GamesPlayedStats` phase convention (PHL / Divisioona / Mutasarja):
+ *   phase 0  = regular season
+ *   phase 1+ = playoffs
+ *
+ * When implementing `sin1` at runtime:
+ *   otte(c, 1) = sum of all phases (0 + 1 + 2 + …)
+ *   otte(c, 2) = sum of phases 1+ (playoff games only)
+ *   vsaldo(c, *) = phase 0 only (regular-season W/T/L for the win-rate modifier)
  */
 export type ExperienceCompetitionRecord = {
   games: number;

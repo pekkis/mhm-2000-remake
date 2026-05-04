@@ -15,10 +15,7 @@ import {
   type ManagedTeamDefinition,
   type LeagueTier
 } from "@/data/mhm2000/teams";
-import {
-  tiersForExperience,
-  type CustomTeamOverride
-} from "@/machines/new-game";
+import { isTeamSelectable, type CustomTeamOverride } from "@/machines/new-game";
 import competitions from "@/data/competitions";
 import {
   TEAM_HEADLINE,
@@ -124,7 +121,6 @@ const StepTeam: FC<WizardStepProps> = ({ actor }) => {
     actor,
     (s) => new Set(s.context.drafts.map((d) => d.team))
   );
-  const tiers = experience ? tiersForExperience(experience) : [];
 
   const [customMode, setCustomMode] = useState(false);
   const [displaceTeam, setDisplaceTeam] = useState<number | undefined>();
@@ -133,14 +129,17 @@ const StepTeam: FC<WizardStepProps> = ({ actor }) => {
   const [customArena, setCustomArena] = useState("MHM 2000 Areena");
 
   const groups = groupedCompetitionOrder
-    .filter((g) => tiers.includes(g.league))
     .map((g) => ({
       ...g,
       label: TEAM_GROUP_LABELS[g.league] ?? g.league.toUpperCase(),
       teams: managedTeams.filter(
-        (t) => t.league === g.league && !takenTeams.has(t.id)
+        (t) =>
+          t.league === g.league &&
+          !takenTeams.has(t.id) &&
+          (experience ? isTeamSelectable(t, experience) : false)
       )
-    }));
+    }))
+    .filter((g) => g.teams.length > 0);
 
   const submitNormal = (team: number) => {
     actor.send({ type: "SET_TEAM", team });

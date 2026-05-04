@@ -36,22 +36,126 @@ import {
   managerExperienceById,
   type ManagerExperienceId
 } from "@/data/mhm2000/manager-experience";
-import type { LeagueTier } from "@/data/mhm2000/teams";
+import type { ManagedTeamDefinition } from "@/data/mhm2000/teams";
 import type { AchievementsStat, GamesPlayedStats } from "@/state/game";
 import { emptyAchievements } from "@/services/empties";
 
-/** Allowed team tiers per experience archetype. Mirrors QB's `sin1`-threshold gating. */
-export const tiersForExperience = (
+/**
+ * Compute the manager strength score (`sin1`) from their career history,
+ * then map it to the team-quality threshold `a` that gates team selection.
+ *
+ * Verbatim port of `SUB omasopimus` (`ILEZ5.BAS:1133`).
+ *
+ * `history`  — from `ExperienceCompetitionRecord` (new-game pre-fill) or
+ *              accumulated `GamesPlayedStats` (live game).
+ * `achievements` — from `AchievementsStat`.
+ *
+ * Phase convention for `GamesPlayedStats`:
+ *   phase 0   = regular season  → contributes to win-rate (sin2) + flat
+ *   phase 1+  = playoffs        → contribute flat bonus only (otte(c,2))
+ *
+ * Returns threshold `a`: only teams where
+ * `average(previousRankings) >= a` are selectable.
+ * Lower `a` = weaker manager = only bottom teams.
+ * Higher `a` = stronger manager = top teams unlocked.
+ */
+export const computeTeamThreshold = (
   experience: ManagerExperienceId
-): readonly LeagueTier[] => {
-  switch (experience) {
-    case "rookie":
-      return ["mutasarja"] as const;
-    case "veteran":
-      return ["divisioona", "mutasarja"] as const;
-    case "legend":
-      return ["phl", "divisioona", "mutasarja"] as const;
+): number => {
+  const { history, achievements } = managerExperienceById(experience);
+
+  // Per-competition: win-rate adjusted regular-season points, plus flat playoff bonus.
+  // Competition weights: PHL=0.3/1.0, Div=0.2/0.6, Muta=0.1/0.3, EHL flat only.
+  const comps = [
+    { record: history.phl, regWeight: 0.3, poWeight: 1.0 },
+    { record: history.division, regWeight: 0.2, poWeight: 0.6 },
+    { record: history.mutasarja, regWeight: 0.1, poWeight: 0.3 }
+  ] as const;
+
+  let sin1 = 0;
+
+  for (const { record, regWeight, poWeight } of comps) {
+    if (!record) {
+      continue;
+    }
+    const { games, playoffs, wins, ties } = record;
+    const regularGames = games - playoffs;
+    // sin2: points-% over regular season (win=1pt, tie=0.5pt). 0 if no games.
+    const sin2 =
+      regularGames === 0 ? 0 : ((wins + 0.5 * ties) / regularGames) * 100;
+    sin1 += regularGames * regWeight * (1 + (sin2 - 50) * 0.004);
+    sin1 += playoffs * poWeight;
   }
+
+  // EHL: flat bonus, no win-rate modifier.
+  if (history.ehl) {
+    const { games, playoffs } = history.ehl;
+    sin1 += games * 1.0;
+    sin1 += playoffs * 10.0;
+  }
+
+  // Achievement cabinet.
+  sin1 += (achievements[1] ?? 0) * 20; // gold
+  sin1 += (achievements[2] ?? 0) * 15; // silver
+  sin1 += (achievements[3] ?? 0) * 10; // bronze
+  sin1 += (achievements[4] ?? 0) * 20; // EHL title
+  sin1 += (achievements[5] ?? 0) * 10; // promotion
+  sin1 += (achievements[6] ?? 0) * -10; // relegation
+  sin1 += (achievements[7] ?? 0) * 15; // cup win
+
+  // Map sin1 to threshold `a` (SELECT CASE from MHM2K.BAS:1842/ILEZ5.BAS:1156).
+  // Teams with average(previousRankings) >= a are selectable.
+  if (sin1 <= 6) {
+    return 44;
+  }
+  if (sin1 <= 12) {
+    return 40;
+  }
+  if (sin1 <= 18) {
+    return 35;
+  }
+  if (sin1 <= 30) {
+    return 29;
+  }
+  if (sin1 <= 50) {
+    return 23;
+  }
+  if (sin1 <= 80) {
+    return 18;
+  }
+  if (sin1 <= 110) {
+    return 14;
+  }
+  if (sin1 <= 150) {
+    return 10;
+  }
+  if (sin1 <= 200) {
+    return 8;
+  }
+  if (sin1 <= 300) {
+    return 6;
+  }
+  if (sin1 <= 400) {
+    return 4;
+  }
+  if (sin1 <= 500) {
+    return 3;
+  }
+
+  return 1;
+};
+
+/**
+ * Returns true if a team is selectable for a manager with the given
+ * experience archetype. Mirrors `(sed+sedd+seddd)/3 >= a` in QB.
+ */
+export const isTeamSelectable = (
+  team: ManagedTeamDefinition,
+  experience: ManagerExperienceId
+): boolean => {
+  const a = computeTeamThreshold(experience);
+  const [r1, r2, r3] = team.previousRankings;
+  return (r1 + r2 + r3) / 3 >= a;
 };
 
 export const getGamesPlayedFromExperience = (
