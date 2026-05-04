@@ -34,8 +34,8 @@ const ZERO_ATTRS: ManagerAttributes = {
   luck: 0
 };
 
-const sumAbs = (attrs: ManagerAttributes): number =>
-  ATTRIBUTE_KEYS.reduce((acc, k) => acc + Math.abs(attrs[k]), 0);
+const signedSum = (attrs: ManagerAttributes): number =>
+  ATTRIBUTE_KEYS.reduce((acc, k) => acc + attrs[k], 0);
 
 const StepAttributes: FC<WizardStepProps> = ({ actor }) => {
   const difficulty = useSelector(actor, (s) => s.context.current.difficulty);
@@ -46,8 +46,7 @@ const StepAttributes: FC<WizardStepProps> = ({ actor }) => {
 
   const [attrs, setAttrs] = useState<ManagerAttributes>(ZERO_ATTRS);
   const [focused, setFocused] = useState<ManagerAttributeKey>("strategy");
-  const spent = sumAbs(attrs);
-  const remaining = pool - spent;
+  const remaining = pool - signedSum(attrs);
 
   const adjust = (key: ManagerAttributeKey, delta: number) => {
     const current = attrs[key];
@@ -55,9 +54,8 @@ const StepAttributes: FC<WizardStepProps> = ({ actor }) => {
     if (next < -3 || next > 3) {
       return;
     }
-    // Spending check: each tick costs |new| - |current|.
-    const cost = Math.abs(next) - Math.abs(current);
-    if (cost > remaining) {
+    // Positive delta costs a point; negative delta refunds one.
+    if (delta > remaining) {
       return;
     }
     setFocused(key);
