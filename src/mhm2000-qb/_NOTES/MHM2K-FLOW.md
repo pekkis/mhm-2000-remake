@@ -116,10 +116,12 @@ The per-manager loop. Each manager goes through this sequence in order:
     `valb(4, pv)`). NOT the inter-manager prank system despite the
     in-source `jäynä` label — that's `jaynteh`/JAYNAT.M2K, separate.
 - Then computes a strength score `sin1` from previous-experience
-  scaffolding (lots of weighted sums of `otte`/`vsaldo`/`saav`) and
-  bins it into `a` — the **team-quality threshold** for the team
-  selector. Combined with `vai(2)`, `a` controls which teams are
-  pickable in the next step.
+  scaffolding (weighted sums of `otte`/`vsaldo`/`saav`) and bins it into
+  `a` — the **team-quality threshold** for the team selector. Combined
+  with `vai(2)`, `a` controls which teams are pickable in the next step.
+  Ported to [src/machines/new-game.ts](../../machines/new-game.ts)
+  (`computeManagerStrength` + `sin1ToThreshold` + `isTeamSelectable`).
+  See VARIABLES.md `sin1` row for the formula breakdown.
 
 ### 5. Team selection (still inside `options`, label `carlosmoya:`)
 
