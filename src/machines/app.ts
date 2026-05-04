@@ -26,7 +26,7 @@ import {
 } from "xstate";
 
 import { gameMachine } from "@/machines/game";
-import { newGameMachine, type NewGameOutput } from "@/machines/new-game";
+import { newGameMachine } from "@/machines/new-game";
 import {
   loadSlot,
   saveSlot,
@@ -263,8 +263,7 @@ export const appMachine = setup({
         onDone: {
           target: "playing",
           actions: assign({
-            pending: ({ event }) =>
-              composeNewGameContext(event.output as NewGameOutput)
+            pending: ({ event }) => composeNewGameContext(event.output)
           })
         },
         onError: {

@@ -63,6 +63,9 @@ const makeManager = (overrides: Partial<AIManager> = {}): AIManager => ({
   id: "m",
   name: "Manager",
   nationality: "FI",
+  stats: {
+    games: {}
+  },
   attributes: {
     strategy: 0,
     specialTeams: 0,

@@ -611,11 +611,12 @@ export const activeManagersInvitations: ContextSelector<
 export const totalGamesPlayed =
   (
     manager: string,
-    competition: string,
+    competition: CompetitionId,
     phase: number
   ): ContextSelector<number | undefined> =>
   (ctx) => {
-    const record = ctx.stats.managers?.[manager]?.games?.[competition]?.[phase];
+    const record =
+      ctx.managers?.[manager]?.stats?.games?.[competition]?.[phase];
 
     if (!record) {
       return 0;

@@ -21,6 +21,9 @@ const buildContextWithManager = (): GameContext => {
       specialTeams: 3,
       strategy: 3
     },
+    stats: {
+      games: {}
+    },
     name: "Pier Paolo Pasolini",
     team: 12,
     difficulty: 1,

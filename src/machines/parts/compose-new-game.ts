@@ -26,6 +26,9 @@ const buildHumanManager = (draft: ManagerDraft): HumanManager => {
   const legacyDifficulty = draft.difficulty - 1;
   return {
     id: createUniqueId(),
+    stats: {
+      games: {}
+    },
     kind: "human",
     name: draft.name,
     nationality: draft.nationality,

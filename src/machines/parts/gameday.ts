@@ -2,7 +2,7 @@ import { entries } from "remeda";
 import type { Draft } from "immer";
 
 import type { GameContext } from "@/state";
-import type { GameResult } from "@/types/competitions";
+import type { CompetitionId, GameResult } from "@/types/competitions";
 import calendar from "@/data/calendar";
 import competitionData from "@/data/competitions";
 import competitionTypes from "@/services/competition-type";
@@ -28,7 +28,7 @@ const emptyGameRecord = { win: 0, draw: 0, loss: 0 } as const;
 function updateStreaks(
   draft: Draft<GameContext>,
   params: {
-    competition: string;
+    competition: CompetitionId;
     phase: number;
     result: GameResult;
     home: { team: number; manager: string | undefined };
@@ -36,21 +36,21 @@ function updateStreaks(
   }
 ) {
   const stats = draft.stats;
-  const phaseKey = params.phase.toString();
+  const phaseKey = params.phase;
 
   for (const which of ["home", "away"] as const) {
     const { team, manager } = params[which];
     const facts = resultFacts(params.result, which);
-    const teamKey = team.toString();
 
     // Team streaks.
-    if (!stats.streaks.team[teamKey]) {
-      stats.streaks.team[teamKey] = {};
+    if (!stats.streaks.team[team]) {
+      stats.streaks.team[team] = {};
     }
-    if (!stats.streaks.team[teamKey][params.competition]) {
-      stats.streaks.team[teamKey][params.competition] = { ...emptyStreak };
+    if (!stats.streaks.team[team][params.competition]) {
+      stats.streaks.team[team][params.competition] = { ...emptyStreak };
     }
-    const s = stats.streaks.team[teamKey][params.competition];
+
+    const s = stats.streaks.team[team][params.competition]!;
     s.win = facts.isWin ? s.win + 1 : 0;
     s.draw = facts.isDraw ? s.draw + 1 : 0;
     s.loss = facts.isLoss ? s.loss + 1 : 0;
@@ -59,18 +59,20 @@ function updateStreaks(
 
     // Manager game records (only for managed teams).
     if (manager) {
-      if (!stats.managers[manager]) {
-        stats.managers[manager] = { games: {} };
+      const m = draft.managers[manager];
+
+      if (!m.stats) {
+        m.stats = { games: {} };
       }
-      if (!stats.managers[manager].games[params.competition]) {
-        stats.managers[manager].games[params.competition] = {};
+      if (!m.stats.games[params.competition]) {
+        m.stats.games[params.competition] = {};
       }
-      if (!stats.managers[manager].games[params.competition][phaseKey]) {
-        stats.managers[manager].games[params.competition][phaseKey] = {
+      if (!m.stats.games[params.competition]![phaseKey]) {
+        m.stats.games[params.competition]![phaseKey] = {
           ...emptyGameRecord
         };
       }
-      const r = stats.managers[manager].games[params.competition][phaseKey];
+      const r = m.stats.games[params.competition]![phaseKey];
       if (facts.isWin) {
         r.win += 1;
       } else if (facts.isLoss) {

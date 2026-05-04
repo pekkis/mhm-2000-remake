@@ -1,3 +1,5 @@
+import type { CompetitionId } from "@/machines/types";
+
 export type Streak = {
   win: number;
   draw: number;
@@ -23,14 +25,10 @@ export type SeasonStats = {
 };
 
 export type StatsState = {
-  managers: Record<
-    string,
-    { games: Record<string, Record<string, GameRecord>> }
-  >;
   currentSeason: SeasonStats | undefined;
   seasons: SeasonStats[];
   streaks: {
-    team: Record<string, Record<string, Streak>>;
-    manager: Record<string, any>;
+    team: Record<number, Partial<Record<CompetitionId, Streak>>>;
+    manager: Record<string, Partial<Record<CompetitionId, Streak>>>;
   };
 };
