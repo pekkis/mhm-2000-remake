@@ -290,7 +290,7 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
  * Returns `undefined` for light teams or teams that aren't part of the
  * Pekkalandia ladder.
  */
-const tierOf = (
+export const tierOf = (
   draft: Draft<GameContext>,
   teamId: number
 ): 1 | 2 | 3 | undefined => {
@@ -311,7 +311,7 @@ const tierOf = (
  * `SELECT CASE sin1` ladders inside `SUB tasomuut`. `sin1` is the 3-season
  * rolling average of league-global rankings (lower = better).
  */
-const sameTierStrength = (sin1: number, tier: 1 | 2 | 3): number => {
+export const sameTierStrength = (sin1: number, tier: 1 | 2 | 3): number => {
   if (tier === 1) {
     if (sin1 <= 1) {
       return 36;
@@ -398,12 +398,11 @@ const sameTierStrength = (sin1: number, tier: 1 | 2 | 3): number => {
  * stayed/promoted/relegated direction, (3) the manager's negotiation
  * skill (jitter), and (4) the arena capacity (tiny-arena cap).
  *
- * **Skill mapping caveat.** QB `mtaito(3, manager)` is NEUVOKKUUS in
- * the 1..6 range. Our `manager.attributes.negotiation` is the wizard's
- * signed -3..+3 offset. We map `skill = negotiation + 4` (so -3..+3 ⇒
- * 1..7); `+3` reaches an extra band beyond the QB encoding. Accepted
- * intentional drift — to be revisited when we standardise the skill
- * indexing across the codebase.
+ * **Skill is signed -3..+3, identical to QB.** `mtaito(3, man)` in QB is
+ * the manager's NEUVOKKUUS attribute, bounded to `-3..+3` by the
+ * character-creation wizard at `MHM2K.BAS:1535/1539` and rendered as a
+ * signed value at `ILES5.BAS:741`. Our `manager.attributes.negotiation`
+ * stores the same signed value verbatim — pass it through, no shift.
  *
  * Must run *after* promotions/relegations have been committed (so
  * `tierOf` reflects the new league assignment) and *after* any AI
@@ -476,9 +475,9 @@ export const runTasomuut = (
       }
     }
 
-    // Negotiation jitter — see "Skill mapping caveat" above.
+    // Negotiation jitter — mtaito(3) is signed -3..+3, used directly.
     const manager = draft.managers[team.manager];
-    const skill = manager.attributes.negotiation + 4;
+    const skill = manager.attributes.negotiation;
     const a = random.integer(1, 90);
     const lower = 30 + skill * 8;
     const upper = 60 + skill * 8;

@@ -144,8 +144,18 @@ export const computeManagerStrength = (stats: {
  * fall through with `a = 0` (every team passes). Almost certainly a QB
  * typo, but it's load-bearing weirdness — preserve it.
  *
- * Lower `a` = stronger manager (top teams unlocked).
- * Higher `a` = weaker manager (only bottom teams selectable).
+ * Gate semantics (see `isTeamSelectable`): `(sed+sedd+seddd)/3 >= a`.
+ * Ranking 1 = best. So:
+ *   - Higher `a` (weak manager) ⇒ team's avg ranking must be ≥ a, i.e.
+ *     only the lower-ranked (worse) teams pass. a=44 ⇒ bottom 4-5 only.
+ *   - Lower `a` (strong manager) ⇒ almost every team passes; only the
+ *     literal top 1..(a-1) teams stay locked. a=1 (sin1≥501) ⇒ EVERY
+ *     team selectable, top of the pyramid included.
+ *   - The two `a=0` gaps therefore also unlock everything (avg ≥ 0 is
+ *     trivially true for any team).
+ *
+ * Net effect: even legendary managers can't grab Jokerit (avg=1) until
+ * sin1 climbs into the 501+ band. Tiny QB courtesy gate at the very top.
  */
 export const sin1ToThreshold = (sin1: number): number => {
   if (sin1 >= 0 && sin1 <= 6) {
