@@ -216,10 +216,8 @@ const buildContext = (
   return ctx;
 };
 
-const runWith = (
-  ctx: GameContext,
-  random: RandomService
-): GameContext => produce(ctx, (draft) => runTasomuut(draft, random));
+const runWith = (ctx: GameContext, random: RandomService): GameContext =>
+  produce(ctx, (draft) => runTasomuut(draft, random));
 
 // ---------------------------------------------------------------------------
 // sameTierStrength — direct ladder coverage
@@ -524,10 +522,7 @@ describe("runTasomuut — promoted path", () => {
       [{ id: "m", negotiation: 0 }],
       { promotedDivision: [0] }
     );
-    const next = runWith(
-      ctx,
-      scriptedRandom({ real: [10], integer: [50] })
-    );
+    const next = runWith(ctx, scriptedRandom({ real: [10], integer: [50] }));
     // 31 - 2 = 29.
     expect(next.teams[0]!.tier).toBe(29);
   });
@@ -547,10 +542,7 @@ describe("runTasomuut — promoted path", () => {
       { promotedDivision: [0] }
     );
     // sin1=5 → threshold = real(0,100)<10. roll=50 → no -2.
-    const next = runWith(
-      ctx,
-      scriptedRandom({ real: [50], integer: [50] })
-    );
+    const next = runWith(ctx, scriptedRandom({ real: [50], integer: [50] }));
     expect(next.teams[0]!.tier).toBe(31);
   });
 
@@ -590,10 +582,7 @@ describe("runTasomuut — promoted path", () => {
       { promotedMutasarja: [0] }
     );
     // sin1=20 → threshold = real(0,200)<40. roll=10 → -2. 24-2 = 22.
-    const next = runWith(
-      ctx,
-      scriptedRandom({ real: [10], integer: [50] })
-    );
+    const next = runWith(ctx, scriptedRandom({ real: [10], integer: [50] }));
     expect(next.teams[0]!.tier).toBe(22);
   });
 });
@@ -733,9 +722,10 @@ describe("runTasomuut — skip rules", () => {
   });
 
   it("skips teams without previousRankings (light teams)", () => {
-    const ctx = buildContext([{ id: 0, manager: "m", tier: 12 }], [
-      { id: "m", negotiation: 0 }
-    ]);
+    const ctx = buildContext(
+      [{ id: 0, manager: "m", tier: 12 }],
+      [{ id: "m", negotiation: 0 }]
+    );
     const next = runWith(ctx, scriptedRandom({}));
     expect(next.teams[0]!.tier).toBe(12);
   });
