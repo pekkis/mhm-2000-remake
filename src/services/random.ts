@@ -33,16 +33,10 @@ export const createRandom = (seed: number) => {
   return createRandomWithEngine(MersenneTwister19937.seed(seed));
 };
 
-export const createRandomWithEngine = (engine: Engine): RandomService => {
+export const createRandomWithEngine = (engine: Engine): Random => {
   const random = new Random(engine);
-  return {
-    integer: (min, max) => random.integer(min, max),
-    real: (min, max) => random.real(min, max),
-    bool: (percentage) =>
-      percentage !== undefined ? random.bool(percentage) : random.bool(),
-    pick: (array) => random.pick(array),
-    cinteger: (min, max) => Math.round(random.real(min, max))
-  };
+
+  return random;
 };
 
 const appSeed = import.meta.env.VITE_RANDOM_SEED
@@ -60,4 +54,6 @@ const defaultService = createRandomWithEngine(engine);
 
 export default defaultService;
 
-export const cinteger = defaultService.cinteger;
+export const cinteger = (min: number, max: number, random = defaultService) => {
+  return Math.round(random.real(min, max));
+};

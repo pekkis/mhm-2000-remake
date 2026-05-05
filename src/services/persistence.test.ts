@@ -1,83 +1,109 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
+import "fake-indexeddb/auto";
+import { IDBFactory } from "fake-indexeddb";
+
 import {
-  saveSnapshot,
-  loadSnapshot,
-  hasSnapshot
+  saveSlot,
+  loadSlot,
+  clearSlot,
+  listSlots,
+  getLastSlot,
+  setLastSlot,
+  SLOT_COUNT,
+  type SlotMetadata,
+  _resetDbForTests
 } from "@/services/persistence";
 
-let storageData: Record<string, string> = {};
-
-const localStorageMock = {
-  getItem: vi.fn((key: string) => storageData[key] ?? null),
-  setItem: vi.fn((key: string, value: string) => {
-    storageData[key] = value;
-  }),
-  removeItem: vi.fn((key: string) => {
-    delete storageData[key];
-  }),
-  clear: vi.fn(() => {
-    storageData = {};
-  }),
-  get length() {
-    return Object.keys(storageData).length;
-  },
-  key: vi.fn((index: number) => Object.keys(storageData)[index] ?? null)
-};
+const fakeMeta = (overrides: Partial<SlotMetadata> = {}): SlotMetadata => ({
+  managerCount: 1,
+  year: 1998,
+  managers: [
+    { name: "Pier Paolo Pasolini", teamName: "Jokerit", league: "phl" }
+  ],
+  savedAt: 0,
+  ...overrides
+});
 
 beforeEach(() => {
-  storageData = {};
-  localStorageMock.getItem.mockClear();
-  localStorageMock.setItem.mockClear();
-  (globalThis as any).localStorage = localStorageMock;
+  // Wipe the entire fake IDB between tests so slot state doesn't leak.
+  globalThis.indexedDB = new IDBFactory();
+  _resetDbForTests();
 });
 
-afterEach(() => {
-  delete (globalThis as any).localStorage;
-});
+describe("persistence (IndexedDB)", () => {
+  describe("saveSlot / loadSlot / clearSlot", () => {
+    it("round-trips a snapshot + metadata for a slot", async () => {
+      const snap = { value: "in_game", context: { foo: 1 } };
+      const meta = fakeMeta();
+      await saveSlot(3, snap, meta);
 
-describe("persistence service", () => {
-  describe("saveSnapshot", () => {
-    it("serializes a snapshot to the slot's localStorage key", () => {
-      saveSnapshot(1, { value: "in_game", context: { foo: 1 } });
+      const record = await loadSlot(3);
+      expect(record).toEqual({ slot: 3, snapshot: snap, metadata: meta });
+    });
 
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        "mhm97:slot:1",
-        expect.any(String)
+    it("returns null for an empty slot", async () => {
+      expect(await loadSlot(1)).toBeNull();
+    });
+
+    it("keeps slots independent", async () => {
+      await saveSlot(1, { tag: "pasolini" }, fakeMeta());
+      await saveSlot(2, { tag: "fellini" }, fakeMeta({ year: 1999 }));
+
+      expect((await loadSlot(1))?.snapshot).toEqual({ tag: "pasolini" });
+      expect((await loadSlot(2))?.snapshot).toEqual({ tag: "fellini" });
+      expect((await loadSlot(2))?.metadata.year).toBe(1999);
+    });
+
+    it("clearSlot wipes a slot", async () => {
+      await saveSlot(4, { x: 1 }, fakeMeta());
+      await clearSlot(4);
+      expect(await loadSlot(4)).toBeNull();
+    });
+
+    it("rejects out-of-range slots", async () => {
+      await expect(saveSlot(0, {}, fakeMeta())).rejects.toBeInstanceOf(
+        RangeError
       );
-    });
-
-    it("keeps slots independent", () => {
-      saveSnapshot(1, { tag: "pasolini" });
-      saveSnapshot(2, { tag: "fellini" });
-
-      expect(loadSnapshot(1)).toEqual({ tag: "pasolini" });
-      expect(loadSnapshot(2)).toEqual({ tag: "fellini" });
+      await expect(saveSlot(9, {}, fakeMeta())).rejects.toBeInstanceOf(
+        RangeError
+      );
+      await expect(loadSlot(99)).rejects.toBeInstanceOf(RangeError);
     });
   });
 
-  describe("loadSnapshot", () => {
-    it("returns null when the slot is empty", () => {
-      expect(loadSnapshot(1)).toBeNull();
-    });
-
-    it("round-trips a snapshot correctly", () => {
-      const snap = {
-        value: "in_game",
-        context: { manager: { active: "pasolini" } }
-      };
-      saveSnapshot(1, snap);
-      expect(loadSnapshot(1)).toEqual(snap);
+  describe("listSlots", () => {
+    it("always returns 8 entries with empty/full status", async () => {
+      await saveSlot(2, { x: 1 }, fakeMeta());
+      const slots = await listSlots();
+      expect(slots).toHaveLength(SLOT_COUNT);
+      expect(slots.map((s) => s.status)).toEqual([
+        "empty",
+        "full",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty"
+      ]);
+      const filled = slots.find((s) => s.slot === 2);
+      expect(filled?.status).toBe("full");
+      if (filled?.status === "full") {
+        expect(filled.metadata.managers[0].name).toBe("Pier Paolo Pasolini");
+      }
     });
   });
 
-  describe("hasSnapshot", () => {
-    it("is false for an empty slot", () => {
-      expect(hasSnapshot(1)).toBe(false);
+  describe("getLastSlot / setLastSlot", () => {
+    it("returns undefined when never set", async () => {
+      expect(await getLastSlot()).toBeUndefined();
     });
 
-    it("is true once a slot has been written", () => {
-      saveSnapshot(1, { foo: 1 });
-      expect(hasSnapshot(1)).toBe(true);
+    it("round-trips the last selected slot", async () => {
+      await setLastSlot(5);
+      expect(await getLastSlot()).toBe(5);
+      await setLastSlot(7);
+      expect(await getLastSlot()).toBe(7);
     });
   });
 });

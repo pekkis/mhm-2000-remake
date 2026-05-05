@@ -1,199 +1,183 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
+import "fake-indexeddb/auto";
+import { IDBFactory } from "fake-indexeddb";
 import { createActor, waitFor } from "xstate";
+
 import { appMachine } from "@/machines/app";
-import type { ManagerSubmission } from "@/machines/game";
+import { newGameMachine } from "@/machines/new-game";
 import { gameMachine } from "@/machines/game";
 import { createDefaultGameContext } from "@/state";
-import { loadSnapshot, saveSnapshot } from "@/services/persistence";
+import {
+  saveSlot,
+  setLastSlot,
+  _resetDbForTests
+} from "@/services/persistence";
+import type { ManagerAttributes } from "@/data/managers";
 
-vi.mock("@/services/persistence", () => ({
-  loadSnapshot: vi.fn(),
-  saveSnapshot: vi.fn()
-}));
-
-const submission: ManagerSubmission = {
-  name: "Pier Paolo Pasolini",
-  arena: "Stadio Olimpico",
-  difficulty: 1,
-  team: 12
+const ZERO_ATTRS: ManagerAttributes = {
+  strategy: 0,
+  specialTeams: 0,
+  negotiation: 0,
+  resourcefulness: 0,
+  charisma: 0,
+  luck: 0
 };
 
-const createTestActor = () => {
+const startApp = async () => {
   const actor = createActor(appMachine);
   actor.start();
+  // Drain the menu's loadingSlots → slotList async hop.
+  await waitFor(actor, (snap) => snap.matches({ menu: "slotList" }));
   return actor;
 };
 
+const driveWizardThroughOneManager = (
+  actor: ReturnType<typeof createActor<typeof newGameMachine>>
+) => {
+  actor.send({ type: "SET_NAME", name: "Pier Paolo Pasolini" });
+  actor.send({ type: "SET_NATIONALITY", nationality: "IT" });
+  actor.send({ type: "SET_EXPERIENCE", experience: "legend" });
+  actor.send({ type: "SET_DIFFICULTY", difficulty: 3 });
+  actor.send({ type: "SET_TEAM", team: 0 });
+  actor.send({ type: "SET_ATTRIBUTES", attributes: ZERO_ATTRS });
+};
+
 beforeEach(() => {
-  vi.mocked(loadSnapshot).mockReset();
-  vi.mocked(saveSnapshot).mockReset();
+  globalThis.indexedDB = new IDBFactory();
+  _resetDbForTests();
 });
 
-describe("appMachine", () => {
-  describe("initial state", () => {
-    it("starts in menu with no pending context and no game ref", () => {
-      const snap = createTestActor().getSnapshot();
-      expect(snap.value).toBe("menu");
-      expect(snap.context.pending).toBeUndefined();
-      expect(snap.context.gameRef).toBeUndefined();
-    });
+describe("appMachine — slot menu", () => {
+  it("starts in menu.loadingSlots and lands in slotList with 8 empty slots", async () => {
+    const actor = await startApp();
+    const snap = actor.getSnapshot();
+    expect(snap.matches({ menu: "slotList" })).toBe(true);
+    expect(snap.context.slots).toHaveLength(8);
+    expect(snap.context.slots.every((s) => s.status === "empty")).toBe(true);
   });
 
-  describe("new game flow", () => {
-    it("START_GAME transitions to starting and seeds pending with defaults", () => {
-      const actor = createTestActor();
-      actor.send({ type: "START_GAME" });
-      const snap = actor.getSnapshot();
-      expect(snap.value).toBe("starting");
-      expect(snap.context.pending).toBeDefined();
-      expect(snap.context.pending!.human.active).toBeUndefined();
-    });
-
-    it("ADD_MANAGER refines context and transitions to playing", () => {
-      const actor = createTestActor();
-      actor.send({ type: "START_GAME" });
-      actor.send({ type: "ADD_MANAGER", payload: submission });
-
-      const snap = actor.getSnapshot();
-      expect(snap.value).toBe("playing");
-      // pending is handed to the spawned game on entry to `playing`
-      // and cleared from app context to avoid duplicate trees.
-      expect(snap.context.pending).toBeUndefined();
-
-      const gameCtx = snap.context.gameRef!.getSnapshot().context;
-      const activeId = gameCtx.human.active;
-      expect(activeId).toBeDefined();
-      expect(gameCtx.managers[activeId!].name).toBe(submission.name);
-      expect(gameCtx.teams[submission.team].manager).toBe(activeId);
-    });
-
-    it("entering playing creates a running game actor stored in context", () => {
-      const actor = createTestActor();
-      actor.send({ type: "START_GAME" });
-      actor.send({ type: "ADD_MANAGER", payload: submission });
-
-      const snap = actor.getSnapshot();
-      expect(snap.context.gameRef).toBeDefined();
-      expect(snap.context.gameRef!.getSnapshot().status).toBe("active");
-    });
-
-    it("the spawned game starts in_game with the refined context", () => {
-      const actor = createTestActor();
-      actor.send({ type: "START_GAME" });
-      actor.send({ type: "ADD_MANAGER", payload: submission });
-
-      const gameRef = actor.getSnapshot().context.gameRef!;
-      const gameSnap = gameRef.getSnapshot();
-      expect(gameSnap.matches("in_game")).toBe(true);
-      expect(gameSnap.context.human.active).toBeDefined();
-      expect(gameSnap.context.teams[submission.team].manager).toBe(
-        gameSnap.context.human.active
-      );
-    });
-
-    it("QUIT from starting returns to menu and clears pending", () => {
-      const actor = createTestActor();
-      actor.send({ type: "START_GAME" });
-      actor.send({ type: "QUIT" });
-
-      const snap = actor.getSnapshot();
-      expect(snap.value).toBe("menu");
-      expect(snap.context.pending).toBeUndefined();
-    });
+  it("highlights the persisted lastSlot if present", async () => {
+    await setLastSlot(5);
+    const actor = await startApp();
+    expect(actor.getSnapshot().context.selectedSlot).toBe(5);
   });
 
-  describe("load game flow", () => {
-    const buildSnapshot = (
-      mutate?: (ctx: ReturnType<typeof createDefaultGameContext>) => void
-    ) => {
-      const ctx = createDefaultGameContext();
-      mutate?.(ctx);
-      const tmp = createActor(gameMachine, { input: ctx });
-      tmp.start();
-      const snap = tmp.getPersistedSnapshot();
-      tmp.stop();
-      return snap;
-    };
-
-    it("LOAD_GAME transitions to loading", () => {
-      vi.mocked(loadSnapshot).mockReturnValue(buildSnapshot());
-      const actor = createTestActor();
-      actor.send({ type: "LOAD_GAME" });
-      expect(actor.getSnapshot().value).toBe("loading");
-    });
-
-    it("loading reaches playing with the loaded snapshot driving the game", async () => {
-      const persisted = buildSnapshot((ctx) => {
-        ctx.turn.season = 7; // marker we can verify survived the handoff
-      });
-      vi.mocked(loadSnapshot).mockReturnValue(persisted);
-      const actor = createTestActor();
-      actor.send({ type: "LOAD_GAME" });
-
-      await waitFor(actor, (snap) => snap.value === "playing");
-      const snap = actor.getSnapshot();
-      expect(snap.context.pending).toBeUndefined();
-      expect(snap.context.snapshot).toBeUndefined();
-      expect(snap.context.gameRef).toBeDefined();
-      expect(snap.context.gameRef!.getSnapshot().context.turn.season).toBe(7);
-    });
-
-    it("loading falls back to menu when no saved game exists", async () => {
-      vi.mocked(loadSnapshot).mockReturnValue(null);
-      const actor = createTestActor();
-      actor.send({ type: "LOAD_GAME" });
-      await waitFor(actor, (snap) => snap.value === "menu");
-    });
+  it("SELECT_SLOT updates selectedSlot in context", async () => {
+    const actor = await startApp();
+    actor.send({ type: "SELECT_SLOT", slot: 3 });
+    expect(actor.getSnapshot().context.selectedSlot).toBe(3);
   });
 
-  describe("save flow", () => {
-    it("SAVE_GAME persists the live game's snapshot to slot 1", () => {
-      const actor = createTestActor();
-      actor.send({ type: "START_GAME" });
-      actor.send({ type: "ADD_MANAGER", payload: submission });
+  it("REQUEST_CLEAR_SLOT moves to confirmingClear; CANCEL_CLEAR_SLOT returns", async () => {
+    const actor = await startApp();
+    actor.send({ type: "REQUEST_CLEAR_SLOT", slot: 2 });
+    expect(actor.getSnapshot().matches({ menu: "confirmingClear" })).toBe(true);
+    expect(actor.getSnapshot().context.pendingClearSlot).toBe(2);
+    actor.send({ type: "CANCEL_CLEAR_SLOT" });
+    expect(actor.getSnapshot().matches({ menu: "slotList" })).toBe(true);
+    expect(actor.getSnapshot().context.pendingClearSlot).toBeUndefined();
+  });
+});
 
-      actor.send({ type: "SAVE_GAME" });
+describe("appMachine — load flow", () => {
+  it("LOAD_SLOT loads the snapshot and reaches `playing`", async () => {
+    const ctx = createDefaultGameContext();
+    ctx.turn.season = 9;
+    const tmp = createActor(gameMachine, { input: ctx });
+    tmp.start();
+    const persisted = tmp.getPersistedSnapshot();
+    tmp.stop();
 
-      expect(saveSnapshot).toHaveBeenCalledTimes(1);
-      const [slot, snap] = vi.mocked(saveSnapshot).mock.calls[0];
-      expect(slot).toBe(1);
-      expect(snap).toBeDefined();
+    await saveSlot(4, persisted, {
+      managerCount: 0,
+      year: 2007,
+      managers: [],
+      savedAt: 0
     });
 
-    it("SAVE_GAME is a no-op when no game is running", () => {
-      const actor = createTestActor();
-      actor.send({ type: "SAVE_GAME" });
-      expect(saveSnapshot).not.toHaveBeenCalled();
-    });
+    const actor = await startApp();
+    actor.send({ type: "LOAD_SLOT", slot: 4 });
+    await waitFor(actor, (snap) => snap.matches("playing"));
+    const snap = actor.getSnapshot();
+    expect(snap.context.gameRef).toBeDefined();
+    expect(snap.context.gameRef!.getSnapshot().context.turn.season).toBe(9);
+  });
+});
+
+describe("appMachine — new game flow", () => {
+  it("START_NEW_GAME spawns the wizard child; wizard completion lands in `playing`", async () => {
+    const actor = await startApp();
+    actor.send({ type: "START_NEW_GAME", slot: 1 });
+    expect(actor.getSnapshot().matches("creatingGame")).toBe(true);
+
+    const wizard = actor.getSnapshot().children.newGame as ReturnType<
+      typeof createActor<typeof newGameMachine>
+    >;
+    expect(wizard).toBeDefined();
+    wizard.send({ type: "SET_MANAGER_COUNT", count: 1 });
+    driveWizardThroughOneManager(wizard);
+    // askMore auto-skips for single-manager runs (no event needed),
+    // peckingOrder auto-resolves and we hit `done`.
+
+    await waitFor(actor, (snap) => snap.matches("playing"));
+    const snap = actor.getSnapshot();
+    const gameCtx = snap.context.gameRef!.getSnapshot().context;
+    const activeId = gameCtx.human.active!;
+    expect(gameCtx.managers[activeId].name).toBe("Pier Paolo Pasolini");
+    expect(gameCtx.teams[0].manager).toBe(activeId);
   });
 
-  describe("quit flow", () => {
-    it("QUIT from playing returns to menu and drops pending + gameRef", () => {
-      const actor = createTestActor();
-      actor.send({ type: "START_GAME" });
-      actor.send({ type: "ADD_MANAGER", payload: submission });
-      expect(actor.getSnapshot().value).toBe("playing");
-
-      actor.send({ type: "QUIT" });
-      const snap = actor.getSnapshot();
-      expect(snap.value).toBe("menu");
-      expect(snap.context.pending).toBeUndefined();
-      expect(snap.context.gameRef).toBeUndefined();
+  it("custom-team override renames the displaced team", async () => {
+    const actor = await startApp();
+    actor.send({ type: "START_NEW_GAME", slot: 1 });
+    const wizard = actor.getSnapshot().children.newGame as ReturnType<
+      typeof createActor<typeof newGameMachine>
+    >;
+    wizard.send({ type: "SET_MANAGER_COUNT", count: 1 });
+    wizard.send({ type: "SET_NAME", name: "Tester" });
+    wizard.send({ type: "SET_NATIONALITY", nationality: "FI" });
+    wizard.send({ type: "SET_EXPERIENCE", experience: "legend" });
+    wizard.send({ type: "SET_DIFFICULTY", difficulty: 3 });
+    wizard.send({
+      type: "SET_TEAM",
+      team: 0,
+      customTeam: {
+        name: "PASOLINIT",
+        city: "Hirvikoski",
+        arena: "Pasolinin Halli"
+      }
     });
+    wizard.send({ type: "SET_ATTRIBUTES", attributes: ZERO_ATTRS });
 
-    it("re-entering playing spawns a fresh game actor", () => {
-      const actor = createTestActor();
-      actor.send({ type: "START_GAME" });
-      actor.send({ type: "ADD_MANAGER", payload: submission });
-      const firstRef = actor.getSnapshot().context.gameRef;
+    await waitFor(actor, (snap) => snap.matches("playing"));
+    const gameCtx = actor.getSnapshot().context.gameRef!.getSnapshot().context;
+    expect(gameCtx.teams[0].name).toBe("PASOLINIT");
+    expect(gameCtx.teams[0].city).toBe("Hirvikoski");
+    expect(gameCtx.teams[0].arena.name).toBe("Pasolinin Halli");
+  });
 
-      actor.send({ type: "QUIT" });
-      actor.send({ type: "START_GAME" });
-      actor.send({ type: "ADD_MANAGER", payload: submission });
-      const secondRef = actor.getSnapshot().context.gameRef;
+  it("QUIT from creatingGame returns to menu", async () => {
+    const actor = await startApp();
+    actor.send({ type: "START_NEW_GAME", slot: 1 });
+    expect(actor.getSnapshot().matches("creatingGame")).toBe(true);
+    actor.send({ type: "QUIT" });
+    await waitFor(actor, (snap) => snap.matches({ menu: "slotList" }));
+  });
+});
 
-      expect(secondRef).toBeDefined();
-      expect(secondRef).not.toBe(firstRef);
-    });
+describe("appMachine — quit flow", () => {
+  it("QUIT from playing returns to menu and drops gameRef", async () => {
+    const actor = await startApp();
+    actor.send({ type: "START_NEW_GAME", slot: 1 });
+    const wizard = actor.getSnapshot().children.newGame as ReturnType<
+      typeof createActor<typeof newGameMachine>
+    >;
+    wizard.send({ type: "SET_MANAGER_COUNT", count: 1 });
+    driveWizardThroughOneManager(wizard);
+    await waitFor(actor, (snap) => snap.matches("playing"));
+
+    actor.send({ type: "QUIT" });
+    await waitFor(actor, (snap) => snap.matches({ menu: "slotList" }));
+    expect(actor.getSnapshot().context.gameRef).toBeUndefined();
   });
 });

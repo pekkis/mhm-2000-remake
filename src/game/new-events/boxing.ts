@@ -1,6 +1,6 @@
 import { managersTeamId, randomManager } from "@/machines/selectors";
 import { currency } from "@/services/format";
-import random from "@/services/random";
+import { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -60,7 +60,7 @@ const boxing: DeclarativeEvent<BoxingData> = {
     ...data,
     resolved: true,
     agree: value === "agree",
-    result: value === "agree" ? random.cinteger(0, 4) : false
+    result: value === "agree" ? cinteger(0, 4) : false
   }),
 
   render: (data) => {

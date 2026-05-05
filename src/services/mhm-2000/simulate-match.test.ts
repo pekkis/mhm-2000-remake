@@ -17,6 +17,7 @@ import { teamLevels } from "@/data/levels";
 import competitionDefinitions from "@/data/competitions";
 import type { AIManager, AITeam } from "@/state/game";
 import type { Group, Phase } from "@/types/competitions";
+import { emptyAchievements } from "@/services/empties";
 
 const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => {
   const tier = overrides.tier ?? 30;
@@ -64,6 +65,10 @@ const makeManager = (overrides: Partial<AIManager> = {}): AIManager => ({
   id: "ai-manager",
   name: "AI Manager",
   nationality: "FI",
+  stats: {
+    games: {},
+    achievements: emptyAchievements()
+  },
   attributes: {
     strategy: 0,
     specialTeams: 0,
@@ -194,8 +199,19 @@ describe("simulateMatch", () => {
       if (r.homeGoals === r.awayGoals) {
         tieSeen = true;
         expect(r.overtime).toBe(true);
-        expect(r.homeMoraleChange).toBe(0);
-        expect(r.awayMoraleChange).toBe(0);
+
+        expect(r.effects).toEqual([
+          {
+            amount: 0,
+            team: 1,
+            type: "incrementMorale"
+          },
+          {
+            amount: 0,
+            team: 2,
+            type: "incrementMorale"
+          }
+        ]);
       }
     }
     expect(tieSeen).toBe(true);
@@ -207,8 +223,19 @@ describe("simulateMatch", () => {
     const weak = sideFromTier(2, "Weak", 5);
     const r = simulateMatch(strong, weak, regularContext, createRandom(99));
     expect(r.homeGoals).toBeGreaterThan(r.awayGoals);
-    expect(r.homeMoraleChange).toBe(1);
-    expect(r.awayMoraleChange).toBe(-1);
+
+    expect(r.effects).toEqual([
+      {
+        amount: 1,
+        team: 1,
+        type: "incrementMorale"
+      },
+      {
+        amount: -1,
+        team: 2,
+        type: "incrementMorale"
+      }
+    ]);
   });
 
   it("home advantage shows up over many samples", () => {

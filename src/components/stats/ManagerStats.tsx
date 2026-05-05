@@ -53,12 +53,10 @@ const ManagerStats: FC<ManagerStatsProps> = ({
           title: "Ura numeroina",
           content: () => (
             <div>
-              {(["phl", "division", "ehl"] as const)
+              {(["phl", "division", "mutasarja", "ehl"] as const)
                 .map((c) => competitions[c])
                 .map((c) => {
-                  const stat = stats.managers?.[manager.id]?.games?.[c.id]?.[
-                    "0"
-                  ] ?? {
+                  const stat = manager.stats.games?.[c.id]?.[0] ?? {
                     win: 0,
                     draw: 0,
                     loss: 0

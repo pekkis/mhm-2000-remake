@@ -1,5 +1,5 @@
 import { managersMainCompetition, managersTeamId } from "@/machines/selectors";
-import random from "@/services/random";
+import { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "saunailta";
@@ -30,7 +30,7 @@ const saunailta: DeclarativeEvent<SaunailtaData> = {
       manager,
       resolved: true,
       effect: mainCompetition === "phl" ? -30 : -20,
-      duration: random.cinteger(0, 2) + 2
+      duration: cinteger(0, 2) + 2
     };
   },
 

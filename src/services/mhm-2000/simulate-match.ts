@@ -71,6 +71,7 @@
  */
 
 import competitions from "@/data/competitions";
+import type { EventEffect } from "@/game/event-effects";
 import competitionTypes from "@/services/competition-type";
 import defaultRandom, { type RandomService } from "@/services/random";
 import { calculateStrength } from "@/services/team";
@@ -125,8 +126,8 @@ export type MatchResult = {
    * [ILEX5.BAS:3953-3960]. Tournament matches (`turnauz <> 0`) skip
    * this — out of scope for this function.
    */
-  homeMoraleChange: number;
-  awayMoraleChange: number;
+
+  effects: EventEffect[];
 };
 
 // ─── helpers ─────────────────────────────────────────────────────────
@@ -462,7 +463,10 @@ export const simulateMatch = (
     homeGoals,
     awayGoals,
     overtime: overtime !== "none",
-    homeMoraleChange,
-    awayMoraleChange
+
+    effects: [
+      { type: "incrementMorale", team: home.team.id, amount: homeMoraleChange },
+      { type: "incrementMorale", team: away.team.id, amount: awayMoraleChange }
+    ]
   };
 };

@@ -1,4 +1,3 @@
-import { entries } from "remeda";
 import type { Draft } from "immer";
 
 import type { GameContext } from "@/state";
@@ -7,11 +6,9 @@ import calendar from "@/data/calendar";
 import competitionData from "@/data/competitions";
 import competitionTypes from "@/services/competition-type";
 import { computeStats } from "@/services/competition-type";
-import { gameFacts, resultFacts } from "@/services/game";
+import { resultFacts } from "@/services/game";
 import { simulate, toGameResult } from "@/services/mhm-2000/game";
-import { amount as formatAmount } from "@/services/format";
-import difficultyLevels from "@/data/difficulty-levels";
-import random from "@/services/random";
+import type { EventEffect } from "@/game/event-effects";
 
 const emptyStreak = { win: 0, draw: 0, loss: 0, noLoss: 0, noWin: 0 } as const;
 const emptyGameRecord = { win: 0, draw: 0, loss: 0 } as const;
@@ -36,21 +33,21 @@ function updateStreaks(
   }
 ) {
   const stats = draft.stats;
-  const phaseKey = params.phase.toString();
+  const phaseKey = params.phase;
 
   for (const which of ["home", "away"] as const) {
     const { team, manager } = params[which];
     const facts = resultFacts(params.result, which);
-    const teamKey = team.toString();
 
     // Team streaks.
-    if (!stats.streaks.team[teamKey]) {
-      stats.streaks.team[teamKey] = {};
+    if (!stats.streaks.team[team]) {
+      stats.streaks.team[team] = {};
     }
-    if (!stats.streaks.team[teamKey][params.competition]) {
-      stats.streaks.team[teamKey][params.competition] = { ...emptyStreak };
+    if (!stats.streaks.team[team][params.competition]) {
+      stats.streaks.team[team][params.competition] = { ...emptyStreak };
     }
-    const s = stats.streaks.team[teamKey][params.competition];
+
+    const s = stats.streaks.team[team][params.competition]!;
     s.win = facts.isWin ? s.win + 1 : 0;
     s.draw = facts.isDraw ? s.draw + 1 : 0;
     s.loss = facts.isLoss ? s.loss + 1 : 0;
@@ -59,18 +56,17 @@ function updateStreaks(
 
     // Manager game records (only for managed teams).
     if (manager) {
-      if (!stats.managers[manager]) {
-        stats.managers[manager] = { games: {} };
+      const m = draft.managers[manager];
+
+      if (!m.stats.games[params.competition]) {
+        m.stats.games[params.competition] = {};
       }
-      if (!stats.managers[manager].games[params.competition]) {
-        stats.managers[manager].games[params.competition] = {};
-      }
-      if (!stats.managers[manager].games[params.competition][phaseKey]) {
-        stats.managers[manager].games[params.competition][phaseKey] = {
+      if (!m.stats.games[params.competition]![phaseKey]) {
+        m.stats.games[params.competition]![phaseKey] = {
           ...emptyGameRecord
         };
       }
-      const r = stats.managers[manager].games[params.competition][phaseKey];
+      const r = m.stats.games[params.competition]![phaseKey];
       if (facts.isWin) {
         r.win += 1;
       } else if (facts.isLoss) {
@@ -94,7 +90,7 @@ function updateStreaks(
  * for each group, simulate every match where `playMatch` returns true,
  * recompute stats, then run the per-manager `afterGameday`
  * bookkeeping (microphone roll → fine + announcement, plus
- * gameBalance / moraleBoost / readinessBoost), then bump the group's
+ *  moraleBoost), then bump the group's
  * round counter, then delegate to the competition's `groupEnd` hook
  * once the schedule is exhausted.
  *
@@ -103,9 +99,11 @@ function updateStreaks(
  * is stashed onto context. The next entry action reads it, dispatches
  * `RESOLVE` to each parlay bet actor, and clears the field.
  */
-export function runGameday(draft: Draft<GameContext>): void {
+export function runGameday(draft: Draft<GameContext>): EventEffect[] {
   const round = draft.turn.round;
   const gamedays = calendar[round]?.gamedays ?? [];
+
+  let effects: EventEffect[] = [];
 
   for (const competitionId of gamedays) {
     const comp = draft.competitions[competitionId];
@@ -154,22 +152,7 @@ export function runGameday(draft: Draft<GameContext>): void {
           }
         });
 
-        /*
-        const result = simulate({
-          ...groupParams,
-          overtime: (r) => ct.overtime(r, group, groupRound, x),
-          home,
-          away,
-          homeManager: home.manager
-            ? draft.managers[home.manager]
-            : (undefined as unknown as Manager),
-          awayManager: away.manager
-            ? draft.managers[away.manager]
-            : (undefined as unknown as Manager),
-          phaseId: comp.phase,
-          competitionId
-        });
-        */
+        effects = effects.concat(result.effects);
 
         const legacyResult = toGameResult(result);
 
@@ -186,93 +169,6 @@ export function runGameday(draft: Draft<GameContext>): void {
 
       // 2. Recompute the group's standings.
       group.stats = computeStats(group);
-
-      // 3. Per-manager bookkeeping for the round we just played.
-      //    1-1 port of `afterGameday()` in src/sagas/manager.ts.
-      for (const [managerId, manager] of entries(draft.managers)) {
-        if (manager.team === undefined) {
-          continue;
-        }
-
-        const managersIndex = group.teams.findIndex((t) => t === manager.team);
-        if (managersIndex === -1) {
-          continue;
-        }
-
-        const game = group.schedule[groupRound].find(
-          (p) => p.home === managersIndex || p.away === managersIndex
-        );
-        if (!game || !game.result) {
-          continue;
-        }
-
-        if (manager.kind === "human") {
-          // Microphone bust roll: PHL/division phase 0 only, 6%
-          // chance → 50000 fine + 4-point penalty (in the league
-          // group, hard-coded to phase 0 group 0).
-          if (
-            manager.services.microphone &&
-            (competitionId === "phl" || competitionId === "division") &&
-            comp.phase === 0
-          ) {
-            if (random.bool(0.06)) {
-              const fine = 50000;
-              const pointDeduction = -4;
-              manager.balance -= fine;
-              // Inline the penalty (port of `incurPenalty` saga +
-              // `teamIncurPenalty` reducer): only applies to
-              // round-robin groups, which the league always is.
-              const leagueGroup =
-                draft.competitions[competitionId].phases[0].groups[0];
-              if (leagueGroup.type === "round-robin") {
-                leagueGroup.penalties.push({
-                  team: manager.team!,
-                  penalty: pointDeduction
-                });
-                leagueGroup.stats = computeStats(leagueGroup);
-              }
-              if (!draft.news.announcements[managerId]) {
-                draft.news.announcements[managerId] = [];
-              }
-              draft.news.announcements[managerId].push(
-                `"Salainen" mikrofonisi vastustajan vaihtoaitiossa on paljastunut. Teidät tuomitaan __${formatAmount(
-                  fine
-                )}__ pekan sakkoihin ja __${pointDeduction}__ pisteen menetykseen.`
-              );
-            }
-          }
-        }
-
-        const facts = gameFacts(game, managersIndex);
-        const team = draft.teams[manager.team!];
-
-        const moraleDelta = competitionDef.moraleBoost(
-          comp.phase,
-          facts,
-          manager
-        );
-
-        if (manager.kind === "human") {
-          const balanceDelta = competitionDef.gameBalance(
-            comp.phase,
-            facts,
-            manager
-          );
-
-          if (balanceDelta) {
-            manager.balance += balanceDelta;
-          }
-        }
-
-        if (moraleDelta) {
-          // Morale clamp uses the team's manager's difficulty
-          // (defaults to 2 / Pasolini-mode for unmanaged teams).
-          const diffIdx = manager.difficulty;
-          const min = difficultyLevels[diffIdx].moraleMin;
-          const max = difficultyLevels[diffIdx].moraleMax;
-          team.morale = Math.min(max, Math.max(min, team.morale + moraleDelta));
-        }
-      }
 
       // 4. Capture parlay correct coupon — PHL phase 0 group 0
       //    only. Stashed on context so the follow-up entry action
@@ -309,4 +205,5 @@ export function runGameday(draft: Draft<GameContext>): void {
       }
     }
   }
+  return effects;
 }

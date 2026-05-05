@@ -28,44 +28,19 @@ const StickyMenu: FC<Props> = ({
   return (
     <Box p="md">
       <Stack direction="row">
-        {back && (
+        <>
           <Box flex="1">
             <Button
               block
+              disabled={!advanceEnabled}
               onClick={() => {
-                navigate("/");
+                game.send({ type: "ADVANCE" });
               }}
             >
-              Päävalikkoon
+              {forward}
             </Button>
           </Box>
-        )}
-
-        {!back && (
-          <>
-            {menu && (
-              <div className="secondary">
-                <Button
-                  secondary
-                  onClick={() => uiStore.send({ type: "toggleMenu" })}
-                >
-                  <FaBars />
-                </Button>
-              </div>
-            )}
-            <Box flex="1">
-              <Button
-                block
-                disabled={!advanceEnabled}
-                onClick={() => {
-                  game.send({ type: "ADVANCE" });
-                }}
-              >
-                {forward}
-              </Button>
-            </Box>
-          </>
-        )}
+        </>
       </Stack>
     </Box>
   );

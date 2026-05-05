@@ -2,6 +2,7 @@ import type { FC, ReactNode } from "react";
 import Centerer from "@/components/Centerer";
 import * as styles from "./AdvancedHeaderedPage.css";
 import Box from "@/components/ui/Box";
+import ActionMenu from "@/components/ActionMenu";
 
 type Props = {
   stickyMenu?: ReactNode;
@@ -16,14 +17,17 @@ const AdvancedHeaderedPage: FC<Props> = ({
 }) => {
   return (
     <Box className={styles.root}>
-      {managerInfo}
       <Box className={styles.content} my="md">
         <Centerer>
           <Box px="md">{children}</Box>
         </Centerer>
       </Box>
 
-      {stickyMenu && <div className={styles.stickyMenu}>{stickyMenu}</div>}
+      <Box className={styles.sidebar}>
+        {stickyMenu}
+        <Box>{managerInfo}</Box>
+        <ActionMenu />
+      </Box>
     </Box>
   );
 };

@@ -1,5 +1,5 @@
 import { flag, randomTeamFrom } from "@/machines/selectors";
-import random from "@/services/random";
+import random, { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "psychoRelease";
@@ -40,7 +40,7 @@ const psychoRelease: DeclarativeEvent<PsychoReleaseData> = {
       resolved: true,
       otherManager: psychoManager.name,
       otherTeam: team.name,
-      letter: random.cinteger(0, 4)
+      letter: cinteger(0, 4)
     };
   },
 

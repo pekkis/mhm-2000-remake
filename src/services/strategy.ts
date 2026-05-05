@@ -33,10 +33,10 @@
 
 import type { TeamStrength } from "@/data/levels";
 import type { StrategyId } from "@/data/mhm2000/strategies";
-import type { RandomService } from "@/services/random";
 import { calculateStrength } from "@/services/team";
 import type { Manager, Team } from "@/state";
 import { forcedStrategyForManager } from "@/data/mhm2000/strategies";
+import type { Random } from "random-js";
 
 /**
  * Lottery weights for the three strategies in QB `valm` order:
@@ -175,7 +175,7 @@ export const strategyWeightsForProxy = (proxy: number): StrategyWeights => {
  */
 export const rollStrategyFromWeights = (
   weights: StrategyWeights,
-  random: RandomService
+  random: Random
 ): StrategyId => {
   const [s1, s2, s3] = weights;
   const total = s1 + s2 + s3;
@@ -208,7 +208,7 @@ export const rollStrategyFromWeights = (
 export const distributeAIStrategies = (
   aiTeamsInCompetition: readonly Team[],
   managers: Record<string, Manager>,
-  random: RandomService
+  random: Random
 ): Map<number, StrategyId> => {
   const picks = new Map<number, StrategyId>();
   if (aiTeamsInCompetition.length === 0) {

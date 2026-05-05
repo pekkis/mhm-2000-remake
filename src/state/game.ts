@@ -4,6 +4,7 @@ import type { CountryIso } from "@/data/countries";
 import type { ManagerAttributes } from "@/data/managers";
 import type { TeamStrength } from "@/data/levels";
 import type { BudgetCategoryName, BudgetLevel } from "@/data/mhm2000/budget";
+import type { GameRecord } from "@/machines/types";
 
 /* The free players in the player market */
 export type BorssiPlayer = {};
@@ -28,6 +29,20 @@ export type ManagerServices = {
 
 export type Manager = HumanManager | AIManager;
 
+export type GamesPlayedStats = Partial<
+  Record<CompetitionId, Record<number, GameRecord>>
+>;
+
+export type AchievementsStat = {
+  ehl: number;
+  gold: number;
+  silver: number;
+  bronze: number;
+  cup: number;
+  promoted: number;
+  relegated: number;
+};
+
 type BaseManager = {
   id: string;
   name: string;
@@ -36,6 +51,7 @@ type BaseManager = {
   team?: number;
   tags: string[];
   difficulty: number;
+  stats: { games: GamesPlayedStats; achievements: AchievementsStat };
 };
 
 export type AIManager = BaseManager & {

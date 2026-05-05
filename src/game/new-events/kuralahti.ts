@@ -5,7 +5,7 @@ import {
   teamHasActiveEffects
 } from "@/machines/selectors";
 import { currency as c } from "@/services/format";
-import random from "@/services/random";
+import { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -40,7 +40,7 @@ const kuralahti: DeclarativeEvent<KuralahtiData> = {
       eventId,
       manager,
       resolved: true,
-      duration: random.cinteger(1, 7),
+      duration: cinteger(1, 7),
       amount: 5000,
       hasInsurance: managerHasService(manager, "insurance")(ctx)
     };

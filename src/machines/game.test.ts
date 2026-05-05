@@ -5,6 +5,7 @@ import { createDefaultGameContext } from "@/state";
 import type { GameContext } from "@/state";
 import type { HumanManager } from "@/state/game";
 import { humanManagerById } from "@/machines/selectors";
+import { emptyAchievements } from "@/services/empties";
 
 const buildContextWithManager = (): GameContext => {
   const ctx = createDefaultGameContext();
@@ -20,6 +21,10 @@ const buildContextWithManager = (): GameContext => {
       resourcefulness: 3,
       specialTeams: 3,
       strategy: 3
+    },
+    stats: {
+      games: {},
+      achievements: emptyAchievements()
     },
     name: "Pier Paolo Pasolini",
     team: 12,
@@ -40,6 +45,7 @@ const buildContextWithManager = (): GameContext => {
   return {
     ...ctx,
     managers: {
+      ...ctx.managers,
       pasolini: manager
     },
     human: { active: manager.id, order: [manager.id] },

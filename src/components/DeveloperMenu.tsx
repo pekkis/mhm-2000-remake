@@ -11,6 +11,7 @@ import Stack from "@/components/ui/Stack";
 import Heading from "@/components/ui/Heading";
 import Box from "@/components/ui/Box";
 import strategies, { type StrategyId } from "@/data/mhm2000/strategies";
+import { calculateStrength } from "@/services/team";
 
 const fmt = (n: number) => n.toFixed(3);
 
@@ -56,11 +57,12 @@ const DeveloperMenu = () => {
                   <thead>
                     <tr>
                       <Th>Joukkue</Th>
+                      <Th>Tier</Th>
+                      <Th>str</Th>
                       <Th>Manageri</Th>
                       <Th>Strategia</Th>
                       <Th>E-moraali</Th>
                       <Th>P-valmius</Th>
-                      <Th>E-valmius</Th>
                       <Th>previous</Th>
                     </tr>
                   </thead>
@@ -81,11 +83,12 @@ const DeveloperMenu = () => {
                         return (
                           <tr key={team.name}>
                             <Td>{team.name}</Td>
+                            <Td>{team.tier}</Td>
+                            <Td>{JSON.stringify(calculateStrength(team))}</Td>
                             <Td>{managerLabel}</Td>
                             <Td>{strategyName(team.strategy)}</Td>
-                            <Td>{e.morale}</Td>
+                            <Td>{team.morale}</Td>
                             <Td>{fmt(team.readiness)}</Td>
-                            <Td>{fmt(e.readiness)}</Td>
                             <Td>{JSON.stringify(e.previousRankings)}</Td>
                           </tr>
                         );

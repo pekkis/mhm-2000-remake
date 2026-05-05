@@ -30,39 +30,8 @@ const division: CompetitionDefinition = {
   relegateTo: "mutasarja",
   promoteTo: "phl",
 
-  gameBalance: (_phase, facts, manager) => {
-    const arenaLevel = manager.arena.level + 1;
-
-    if (facts.isLoss) {
-      return manager.extra;
-    }
-
-    if (facts.isDraw) {
-      return 3000 + 2000 * arenaLevel + manager.extra;
-    }
-
-    return 10000 + 3000 * arenaLevel + manager.extra;
-  },
-
   moraleBoost: (_phase, facts, _manager) => {
     return defaultMoraleBoost(facts);
-  },
-
-  readinessBoost: (_phase, _facts, _manager) => {
-    return 0;
-  },
-
-  parameters: {
-    gameday: (_phase) => ({
-      advantage: {
-        home: (_team) => 5,
-        away: (_team) => -5
-      },
-      base: () => 10,
-      moraleEffect: (team) => {
-        return team.morale;
-      }
-    })
   },
 
   seed: [

@@ -77,6 +77,10 @@ const ActionMenu = () => {
             Tilastot
           </Link>
 
+          <Link onClick={close} to="/playoffit">
+            Playoffit
+          </Link>
+
           <Calendar
             when={(e, _c, competitions) => {
               return e.gamedays.includes("phl") && competitions.phl.phase === 0;

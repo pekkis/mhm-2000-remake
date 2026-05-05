@@ -3,7 +3,7 @@ import {
   managerHasService,
   managersTeamId
 } from "@/machines/selectors";
-import random from "@/services/random";
+import random, { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 import { currency } from "@/services/format";
@@ -37,7 +37,7 @@ const juznetsov: DeclarativeEvent<JuznetsovData> = {
     resolved: true,
     effect: managerCompetesIn(manager, "phl")(ctx) ? 20 : 10,
     amount: 7000,
-    duration: random.cinteger(0, 3) + 2,
+    duration: cinteger(0, 3) + 2,
     hasInsurance: managerHasService(manager, "insurance")(ctx)
   }),
 

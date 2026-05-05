@@ -1,6 +1,6 @@
 import { managersTeamId, teamCompetesIn } from "@/machines/selectors";
 import { currency as c } from "@/services/format";
-import random from "@/services/random";
+import random, { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 
@@ -62,7 +62,7 @@ const russianAgent: DeclarativeEvent<RussianAgentData> = {
       ...data,
       resolved: true,
       agree: true,
-      skillGained: random.cinteger(1, 11)
+      skillGained: cinteger(1, 11)
     };
   },
 

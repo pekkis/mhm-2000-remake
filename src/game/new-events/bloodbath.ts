@@ -1,5 +1,5 @@
 import { randomManager, randomTeamFrom } from "@/machines/selectors";
-import random from "@/services/random";
+import { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "bloodbath";
@@ -48,8 +48,8 @@ const bloodbath: DeclarativeEvent<BloodbathData> = {
       team2: team2.id,
       teamName: team.name,
       teamName2: team2.name,
-      team1StrengthLoss: random.cinteger(0, 12) + 6,
-      team2StrengthLoss: random.cinteger(0, 12) + 6,
+      team1StrengthLoss: cinteger(0, 12) + 6,
+      team2StrengthLoss: cinteger(0, 12) + 6,
       resolved: true
     };
   },

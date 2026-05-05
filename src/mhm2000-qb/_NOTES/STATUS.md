@@ -109,6 +109,43 @@ tournament-match path. All TODO-tagged inline in the port.
     [DATA-FILES.md](DATA-FILES.md) for the canonical token-rewrite
     table.
 
+### End-of-season port progress
+
+Two `ILEZ5.BAS` SUBs are now decoded, ported, and pinned by parity
+tests:
+
+- **`SUB omasopimus` (`ILEZ5.BAS:1133`)** — manager-strength score
+  `sin1`, threshold `a`, and the team-grid gate
+  `(sed+sedd+seddd)/3 >= a`. Ported as `computeManagerStrength` /
+  `sin1ToThreshold` / `isTeamSelectable` in
+  [src/machines/new-game.ts](../../machines/new-game.ts). Used by both
+  the new-game wizard team picker (`MHM2K.BAS:1842`) and contract
+  negotiation. **Surprising verbatim quirk:** strong managers (low `a`)
+  do _not_ unlock the literal #1 team — the gate is `>= a`, so for
+  `a = 3` the top 1-2 teams stay locked. Only `a = 1` (sin1 ≥ 501)
+  fully opens the pyramid. The two intentional `a = 0` SELECT-CASE
+  gaps (sin1 ∈ {19, 20} and {111…120}) trivially pass everything.
+  Pinned by 52 tests in
+  [src/machines/new-game.test.ts](../../machines/new-game.test.ts).
+- **`SUB tasomuut` (`ILEZ5.BAS:1832`)** — AI team-strength
+  recalculation. Ported as `runTasomuut` in
+  [src/machines/end-of-season.ts](../../machines/end-of-season.ts);
+  wired into `runSeasonEnd` after the promotion/relegation block.
+  All three direction paths (same-tier ladder, relegated bump,
+  promoted cap-and-roll) plus negotiation jitter and the tiny-arena
+  cap covered by 92 tests in
+  [src/machines/end-of-season.test.ts](../../machines/end-of-season.test.ts).
+  **Skill is signed -3..+3** — `mtaito(3, man)` in QB is bounded to
+  `-3..+3` by the wizard at `MHM2K.BAS:1535/1539` and rendered with
+  a sign branch at `ILES5.BAS:741`; our `manager.attributes.negotiation`
+  stores the same signed value verbatim, so jitter math passes it
+  through unchanged. (No `+4` shift — a previous draft of this port
+  had one based on a misreading; corrected.)
+- **TODO: `SUB managerisiirrot` (`ILEZ5.BAS:940`)** — AI manager
+  shuffle. Must run **before** `runTasomuut` to honour the QB call
+  order so jitter uses the _incoming_ manager's NEUVOKKUUS. Currently
+  un-ported; placeholder TODO at the `runTasomuut` call site.
+
 ## Sub-decode docs
 
 - [MHM2K-FLOW.md](MHM2K-FLOW.md) — `MHM2K.BAS` end-to-end: title

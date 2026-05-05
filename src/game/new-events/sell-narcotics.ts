@@ -1,7 +1,7 @@
 import type { DeclarativeEvent } from "@/types/event";
 import type { PrankInstance } from "@/game/pranks";
 import type { EventEffect } from "@/game/event-effects";
-import random from "@/services/random";
+import random, { cinteger } from "@/services/random";
 import { teamCompetesIn } from "@/machines/selectors";
 import { currency } from "@/services/format";
 
@@ -47,9 +47,7 @@ const sellNarcotics: DeclarativeEvent<SellNarcoticsData, PrankInstance> = {
   resolve: (ctx, data) => {
     const victimTeam = ctx.teams[data.victim];
     const phl = teamCompetesIn(data.victim, "phl")(ctx);
-    const skillLost = phl
-      ? random.cinteger(0, 25) + 1
-      : random.cinteger(0, 12) + 1;
+    const skillLost = phl ? cinteger(0, 25) + 1 : cinteger(0, 12) + 1;
     const fine = phl ? 200000 : 60000;
     return {
       ...data,

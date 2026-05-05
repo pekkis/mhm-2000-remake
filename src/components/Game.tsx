@@ -27,6 +27,7 @@ import type { ActorRefFrom } from "xstate";
 import type { notificationsMachine } from "@/machines/notifications";
 import type { FC } from "react";
 import { GameMachineContext } from "@/context/game-machine-context";
+import PlayoffBracket from "@/components/PlayoffBracket";
 
 type PhaseProps = {
   phase: string | undefined;
@@ -151,6 +152,7 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
           <Route path="/erikoistoimenpiteet" element={<Services />} />
           <Route path="/areena" element={<Arena />} />
           <Route path="/jaynat" element={<Pranks />} />
+          <Route path="/playoffit" element={<PlayoffBracket />} />
           <Route path="/tilastot" element={<Stats />} />
           <Route path="/kutsut" element={<Invitations />} />
           <Route path="/veikkaus" element={<Betting />} />

@@ -13,6 +13,8 @@ import {
   STRATEGY_COMPETITION_IDS
 } from "@/services/strategy";
 import random from "@/services/random";
+import { emptySeasonStat } from "@/services/empties";
+import { rollTeamStrength } from "@/services/levels";
 
 /**
  * Per-team and per-manager bookkeeping plus competition reset run on
@@ -44,18 +46,25 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
   // QB cross-ref: `SUB tremaar` (ILEX5.BAS:7458-7464) writes the
   // initial `tre()` based on the chosen `valm`.
   for (const t of draft.teams) {
+    if (!t.manager) {
+      throw new Error("Managerless team");
+    }
+
     t.effects = [];
     t.opponentEffects = [];
-    t.morale = 0;
 
-    const manager = t.manager ? draft.managers[t.manager] : undefined;
-    const forced = manager ? forcedStrategyForManager(manager.tags) : undefined;
-    const strategy: StrategyId = forced ?? 3;
+    const manager = draft.managers[t.manager];
+
+    t.morale = manager.attributes.resourcefulness;
+
+    const strategy = forcedStrategyForManager(manager.tags) ?? 3;
     t.strategy = strategy;
-    t.readiness = initialReadinessFor(
-      strategy,
-      manager?.attributes.strategy ?? 0
-    );
+
+    t.readiness = initialReadinessFor(strategy, manager.attributes.strategy);
+
+    if (t.kind === "ai") {
+      t.strengthObj = rollTeamStrength(t.tier);
+    }
   }
 
   // AI strategy distribution — port of QB `SUB valitsestrattie`
@@ -67,15 +76,15 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
   // pick — `distributeAIStrategies` honours that internally.
   for (const competitionId of STRATEGY_COMPETITION_IDS) {
     const competition = draft.competitions[competitionId];
-    if (!competition) {
-      continue;
-    }
+
     // Only AI-managed teams participate in the QB roll
     // (`IF ohj(x(xx)) = 0 THEN ...` skips human-controlled teams).
     const aiTeams = competition.teams
       .map((idx) => draft.teams[idx])
-      .filter((team) => team !== undefined && team.kind === "ai");
+      .filter((team) => team.kind === "ai");
+
     const picks = distributeAIStrategies(aiTeams, draft.managers, random);
+
     for (const [teamId, strategy] of picks) {
       const team = draft.teams[teamId];
       if (!team) {
@@ -85,7 +94,7 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
       const manager = team.manager ? draft.managers[team.manager] : undefined;
       team.readiness = initialReadinessFor(
         strategy,
-        manager?.attributes.strategy ?? 0
+        manager!.attributes.strategy
       );
     }
   }
@@ -124,13 +133,5 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
 
   // Initialize currentSeason for stats accumulation. Saga side did
   // this via the SEASON_START reducer in stats.ts.
-  draft.stats.currentSeason = {
-    ehlChampion: undefined,
-    presidentsTrophy: undefined,
-    medalists: undefined,
-    worldChampionships: undefined,
-    promoted: undefined,
-    relegated: undefined,
-    stories: {}
-  };
+  draft.stats.currentSeason = emptySeasonStat();
 }

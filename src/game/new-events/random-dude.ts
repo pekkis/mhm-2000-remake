@@ -1,5 +1,5 @@
 import { randomTeamFrom } from "@/machines/selectors";
-import random from "@/services/random";
+import random, { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "randomDude";
@@ -29,7 +29,7 @@ const randomDude: DeclarativeEvent<RandomDudeData> = {
       eventId,
       manager,
       resolved: true,
-      strengthGain: random.cinteger(0, 10) + 1,
+      strengthGain: cinteger(0, 10) + 1,
       team: team.id,
       teamName: team.name
     };
