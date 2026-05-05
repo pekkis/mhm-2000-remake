@@ -1,5 +1,5 @@
 import { randomTeamFrom } from "@/machines/selectors";
-import random from "@/services/random";
+import random, { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "ogilny";
@@ -29,7 +29,7 @@ const ogilny: DeclarativeEvent<OgilnyData> = {
       eventId,
       manager,
       resolved: true,
-      duration: random.cinteger(0, 2) + 1,
+      duration: cinteger(0, 2) + 1,
       team: team.id,
       teamName: team.name
     };

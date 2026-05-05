@@ -1,5 +1,5 @@
 import { randomTeamFrom } from "@/machines/selectors";
-import random from "@/services/random";
+import random, { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "workPermits";
@@ -30,7 +30,7 @@ const workPermits: DeclarativeEvent<WorkPermitsData> = {
       eventId,
       manager,
       resolved: true,
-      duration: random.cinteger(0, 3) + 3,
+      duration: cinteger(0, 3) + 3,
       team: team.id,
       teamName: team.name
     };

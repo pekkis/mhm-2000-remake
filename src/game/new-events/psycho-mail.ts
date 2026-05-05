@@ -1,5 +1,5 @@
 import { flag } from "@/machines/selectors";
-import random from "@/services/random";
+import random, { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "psychoMail";
@@ -50,7 +50,7 @@ const psychoMail: DeclarativeEvent<PsychoMailData> = {
       manager,
       resolved: true,
       otherManager: psychoManager.name,
-      letter: random.cinteger(0, 4)
+      letter: cinteger(0, 4)
     };
   },
 

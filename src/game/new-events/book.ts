@@ -3,7 +3,7 @@ import {
   managersTeamId,
   totalGamesPlayed
 } from "@/machines/selectors";
-import random from "@/services/random";
+import random, { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "book";
@@ -46,7 +46,7 @@ const book: DeclarativeEvent<BookData> = {
       manager,
       resolved: true,
       managerName: m.name,
-      book: random.cinteger(0, 3)
+      book: cinteger(0, 3)
     };
   },
 

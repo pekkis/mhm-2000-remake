@@ -1,5 +1,5 @@
 import { managerHasService } from "@/machines/selectors";
-import random from "@/services/random";
+import random, { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "etelalaAscends";
@@ -26,7 +26,7 @@ const etelalaAscends: DeclarativeEvent<EtelalaAscendsData> = {
     eventId,
     manager,
     resolved: true,
-    amount: random.cinteger(0, 100) + 50,
+    amount: cinteger(0, 100) + 50,
     hasInsurance: managerHasService(manager, "insurance")(ctx)
   }),
 
