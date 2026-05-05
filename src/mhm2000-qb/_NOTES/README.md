@@ -53,6 +53,11 @@ mhm2k first" → bail to mhm2k.
 - [GLOSSARY.md](GLOSSARY.md) — Finnish words & invented MHM jargon.
 - [DATA-FILES.md](DATA-FILES.md) — the `DATA/` folder: .MHM (random-access
   500-byte text records), .M2K (ASCII tables), .MHX, .PLX, TEAMS.\*.
+- [ATTRIBUTES.md](ATTRIBUTES.md) — every `mtaito(*, manager)` call
+  site, port status per attribute, S..D power tiering, and the
+  resulting CPU-manager rankings (Juri Simonov +45, Marcó Harcimo
+  −16). Read before touching crisis / training / poaching / contract
+  code.
 
 ## How to use this
 
