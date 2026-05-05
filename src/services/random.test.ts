@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { createRandom } from "@/services/random";
+import { cinteger, createRandom } from "@/services/random";
 
 describe("cinteger", () => {
   it("should always return integers", () => {
     const r = createRandom(42);
     for (let i = 0; i < 1000; i++) {
-      const result = r.cinteger(0, 10);
+      const result = cinteger(0, 10, r);
       expect(Number.isInteger(result)).toBe(true);
     }
   });
@@ -13,7 +13,7 @@ describe("cinteger", () => {
   it("should return values within [min, max] inclusive", () => {
     const r = createRandom(123);
     for (let i = 0; i < 1000; i++) {
-      const result = r.cinteger(3, 7);
+      const result = cinteger(3, 7, r);
       expect(result).toBeGreaterThanOrEqual(3);
       expect(result).toBeLessThanOrEqual(7);
     }
@@ -22,7 +22,7 @@ describe("cinteger", () => {
   it("should return the only value when min === max", () => {
     const r = createRandom(999);
     for (let i = 0; i < 100; i++) {
-      expect(r.cinteger(5, 5)).toBe(5);
+      expect(cinteger(5, 5, r)).toBe(5);
     }
   });
 
@@ -39,7 +39,7 @@ describe("cinteger", () => {
     }
 
     for (let i = 0; i < samples; i++) {
-      counts[r.cinteger(min, max)]++;
+      counts[cinteger(min, max, r)]++;
     }
 
     // Theoretical distribution for cinteger(0, 4):
@@ -82,7 +82,7 @@ describe("cinteger", () => {
     let zeros = 0;
 
     for (let i = 0; i < samples; i++) {
-      if (r.cinteger(0, 1) === 0) {
+      if (cinteger(0, 1, r) === 0) {
         zeros++;
       }
     }
@@ -106,7 +106,7 @@ describe("cinteger", () => {
     }
 
     for (let i = 0; i < samples; i++) {
-      counts[r.cinteger(min, max)]++;
+      counts[cinteger(min, max, r)]++;
     }
 
     // Same bias pattern: endpoints depressed, interior elevated
@@ -119,7 +119,7 @@ describe("cinteger", () => {
     const a = createRandom(42);
     const b = createRandom(42);
     for (let i = 0; i < 100; i++) {
-      expect(a.cinteger(0, 100)).toBe(b.cinteger(0, 100));
+      expect(cinteger(0, 100, a)).toBe(cinteger(0, 100, b));
     }
   });
 });
