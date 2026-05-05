@@ -245,11 +245,19 @@ export function runGameday(draft: Draft<GameContext>): void {
         const facts = gameFacts(game, managersIndex);
         const team = draft.teams[manager.team!];
 
+        if (manager.kind === 'human') {
+          console.log('TEAM MO', team.morale)
+        }
+
         const moraleDelta = competitionDef.moraleBoost(
           comp.phase,
           facts,
           manager
         );
+
+        if (manager.kind === "human") {
+          console.log("MORALE DELTA", { moraleDelta, manager: manager.name });
+        }
 
         if (manager.kind === "human") {
           const balanceDelta = competitionDef.gameBalance(
@@ -269,7 +277,18 @@ export function runGameday(draft: Draft<GameContext>): void {
           const diffIdx = manager.difficulty;
           const min = difficultyLevels[diffIdx].moraleMin;
           const max = difficultyLevels[diffIdx].moraleMax;
-          team.morale = Math.min(max, Math.max(min, team.morale + moraleDelta));
+
+          if (manager.kind === 'human') {
+            console.log('ADDING MORAAL')
+          }
+
+          team.morale = team.morale + moraleDelta
+
+          // Math.min(max, Math.max(min, team.morale + moraleDelta));
+
+          if (manager.kind === "human") {
+            console.log("MORAAL", team.morale);
+          }
         }
       }
 

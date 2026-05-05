@@ -53,11 +53,17 @@ const sumGames = (
   phaseFilter: "all" | "regular" | "playoff"
 ): { games: number; wins: number; ties: number; losses: number } => {
   const acc = { games: 0, wins: 0, ties: 0, losses: 0 };
-  if (!records) {return acc;}
+  if (!records) {
+    return acc;
+  }
   for (const [phaseStr, rec] of Object.entries(records)) {
     const phase = Number(phaseStr);
-    if (phaseFilter === "regular" && phase !== 0) {continue;}
-    if (phaseFilter === "playoff" && phase === 0) {continue;}
+    if (phaseFilter === "regular" && phase !== 0) {
+      continue;
+    }
+    if (phaseFilter === "playoff" && phase === 0) {
+      continue;
+    }
     acc.wins += rec.win;
     acc.ties += rec.draw;
     acc.losses += rec.loss;
@@ -142,21 +148,47 @@ export const computeManagerStrength = (stats: {
  * Higher `a` = weaker manager (only bottom teams selectable).
  */
 export const sin1ToThreshold = (sin1: number): number => {
-  if (sin1 >= 0 && sin1 <= 6) {return 44;}
-  if (sin1 >= 7 && sin1 <= 12) {return 40;}
-  if (sin1 >= 13 && sin1 <= 18) {return 35;}
+  if (sin1 >= 0 && sin1 <= 6) {
+    return 44;
+  }
+  if (sin1 >= 7 && sin1 <= 12) {
+    return 40;
+  }
+  if (sin1 >= 13 && sin1 <= 18) {
+    return 35;
+  }
   // sin1 in {19, 20}: falls through, a = 0
-  if (sin1 >= 21 && sin1 <= 30) {return 29;}
-  if (sin1 >= 31 && sin1 <= 50) {return 23;}
-  if (sin1 >= 51 && sin1 <= 80) {return 18;}
-  if (sin1 >= 81 && sin1 <= 110) {return 14;}
+  if (sin1 >= 21 && sin1 <= 30) {
+    return 29;
+  }
+  if (sin1 >= 31 && sin1 <= 50) {
+    return 23;
+  }
+  if (sin1 >= 51 && sin1 <= 80) {
+    return 18;
+  }
+  if (sin1 >= 81 && sin1 <= 110) {
+    return 14;
+  }
   // sin1 in {111..120}: falls through, a = 0
-  if (sin1 >= 121 && sin1 <= 150) {return 10;}
-  if (sin1 >= 151 && sin1 <= 200) {return 8;}
-  if (sin1 >= 201 && sin1 <= 300) {return 6;}
-  if (sin1 >= 301 && sin1 <= 400) {return 4;}
-  if (sin1 >= 401 && sin1 <= 500) {return 3;}
-  if (sin1 >= 501) {return 1;}
+  if (sin1 >= 121 && sin1 <= 150) {
+    return 10;
+  }
+  if (sin1 >= 151 && sin1 <= 200) {
+    return 8;
+  }
+  if (sin1 >= 201 && sin1 <= 300) {
+    return 6;
+  }
+  if (sin1 >= 301 && sin1 <= 400) {
+    return 4;
+  }
+  if (sin1 >= 401 && sin1 <= 500) {
+    return 3;
+  }
+  if (sin1 >= 501) {
+    return 1;
+  }
   return 0;
 };
 
