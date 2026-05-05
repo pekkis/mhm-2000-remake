@@ -30,6 +30,8 @@ import { createUniqueId } from "@/services/id";
 import { rollTeamStrength } from "@/services/levels";
 import { initialBudgetForRankings } from "@/data/mhm2000/budget";
 
+import random from "@/services/random";
+
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
 // order (id 12 is mutasarja, etc.). The runtime competitions hard-code
@@ -271,6 +273,17 @@ export const createDefaultGameContext = (): GameContext => {
     );
   }
 
+  const simonov = managers.find((m) => m.tags.includes("match_with_karpat"));
+  if (!simonov) {
+    throw new Error("Simonov not found in managers");
+  }
+
+  const shuffleableManagers = managers.filter(
+    (m) => m.id !== simonov.id && m.id !== pasolini.id
+  );
+
+  random.shuffle(shuffleableManagers);
+
   for (let x = 0; x < ctx.teams.length; x = x + 1) {
     if (ctx.teams[x].tags.includes("light")) {
       ctx.teams[x].manager = pasolini.id;
@@ -279,7 +292,17 @@ export const createDefaultGameContext = (): GameContext => {
       // need "which teams does this manager run" should reverse-lookup
       // through `team.manager`.
     } else {
-      const manager = managers[x];
+      const manager = shuffleableManagers.shift();
+
+      if (!manager) {
+        throw new Error("Ran out of managers!");
+      }
+
+      if (ctx.teams[x].name === "Kärpät") {
+        ctx.teams[x].manager = simonov.id;
+        continue;
+      }
+
       ctx.teams[x].manager = manager.id;
       manager.team = x;
     }

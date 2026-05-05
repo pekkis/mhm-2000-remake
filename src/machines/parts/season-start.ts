@@ -47,16 +47,21 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
   for (const t of draft.teams) {
     t.effects = [];
     t.opponentEffects = [];
-    t.morale = 0;
 
-    const manager = t.manager ? draft.managers[t.manager] : undefined;
+    console.log("TEAM", t);
+
+    const manager = draft.managers[t.manager!];
+
+    if (!manager) {
+      throw new Error("Team has no manager");
+    }
+
+    t.morale = manager.attributes.resourcefulness;
+
     const forced = manager ? forcedStrategyForManager(manager.tags) : undefined;
     const strategy: StrategyId = forced ?? 3;
     t.strategy = strategy;
-    t.readiness = initialReadinessFor(
-      strategy,
-      manager?.attributes.strategy ?? 0
-    );
+    t.readiness = initialReadinessFor(strategy, manager.attributes.strategy);
   }
 
   // AI strategy distribution — port of QB `SUB valitsestrattie`
@@ -86,7 +91,7 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
       const manager = team.manager ? draft.managers[team.manager] : undefined;
       team.readiness = initialReadinessFor(
         strategy,
-        manager?.attributes.strategy ?? 0
+        manager!.attributes.strategy
       );
     }
   }

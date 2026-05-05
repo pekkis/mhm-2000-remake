@@ -29,7 +29,7 @@ import services from "@/data/services";
 import prankTypes from "@/game/pranks";
 import arenas from "@/data/arenas";
 import playerTypes from "@/data/transfer-market";
-import random from "@/services/random";
+import random, { cinteger } from "@/services/random";
 import {
   notificationsMachine,
   pushNotification
@@ -842,7 +842,7 @@ export const gameMachine = setup({
     executeEventCreation: assign(({ context }) =>
       produce(context, (draft) => {
         for (const manager of values(humanManagers(draft))) {
-          const eventNumber = random.cinteger(1, 335);
+          const eventNumber = cinteger(1, 335);
           const eventName = eventsMap[eventNumber];
 
           if (!eventName) {

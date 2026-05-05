@@ -9,7 +9,7 @@
  * Saga side is REFERENCE-ONLY post-pivot.
  */
 
-import type { RandomService } from "@/services/random";
+import { cinteger, type RandomService } from "@/services/random";
 import type { GameContext } from "@/state";
 import type { WorldChampionshipEntry } from "@/state/game";
 import type {
@@ -27,6 +27,7 @@ import { managersMainCompetition } from "@/machines/selectors";
 import { sortStats } from "@/services/league";
 import { eliminated, victors } from "@/services/playoffs";
 import { difference, takeLast, values } from "remeda";
+import type { Random } from "random-js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -56,20 +57,20 @@ const ensureCurrentSeason = (draft: Draft<GameContext>): void => {
 // 1. World championships
 // ---------------------------------------------------------------------------
 
-const luck = (random: RandomService): number => {
-  const roll = random.cinteger(1, 10);
+const luck = (random: Random): number => {
+  const roll = cinteger(1, 10, random);
   if (roll === 1) {
-    return -(random.cinteger(0, 20) + 20);
+    return -(cinteger(0, 20) + 20);
   }
   if (roll === 10) {
-    return random.cinteger(0, 20) + 20;
+    return cinteger(0, 20) + 20;
   }
   return 0;
 };
 
 export const runWorldChampionships = (
   draft: Draft<GameContext>,
-  random: RandomService
+  random: Random
 ): void => {
   // Pekkalandian average → FI strength.
   // const phl = draft.competitions.phl;
@@ -92,7 +93,7 @@ export const runWorldChampionships = (
       name: c.name,
       strength: c.strength ?? 0,
       luck: luck(random),
-      random: random.cinteger(0, 20) - random.cinteger(0, 10)
+      random: cinteger(0, 20) - cinteger(0, 10)
     }))
     .sort(
       (a, b) =>
