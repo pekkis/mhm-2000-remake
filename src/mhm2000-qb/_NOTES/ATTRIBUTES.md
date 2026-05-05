@@ -44,14 +44,17 @@ that ranges ~0.7..1.3. <2% strength swing. Almost a stat dump.
 
 | QB site                             | Effect                                                                       | Port                                                                  |
 | ----------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| [ILEX5.BAS:328-329](../ILEX5.BAS)   | `yw/aw *= 1 + mtaito(2)*.04` — base PP/PK weights every match                | ✅ [simulate-match.ts:209](../../services/mhm-2000/simulate-match.ts) |
-| [ILEX5.BAS:8538-8539](../ILEX5.BAS) | **Same multiplier re-applied** in `voimamaar` (lineup-change recompute path) | ❌ unported                                                           |
+| [ILEX5.BAS:325-336](../ILEX5.BAS)   | `yw/aw = (…) * (1 + mtaito(2)*.04)` for **AI teams only** (guarded by `IF ohj(xx) = 0`); coarse formula using team aggregates | ✅ [simulate-match.ts:209](../../services/mhm-2000/simulate-match.ts) |
+| [ILEX5.BAS:8538-8539](../ILEX5.BAS) | Same multiplier applied **for the human's team only** at the end of `voimamaar`, which fully recomputes `yw/aw` from per-line tactical-chain weights | ❌ unported (`voimamaar` whole-SUB)                                  |
 
-Clean ±12% on PP/PK weight every match. **The double-apply at
-`voimamaar` is suspicious** — at +3 it stacks to ×1.2544 instead of
-×1.12 (extra ~12%), and only on the user's lineup-change recompute.
-Either a 1999 copy-paste bug or an intentional buff for the active
-human. Decide when porting `voimamaar`.
+Clean ±12% on PP/PK weight every match. The two sites form a
+**mutually-exclusive guarded split** (AI teams → site 1, human team →
+site 2 via `voimamaar` called from `piirtox`); each team's `yw/aw`
+receives the multiplier exactly once. The formulas differ in
+_aggregation granularity_ — AI uses pre-summed team aggregates
+(`hw/pw`); human walks each player on each PP/PK chain
+(`pketju` / `hketju` / `ketju()`) — giving the human extra lineup
+agency but **no asymmetric multiplier buff**.
 
 ### `mtaito(3, …)` — negotiation
 
@@ -132,7 +135,7 @@ principle: leave it to chance.**
 | Attribute       | Wired in TS              | Pending                                                                                  |
 | --------------- | ------------------------ | ---------------------------------------------------------------------------------------- |
 | strategy        | season-arc bonus + drift | —                                                                                        |
-| specialTeams    | match PP/PK base mult    | `voimamaar` re-mult (decide bug vs feature)                                              |
+| specialTeams    | match PP/PK base mult (AI formula) | `voimamaar` per-line recompute for human team                                            |
 | negotiation     | `runTasomuut` jitter     | contract negotiation flow                                                                |
 | resourcefulness | initial morale           | `kriisipalaveri` math (5 thresholds)                                                     |
 | charisma        | —                        | training-round morale boost, season-ticket revenue, board vote, poaching, training-event |
@@ -150,7 +153,7 @@ For a human spending the new-game budget at
 
 1. **resourcefulness** — buy to +3, no question. S-tier survival stat.
 2. **charisma** — buy to +2 or +3. A-tier passive income.
-3. **specialTeams** — buy to +1 or +2 (more if `voimamaar` double-apply turns out to be intentional).
+3. **specialTeams** — buy to +1 or +2. Predictable ±12% on PP/PK each match.
 4. **negotiation** — +1 if budget allows; matters more in long campaigns.
 5. **strategy** — leave at 0. <2% strength bonus. Stat dump.
 6. **luck** — dump to −3 to free points. You'll barely notice.

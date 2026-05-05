@@ -6,7 +6,7 @@ type Props = {
 };
 
 const Centerer: FC<Props> = ({ children }) => {
-  return <Center maxInlineSize={600}>{children}</Center>;
+  return <Center maxInlineSize={1200}>{children}</Center>;
 };
 
 export default Centerer;

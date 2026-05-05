@@ -418,18 +418,22 @@ export const runTasomuut = (
   const cs = draft.stats.currentSeason!;
 
   for (const team of values(draft.teams)) {
+    if (team.tags.includes("light")) {
+      continue;
+    }
+
     if (team.kind !== "ai") {
       continue;
     }
     if (team.previousRankings === undefined) {
-      continue;
+      throw new Error("Previous rankings fugged up in calculations");
     }
     if (team.manager === undefined) {
-      continue;
+      throw new Error("Manager fugged up in calculations");
     }
     const newTier = tierOf(draft, team.id);
     if (newTier === undefined) {
-      continue;
+      throw new Error("New tier fugged up");
     }
 
     // sin1 — 3-season rolling rank average. previousRankings has just
