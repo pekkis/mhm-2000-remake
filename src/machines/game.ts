@@ -610,7 +610,7 @@ export const gameMachine = setup({
           return;
         }
 
-        const team = context.teams[m.team];
+        const team = context.teams[m.team!];
         const cost = context.competitions.division.teams.includes(team.id)
           ? CRISIS_COST / 2
           : CRISIS_COST;
@@ -935,7 +935,7 @@ export const gameMachine = setup({
      */
     executeSeasonEnd: assign(({ context }) =>
       produce(context, (draft) => {
-        runSeasonEnd(draft);
+        runSeasonEnd(draft, random);
       })
     ),
 

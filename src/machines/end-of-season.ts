@@ -9,25 +9,24 @@
  * Saga side is REFERENCE-ONLY post-pivot.
  */
 
-import { current, type Draft } from "immer";
+import type { RandomService } from "@/services/random";
 import type { GameContext } from "@/state";
 import type { WorldChampionshipEntry } from "@/state/game";
 import type {
-  PlayoffGroup,
-  TeamStat,
-  Phase,
   CompetitionId,
-  RoundRobinGroup
+  Phase,
+  PlayoffGroup,
+  RoundRobinGroup,
+  TeamStat
 } from "@/types/competitions";
-import type { RandomService } from "@/services/random";
+import { type Draft } from "immer";
 
-import { difference, intersection, takeLast, values } from "remeda";
-import { victors, eliminated } from "@/services/playoffs";
 import competitionData from "@/data/competitions";
+import { initialBudgetForRankings } from "@/data/mhm2000/budget";
 import { managersMainCompetition } from "@/machines/selectors";
 import { sortStats } from "@/services/league";
-import { initialBudgetForRankings } from "@/data/mhm2000/budget";
-import { emptySeasonStat } from "@/services/empties";
+import { eliminated, victors } from "@/services/playoffs";
+import { difference, takeLast, values } from "remeda";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -40,19 +39,17 @@ const ensureCurrentSeason = (draft: Draft<GameContext>): void => {
       presidentsTrophy: undefined,
       medalists: undefined,
       worldChampionships: undefined,
-      promoted: undefined,
-      relegated: undefined,
+      promoted: {
+        division: [],
+        mutasarja: []
+      },
+      relegated: {
+        phl: [],
+        division: []
+      },
       stories: {}
     };
   }
-};
-
-const teamCompetesIn = (
-  draft: Draft<GameContext>,
-  teamId: number,
-  competitionId: CompetitionId
-): boolean => {
-  return draft.competitions[competitionId].teams.includes(teamId);
 };
 
 // ---------------------------------------------------------------------------
@@ -284,7 +281,224 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
 };
 
 // ---------------------------------------------------------------------------
-// 4. Season end (commit currentSeason, bump season, promote/relegate)
+// 4. AI team-strength recalculation (port of QB SUB tasomuut, ILEZ5.BAS:1832)
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve a team's *current* league tier (1=PHL, 2=Divisioona, 3=Mutasarja)
+ * by membership in the post-promotion/relegation competition arrays.
+ * Returns `undefined` for light teams or teams that aren't part of the
+ * Pekkalandia ladder.
+ */
+const tierOf = (
+  draft: Draft<GameContext>,
+  teamId: number
+): 1 | 2 | 3 | undefined => {
+  if (draft.competitions.phl.teams.includes(teamId)) {
+    return 1;
+  }
+  if (draft.competitions.division.teams.includes(teamId)) {
+    return 2;
+  }
+  if (draft.competitions.mutasarja.teams.includes(teamId)) {
+    return 3;
+  }
+  return undefined;
+};
+
+/**
+ * Same-tier strength bracket lookup. Verbatim port of the QB
+ * `SELECT CASE sin1` ladders inside `SUB tasomuut`. `sin1` is the 3-season
+ * rolling average of league-global rankings (lower = better).
+ */
+const sameTierStrength = (sin1: number, tier: 1 | 2 | 3): number => {
+  if (tier === 1) {
+    if (sin1 <= 1) {
+      return 36;
+    }
+    if (sin1 <= 2) {
+      return 35;
+    }
+    if (sin1 <= 3) {
+      return 34;
+    }
+    if (sin1 <= 4) {
+      return 33;
+    }
+    if (sin1 <= 6) {
+      return 32;
+    }
+    if (sin1 <= 8) {
+      return 31;
+    }
+    if (sin1 <= 11) {
+      return 30;
+    }
+    if (sin1 <= 13) {
+      return 29;
+    }
+    return 28;
+  }
+  if (tier === 2) {
+    if (sin1 <= 13.5) {
+      return 28;
+    }
+    if (sin1 <= 15) {
+      return 27;
+    }
+    if (sin1 <= 17) {
+      return 26;
+    }
+    if (sin1 <= 19) {
+      return 25;
+    }
+    if (sin1 <= 21) {
+      return 24;
+    }
+    if (sin1 <= 23) {
+      return 23;
+    }
+    if (sin1 <= 25) {
+      return 22;
+    }
+    return 21;
+  }
+  if (sin1 <= 26) {
+    return 22;
+  }
+  if (sin1 <= 28) {
+    return 21;
+  }
+  if (sin1 <= 31) {
+    return 20;
+  }
+  if (sin1 <= 34) {
+    return 19;
+  }
+  if (sin1 <= 37) {
+    return 18;
+  }
+  if (sin1 <= 40) {
+    return 17;
+  }
+  if (sin1 <= 43) {
+    return 16;
+  }
+  if (sin1 <= 46) {
+    return 15;
+  }
+  return 14;
+};
+
+/**
+ * Verbatim port of QB `SUB tasomuut` (`ILEZ5.BAS:1832`).
+ *
+ * Recomputes `team.tier` (QB `tazo()`) for every AI-managed team,
+ * based on (1) the 3-season rolling rank average, (2) the
+ * stayed/promoted/relegated direction, (3) the manager's negotiation
+ * skill (jitter), and (4) the arena capacity (tiny-arena cap).
+ *
+ * **Skill mapping caveat.** QB `mtaito(3, manager)` is NEUVOKKUUS in
+ * the 1..6 range. Our `manager.attributes.negotiation` is the wizard's
+ * signed -3..+3 offset. We map `skill = negotiation + 4` (so -3..+3 ⇒
+ * 1..7); `+3` reaches an extra band beyond the QB encoding. Accepted
+ * intentional drift — to be revisited when we standardise the skill
+ * indexing across the codebase.
+ *
+ * Must run *after* promotions/relegations have been committed (so
+ * `tierOf` reflects the new league assignment) and *after* any AI
+ * manager swap (so `mtaito(3)` uses the incoming manager's
+ * NEUVOKKUUS — see SUBS.md `tasomuut` row for the QB call-order
+ * note).
+ */
+export const runTasomuut = (
+  draft: Draft<GameContext>,
+  random: RandomService
+): void => {
+  const cs = draft.stats.currentSeason!;
+
+  for (const team of values(draft.teams)) {
+    if (team.kind !== "ai") {
+      continue;
+    }
+    if (team.previousRankings === undefined) {
+      continue;
+    }
+    if (team.manager === undefined) {
+      continue;
+    }
+    const newTier = tierOf(draft, team.id);
+    if (newTier === undefined) {
+      continue;
+    }
+
+    // sin1 — 3-season rolling rank average. previousRankings has just
+    // been rolled forward in runFinalizeStats, so [0]=this season's
+    // finish, [1]=last season, [2]=two seasons ago.
+    const [r1, r2, r3] = team.previousRankings;
+    const sin1 = (r1 + r2 + r3) / 3;
+
+    const wasPromoted =
+      cs.promoted.division.includes(team.id) ||
+      cs.promoted.mutasarja.includes(team.id);
+    const wasRelegated =
+      cs.relegated.phl.includes(team.id) ||
+      cs.relegated.division.includes(team.id);
+
+    let temp: number;
+
+    if (!wasPromoted && !wasRelegated) {
+      // Same-tier path (tempsr === sr in QB).
+      temp = sameTierStrength(sin1, newTier);
+    } else if (wasRelegated) {
+      // Relegated path (tempsr > sr in QB; QB SELECT CASE keys on
+      // OLD tier — one league above the current). Strong rolling
+      // average → small +1/+2 bump (legacy quality preserved); weak →
+      // no change.
+      const oldTier = newTier - 1; // PHL→Div ⇒ 1, Div→Muta ⇒ 2.
+      const threshold = oldTier === 1 ? 15 : 27;
+      temp = sin1 <= threshold ? team.tier + random.integer(1, 2) : team.tier;
+    } else {
+      // Promoted path (tempsr < sr in QB; QB SELECT CASE keys on
+      // OLD tier — one league below the current). Cap to a ceiling,
+      // then roll a sin1-weighted -2 (poor average ⇒ more likely).
+      const oldTier = newTier + 1; // Div→PHL ⇒ 2, Muta→Div ⇒ 3.
+      if (oldTier === 2) {
+        temp = team.tier > 31 ? 31 : team.tier;
+        if (random.real(0, 100) < sin1 * 2) {
+          temp -= 2;
+        }
+      } else {
+        temp = team.tier > 24 ? 24 : team.tier;
+        if (random.real(0, 200) < sin1 * 2) {
+          temp -= 2;
+        }
+      }
+    }
+
+    // Negotiation jitter — see "Skill mapping caveat" above.
+    const manager = draft.managers[team.manager];
+    const skill = manager.attributes.negotiation + 4;
+    const a = random.integer(1, 90);
+    const lower = 30 + skill * 8;
+    const upper = 60 + skill * 8;
+    if (a <= lower) {
+      temp += 1;
+    } else if (a > upper) {
+      temp -= 1;
+    }
+
+    // Tiny-arena cap (QB `paikka(1) + paikka(2) < 40`).
+    if (team.arena.standingCount + team.arena.seatedCount < 40 && temp > 27) {
+      temp = 27;
+    }
+
+    team.tier = temp;
+  }
+};
+
+// ---------------------------------------------------------------------------
+// 5. Season end (commit currentSeason, bump season, promote/relegate)
 // ---------------------------------------------------------------------------
 
 const removeTeamFromCompetition = (
@@ -336,7 +550,10 @@ const runRelegate = (
   addTeamToCompetition(draft, relegateTo, teamId);
 };
 
-export const runSeasonEnd = (draft: Draft<GameContext>): void => {
+export const runSeasonEnd = (
+  draft: Draft<GameContext>,
+  random: RandomService
+): void => {
   const cs = draft.stats.currentSeason!;
   if (cs) {
     draft.stats.seasons.push(cs);
@@ -359,12 +576,14 @@ export const runSeasonEnd = (draft: Draft<GameContext>): void => {
     runRelegate(draft, "division", relegated);
   });
 
-  // TODO: AI manager swap. NOT YET.
+  // TODO: AI manager swap. NOT YET. When it lands, it must run before
+  // runTasomuut so the negotiation-jitter roll uses the incoming
+  // manager's NEUVOKKUUS — see SUBS.md `tasomuut` row.
 
-  /*
-  We SHOULD be able to do tasomaar() here now from the precalculated SeasonStats
-  and the already updated previousRankings.
-  */
+  // AI team-strength recalculation. Mutates `team.tier` in place for
+  // every AI team based on the freshly rolled `previousRankings` and
+  // the just-applied promotion/relegation moves.
+  runTasomuut(draft, random);
 
   // Bump season; advanceRound will then take round 0 → 1, but we want next
   // season to begin at round 0, so set to -1 and let advanceRound increment.
