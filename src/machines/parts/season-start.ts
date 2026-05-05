@@ -48,9 +48,11 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
     t.effects = [];
     t.opponentEffects = [];
 
-    console.log("TEAM", t);
+    if (!t.manager) {
+      throw new Error("Managerless team");
+    }
 
-    const manager = draft.managers[t.manager!];
+    const manager = draft.managers[t.manager];
 
     if (!manager) {
       throw new Error("Team has no manager");

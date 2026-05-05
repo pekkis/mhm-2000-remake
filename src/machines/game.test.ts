@@ -45,6 +45,7 @@ const buildContextWithManager = (): GameContext => {
   return {
     ...ctx,
     managers: {
+      ...ctx.managers,
       pasolini: manager
     },
     human: { active: manager.id, order: [manager.id] },
