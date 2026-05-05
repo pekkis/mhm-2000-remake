@@ -5,10 +5,11 @@ import Box from "@/components/ui/Box";
 import { Table, Td, Th } from "@/components/ui/Table";
 import type { Team } from "@/state/game";
 import type { Competition } from "@/types/competitions";
+import type { SeasonStory } from "@/state/stats";
 
 type StoryProps = {
   season: number;
-  story: any;
+  story: SeasonStory;
   teams: Team[];
   competitions: Record<string, Competition>;
 };

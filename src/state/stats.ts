@@ -1,4 +1,16 @@
 import type { CompetitionId } from "@/machines/types";
+import type { TeamStat } from "@/types/competitions";
+
+export type SeasonStory = {
+  mainCompetition: CompetitionId;
+  mainCompetitionStat: TeamStat;
+  ranking: number;
+  promoted: boolean;
+  relegated: boolean;
+  medal: number;
+  ehlChampion: boolean;
+  lastPhase: number;
+};
 
 export type Streak = {
   win: number;
@@ -19,9 +31,15 @@ export type SeasonStats = {
   presidentsTrophy: number | undefined;
   medalists: number[] | undefined;
   worldChampionships: any[] | undefined;
-  promoted: number | undefined;
-  relegated: number | undefined;
-  stories: Record<string, any>;
+  promoted: {
+    mutasarja: number[];
+    division: number[];
+  };
+  relegated: {
+    phl: number[];
+    division: number[];
+  };
+  stories: Record<string, SeasonStory>;
 };
 
 export type StatsState = {

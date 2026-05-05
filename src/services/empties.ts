@@ -1,3 +1,4 @@
+import type { SeasonStats } from "@/state";
 import type { AchievementsStat } from "@/state/game";
 
 export const emptyAchievements = (): AchievementsStat => {
@@ -10,4 +11,22 @@ export const emptyAchievements = (): AchievementsStat => {
     promoted: 0,
     relegated: 0
   };
+};
+
+export const emptySeasonStat = (): SeasonStats => {
+  return {
+    ehlChampion: undefined,
+    medalists: [],
+    presidentsTrophy: undefined,
+    promoted: {
+      division: [],
+      mutasarja: []
+    },
+    relegated: {
+      phl: [],
+      division: []
+    },
+    worldChampionships: undefined,
+    stories: {}
+  } satisfies SeasonStats;
 };

@@ -1,27 +1,4 @@
-import type { Team } from "@/state/game";
-import type {
-  GameResult,
-  GameFacts,
-  GamedayAdvantage
-} from "@/types/competitions";
-import type { Manager } from "@/state/game";
-
-export type GameInput = {
-  home: Team;
-  away: Team;
-  homeManager: Manager;
-  awayManager: Manager;
-  advantage: GamedayAdvantage;
-  base: () => number;
-  moraleEffect: (team: Team) => number;
-  overtime: (result: GameResult) => boolean;
-  competitionId: string;
-  phaseId: number;
-};
-
-export type GameService = {
-  simulate: (game: GameInput) => GameResult;
-};
+import type { GameResult, GameFacts } from "@/types/competitions";
 
 export const resultFacts = (
   result: GameResult,

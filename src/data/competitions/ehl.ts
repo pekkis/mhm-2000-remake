@@ -78,41 +78,12 @@ const ehl: CompetitionDefinition = {
   relegateTo: false,
   promoteTo: false,
 
-  gameBalance: (phase, _facts, manager) => {
-    if (phase > 0) {
-      return 0;
-    }
-
-    const arenaLevel = manager.arena.level + 1;
-    return 100000 + 20000 * arenaLevel;
-  },
-
   moraleBoost: (phase, facts, _manager) => {
     if (phase > 0) {
       return 0;
     }
 
     return defaultMoraleBoost(facts);
-  },
-
-  readinessBoost: (phase, _facts, _manager) => {
-    if (phase > 0) {
-      return 0;
-    }
-    return -1;
-  },
-
-  parameters: {
-    gameday: (phase) => ({
-      advantage: {
-        home: (_team) => (phase === 0 ? 10 : 0),
-        away: (_team) => (phase === 0 ? -10 : 0)
-      },
-      base: () => 20,
-      moraleEffect: (team) => {
-        return team.morale * 2;
-      }
-    })
   },
 
   seed: [

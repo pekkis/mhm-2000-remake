@@ -13,6 +13,7 @@ import {
   STRATEGY_COMPETITION_IDS
 } from "@/services/strategy";
 import random from "@/services/random";
+import { emptySeasonStat } from "@/services/empties";
 
 /**
  * Per-team and per-manager bookkeeping plus competition reset run on
@@ -124,13 +125,5 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
 
   // Initialize currentSeason for stats accumulation. Saga side did
   // this via the SEASON_START reducer in stats.ts.
-  draft.stats.currentSeason = {
-    ehlChampion: undefined,
-    presidentsTrophy: undefined,
-    medalists: undefined,
-    worldChampionships: undefined,
-    promoted: undefined,
-    relegated: undefined,
-    stories: {}
-  };
+  draft.stats.currentSeason = emptySeasonStat();
 }

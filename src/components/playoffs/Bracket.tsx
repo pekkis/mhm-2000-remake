@@ -19,7 +19,9 @@ import * as styles from "./Bracket.css";
  */
 function collectPlayoffPhases(competition: Competition): Phase[] {
   const firstIdx = competition.phases.findIndex((p) => p.type === "playoffs");
-  if (firstIdx === -1) {return [];}
+  if (firstIdx === -1) {
+    return [];
+  }
   return competition.phases
     .slice(firstIdx)
     .filter((p) => p.type === "playoffs");
@@ -86,7 +88,9 @@ type BracketRoundProps = {
 
 const BracketRound: FC<BracketRoundProps> = ({ phase, teams, managers }) => {
   const matchups = phase.groups.flatMap((group) => {
-    if (group.type !== "playoffs") {return [];}
+    if (group.type !== "playoffs") {
+      return [];
+    }
     const playoffGroup = group as PlayoffGroup;
     return playoffGroup.matchups.map((matchup, idx) => {
       const stat = playoffGroup.stats[idx] as MatchupStat | undefined;
@@ -130,7 +134,9 @@ export const Bracket: FC<BracketProps> = ({
   managers = {}
 }) => {
   const phases = collectPlayoffPhases(competition);
-  if (phases.length === 0) {return null;}
+  if (phases.length === 0) {
+    return null;
+  }
 
   return (
     <div className={styles.bracket}>

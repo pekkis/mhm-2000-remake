@@ -87,20 +87,7 @@ const cup: CompetitionDefinition = {
     };
   },
 
-  gameBalance: (_phase, _facts, _manager) => 0,
   moraleBoost: (_phase, _facts, _manager) => 0,
-  readinessBoost: (_phase, _facts, _manager) => 0,
-
-  parameters: {
-    gameday: (_phase, _group) => ({
-      advantage: {
-        home: (_team) => 10,
-        away: (_team) => -10
-      },
-      base: () => 20,
-      moraleEffect: (team) => team.morale * 2
-    })
-  },
 
   seed: [
     // Phase 0: round of 64. Pool = PHL + Divisioona + Mutasarja + 16

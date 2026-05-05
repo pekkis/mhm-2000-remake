@@ -599,6 +599,8 @@ export const gameMachine = setup({
      */
     executeCrisisMeeting: enqueueActions(
       ({ context, enqueue }, params: { manager: string }) => {
+        return;
+
         const m = context.managers[params.manager];
         if (!m || m.team === undefined) {
           return;
@@ -613,7 +615,7 @@ export const gameMachine = setup({
           ? CRISIS_COST / 2
           : CRISIS_COST;
         const diff = difficultyLevels[m.difficulty];
-        const moraleGain = 4 + diff.moraleBoost;
+        const moraleGain = 4;
 
         enqueue.assign(
           produce(context, (draft) => {
@@ -709,7 +711,7 @@ export const gameMachine = setup({
      * for each group, simulate every match where `playMatch` returns true,
      * recompute stats, then run the per-manager `afterGameday`
      * bookkeeping (microphone roll → fine + announcement, plus
-     * gameBalance / moraleBoost / readinessBoost), then bump the group's
+     *  moraleBoost), then bump the group's
      * round counter.
      *
      * Still TODO and intentionally NOT in this step:
@@ -722,11 +724,19 @@ export const gameMachine = setup({
      * looping `preview → play → results → preview` until the
      * `tournamentHasMoreRounds` guard returns false.
      */
-    executeGameday: assign(({ context }) =>
+    executeGameday: enqueueActions(({ context, enqueue }) => {
+      runInterpreter(context, enqueue, (draft, notify) => {
+        const effects = runGameday(draft);
+
+        applyEffects(draft, effects, spawnEvent, notify);
+      });
+    }),
+
+    /* assign(({ context }) =>
       produce(context, (draft) => {
         runGameday(draft);
       })
-    ),
+    ),*/
 
     /**
      * Bridge between `executeGameday` and the parlay bet actors.
@@ -980,12 +990,7 @@ export const gameMachine = setup({
           if (!def) {
             continue;
           }
-          applyEffects(
-            draft,
-            def.execute(draft as GameContext, prank),
-            spawnEvent,
-            notify
-          );
+          applyEffects(draft, def.execute(draft, prank), spawnEvent, notify);
         }
         draft.prank.pranks = [];
       });

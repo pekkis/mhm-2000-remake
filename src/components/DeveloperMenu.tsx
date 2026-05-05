@@ -83,7 +83,7 @@ const DeveloperMenu = () => {
                             <Td>{team.name}</Td>
                             <Td>{managerLabel}</Td>
                             <Td>{strategyName(team.strategy)}</Td>
-                            <Td>{e.morale}</Td>
+                            <Td>{team.morale}</Td>
                             <Td>{fmt(team.readiness)}</Td>
                             <Td>{fmt(e.readiness)}</Td>
                             <Td>{JSON.stringify(e.previousRankings)}</Td>

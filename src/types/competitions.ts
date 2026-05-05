@@ -181,16 +181,6 @@ export type GamedayAdvantage = {
   away: (team: Team) => number;
 };
 
-export type GamedayParams = {
-  advantage: GamedayAdvantage;
-  base: () => number;
-  moraleEffect: (team: Team) => number;
-};
-
-export type CompetitionParameters = {
-  gameday: (phase: number, group?: number) => GamedayParams;
-};
-
 export type GameFacts = {
   isWin: boolean;
   isDraw: boolean;
@@ -204,19 +194,12 @@ export type HomeAndAwayTeamAdvantages = {
 
 export type CompetitionDefinition = {
   data: Competition;
-  relegateTo: string | false;
-  promoteTo: string | false;
-  parameters: CompetitionParameters;
+  relegateTo: CompetitionId | false;
+  promoteTo: CompetitionId | false;
 
   homeAndAwayTeamAdvantages: (phase: number) => HomeAndAwayTeamAdvantages;
 
-  gameBalance: (
-    phase: number,
-    facts: GameFacts,
-    manager: HumanManager
-  ) => number;
   moraleBoost: (phase: number, facts: GameFacts, manager: Manager) => number;
-  readinessBoost: (phase: number, facts: GameFacts, manager: Manager) => number;
   seed: Array<
     (competitions: Record<CompetitionId, Competition>, context?: any) => Phase
   >;

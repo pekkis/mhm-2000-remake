@@ -40,37 +40,8 @@ const tournaments: CompetitionDefinition = {
     };
   },
 
-  /*
-
-  */
-
-  /*
-
-  */
-
-  gameBalance: (_phase, _facts, _manager) => {
-    return 0;
-  },
-
   moraleBoost: (_phase, _facts, _manager) => {
     return 0;
-  },
-
-  readinessBoost: (_phase, _facts, _manager) => {
-    return 0;
-  },
-
-  parameters: {
-    gameday: (_phase, _group) => ({
-      advantage: {
-        home: (_team) => 0,
-        away: (_team) => 0
-      },
-      base: () => 20,
-      moraleEffect: (team) => {
-        return team.morale * 2;
-      }
-    })
   },
 
   seed: [

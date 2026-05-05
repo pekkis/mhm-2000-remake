@@ -181,6 +181,8 @@ export function applyEffect(
   spawn: SpawnEventFn,
   notify: NotifyFn
 ): void {
+  console.log(`EFFECT :: ${effect.type} `, effect);
+
   switch (effect.type) {
     // ── Manager balance ──
     case "incrementBalance": {

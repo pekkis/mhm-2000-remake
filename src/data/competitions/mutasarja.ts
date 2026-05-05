@@ -58,39 +58,8 @@ const mutasarja: CompetitionDefinition = {
   relegateTo: false,
   promoteTo: "division",
 
-  gameBalance: (_phase, facts, manager) => {
-    const arenaLevel = manager.arena.level + 1;
-
-    if (facts.isLoss) {
-      return manager.extra;
-    }
-
-    if (facts.isDraw) {
-      return 1500 + 1000 * arenaLevel + manager.extra;
-    }
-
-    return 5000 + 2000 * arenaLevel + manager.extra;
-  },
-
   moraleBoost: (_phase, facts, _manager) => {
     return defaultMoraleBoost(facts);
-  },
-
-  readinessBoost: (_phase, _facts, _manager) => {
-    return 0;
-  },
-
-  parameters: {
-    gameday: (_phase) => ({
-      advantage: {
-        home: (_team) => 4,
-        away: (_team) => -4
-      },
-      base: () => 8,
-      moraleEffect: (team) => {
-        return team.morale;
-      }
-    })
   },
 
   seed: [

@@ -9,7 +9,7 @@
  * Saga side is REFERENCE-ONLY post-pivot.
  */
 
-import { type Draft } from "immer";
+import { current, type Draft } from "immer";
 import type { GameContext } from "@/state";
 import type { WorldChampionshipEntry } from "@/state/game";
 import type {
@@ -21,12 +21,13 @@ import type {
 } from "@/types/competitions";
 import type { RandomService } from "@/services/random";
 
-import { takeLast, values } from "remeda";
+import { difference, intersection, takeLast, values } from "remeda";
 import { victors, eliminated } from "@/services/playoffs";
 import competitionData from "@/data/competitions";
 import { managersMainCompetition } from "@/machines/selectors";
 import { sortStats } from "@/services/league";
 import { initialBudgetForRankings } from "@/data/mhm2000/budget";
+import { emptySeasonStat } from "@/services/empties";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -128,7 +129,7 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
   const phlStats = phl.phases[0].groups[0].stats as TeamStat[];
   const phlLoser = phlStats[phlStats.length - 1].id;
 
-  const divisionVictor = victors(divFinals)[0].id;
+  const divisionVictors = victors(divFinals);
 
   const divisionLosers = eliminated(divFinals);
 
@@ -138,15 +139,24 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
     phlVictors[phlVictors.length - 1]
   ].map((e) => e.id);
 
+  // todo: wip
+  draft.stats.currentSeason!.relegated = {
+    phl: [],
+    division: []
+  };
+
+  draft.stats.currentSeason!.promoted = {
+    mutasarja: [],
+    division: []
+  };
+
   const cs = draft.stats.currentSeason!;
   cs.presidentsTrophy = presidentsTrophy;
   cs.medalists = medalists;
-  if (divisionVictor !== phlLoser) {
-    cs.relegated = phlLoser;
-    cs.promoted = divisionVictor;
+  if (divisionVictors[0].id !== phlLoser) {
+    cs.relegated.phl = [phlLoser];
+    cs.promoted.division = [divisionVictors[0].id];
   }
-
-  console.log("PRAAT PROOT");
 
   const mutasarja1 = draft.competitions.mutasarja.phases[0]
     .groups[0] as RoundRobinGroup;
@@ -160,7 +170,22 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
 
   const worstOfTheWorst = sortStats(combinedMutasarja).map((w) => w.id);
 
-  console.log("WORST OF THE WORST", worstOfTheWorst);
+  const mutasarjaVictors = victors(
+    mutasarja.phases[3].groups[0] as PlayoffGroup
+  ).map((t) => t.id);
+
+  const divisionRegularSeason = division.phases[0].groups[0] as RoundRobinGroup;
+
+  const divisionLastTwo = takeLast(divisionRegularSeason.stats, 2).map(
+    (t) => t.id
+  );
+
+  const divisionRelegated = difference(divisionLastTwo, mutasarjaVictors);
+
+  const mutasarjaPromoted = difference(mutasarjaVictors, divisionRelegated);
+
+  cs.relegated.division = divisionRelegated;
+  cs.promoted.mutasarja = mutasarjaPromoted;
 
   const ranking = [
     ...medalists,
@@ -172,7 +197,7 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
       .slice(8, 11)
       .map((s) => s.id),
 
-    divisionVictor,
+    divisionVictors[0].id,
     divisionLosers[0].id,
 
     ...eliminated(division.phases[2].groups[0] as PlayoffGroup).map(
@@ -241,14 +266,20 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
       mainCompetition,
       mainCompetitionStat: stat,
       ranking,
-      promoted: teamId === cs.promoted,
-      relegated: teamId === cs.relegated,
+      promoted:
+        cs.promoted.division.includes(teamId) ||
+        cs.promoted.mutasarja.includes(teamId),
+      relegated:
+        cs.relegated.division.includes(teamId) ||
+        cs.promoted.mutasarja.includes(teamId),
       medal: medalists.findIndex((m) => m === teamId),
       ehlChampion: cs.ehlChampion === teamId,
       lastPhase: competition.phases.findLastIndex((phase: Phase) =>
         phase.teams.includes(teamId)
       )
     };
+
+    //
   }
 };
 
@@ -286,7 +317,7 @@ const runPromote = (
 ): void => {
   const promoteTo = competitionData[competitionId as CompetitionId].promoteTo;
   if (promoteTo === false) {
-    return;
+    throw new Error("Promotion not possible");
   }
   removeTeamFromCompetition(draft, competitionId, teamId);
   addTeamToCompetition(draft, promoteTo, teamId);
@@ -305,88 +336,35 @@ const runRelegate = (
   addTeamToCompetition(draft, relegateTo, teamId);
 };
 
-/**
- * Apply the Mutasarja ↔ Divisioona swap.
- *
- * MHM 2000 third-tier rules: the two winners of Mutasarja's phase 3
- * round-of-4 playoffs are promoted to Divisioona for the next season.
- * The two slots they take are vacated by the two worst Divisioona teams
- * after the regular season — except those two had a chance to defend
- * their slot by entering Mutasarja's phase 2 as seeds 1 & 2. If a
- * Divisioona relegation candidate fights its way to a phase-3 win, it
- * stays in Divisioona; the other relegation candidate is the one who
- * actually drops.
- *
- * Implementation: each phase-3 winner that is currently in Mutasarja
- * gets promoted; for every slot we need to vacate in Divisioona we
- * relegate one of the two original Divisioona relegation candidates
- * that did NOT survive phase 3. Net effect: Divisioona size stays at
- * 12, Mutasarja size stays at 24.
- *
- * No-op if Mutasarja's phase-3 group hasn't been seeded (e.g. early
- * release, manual context, partial port).
- */
-const runMutasarjaSwap = (draft: Draft<GameContext>): void => {
-  const muta = draft.competitions.mutasarja;
-  const finalGroup = muta.phases[3]?.groups[0];
-  if (!finalGroup || finalGroup.type !== "playoffs") {
-    return;
-  }
-  const winnersIds = victors(finalGroup as PlayoffGroup).map((t) => t.id);
-  if (winnersIds.length === 0) {
-    return;
-  }
-
-  const divStats = draft.competitions.division.phases[0]?.groups[0]?.stats as
-    | TeamStat[]
-    | undefined;
-  if (!divStats || divStats.length < 2) {
-    return;
-  }
-  const relegationCandidates = [
-    divStats[divStats.length - 1].id,
-    divStats[divStats.length - 2].id
-  ];
-
-  // Promote every phase-3 winner currently in Mutasarja.
-  const promoted: number[] = [];
-  for (const teamId of winnersIds) {
-    if (teamCompetesIn(draft, teamId, "mutasarja")) {
-      runPromote(draft, "mutasarja", teamId);
-      promoted.push(teamId);
-    }
-  }
-
-  // Relegate as many Divisioona relegation candidates as Mutasarja
-  // teams we just promoted — but skip ones that already won phase 3
-  // (they earned their stay).
-  let toRelegate = promoted.length;
-  for (const teamId of relegationCandidates) {
-    if (toRelegate === 0) {
-      break;
-    }
-    if (winnersIds.includes(teamId)) {
-      continue;
-    }
-    runRelegate(draft, "division", teamId);
-    toRelegate -= 1;
-  }
-};
-
 export const runSeasonEnd = (draft: Draft<GameContext>): void => {
-  const cs = draft.stats.currentSeason;
+  const cs = draft.stats.currentSeason!;
   if (cs) {
     draft.stats.seasons.push(cs);
   }
 
-  // Promote/relegate (skipped when same team — see runFinalizeStats).
-  if (cs?.promoted !== undefined && cs?.relegated !== undefined) {
-    runPromote(draft, "division", cs.promoted);
-    runRelegate(draft, "phl", cs.relegated);
-  }
+  // Run promotions and relegations from precalculated season stats
+  cs.promoted.division.forEach((promoted) => {
+    runPromote(draft, "division", promoted);
+  });
 
-  // Mutasarja ↔ Divisioona swap (MHM 2000 third tier).
-  runMutasarjaSwap(draft);
+  cs.promoted.mutasarja.forEach((promoted) => {
+    runPromote(draft, "mutasarja", promoted);
+  });
+
+  cs.relegated.phl.forEach((relegated) => {
+    runRelegate(draft, "phl", relegated);
+  });
+
+  cs.relegated.division.forEach((relegated) => {
+    runRelegate(draft, "division", relegated);
+  });
+
+  // TODO: AI manager swap. NOT YET.
+
+  /*
+  We SHOULD be able to do tasomaar() here now from the precalculated SeasonStats
+  and the already updated previousRankings.
+  */
 
   // Bump season; advanceRound will then take round 0 → 1, but we want next
   // season to begin at round 0, so set to -1 and let advanceRound increment.

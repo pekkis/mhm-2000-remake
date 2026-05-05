@@ -77,7 +77,7 @@ const ActionMenu = () => {
             Tilastot
           </Link>
 
-          <Link onClick={close} to="/tilastot">
+          <Link onClick={close} to="/playoffit">
             Playoffit
           </Link>
 
