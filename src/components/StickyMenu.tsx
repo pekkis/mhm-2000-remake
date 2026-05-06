@@ -1,8 +1,5 @@
 import Button from "./ui/Button";
-import { FaBars } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import { GameMachineContext } from "@/context/game-machine-context";
-import { uiStore } from "@/stores/ui";
 import { advanceEnabled as advanceEnabledSelector } from "@/machines/selectors";
 import type { FC } from "react";
 import Box from "@/components/ui/Box";
@@ -14,16 +11,10 @@ type Props = {
   forward?: React.ReactNode;
 };
 
-const StickyMenu: FC<Props> = ({
-  back = false,
-  menu = false,
-  forward = "Eteenpäin!"
-}) => {
+const StickyMenu: FC<Props> = ({ forward = "Eteenpäin!" }) => {
   const advanceEnabled = GameMachineContext.useSelector(advanceEnabledSelector);
 
   const game = GameMachineContext.useActorRef();
-
-  const navigate = useNavigate();
 
   return (
     <Box p="md">

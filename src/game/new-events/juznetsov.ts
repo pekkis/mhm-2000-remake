@@ -3,7 +3,7 @@ import {
   managerHasService,
   managersTeamId
 } from "@/machines/selectors";
-import random, { cinteger } from "@/services/random";
+import { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 import { currency } from "@/services/format";

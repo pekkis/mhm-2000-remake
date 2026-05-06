@@ -1,6 +1,6 @@
 import { managersTeamId, teamCompetesIn } from "@/machines/selectors";
 import { currency as c } from "@/services/format";
-import random, { cinteger } from "@/services/random";
+import { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 import type { EventEffect } from "@/game/event-effects";
 

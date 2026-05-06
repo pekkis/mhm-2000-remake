@@ -1,5 +1,5 @@
 import { randomTeamFrom } from "@/machines/selectors";
-import random, { cinteger } from "@/services/random";
+import { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "workPermits";

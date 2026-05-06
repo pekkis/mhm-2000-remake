@@ -3,7 +3,7 @@ import {
   managersTeamId,
   totalGamesPlayed
 } from "@/machines/selectors";
-import random, { cinteger } from "@/services/random";
+import { cinteger } from "@/services/random";
 import type { DeclarativeEvent } from "@/types/event";
 
 const eventId = "book";

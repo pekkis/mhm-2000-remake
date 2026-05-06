@@ -5,8 +5,7 @@ import type { GameContext } from "@/state";
 import difficultyLevels from "@/data/difficulty-levels";
 import {
   forcedStrategyForManager,
-  initialReadinessFor,
-  type StrategyId
+  initialReadinessFor
 } from "@/data/mhm2000/strategies";
 import {
   distributeAIStrategies,
