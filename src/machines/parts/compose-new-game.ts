@@ -7,10 +7,10 @@
  * Kept out of `appMachine` to keep the machine wiring readable.
  */
 
-import { produce } from "immer";
+import { produce, current } from "immer";
 
 import { createDefaultGameContext, type GameContext } from "@/state";
-import type { HumanManager } from "@/state/game";
+import type { AITeam, HumanManager } from "@/state/game";
 import {
   statsFromExperience,
   type ManagerDraft,
@@ -20,6 +20,8 @@ import {
 import { createUniqueId } from "@/services/id";
 import difficultyLevels from "@/data/difficulty-levels";
 import random from "@/services/random";
+import { generateMarketPlayers } from "@/services/mhm-2000/generate-market-players";
+import { generateTeamRoster } from "@/services/mhm-2000/generate-team-roster";
 
 const buildHumanManager = (draft: ManagerDraft): HumanManager => {
   // Convert MHM 2000 difficulty id (1..5) to the legacy 0-based index
@@ -133,5 +135,23 @@ export const composeNewGameContext = (output: NewGameOutput): GameContext => {
 
     draft.human.order = applyPeckingOrder(installed, output.peckingOrder);
     draft.human.active = draft.human.order[0];
+
+    // Generate player market (port of QB `borsgene`, ILEX5.BAS:1061)
+    draft.playerMarket.players = generateMarketPlayers(440, random);
+
+    // Generate rosters for all human-managed teams (port of QB `gene`, MHM2K.BAS:1026)
+    for (const managerDraft of output.drafts) {
+      const idx = managerDraft.team;
+      const existingTeam = current(draft.teams[idx]) as AITeam;
+      const { strengthObj } = existingTeam;
+
+      // Convert AITeam → HumanTeam; manager pointer already set above
+      draft.teams[idx] = {
+        ...existingTeam,
+        kind: "human",
+        strengthObj,
+        players: generateTeamRoster(strengthObj, random)
+      };
+    }
   });
 };

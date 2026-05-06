@@ -209,6 +209,8 @@ export const createDefaultGameContext = (): GameContext => {
 
     worldChampionshipResults: undefined,
 
+    playerMarket: { players: {} },
+
     human: { active: undefined, order: [] },
 
     // betting — parlay + championship bet actors plus the transient

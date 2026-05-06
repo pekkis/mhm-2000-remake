@@ -5,15 +5,9 @@ import type { ManagerAttributes } from "@/data/managers";
 import type { TeamStrength } from "@/data/levels";
 import type { BudgetCategoryName, BudgetLevel } from "@/data/mhm2000/budget";
 import type { GameRecord } from "@/machines/types";
+import type { MarketPlayer, Player } from "@/state/player";
 
-/* The free players in the player market */
-export type BorssiPlayer = {};
-
-/* Actual, hired players in a team */
-export type Player = {};
-
-/* the "players" of AI teams */
-export type AITeamMockPlayer = {};
+export type { Player };
 
 export type ManagerArena = {
   name: string;
@@ -108,6 +102,8 @@ export type AITeam = BaseTeam & {
 
 export type HumanTeam = BaseTeam & {
   kind: "human";
+  /** QB `mw/pw/hw` — computed from roster by `orgamaar`; initially seeded from team tier. */
+  strengthObj: TeamStrength;
   players: Record<string, Player>;
 };
 
@@ -140,6 +136,6 @@ export type GameState = {
   worldChampionshipResults: WorldChampionshipEntry[] | undefined;
 
   playerMarket: {
-    players: Record<string, Player>;
+    players: Record<string, MarketPlayer>;
   };
 };
