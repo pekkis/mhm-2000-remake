@@ -9,20 +9,23 @@ import { computeBaseSalary } from "@/services/mhm-2000/contract-negotiation";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const NEUTRAL_BUDGET: TeamBudget = {
-  coaching: 0,
-  goalieCoaching: 0,
-  health: 0,
-  benefits: 0,
-  juniors: 0
-};
+// BudgetLevel = 1|2|3|4|5.  Formula: coaching + health + benefits*2 - skill → capped at 0.
+// MID (all 3): 3+3+6=12 surplus over skill≤12.  GENEROUS (all 5): 5+5+10=20.  TIGHT (all 1): 4 total.
 
 const GENEROUS_BUDGET: TeamBudget = {
-  coaching: 3,
-  goalieCoaching: 3,
-  health: 2,
-  benefits: 2,
-  juniors: 0
+  coaching: 5,
+  goalieCoaching: 5,
+  health: 5,
+  benefits: 5,
+  juniors: 5
+};
+
+const TIGHT_BUDGET: TeamBudget = {
+  coaching: 1,
+  goalieCoaching: 1,
+  health: 1,
+  benefits: 1,
+  juniors: 1
 };
 
 /** A mid-skill skater unlikely to refuse due to budget pressure. */
@@ -38,10 +41,13 @@ const HAPPY_PLAYER: NegotiationPlayer = {
   hasSpecialContract: false
 };
 
-/** Player that always refuses — needs teamNeedsRating <= -4. */
+/**
+ * Player that always refuses with TIGHT_BUDGET.
+ * TIGHT (all 1): 1+1+2-8 = -4 → teamNeedsRating = -4 → refused.
+ */
 const REFUSED_PLAYER: NegotiationPlayer = {
   ...HAPPY_PLAYER,
-  skill: 15 // generous budget still: 3+2+2*2-15 = -6 → refused
+  skill: 8
 };
 
 function makeInput(
@@ -77,7 +83,7 @@ describe("early exit conditions", () => {
 
   it("teamNeedsRating <= -4 (no special contract) → 'refused'", () => {
     const snap = runToCompletion(
-      makeInput({ player: REFUSED_PLAYER, budget: NEUTRAL_BUDGET })
+      makeInput({ player: REFUSED_PLAYER, budget: TIGHT_BUDGET })
     );
     expect(snap.output?.outcome).toBe("refused");
   });
@@ -88,7 +94,7 @@ describe("early exit conditions", () => {
       hasSpecialContract: true
     };
     const snap = runToCompletion(
-      makeInput({ player: specialPlayer, budget: NEUTRAL_BUDGET })
+      makeInput({ player: specialPlayer, budget: TIGHT_BUDGET })
     );
     // Should reach negotiating state, not immediately done
     expect(snap.value).toBe("negotiating");

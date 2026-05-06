@@ -14,28 +14,32 @@ import type { TeamBudget } from "@/data/mhm2000/budget";
 
 // ─── Test fixtures ────────────────────────────────────────────────────────────
 
-const NEUTRAL_BUDGET: TeamBudget = {
-  coaching: 0,
-  goalieCoaching: 0,
-  health: 0,
-  benefits: 0,
-  juniors: 0
-};
+// BudgetLevel = 1|2|3|4|5 (no zeroes or negatives).
+// computeTeamNeedsRating formula: coaching + health + benefits*2 - skill, capped at 0.
+// With all-1 budget: 1+1+2=4.  All-3: 3+3+6=12.  All-5: 5+5+10=20.
 
-const GENEROUS_BUDGET: TeamBudget = {
+const MID_BUDGET: TeamBudget = {
   coaching: 3,
   goalieCoaching: 3,
-  health: 2,
-  benefits: 2,
-  juniors: 0
+  health: 3,
+  benefits: 3,
+  juniors: 3
 };
 
 const TIGHT_BUDGET: TeamBudget = {
-  coaching: -3,
-  goalieCoaching: -3,
-  health: -2,
-  benefits: -2,
-  juniors: 0
+  coaching: 1,
+  goalieCoaching: 1,
+  health: 1,
+  benefits: 1,
+  juniors: 1
+};
+
+const GENEROUS_BUDGET: TeamBudget = {
+  coaching: 5,
+  goalieCoaching: 5,
+  health: 5,
+  benefits: 5,
+  juniors: 5
 };
 
 const BASE_SKATER: NegotiationPlayer = {
@@ -50,61 +54,58 @@ const BASE_SKATER: NegotiationPlayer = {
   hasSpecialContract: false
 };
 
-const BASE_GOALIE: NegotiationPlayer = {
-  ...BASE_SKATER,
-  position: "g"
-};
-
 // ─── computeTeamNeedsRating ───────────────────────────────────────────────────
 
 describe("computeTeamNeedsRating — port of QB `a` calculation", () => {
-  it("returns 0 when budget is fully neutral (all sliders 0) and skill is 0", () => {
+  it("returns 0 when team budget exceeds player skill", () => {
+    // MID budget (all 3): coaching=3 + health=3 + benefits*2=6 - skill=3 = 9 → 0
     expect(
-      computeTeamNeedsRating(NEUTRAL_BUDGET, { position: "c", skill: 0 })
+      computeTeamNeedsRating(MID_BUDGET, { position: "c", skill: 3 })
     ).toBe(0);
   });
 
-  it("is always <= 0 (capped)", () => {
-    // Even with huge budget surplus it stays 0
+  it("is always <= 0 (capped at zero)", () => {
+    // GENEROUS budget always produces surplus for reasonable skills
     expect(
-      computeTeamNeedsRating(GENEROUS_BUDGET, { position: "c", skill: 1 })
+      computeTeamNeedsRating(GENEROUS_BUDGET, { position: "c", skill: 5 })
     ).toBe(0);
   });
 
-  it("skater: uses coaching budget slot (not goalieCoaching)", () => {
-    const budget: TeamBudget = { ...NEUTRAL_BUDGET, coaching: 2, goalieCoaching: -5 };
-    // skater: 2 + 0 + 0*2 - 5 = -3; capped at min(-3, 0) = -3 for skill 5
-    const a = computeTeamNeedsRating(
-      { ...NEUTRAL_BUDGET, coaching: 2, goalieCoaching: -5 },
-      { position: "c", skill: 5 }
-    );
-    // coaching=2 + health=0 + benefits*2=0 - skill=5 = -3
-    expect(a).toBe(-3);
-    void budget;
+  it("skater uses coaching slot (not goalieCoaching)", () => {
+    // coaching=1, goalieCoaching=5, health=1, benefits=1
+    // skater:  1+1+2 - 8 = -4
+    // goalie:  5+1+2 - 8 =  0 (positive, capped)
+    const budget: TeamBudget = { ...TIGHT_BUDGET, goalieCoaching: 5 };
+    const skaterA = computeTeamNeedsRating(budget, { position: "c", skill: 8 });
+    const goalieA  = computeTeamNeedsRating(budget, { position: "g", skill: 8 });
+    expect(skaterA).toBe(-4);
+    expect(goalieA).toBe(0);
   });
 
-  it("goalie: uses goalieCoaching budget slot", () => {
-    const a = computeTeamNeedsRating(
-      { ...NEUTRAL_BUDGET, coaching: 10, goalieCoaching: -3 },
-      { position: "g", skill: 5 }
-    );
-    // goalieCoaching=-3 + health=0 + benefits*2=0 - skill=5 = -8
-    expect(a).toBe(-8);
+  it("goalie uses goalieCoaching slot (not coaching)", () => {
+    // coaching=5, goalieCoaching=1, health=1, benefits=1
+    // skater:  5+1+2 - 8 = 0 (surplus)
+    // goalie:  1+1+2 - 8 = -4
+    const budget: TeamBudget = { ...TIGHT_BUDGET, coaching: 5 };
+    const skaterA = computeTeamNeedsRating(budget, { position: "lw", skill: 8 });
+    const goalieA  = computeTeamNeedsRating(budget, { position: "g",  skill: 8 });
+    expect(skaterA).toBe(0);
+    expect(goalieA).toBe(-4);
   });
 
   it("benefits slot is multiplied by 2 — port of QB valb(5)*2", () => {
-    const a = computeTeamNeedsRating(
-      { ...NEUTRAL_BUDGET, benefits: 1 },
-      { position: "c", skill: 3 }
-    );
-    // 0 + 0 + 1*2 - 3 = -1
-    expect(a).toBe(-1);
+    // coaching=1, health=1, benefits=1, skill=5 → 1+1+2-5 = -1
+    // coaching=1, health=1, benefits=2, skill=5 → 1+1+4-5 =  1 → 0 (capped)
+    const low  = computeTeamNeedsRating({ ...TIGHT_BUDGET, benefits: 1 }, { position: "c", skill: 5 });
+    const high = computeTeamNeedsRating({ ...TIGHT_BUDGET, benefits: 2 }, { position: "c", skill: 5 });
+    expect(low).toBe(-1);
+    expect(high).toBe(0); // benefits*2 pushed it into surplus
   });
 
   it("high-skill player with tight budget: deeply negative rating", () => {
-    const a = computeTeamNeedsRating(TIGHT_BUDGET, { position: "c", skill: 10 });
-    // -3 + -2 + -2*2 - 10 = -3 -2 -4 -10 = -19
-    expect(a).toBe(-19);
+    // TIGHT (all 1): 1+1+2-15 = -11
+    const a = computeTeamNeedsRating(TIGHT_BUDGET, { position: "c", skill: 15 });
+    expect(a).toBe(-11);
   });
 });
 

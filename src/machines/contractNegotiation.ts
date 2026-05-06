@@ -29,6 +29,10 @@ import {
   adjustSalary,
   computeBaseSalary
 } from "@/services/mhm-2000/contract-negotiation";
+import {
+  type NegotiationDialogKey,
+  getDialogLine
+} from "@/data/mhm2000/negotiation-dialog";
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
@@ -59,10 +63,10 @@ export type ContractNegotiationOutput =
       /** QB `gnome = 3` — player accepted very happily. */
       playerWasHappy: boolean;
     }
-  | { outcome: "refused" }          // player refused to negotiate (a <= -4)
-  | { outcome: "playerWalked" }     // player's patience hit 0
+  | { outcome: "refused" }           // player refused to negotiate (a <= -4)
+  | { outcome: "playerWalked" }      // player's patience hit 0
   | { outcome: "alreadyNegotiated" } // neu = 1 this round
-  | { outcome: "cancelled" };       // manager quit
+  | { outcome: "cancelled" };        // manager quit
 
 // ─── Machine context ──────────────────────────────────────────────────────────
 
@@ -92,6 +96,13 @@ type ContractNegotiationContext = {
   clause: SpecialClause;
   /** QB `palkehd(1)` — offered salary; starts at `baseSalary`, adjustable ±1.5%. */
   offeredSalary: number;
+
+  /**
+   * Accumulated player dialog lines (Markdown strings).
+   * Lines are pushed as the negotiation progresses — never replaced.
+   * Port of QB `lentti 4, sano%` calls from S4.MHM.
+   */
+  playerLines: string[];
 
   // Terminal result (set before entering final states)
   result: ContractNegotiationOutput | null;
@@ -137,6 +148,36 @@ function buildSignedContract(ctx: ContractNegotiationContext): RegularContract {
   return base;
 }
 
+/** Roll a random variant (0..5) of a dialog line. */
+function rollLine(key: NegotiationDialogKey, random: Random): string {
+  return getDialogLine(key, random.integer(0, 5));
+}
+
+/**
+ * Build the initial player dialog lines for the negotiating state.
+ * Port of QB willingness + opening-line display (ILEX5.BAS:6337-6401).
+ */
+function buildInitialLines(
+  teamNeedsRating: number,
+  hasSpecialContract: boolean,
+  random: Random
+): string[] {
+  if (hasSpecialContract) {
+    // Zombie / greedySurfer: skips willingness block, shows unintelligible sound
+    return [rollLine("zombieSound", random)];
+  }
+  // Normal player: willingness reaction + opening line
+  let willingnessKey: NegotiationDialogKey;
+  if (teamNeedsRating < -1) {
+    willingnessKey = "unhappy";
+  } else if (teamNeedsRating < 0) {
+    willingnessKey = "neutral";
+  } else {
+    willingnessKey = "happy";
+  }
+  return [rollLine(willingnessKey, random), rollLine("openingLine", random)];
+}
+
 // ─── Machine ──────────────────────────────────────────────────────────────────
 
 export const contractNegotiationMachine = setup({
@@ -147,9 +188,7 @@ export const contractNegotiationMachine = setup({
     output: {} as ContractNegotiationOutput
   },
   guards: {
-    earlyExit: ({ context }) => context.result !== null,
-    negotiationSucceeded: ({ context }) => context.result?.outcome === "signed",
-    playerWalked: ({ context }) => context.result?.outcome === "playerWalked"
+    earlyExit: ({ context }) => context.result !== null
   }
 }).createMachine({
   id: "contractNegotiation",
@@ -169,13 +208,20 @@ export const contractNegotiationMachine = setup({
     // Resolve early-exit conditions immediately so the willingness state
     // can check context.result instead of input.
     let initialResult: ContractNegotiationOutput | null = null;
+    let initialLines: string[] = [];
+
     if (input.alreadyNegotiated) {
       initialResult = { outcome: "alreadyNegotiated" };
-    } else if (
-      !input.player.hasSpecialContract &&
-      teamNeedsRating <= -4
-    ) {
+      initialLines = [rollLine("alreadyNegotiated", input.random)];
+    } else if (!input.player.hasSpecialContract && teamNeedsRating <= -4) {
       initialResult = { outcome: "refused" };
+      initialLines = [rollLine("refused", input.random)];
+    } else {
+      initialLines = buildInitialLines(
+        teamNeedsRating,
+        input.player.hasSpecialContract,
+        input.random
+      );
     }
 
     return {
@@ -193,6 +239,7 @@ export const contractNegotiationMachine = setup({
       duration: 1,
       clause: "none",
       offeredSalary: baseSalary,
+      playerLines: initialLines,
       result: initialResult
     };
   },
@@ -278,8 +325,13 @@ export const contractNegotiationMachine = setup({
             );
 
             if (attempt.outcome === "accepted") {
+              const acceptLine = rollLine(
+                attempt.happy ? "acceptedHappy" : "acceptedOk",
+                context.random
+              );
               return {
                 negotiationRound: newRound,
+                playerLines: [...context.playerLines, acceptLine],
                 result: {
                   outcome: "signed" as const,
                   contract: buildSignedContract({ ...context, negotiationRound: newRound }),
@@ -289,17 +341,43 @@ export const contractNegotiationMachine = setup({
             }
 
             const newThreshold = attempt.newThreshold;
+            const newLines: string[] = [];
+
+            // Primary reaction line — based on updated patience
+            if (newThreshold <= 0 || newThreshold < 30) {
+              newLines.push(rollLine("veryImpatient", context.random));
+            } else if (newThreshold < 50) {
+              newLines.push(rollLine("impatient", context.random));
+            } else {
+              newLines.push(rollLine("rejection", context.random));
+            }
+
+            // Add-on: NHL aspirations (when duration meets eligibility threshold)
+            if (
+              context.nhlOptionThreshold > 0 &&
+              context.duration >= context.nhlOptionThreshold
+            ) {
+              newLines.push(rollLine("nhlHint", context.random));
+            }
+
+            // Add-on: free-fire clause complaint
+            if (context.clause === "free-fire") {
+              newLines.push(rollLine("freeFireComplaint", context.random));
+            }
+
             if (newThreshold <= 0) {
               return {
                 negotiationRound: newRound,
                 willingnessThreshold: 0,
+                playerLines: [...context.playerLines, ...newLines],
                 result: { outcome: "playerWalked" as const }
               };
             }
 
             return {
               negotiationRound: newRound,
-              willingnessThreshold: newThreshold
+              willingnessThreshold: newThreshold,
+              playerLines: [...context.playerLines, ...newLines]
             };
           })
         },
