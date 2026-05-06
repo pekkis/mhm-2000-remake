@@ -4,6 +4,7 @@ import type { TeamStrength } from "@/data/levels";
 import { keisit } from "@/data/keisit";
 import { createUniqueId } from "@/services/id";
 import { generateBaseAttributes } from "./generate-player";
+import { computeSalary } from "./compute-salary";
 
 type QbPosition = Player["position"];
 
@@ -98,28 +99,34 @@ export function generateTeamRoster(
     skills[xx] = Math.max(1, base - random.integer(0, 3) - 1);
   }
 
-  // Defence redistribution passes (QB:1096-1106)
+  // Defence redistribution passes (QB:1096-1106).
+  // Guard: if every defender is already at 1 there is no one to decrement —
+  // the QB game never exercised this at minimum strength but we must not hang.
   const defPasses = defAvg <= 7 ? 3 : defAvg <= 9 ? 5 : 6;
-  for (let d = 0; d < defPasses; d++) {
-    let z: number, zz: number;
-    do {
-      z = random.integer(3, 8);
-      zz = random.integer(3, 8);
-    } while (z === zz || skills[z] === 1);
-    skills[z]--;
-    skills[zz]++;
+  if (skills.slice(3, 9).some((s) => s > 1)) {
+    for (let d = 0; d < defPasses; d++) {
+      let z: number, zz: number;
+      do {
+        z = random.integer(3, 8);
+        zz = random.integer(3, 8);
+      } while (z === zz || skills[z] === 1);
+      skills[z]--;
+      skills[zz]++;
+    }
   }
 
-  // Forward redistribution passes (QB:1108-1118)
+  // Forward redistribution passes (QB:1108-1118). Same guard.
   const fwdPasses = fwdAvg <= 7 ? 7 : fwdAvg <= 9 ? 9 : 11;
-  for (let d = 0; d < fwdPasses; d++) {
-    let z: number, zz: number;
-    do {
-      z = random.integer(9, 20);
-      zz = random.integer(9, 20);
-    } while (z === zz || skills[z] === 1);
-    skills[z]--;
-    skills[zz]++;
+  if (skills.slice(9, 21).some((s) => s > 1)) {
+    for (let d = 0; d < fwdPasses; d++) {
+      let z: number, zz: number;
+      do {
+        z = random.integer(9, 20);
+        zz = random.integer(9, 20);
+      } while (z === zz || skills[z] === 1);
+      skills[z]--;
+      skills[zz]++;
+    }
   }
 
   // Assemble Player records
@@ -144,7 +151,7 @@ export function generateTeamRoster(
       contract: {
         type: "regular",
         duration: contractDuration,
-        salary: Math.max(1, skills[slot]) * 1000
+        salary: computeSalary({ ...base, position, skill: Math.max(1, skills[slot]) })
       },
       stats: {
         season: { games: 0, goals: 0, assists: 0 },

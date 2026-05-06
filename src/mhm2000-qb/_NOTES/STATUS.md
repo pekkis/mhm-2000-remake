@@ -40,6 +40,22 @@ Pasolini` rows for the rationale and a full list of QB sites this
   now append the QB " ja." overtime marker to every score string when
   `result.overtime`.
 
+### Player generation port (DONE 2026-05-07)
+
+`borsgene` + `gene` + `rela` + `mahmax` fully ported and wired into `composeNewGameContext`.
+
+- **`borsgene`** (`ILEX5.BAS:1061`) → [src/services/mhm-2000/generate-market-players.ts](../../services/mhm-2000/generate-market-players.ts).
+  Generates 440 `MarketPlayer` records using the KEISIT/BORSSIX nation+skill tables. Specialty rolls (greedySurfer > enforcer > foulMouth > evangelist) only when `psk > 6`. `askingSalary = psk * 1000` placeholder (real salary comes when contract system ports).
+- **`gene`** (`MHM2K.BAS:1026`) → [src/services/mhm-2000/generate-team-roster.ts](../../services/mhm-2000/generate-team-roster.ts).
+  Generates 24-player human team roster from `TeamStrength`. Slot layout (g/g/d×6/lw×4/c×4/rw×4/bench×4), balance passes to hit pw/hw totals, then redistribution shuffles to add intra-group variety. Specialties NOT assigned here (QB gene skips spe).
+- **`rela`** (`ILEX5.BAS:5228`) + **`mahmax`** (`MHM2K.BAS:1548`) → [src/services/mhm-2000/generate-player.ts](../../services/mhm-2000/generate-player.ts).
+  Rolls position/age/ego from uniform keisit index; leadership/charisma from triangular double-roll `floor((r+r)/2)`; yvo/avo independently from keisit[6]; name from nation's .MHX surname pool + Pekkalandian/foreign initial pool.
+- **Data tables** → [src/data/keisit.ts](../../data/keisit.ts) (7×100), [src/data/borssix.ts](../../data/borssix.ts) (17×9, all rows sum to 200).
+- **Wiring** → `composeNewGameContext` (`compose-new-game.ts`) now calls `generateMarketPlayers(440)` and converts each human-picked `AITeam` → `HumanTeam` with a generated roster. `HumanTeam` now carries `strengthObj` (needed by `orgamaar` when it ports).
+- **Bug found:** QB `gene`'s redistribution loop hangs if all defenders/forwards have `psk=1` (minimum-strength teams). Added `any(s > 1)` guard — faithful to QB's implicit assumption; the real game never hit this case.
+- **RND() → random-js verified:** all QB `INT(N*RND)` patterns confirmed; the triangular double-roll `INT(((100*RND)+(100*RND))/2)` → `Math.floor((r(0,99)+r(0,99))/2)` same range and shape. Full mapping table in the test files.
+- 27 test files, 502 tests passing.
+
 **Still on the Phase-2 punch list:** `tre` / `tautip` / `erik` services,
 `inte` / `treeni` etu modifiers, `spx(3/4)` consumables, `pel(*).spe`
 roster effects (extremelyFat, daddyPays), `jaynax(2/6)` prank wiring,
@@ -241,8 +257,12 @@ param`). MHM 2000 expanded MHM 97's 75-round calendar.
    _(`ottpel` ported managed-base-team subset — see Phase 2 progress.
    `ottul` still pending; check post-match logic for tournament path.)_
 3. **Runtime player random-access DB filename** — created on new game.
-4. **`borzzi` field meanings**: `na` (name, 13 chars, confirmed),
-   `ma` ❓, `sy` ❓, `pi` ❓, `jo` ❓, `ka` ❓.
+4. ~~**`borzzi` field meanings**~~ **RESOLVED** — `borzzi` is NOT a player-market
+   entry. It's the **scoring leaderboard** (`ppors()`/`rekord()`/`pvoittaja()` arrays).
+   Fields: `na`=name (13 chars), `ma`=goals (`maalit`), `sy`=assists (`syötöt`),
+   `pi`=points (`pisteet` = ma+sy), `jo`=team index (`joukkue`), `ka`=nationality
+   (`kansallisuus`). Filled from `ILEX5.BAS:4505-4510`. See VARIABLES.md `ppors`/`rekord`
+   rows for the full decode. `MarketPlayer` type is `Omit<Player, "contract"|"plannedDeparture"> & { askingSalary }`.
 
 ### Medium — fills out the data layer
 
@@ -255,7 +275,7 @@ param`). MHM 2000 expanded MHM 97's 75-round calendar.
    `montx` records?
 8. **Remaining `.M2K` files** still ❓: `STVARI`, `PEPDEP`,
    `MUUDIT`, `MUUTOS`, `ORGASM`, `PELKIEL`,
-   `TAHDET`. (Decoded so far: `KANSAT`, `MANAGERS`, `KEISIT`,
+   ~~`TAHDET`~~ (decoded — see player-market section). (Decoded so far: `KANSAT`, `MANAGERS`, `KEISIT`,
    `MATERIA`, `MATERIAX`, `TASOT`, `DATAX`, `KARSA`, `KIERO` outline.)
 9. **`TEAMS.{ALA,FOR,NHL,PLN}`** — extension naming. Best guesses in
    [DATA-FILES.md](DATA-FILES.md).
@@ -268,16 +288,22 @@ param`). MHM 2000 expanded MHM 97's 75-round calendar.
 
 ## Recommended next session order
 
-1. Decode `sattuma` → unlock event-system porting.
-2. Decode `ottpel` → unlock gameday porting.
-3. Build a TS `GameContext` shape that maps the QB globals (use
-   [VARIABLES.md](VARIABLES.md) as the source of truth).
-4. Port the simplest event first (`KONKKA.MHM` bankruptcy escalation
-   has only 5 stages and is purely deterministic) as the
-   port-pipeline shakedown.
-5. From there, iterate: declarative event registry, prank registry,
-   per-competition extension methods, calendar driver — all the
-   patterns already exist in the inherited codebase.
+1. **Contract negotiations state machine** — `sopimusext` SUB
+   (`ILEZ5.BAS`) drives the end-of-season player negotiation loop.
+   `omasopimus` (manager strength → team selectability gate) is
+   already ported. Contracts use `RegularContract` / `GuestContract`
+   shapes in [src/state/player.ts](../../state/player.ts); the
+   `specialClause` (NHL/free-fire) decode is documented there.
+   Player salaries are placeholder (`psk*1000`) — the real salary
+   curve from `sopimusext` will replace them.
+2. Decode `sattuma` → unlock event-system porting.
+3. Port `orgamaar` — human team strength recalculation from actual
+   player roster (`mw = max(pel(*).psk)` for goalies, `pw/hw` from
+   sums). `HumanTeam.strengthObj` is now wired and ready.
+4. Port the simplest event (`KONKKA.MHM` bankruptcy escalation) as
+   the event-pipeline shakedown.
+5. From there: declarative event registry, prank registry,
+   per-competition extension methods, calendar driver.
 
 ## Vibe / collaboration notes
 
