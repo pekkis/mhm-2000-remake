@@ -138,4 +138,8 @@ export type GameState = {
   competitions: Record<CompetitionId, Competition>;
   teams: Team[];
   worldChampionshipResults: WorldChampionshipEntry[] | undefined;
+
+  playerMarket: {
+    players: Record<string, Player>;
+  };
 };

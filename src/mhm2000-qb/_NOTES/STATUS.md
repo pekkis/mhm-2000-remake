@@ -156,6 +156,20 @@ tests:
 
 ## What we already know (verified)
 
+### The player market is an illusion
+
+The single most important thing to understand before touching players or transfers:
+
+- **Only human team players are real.** `pel(1..32, 1..plkm)` holds actual `pelaaja` records — only for human-controlled teams.
+- **AI team "players" are display ghosts.** At game start, `TAHDET.M2K` seeds notable players per team (`MHM2K.BAS:2308-2332`). For AI teams (`ohj(team) = 0`) these go into `top()` (the `topp` TYPE — name, gls, ass, age, nat — display only). For human teams they go into real `pel()` slots via `etsipel`. `top()` is what gets shown in standings/leaderboards for AI teams. No full `pelaaja` record is ever created for them.
+- **Free agents in `bel(1..lastbors)`** are players that left a human team. They may linger in the market UI but if "picked up" by an AI team they simply vanish — the AI team doesn't store them anywhere, they're gone.
+- **NHL / abroad = gone forever.** No return path. Player ceases to exist.
+- **When an AI team becomes human-controlled**, real `pelaaja` records are synthesised (presumably from the `top()` stub data). Only then do they gain real attributes.
+- `borsgene` (`ILEX5.BAS:1061`) generates fresh market entries to fill `bel` up to index 440 — these are the procedurally-generated free agents that provide market activity.
+- **SAVETUS6.XXX** = persisted `top()` array (AI star scoring display).
+
+**Porting implication:** AI teams have no real roster. Don't model them as having `Player[]`. The scoring display reads from `top()`, not from player records.
+
 ### Architecture
 
 - **3 CHAINed programs** share `COMMON SHARED` globals via `MHM2K.BI`:

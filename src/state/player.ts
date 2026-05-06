@@ -308,3 +308,16 @@ export type Player = {
     };
   };
 };
+
+/**
+ * A player on the free-agent market (`bel()` in QB).
+ *
+ * Copied from `pel()` with `pok = 0` (total stats reset) and `neu`
+ * toggled. No active contract exists — `sra` in QB becomes the
+ * negotiation starting point (`askingSalary`) fed into `sopimusext`.
+ * `plannedDeparture` is also meaningless outside a live contract.
+ */
+export type MarketPlayer = Omit<Player, "contract" | "plannedDeparture"> & {
+  /** QB `pel.sra` — asking salary, basis for contract negotiation. */
+  askingSalary: number;
+};
