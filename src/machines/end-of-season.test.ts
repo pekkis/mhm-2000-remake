@@ -14,24 +14,24 @@ import {
   sameTierStrength,
   tierOf
 } from "@/machines/end-of-season";
-import type { RandomService } from "@/services/random";
 import type { GameContext } from "@/state";
 import { createDefaultGameContext } from "@/state";
 import { emptyAchievements } from "@/services/empties";
 import type { AITeam, AIManager, HumanManager } from "@/state/game";
+import type { Random } from "random-js";
 
 // ---------------------------------------------------------------------------
 // Random stubs
 // ---------------------------------------------------------------------------
 
 /** Always returns the same value for every call. */
-const fixedRandom = (value: number): RandomService => ({
-  integer: () => value,
-  real: () => value,
-  bool: () => false,
-  pick: <T>(arr: T[]) => arr[0],
-  cinteger: () => value
-});
+const fixedRandom = (value: number): Random =>
+  ({
+    integer: () => value,
+    real: () => value,
+    bool: () => false,
+    pick: <T>(arr: T[]) => arr[0]
+  }) as unknown as Random;
 
 /**
  * Scriptable random: pop integers and reals from independent FIFO queues.
@@ -40,7 +40,7 @@ const fixedRandom = (value: number): RandomService => ({
 const scriptedRandom = (script: {
   integer?: number[];
   real?: number[];
-}): RandomService => {
+}): Random => {
   const intq = [...(script.integer ?? [])];
   const realq = [...(script.real ?? [])];
   return {
@@ -57,11 +57,8 @@ const scriptedRandom = (script: {
       return realq.shift()!;
     },
     bool: () => false,
-    pick: <T>(arr: T[]) => arr[0],
-    cinteger: () => {
-      throw new Error("scriptedRandom: cinteger not allowed in tasomuut");
-    }
-  };
+    pick: <T>(arr: T[]) => arr[0]
+  } as unknown as Random;
 };
 
 // ---------------------------------------------------------------------------
@@ -216,7 +213,7 @@ const buildContext = (
   return ctx;
 };
 
-const runWith = (ctx: GameContext, random: RandomService): GameContext =>
+const runWith = (ctx: GameContext, random: Random): GameContext =>
   produce(ctx, (draft) => runTasomuut(draft, random));
 
 // ---------------------------------------------------------------------------
@@ -701,7 +698,7 @@ describe("runTasomuut — tiny-arena cap", () => {
   });
 });
 
-describe("runTasomuut — skip rules", () => {
+describe("runTasomuut — skip rules and guards", () => {
   it("skips human-managed teams entirely", () => {
     const ctx = buildContext(
       [
@@ -721,30 +718,29 @@ describe("runTasomuut — skip rules", () => {
     expect(next.teams[0]!.tier).toBe(30);
   });
 
-  it("skips teams without previousRankings (light teams)", () => {
+  it("throws when an AI team is missing previousRankings", () => {
     const ctx = buildContext(
-      [{ id: 0, manager: "m", tier: 12 }],
+      [{ id: 0, manager: "m", tier: 12, league: "phl" }],
       [{ id: "m", negotiation: 0 }]
     );
-    const next = runWith(ctx, scriptedRandom({}));
-    expect(next.teams[0]!.tier).toBe(12);
+    expect(() => runWith(ctx, scriptedRandom({}))).toThrow(
+      /previous rankings/i
+    );
   });
 
-  it("skips teams without a manager", () => {
+  it("throws when an AI team has no manager", () => {
     const ctx = buildContext([
       { id: 0, tier: 30, previousRankings: [1, 1, 1], league: "phl" }
     ]);
-    const next = runWith(ctx, scriptedRandom({}));
-    expect(next.teams[0]!.tier).toBe(30);
+    expect(() => runWith(ctx, scriptedRandom({}))).toThrow(/manager/i);
   });
 
-  it("skips teams whose tierOf is undefined (not in any league)", () => {
+  it("throws when an AI team isn't in any Pekkalandia league", () => {
     const ctx = buildContext(
       [{ id: 0, manager: "m", tier: 12, previousRankings: [10, 10, 10] }],
       [{ id: "m", negotiation: 0 }]
     );
-    const next = runWith(ctx, scriptedRandom({}));
-    expect(next.teams[0]!.tier).toBe(12);
+    expect(() => runWith(ctx, scriptedRandom({}))).toThrow(/tier/i);
   });
 });
 

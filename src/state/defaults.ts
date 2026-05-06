@@ -5,7 +5,7 @@
  * `src/ducks/*`. Used as the initial `context` of `gameMachine` and as
  * the reset target on quit-to-menu.
  *
- * Some defaults call into pure functions that read `RandomService` (team
+ * Some defaults call into pure functions that read `Random` (team
  * strengths, country strengths). That keeps existing behavior; the
  * deterministic seed mechanism (`VITE_RANDOM_SEED`) still works.
  */

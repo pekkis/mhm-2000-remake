@@ -13,7 +13,7 @@
  * consumables are all TODO — see the long list in
  * `simulate-match.ts`.
  */
-import defaultRandom, { type RandomService } from "@/services/random";
+import defaultRandom from "@/services/random";
 import {
   simulateMatch,
   type MatchContext,
@@ -21,6 +21,7 @@ import {
   type MatchSide
 } from "@/services/mhm-2000/simulate-match";
 import type { GameResult } from "@/types/competitions";
+import type { Random } from "random-js";
 
 /**
  * Inputs for one MHM 2000 game simulation.
@@ -74,7 +75,7 @@ export const toGameResult = (result: MatchResult): GameResult => ({
 });
 
 export const createMHM2000GameService = (
-  random: RandomService = defaultRandom
+  random: Random = defaultRandom
 ): MHM2000GameService => {
   const simulate = (game: MHM2000GameInput): MatchResult =>
     simulateMatch(game.home, game.away, game.context, random);

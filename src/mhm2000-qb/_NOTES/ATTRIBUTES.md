@@ -42,10 +42,10 @@ that ranges ~0.7..1.3. <2% strength swing. Almost a stat dump.
 
 ### `mtaito(2, …)` — specialTeams
 
-| QB site                             | Effect                                                                       | Port                                                                  |
-| ----------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| [ILEX5.BAS:325-336](../ILEX5.BAS)   | `yw/aw = (…) * (1 + mtaito(2)*.04)` for **AI teams only** (guarded by `IF ohj(xx) = 0`); coarse formula using team aggregates | ✅ [simulate-match.ts:209](../../services/mhm-2000/simulate-match.ts) |
-| [ILEX5.BAS:8538-8539](../ILEX5.BAS) | Same multiplier applied **for the human's team only** at the end of `voimamaar`, which fully recomputes `yw/aw` from per-line tactical-chain weights | ❌ unported (`voimamaar` whole-SUB)                                  |
+| QB site                             | Effect                                                                                                                                               | Port                                                                  |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| [ILEX5.BAS:325-336](../ILEX5.BAS)   | `yw/aw = (…) * (1 + mtaito(2)*.04)` for **AI teams only** (guarded by `IF ohj(xx) = 0`); coarse formula using team aggregates                        | ✅ [simulate-match.ts:209](../../services/mhm-2000/simulate-match.ts) |
+| [ILEX5.BAS:8538-8539](../ILEX5.BAS) | Same multiplier applied **for the human's team only** at the end of `voimamaar`, which fully recomputes `yw/aw` from per-line tactical-chain weights | ❌ unported (`voimamaar` whole-SUB)                                   |
 
 Clean ±12% on PP/PK weight every match. The two sites form a
 **mutually-exclusive guarded split** (AI teams → site 1, human team →
@@ -132,14 +132,14 @@ principle: leave it to chance.**
 
 ## TS port status — what's wired, what's missing
 
-| Attribute       | Wired in TS              | Pending                                                                                  |
-| --------------- | ------------------------ | ---------------------------------------------------------------------------------------- |
-| strategy        | season-arc bonus + drift | —                                                                                        |
+| Attribute       | Wired in TS                        | Pending                                                                                  |
+| --------------- | ---------------------------------- | ---------------------------------------------------------------------------------------- |
+| strategy        | season-arc bonus + drift           | —                                                                                        |
 | specialTeams    | match PP/PK base mult (AI formula) | `voimamaar` per-line recompute for human team                                            |
-| negotiation     | `runTasomuut` jitter     | contract negotiation flow                                                                |
-| resourcefulness | initial morale           | `kriisipalaveri` math (5 thresholds)                                                     |
-| charisma        | —                        | training-round morale boost, season-ticket revenue, board vote, poaching, training-event |
-| luck            | (via `attribute-roll`)   | new-player skill bonus + many `tarko` events as they land                                |
+| negotiation     | `runTasomuut` jitter               | contract negotiation flow                                                                |
+| resourcefulness | initial morale                     | `kriisipalaveri` math (5 thresholds)                                                     |
+| charisma        | —                                  | training-round morale boost, season-ticket revenue, board vote, poaching, training-event |
+| luck            | (via `attribute-roll`)             | new-player skill bonus + many `tarko` events as they land                                |
 
 Charisma is the most under-served attribute relative to its impact —
 zero use sites in TS, biggest QB footprint after luck.

@@ -9,7 +9,7 @@
  *
  * This is the smallest end-to-end vertical slice of the simulation: in →
  * two sides + a round type, out → a final score. The function is pure
- * (modulo the injected RandomService).
+ * (modulo the injected Random).
  *
  * QB context recap (read these notes BEFORE editing):
  *
@@ -73,7 +73,7 @@
 import competitions from "@/data/competitions";
 import type { EventEffect } from "@/game/event-effects";
 import competitionTypes from "@/services/competition-type";
-import defaultRandom, { type RandomService } from "@/services/random";
+import defaultRandom from "@/services/random";
 import { calculateStrength } from "@/services/team";
 import type { Manager, Team } from "@/state/game";
 import type {
@@ -83,6 +83,7 @@ import type {
   HomeAndAwayTeamAdvantages,
   Phase
 } from "@/types/competitions";
+import type { Random } from "random-js";
 
 /**
  * One side of the match — a Team (AI or human) plus the Manager that
@@ -136,7 +137,7 @@ export type MatchResult = {
  * QB `RND` — uniform real in `[0, 1)`. Aliased for readability so the
  * port reads visibly close to the QB original.
  */
-const rnd = (random: RandomService): number => random.real(0, 1);
+const rnd = (random: Random): number => random.real(0, 1);
 
 /**
  * Compute the home/away `etu` (advantage) multipliers for a round.
@@ -267,7 +268,7 @@ const prepareSide = (side: MatchSide, etu: number): SideStrength => {
 const evenStrengthPossession = (
   home: SideStrength,
   away: SideStrength,
-  random: RandomService
+  random: Random
 ): { home: number; away: number } => {
   const tally = { home: 0, away: 0 };
   const sides = [
@@ -298,7 +299,7 @@ const evenStrengthPossession = (
 const powerPlayPossession = (
   attacker: SideStrength,
   defender: SideStrength,
-  random: RandomService
+  random: Random
 ): number => {
   if (attacker.yw * rnd(random) > defender.aw * rnd(random)) {
     if (
@@ -322,7 +323,7 @@ const powerPlayPossession = (
 const overtimeAttempt = (
   home: SideStrength,
   away: SideStrength,
-  random: RandomService
+  random: Random
 ): "home" | "away" | null => {
   const sides = [["home", home, away] as const, ["away", away, home] as const];
   for (const [key, b, c] of sides) {
@@ -349,7 +350,7 @@ export type MatchContext = {
  * Simulate a single match between two managed base teams (AI or
  * human; the engine is symmetric over the two).
  *
- * Pure function modulo the RandomService. Faithful port of `SUB ottpel`
+ * Pure function modulo the Random. Faithful port of `SUB ottpel`
  * for the managed-base-team sub-case; see the module docstring for
  * the list of TODOs that need decoded inputs before light-team
  * matches and the human-only mechanics (services, consumables,
@@ -359,7 +360,7 @@ export const simulateMatch = (
   home: MatchSide,
   away: MatchSide,
   context: MatchContext,
-  random: RandomService = defaultRandom
+  random: Random = defaultRandom
 ): MatchResult => {
   const { phase, group, round, matchup } = context;
 

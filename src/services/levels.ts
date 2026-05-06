@@ -3,7 +3,8 @@ import {
   type TeamLevelDefinition,
   type TeamStrength
 } from "@/data/levels";
-import { default as defaultRandom, type RandomService } from "./random";
+import { default as defaultRandom } from "./random";
+import type { Random } from "random-js";
 
 /**
  * The 20 human-readable "material tier" labels for CPU team strength,
@@ -143,9 +144,7 @@ export function getTeamLevel(level: number): TeamLevelDefinition {
  * Called once per CPU team at season start (and on tier changes during
  * the season — see ILEZ5.BAS), so the noise is per-season, not per-match.
  */
-export const createTeamStrengthService = (
-  random: RandomService = defaultRandom
-) => {
+export const createTeamStrengthService = (random: Random = defaultRandom) => {
   const rollTeamStrength = (level: number): TeamStrength => {
     const base = getTeamLevel(level);
     return {

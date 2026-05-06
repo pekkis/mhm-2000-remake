@@ -9,7 +9,7 @@
  * Saga side is REFERENCE-ONLY post-pivot.
  */
 
-import { cinteger, type RandomService } from "@/services/random";
+import { cinteger } from "@/services/random";
 import type { GameContext } from "@/state";
 import type { WorldChampionshipEntry } from "@/state/game";
 import type {
@@ -413,7 +413,7 @@ export const sameTierStrength = (sin1: number, tier: 1 | 2 | 3): number => {
  */
 export const runTasomuut = (
   draft: Draft<GameContext>,
-  random: RandomService
+  random: Random
 ): void => {
   const cs = draft.stats.currentSeason!;
 
@@ -556,7 +556,7 @@ const runRelegate = (
 
 export const runSeasonEnd = (
   draft: Draft<GameContext>,
-  random: RandomService
+  random: Random
 ): void => {
   const cs = draft.stats.currentSeason!;
   if (cs) {

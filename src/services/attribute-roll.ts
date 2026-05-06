@@ -1,4 +1,5 @@
-import { default as defaultRandom, type RandomService } from "./random";
+import type { Random } from "random-js";
+import { default as defaultRandom } from "./random";
 import {
   legacyIndexByManagerAttribute,
   type ManagerAttributeKey,
@@ -47,9 +48,7 @@ import {
  * preserved as `cinteger`. Do NOT reach for `cinteger` from new
  * MHM 2000 code; use `random.integer(1, 100)` (or this service).
  */
-export const createAttributeRollService = (
-  random: RandomService = defaultRandom
-) => {
+export const createAttributeRollService = (random: Random = defaultRandom) => {
   /**
    * Roll a manager's attribute against a base + weight threshold.
    * Returns true on success, false on failure. Pass any attribute

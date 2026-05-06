@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MersenneTwister19937 } from "random-js";
+import { MersenneTwister19937, Random } from "random-js";
 import {
   competitionStrengthAverages,
   distributeAIStrategies,
@@ -9,7 +9,7 @@ import {
   strategyWeightsForProxy,
   type StrategyWeights
 } from "@/services/strategy";
-import { createRandomWithEngine, type RandomService } from "@/services/random";
+import { createRandomWithEngine } from "@/services/random";
 import type { AIManager, AITeam, Manager } from "@/state/game";
 import type { TeamStrength } from "@/data/levels";
 import type { StrategyId } from "@/data/mhm2000/strategies";
@@ -87,13 +87,13 @@ const makeManager = (overrides: Partial<AIManager> = {}): AIManager => ({
  * `random.integer(min, max)` call, so we can directly assert which
  * weight band a roll falls into.
  */
-const fixedRandom = (value: number): RandomService => ({
-  integer: () => value,
-  real: () => value,
-  bool: () => false,
-  pick: <T>(arr: T[]) => arr[0],
-  cinteger: () => value
-});
+const fixedRandom = (value: number): Random =>
+  ({
+    integer: () => value,
+    real: () => value,
+    bool: () => false,
+    pick: <T>(arr: T[]) => arr[0]
+  }) as unknown as Random;
 
 describe("strategy / valitsestrattie port", () => {
   describe("competitionStrengthAverages", () => {
