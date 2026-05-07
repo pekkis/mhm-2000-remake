@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
 import MainMenu from "./MainMenu";
-import TransferMarket from "./TransferMarket";
 import LeagueTables from "./LeagueTables";
 import DeveloperMenu from "./DeveloperMenu";
 import SelectStrategy from "./SelectStrategy";
@@ -29,6 +28,7 @@ import type { FC } from "react";
 import { GameMachineContext } from "@/context/game-machine-context";
 import PlayoffBracket from "@/components/PlayoffBracket";
 import POCMenu from "@/components/POCMenu";
+import TransferMarketPage from "@/components/transfer-market/TransferMarketPage";
 
 type PhaseProps = {
   phase: string | undefined;
@@ -148,7 +148,7 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
         <Routes>
           <Route path="/" element={<MainMenu />} />
           <Route path="/sarjataulukot" element={<LeagueTables />} />
-          <Route path="/pelaajamarkkinat" element={<TransferMarket />} />
+          <Route path="/pelaajamarkkinat" element={<TransferMarketPage />} />
           <Route path="/kriisipalaveri" element={<CrisisActions />} />
           <Route path="/erikoistoimenpiteet" element={<Services />} />
           <Route path="/areena" element={<Arena />} />

@@ -43,6 +43,10 @@ const GENEROUS_BUDGET: TeamBudget = {
 };
 
 const BASE_SKATER: NegotiationPlayer = {
+  id: "test1",
+  initial: "P",
+  surname: "Pasolini",
+  nationality: "IT",
   skill: 10,
   position: "c",
   age: 25,
@@ -51,6 +55,15 @@ const BASE_SKATER: NegotiationPlayer = {
   charisma: 10,
   powerplayMod: 0,
   penaltyKillMod: 0,
+  specialty: null,
+  effects: [],
+  tags: [],
+  condition: 0,
+  askingSalary: 10000,
+  stats: {
+    season: { games: 0, goals: 0, assists: 0 },
+    total: { games: 0, goals: 0, assists: 0 }
+  },
   hasSpecialContract: false
 };
 

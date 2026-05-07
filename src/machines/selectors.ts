@@ -44,6 +44,7 @@ import type {
   TeamStat
 } from "@/types/competitions";
 import type { HumanManager } from "@/state/game";
+import type { MarketPlayer } from "@/state/player";
 
 // ---------------------------------------------------------------------------
 // Helper types
@@ -308,6 +309,12 @@ export const activeManager: ContextSelector<HumanManager> = (ctx) => {
   }
 
   return manager;
+};
+
+export const marketPlayers: ContextSelector<Record<string, MarketPlayer>> = (
+  ctx
+) => {
+  return ctx.transferMarket.players;
 };
 
 export const humanManagerById =

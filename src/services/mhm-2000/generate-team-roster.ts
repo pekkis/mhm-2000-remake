@@ -136,12 +136,14 @@ export function generateTeamRoster(
     const legacyNation = nations[slot];
     const base = generateBaseAttributes(legacyNation, random);
     const position = positionForSlot(slot);
+    const id = createUniqueId();
 
     // Contract duration: bench players get 1 year, main roster 0-1 (QB svu = INT(2*RND))
     const contractDuration = slot >= 21 ? 1 : random.integer(0, 1);
 
     const player: Player = {
       ...base,
+      id,
       position,
       skill: Math.max(1, skills[slot]),
       specialty: null,
@@ -159,7 +161,7 @@ export function generateTeamRoster(
       }
     };
 
-    result[createUniqueId()] = player;
+    result[id] = player;
   }
 
   return result;

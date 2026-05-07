@@ -14,10 +14,7 @@ import Cluster from "@/components/ui/Cluster";
 import Input from "@/components/ui/form/Input";
 
 const POCMenu = () => {
-  const teams = useGameContext((ctx) => ctx.teams);
-  const managers = useGameContext((ctx) => ctx.managers);
-
-  const players = useGameContext((ctx) => ctx.playerMarket.players);
+  const players = useGameContext((ctx) => ctx.transferMarket.players);
 
   const player = values(players).find((p) => p.skill <= 4);
 

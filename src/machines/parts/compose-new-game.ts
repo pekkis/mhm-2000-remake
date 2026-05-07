@@ -137,7 +137,7 @@ export const composeNewGameContext = (output: NewGameOutput): GameContext => {
     draft.human.active = draft.human.order[0];
 
     // Generate player market (port of QB `borsgene`, ILEX5.BAS:1061)
-    draft.playerMarket.players = generateMarketPlayers(440, random);
+    draft.transferMarket.players = generateMarketPlayers(440, random);
 
     // Generate rosters for all human-managed teams (port of QB `gene`, MHM2K.BAS:1026)
     for (const managerDraft of output.drafts) {

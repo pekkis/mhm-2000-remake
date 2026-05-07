@@ -30,6 +30,10 @@ const TIGHT_BUDGET: TeamBudget = {
 
 /** A mid-skill skater unlikely to refuse due to budget pressure. */
 const HAPPY_PLAYER: NegotiationPlayer = {
+  id: "test1",
+  initial: "P",
+  surname: "Pasolini",
+  nationality: "IT",
   skill: 8,
   position: "c",
   age: 25,
@@ -38,6 +42,15 @@ const HAPPY_PLAYER: NegotiationPlayer = {
   charisma: 10,
   powerplayMod: 0,
   penaltyKillMod: 0,
+  specialty: null,
+  effects: [],
+  tags: [],
+  condition: 0,
+  askingSalary: 8000,
+  stats: {
+    season: { games: 0, goals: 0, assists: 0 },
+    total: { games: 0, goals: 0, assists: 0 }
+  },
   hasSpecialContract: false
 };
 

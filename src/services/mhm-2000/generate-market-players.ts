@@ -66,8 +66,10 @@ export function generateMarketPlayers(
       }
     }
 
+    const id = createUniqueId();
     const player: MarketPlayer = {
       ...base,
+      id,
       skill,
       specialty,
       effects: [],
@@ -80,7 +82,7 @@ export function generateMarketPlayers(
       }
     };
 
-    result[createUniqueId()] = player;
+    result[id] = player;
   }
 
   return result;

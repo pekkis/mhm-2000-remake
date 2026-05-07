@@ -37,7 +37,7 @@ function pickSurname(iso: CountryIso, random: Random): string {
 export function generateBaseAttributes(
   legacyNation: number,
   random: Random
-): Omit<Player, "skill" | "contract" | "specialty" | "effects" | "tags" | "stats" | "condition" | "plannedDeparture"> {
+): Omit<Player, "id" | "skill" | "contract" | "specialty" | "effects" | "tags" | "stats" | "condition" | "plannedDeparture"> {
   // keisit rows are 0-indexed; QB keisix(row, col) → keisit[row-1][col-1]
   const posQb = keisit[1][random.integer(0, 99)];
   const age    = keisit[2][random.integer(0, 99)];

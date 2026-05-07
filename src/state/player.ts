@@ -10,6 +10,7 @@ import type { PlayerSpecialtyKey } from "@/data/player-specialties";
  * manager mults, no morale, no contracts, no specialties.
  */
 export type LightPlayer = {
+  id: string;
   initial: string;
   surname: string;
   position: Player["position"];
@@ -188,6 +189,8 @@ type Tag = "muilutus:primed" | "zombified" | "national-team:selected";
  * for the full per-field decoder.
  */
 export type Player = {
+  id: string;
+
   /** First initial only — QB packs `nam STRING*13` as one field. */
   initial: string;
   surname: string;

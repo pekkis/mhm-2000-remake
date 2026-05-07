@@ -6,7 +6,7 @@
  * This module exports only pure, testable functions.
  */
 
-import type { MarketPlayer, Player } from "@/state/player";
+import type { MarketPlayer } from "@/state/player";
 import type { TeamBudget } from "@/data/mhm2000/budget";
 import { computeSalary } from "./compute-salary";
 
