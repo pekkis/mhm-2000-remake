@@ -155,7 +155,11 @@ type PlayerEffect =
  *   national team. Drives the `inj=9001/9002` absences during break
  *   rounds (`maajoukkue` SUB at ILEX5.BAS:3119-3151).
  */
-type Tag = "muilutus:primed" | "zombified" | "national-team:selected";
+type Tag =
+  | "muilutus:primed"
+  | "zombified"
+  | "national-team:selected"
+  | `irritated:${string}`;
 
 /**
  * The central player record. Direct port of QB `TYPE pelaaja`

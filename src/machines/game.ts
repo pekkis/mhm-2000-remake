@@ -37,6 +37,10 @@ import {
 import type { NotificationData } from "@/machines/notification";
 import { betMachine } from "@/machines/bet";
 import { championBetMachine } from "@/machines/championBet";
+import {
+  contractNegotiationMachine,
+  type ContractNegotiationOutput
+} from "@/machines/contractNegotiation";
 import type { CompetitionId } from "@/types/competitions";
 import { values, entries } from "remeda";
 
@@ -214,6 +218,10 @@ export type GameMachineEvents =
       type: "BET_RESOLVED";
       betId: string;
       effects: EventEffect[];
+    }
+  | {
+      type: "NEGOTIATE_MARKET_PLAYER";
+      payload: { managerId: string; playerId: string };
     };
 
 export const gameMachine = setup({
@@ -226,7 +234,8 @@ export const gameMachine = setup({
   actors: {
     notifications: notificationsMachine,
     bet: betMachine,
-    championBet: championBetMachine
+    championBet: championBetMachine,
+    contractNegotiation: contractNegotiationMachine
   },
 
   actions: {
@@ -250,6 +259,11 @@ export const gameMachine = setup({
           draft.news.news = [];
           draft.news.announcements = {};
           draft.turn.round += 1;
+          for (const player of values(draft.transferMarket.players)) {
+            player.tags = player.tags.filter(
+              (t) => !t.startsWith("irritated:")
+            );
+          }
         })
       );
     }),
@@ -997,6 +1011,71 @@ export const gameMachine = setup({
     }),
 
     /**
+     * Store the negotiation output into `transferMarket.pendingNegotiation`
+     * so `showing_result` can render it, and tag the player as irritated so
+     * they won't talk to this manager again this round.
+     * Reads managerId/playerId from `currentNegotiation` (set on entry to
+     * `negotiating`). Runs on transition from `negotiating` → `showing_result`.
+     */
+    storePendingNegotiation: assign(
+      (
+        { context },
+        params: { result: ContractNegotiationOutput }
+      ) =>
+        produce(context, (draft) => {
+          const cur = draft.transferMarket.currentNegotiation;
+          if (!cur) {
+            return;
+          }
+          draft.transferMarket.pendingNegotiation = {
+            playerId: cur.playerId,
+            managerId: cur.managerId,
+            result: params.result
+          };
+          const player = draft.transferMarket.players[cur.playerId];
+          if (player && params.result.outcome !== "alreadyNegotiated") {
+            player.tags.push(`irritated:${cur.managerId}`);
+          }
+        })
+    ),
+
+    /**
+     * Apply the pending negotiation result to game state and clear it.
+     * Runs on ADVANCE from `showing_result`.
+     *
+     * - `signed`: remove from market, add to team roster with the new contract.
+     * - `refused` / `playerWalked` / `alreadyNegotiated`: tag already set in
+     *   `storePendingNegotiation`; nothing extra to do.
+     * - `cancelled`: unreachable here (cancelled exits to `browsing` directly).
+     */
+    applyNegotiationResult: assign(({ context }) =>
+      produce(context, (draft) => {
+        const pending = draft.transferMarket.pendingNegotiation;
+        if (!pending) {
+          return;
+        }
+        if (pending.result.outcome === "signed") {
+          const player = draft.transferMarket.players[pending.playerId];
+          const manager = draft.managers[pending.managerId];
+          if (player && manager && manager.team !== undefined) {
+            const team = draft.teams[manager.team];
+            if (team.kind === "human") {
+              team.players[player.id] = {
+                ...player,
+                type: "hired",
+                contract: pending.result.contract,
+                tags: [],
+                plannedDeparture: undefined
+              };
+            }
+            delete draft.transferMarket.players[pending.playerId];
+          }
+        }
+        draft.transferMarket.pendingNegotiation = null;
+      })
+    ),
+
+    /**
      * Generic notification dispatcher — forwards a fully-formed notification
      * to the invoked `notifications` child machine. Call sites build the
      * message; this action only handles the delivery + id assignment.
@@ -1298,7 +1377,89 @@ export const gameMachine = setup({
               ]
             },
             action: {
-              on: { ADVANCE: "prank_check" }
+              initial: "browsing",
+              onDone: "prank_check",
+              states: {
+                browsing: {
+                  on: {
+                    NEGOTIATE_MARKET_PLAYER: "negotiating",
+                    ADVANCE: "done"
+                  }
+                },
+                negotiating: {
+                  entry: assign(({ context, event }) => {
+                    if (event.type !== "NEGOTIATE_MARKET_PLAYER") {
+                      return {};
+                    }
+                    return {
+                      transferMarket: {
+                        ...context.transferMarket,
+                        currentNegotiation: event.payload
+                      }
+                    };
+                  }),
+                  invoke: {
+                    src: "contractNegotiation",
+                    id: "contractNegotiation",
+                    systemId: "contractNegotiation",
+                    input: ({ context, event }) => {
+                      if (event.type !== "NEGOTIATE_MARKET_PLAYER") {
+                        throw new Error("negotiating entered from wrong event");
+                      }
+                      const { managerId, playerId } = event.payload;
+                      const manager = context.managers[managerId];
+                      const player = context.transferMarket.players[playerId];
+                      const team =
+                        manager?.team !== undefined
+                          ? context.teams[manager.team]
+                          : undefined;
+                      if (
+                        !manager ||
+                        !player ||
+                        !team ||
+                        team.kind !== "human" ||
+                        !team.budget
+                      ) {
+                        throw new Error("negotiation preconditions not met");
+                      }
+                      return {
+                        player,
+                        mode: "market" as const,
+                        managerNegotiation: manager.attributes.negotiation,
+                        managerCharisma: manager.attributes.charisma,
+                        budget: team.budget,
+                        alreadyNegotiated: player.tags.some(
+                          (t) => t === `irritated:${managerId}`
+                        ),
+                        random
+                      };
+                    },
+                    onDone: [
+                      {
+                        guard: ({ event }) =>
+                          event.output.outcome === "cancelled",
+                        target: "browsing"
+                      },
+                      {
+                        actions: {
+                          type: "storePendingNegotiation",
+                          params: ({ event }) => ({ result: event.output })
+                        },
+                        target: "showing_result"
+                      }
+                    ]
+                  }
+                },
+                showing_result: {
+                  on: {
+                    ADVANCE: {
+                      actions: "applyNegotiationResult",
+                      target: "browsing"
+                    }
+                  }
+                },
+                done: { type: "final" }
+              }
             },
 
             prank_check: {

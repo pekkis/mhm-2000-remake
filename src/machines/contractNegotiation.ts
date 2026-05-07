@@ -61,15 +61,30 @@ export type ContractNegotiationOutput =
       contract: RegularContract;
       /** QB `gnome = 3` — player accepted very happily. */
       playerWasHappy: boolean;
+      playerLines: string[];
     }
-  | { outcome: "refused" } // player refused to negotiate (a <= -4)
-  | { outcome: "playerWalked" } // player's patience hit 0
-  | { outcome: "alreadyNegotiated" } // neu = 1 this round
-  | { outcome: "cancelled" }; // manager quit
+  | { outcome: "refused"; playerLines: string[] }
+  | { outcome: "playerWalked"; playerLines: string[] }
+  | { outcome: "alreadyNegotiated"; playerLines: string[] }
+  | { outcome: "cancelled" }; // manager quit — exits immediately, no lines needed
+
+// ─── Internal types ───────────────────────────────────────────────────────────
+
+/**
+ * Intermediate result stored in context during negotiation.
+ * `playerLines` are kept separately in `context.playerLines` and merged
+ * into the public output only at machine completion.
+ */
+type InternalNegotiationResult =
+  | { outcome: "signed"; contract: RegularContract; playerWasHappy: boolean }
+  | { outcome: "refused" }
+  | { outcome: "playerWalked" }
+  | { outcome: "alreadyNegotiated" }
+  | { outcome: "cancelled" };
 
 // ─── Machine context ──────────────────────────────────────────────────────────
 
-type ContractNegotiationContext = {
+export type ContractNegotiationContext = {
   player: MarketPlayer;
   mode: ContractNegotiationMode;
   managerNegotiation: number;
@@ -104,7 +119,7 @@ type ContractNegotiationContext = {
   playerLines: string[];
 
   // Terminal result (set before entering final states)
-  result: ContractNegotiationOutput | null;
+  result: InternalNegotiationResult | null;
 };
 
 // ─── Events ───────────────────────────────────────────────────────────────────
@@ -202,7 +217,11 @@ export const contractNegotiationMachine = setup({
   }
 }).createMachine({
   id: "contractNegotiation",
-  output: ({ context }) => context.result ?? { outcome: "cancelled" },
+  output: ({ context }): ContractNegotiationOutput => {
+    const result = context.result ?? { outcome: "cancelled" as const };
+    if (result.outcome === "cancelled") { return result; }
+    return { ...result, playerLines: context.playerLines };
+  },
   context: ({ input }) => {
     const teamNeedsRating = computeTeamNeedsRating(input.budget, input.player);
 
@@ -220,7 +239,7 @@ export const contractNegotiationMachine = setup({
 
     // Resolve early-exit conditions immediately so the willingness state
     // can check context.result instead of input.
-    let initialResult: ContractNegotiationOutput | null = null;
+    let initialResult: InternalNegotiationResult | null = null;
     let initialLines: string[] = [];
 
     const playerIsZombie = isZombie(input.player);

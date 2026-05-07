@@ -7,11 +7,13 @@ import Heading from "@/components/ui/Heading";
 import Paragraph from "@/components/ui/Paragraph";
 import Stack from "@/components/ui/Stack";
 import { Table, Td, Th } from "@/components/ui/Table";
-import { useGameContext } from "@/context/game-machine-context";
-import { marketPlayers } from "@/machines/selectors";
+import { GameMachineContext, useGameContext } from "@/context/game-machine-context";
+import { activeManager, marketPlayers } from "@/machines/selectors";
 import type { MarketPlayer, Player } from "@/state/player";
 import type { FC } from "react";
 import { prop, sortBy, values } from "remeda";
+import ContractNegotiationView from "./ContractNegotiationView";
+import NegotiationResultView from "./NegotiationResultView";
 
 const POSITION_ORDER: Record<Player["position"], number> = {
   g: 0,
@@ -28,8 +30,29 @@ const playerSorter = sortBy<MarketPlayer[]>(
   [prop("initial"), "asc"]
 );
 
-const TransferMarketPage: FC = () => {
+const useActionSubState = () =>
+  GameMachineContext.useSelector((snap) => {
+    if (
+      snap.matches({
+        in_game: { executing_phases: { action: "negotiating" } }
+      })
+    ) {
+      return "negotiating";
+    }
+    if (
+      snap.matches({
+        in_game: { executing_phases: { action: "showing_result" } }
+      })
+    ) {
+      return "showing_result";
+    }
+    return "browsing";
+  });
+
+const TransferMarketBrowser: FC = () => {
   const players = useGameContext(marketPlayers);
+  const manager = useGameContext(activeManager);
+  const gameActor = GameMachineContext.useActorRef();
 
   const sortedPlayers = playerSorter(values(players));
 
@@ -55,10 +78,16 @@ const TransferMarketPage: FC = () => {
               <tr>
                 <Th>Nimi</Th>
                 <Th>Pelipaikka</Th>
+                <Th>Nat.</Th>
+                <Th>Taito</Th>
+                <Th></Th>
               </tr>
             </thead>
             <tbody>
               {sortedPlayers.map((player) => {
+                const alreadyNegotiated = player.tags.some(
+                  (t) => t === `irritated:${manager.id}`
+                );
                 return (
                   <tr key={player.id}>
                     <Td>
@@ -67,7 +96,22 @@ const TransferMarketPage: FC = () => {
                     <Td>{player.position}</Td>
                     <Td>{player.nationality}</Td>
                     <Td>{player.skill}</Td>
-                    <Button>neuvottele!</Button>
+                    <Td>
+                      <Button
+                        disabled={alreadyNegotiated}
+                        onClick={() =>
+                          gameActor.send({
+                            type: "NEGOTIATE_MARKET_PLAYER",
+                            payload: {
+                              managerId: manager.id,
+                              playerId: player.id
+                            }
+                          })
+                        }
+                      >
+                        {alreadyNegotiated ? "Ei puhu" : "Neuvottele!"}
+                      </Button>
+                    </Td>
                   </tr>
                 );
               })}
@@ -77,6 +121,18 @@ const TransferMarketPage: FC = () => {
       </Stack>
     </AdvancedHeaderedPage>
   );
+};
+
+const TransferMarketPage: FC = () => {
+  const subState = useActionSubState();
+
+  if (subState === "negotiating") {
+    return <ContractNegotiationView />;
+  }
+  if (subState === "showing_result") {
+    return <NegotiationResultView />;
+  }
+  return <TransferMarketBrowser />;
 };
 
 export default TransferMarketPage;

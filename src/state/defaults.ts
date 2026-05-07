@@ -209,7 +209,7 @@ export const createDefaultGameContext = (): GameContext => {
 
     worldChampionshipResults: undefined,
 
-    transferMarket: { players: {} },
+    transferMarket: { players: {}, currentNegotiation: null, pendingNegotiation: null },
 
     human: { active: undefined, order: [] },
 
