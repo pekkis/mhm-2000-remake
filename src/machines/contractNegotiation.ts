@@ -154,11 +154,13 @@ function rollLine(key: NegotiationDialogKey, random: Random): string {
   return getDialogLine(key, random.integer(0, 5));
 }
 
-function isSpecial(player: Player): boolean {
-  // ZOMBIE and GREEDY SURFER ARE NOT HANDLED SIMILARLY FOR REALS
-  return (
-    player.tags.includes("zombified") || player.specialty === "greedySurfer"
-  );
+/**
+ * QB condition: `neup.spe >= 30000 OR neup.spe = 13`
+ * spe=13 = permanent zombie; spe>=30000 = temporarily zombiPowdered (tag "zombified").
+ * Greedy surfer (spe=8) is NOT here — they negotiate normally.
+ */
+function isZombie(player: Player): boolean {
+  return player.tags.includes("zombified") || player.specialty === "zombie";
 }
 
 /**
@@ -171,7 +173,7 @@ function buildInitialLines(
   random: Random
 ): string[] {
   if (isPlayerSpecial) {
-    // Zombie / greedySurfer: skips willingness block, shows unintelligible sound
+    // spe>=30000 or spe=13: skips willingness block, shows unintelligible sound
     return [rollLine("zombieSound", random)];
   }
   // Normal player: willingness reaction + opening line
@@ -221,22 +223,18 @@ export const contractNegotiationMachine = setup({
     let initialResult: ContractNegotiationOutput | null = null;
     let initialLines: string[] = [];
 
-    /*
-    There is a bug here. Surfers will probably (dig QB code) always negotiate,
-    but they will NOT make zombie sounds. Their greed is silent.
-    */
-    const isPlayerSpecial = isSpecial(input.player);
+    const playerIsZombie = isZombie(input.player);
 
     if (input.alreadyNegotiated) {
       initialResult = { outcome: "alreadyNegotiated" };
       initialLines = [rollLine("alreadyNegotiated", input.random)];
-    } else if (!isPlayerSpecial && teamNeedsRating <= -4) {
+    } else if (!playerIsZombie && teamNeedsRating <= -4) {
       initialResult = { outcome: "refused" };
       initialLines = [rollLine("refused", input.random)];
     } else {
       initialLines = buildInitialLines(
         teamNeedsRating,
-        isSpecial(input.player),
+        playerIsZombie,
         input.random
       );
     }
