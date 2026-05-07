@@ -28,6 +28,7 @@ import type { notificationsMachine } from "@/machines/notifications";
 import type { FC } from "react";
 import { GameMachineContext } from "@/context/game-machine-context";
 import PlayoffBracket from "@/components/PlayoffBracket";
+import POCMenu from "@/components/POCMenu";
 
 type PhaseProps = {
   phase: string | undefined;
@@ -157,6 +158,7 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
           <Route path="/kutsut" element={<Invitations />} />
           <Route path="/veikkaus" element={<Betting />} />
           <Route path="/debug" element={<DeveloperMenu />} />
+          <Route path="/poc" element={<POCMenu />} />
         </Routes>
       );
 

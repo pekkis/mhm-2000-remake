@@ -6,7 +6,7 @@
  * This module exports only pure, testable functions.
  */
 
-import type { Player } from "@/state/player";
+import type { MarketPlayer, Player } from "@/state/player";
 import type { TeamBudget } from "@/data/mhm2000/budget";
 import { computeSalary } from "./compute-salary";
 
@@ -18,25 +18,17 @@ export type SpecialClause = "none" | "nhl" | "free-fire";
  * The player's attributes relevant to contract negotiation.
  * Keeps the machine decoupled from the full Player type.
  */
-export type NegotiationPlayer = {
-  skill: number;
-  position: Player["position"];
-  age: number;
-  ego: number;
-  leadership: number;
-  charisma: number;
-  powerplayMod: number;
-  penaltyKillMod: number;
+export type NegotiationPlayer = MarketPlayer & {
   /** Whether the player is a zombie / greedySurfer (spe >= 30000 or spe = 13). */
   hasSpecialContract: boolean;
 };
 
 /** The negotiation willingness outcome computed from `a` and player state. */
 export type WillingnessOutcome =
-  | "refused"      // a <= -4: categorically refuses
-  | "unhappy"      // -4 < a < -1: open but displeased
-  | "neutral"      // a = -1: slightly unhappy
-  | "happy";       // a = 0: pleased to negotiate
+  | "refused" // a <= -4: categorically refuses
+  | "unhappy" // -4 < a < -1: open but displeased
+  | "neutral" // a = -1: slightly unhappy
+  | "happy"; // a = 0: pleased to negotiate
 
 /** Result of a single `NEGOTIATE` attempt. */
 export type NegotiateAttemptResult =
@@ -60,7 +52,8 @@ export function computeTeamNeedsRating(
 ): number {
   const coachingBudget =
     player.position === "g" ? budget.goalieCoaching : budget.coaching;
-  const raw = coachingBudget + budget.health + budget.benefits * 2 - player.skill;
+  const raw =
+    coachingBudget + budget.health + budget.benefits * 2 - player.skill;
   return Math.min(0, raw);
 }
 
@@ -69,9 +62,7 @@ export function computeTeamNeedsRating(
  * Returns what the player's initial reaction would be.
  * (Players with `hasSpecialContract` skip this and go straight to negotiation.)
  */
-export function checkWillingness(
-  teamNeedsRating: number
-): WillingnessOutcome {
+export function checkWillingness(teamNeedsRating: number): WillingnessOutcome {
   if (teamNeedsRating <= -4) return "refused";
   if (teamNeedsRating < -1) return "unhappy";
   if (teamNeedsRating < 0) return "neutral";
@@ -101,10 +92,7 @@ export function computeWillingnessThreshold(
  * Example: `nhlOptionThreshold = 2` means the player can include an NHL
  * clause only if the contract is ≥ 2 years.
  */
-export function computeNhlOptionThreshold(
-  age: number,
-  skill: number
-): number {
+export function computeNhlOptionThreshold(age: number, skill: number): number {
   if (age >= 26) return 0;
   if (age <= 20) {
     if (skill >= 13) return 2;

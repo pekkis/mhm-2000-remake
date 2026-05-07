@@ -92,7 +92,11 @@ const ActionMenu = () => {
           </Calendar>
 
           <Link onClick={close} to="/debug">
-            Devausmenukka
+            Debug
+          </Link>
+
+          <Link onClick={close} to="/poc">
+            POCcing page
           </Link>
         </Stack>
 
