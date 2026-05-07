@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
 
 export const createUniqueId = (): string => {
-  return nanoid(5);
+  return nanoid(8);
 };

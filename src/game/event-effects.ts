@@ -9,6 +9,8 @@ import type { NotificationData } from "@/machines/notification";
 import { computeStats } from "@/services/competition-type";
 import { humanManagerById } from "@/machines/selectors";
 import type { CountryIso } from "@/data/countries";
+import type { MarketPlayer } from "@/state/player";
+import type { RegularContract } from "@/state/player";
 
 /**
  * Look up the morale clamp for a team. Mirrors `getMoraleMinMax` in
@@ -164,6 +166,20 @@ export type EventEffect =
       type: "spawnEvent";
       eventId: string;
       seed: BaseEventCreationFields;
+    }
+
+  // ── Transfer market ──
+  | {
+      type: "signMarketPlayer";
+      manager: string;
+      player: MarketPlayer;
+      contract: RegularContract;
+      playerWasHappy: boolean;
+    }
+  | {
+      type: "irritateMarketPlayer";
+      managerId: string;
+      playerId: string;
     };
 
 /**
@@ -394,6 +410,34 @@ export function applyEffect(
     // ── Spawn another event ──
     case "spawnEvent": {
       spawn(draft, effect.eventId, effect.seed);
+      return;
+    }
+
+    // ── Transfer market ──
+    case "signMarketPlayer": {
+      const m = humanManagerById(effect.manager)(draft);
+      if (!m || m.team === undefined) {
+        return;
+      }
+      const team = draft.teams[m.team];
+      if (!team || team.kind !== "human") {
+        return;
+      }
+      const { askingSalary: _, type: __, ...baseFields } = effect.player;
+      team.players[effect.player.id] = {
+        ...baseFields,
+        type: "hired",
+        contract: effect.contract,
+        tags: []
+      };
+      delete draft.transferMarket.players[effect.player.id];
+      return;
+    }
+    case "irritateMarketPlayer": {
+      const player = draft.transferMarket.players[effect.playerId];
+      if (player) {
+        player.tags.push(`irritated:${effect.managerId}`);
+      }
       return;
     }
   }

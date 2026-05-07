@@ -6,6 +6,7 @@ import { createRandom } from "@/services/random";
 import type { TeamBudget } from "@/data/mhm2000/budget";
 import { computeBaseSalary } from "@/services/mhm-2000/contract-negotiation";
 import type { MarketPlayer } from "@/state/player";
+import type { HumanManager } from "@/state/game";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -63,14 +64,57 @@ const REFUSED_PLAYER: MarketPlayer = {
   skill: 8
 };
 
+function makeManager(negotiation = 0, charisma = 0): HumanManager {
+  return {
+    id: "test-manager",
+    name: "Testi Manageri",
+    kind: "human",
+    nationality: "FI",
+    difficulty: 2,
+    balance: 100000,
+    team: 0,
+    tags: [],
+    flags: {},
+    pranksExecuted: 0,
+    extra: 0,
+    insuranceExtra: 0,
+    arena: { name: "Testi-areena", level: 0 },
+    services: {
+      coach: false,
+      insurance: false,
+      microphone: false,
+      cheer: false
+    },
+    attributes: {
+      strategy: 0,
+      specialTeams: 0,
+      negotiation,
+      resourcefulness: 0,
+      charisma,
+      luck: 0
+    },
+    stats: {
+      games: {},
+      achievements: {
+        ehl: 0,
+        gold: 0,
+        silver: 0,
+        bronze: 0,
+        cup: 0,
+        promoted: 0,
+        relegated: 0
+      }
+    }
+  };
+}
+
 function makeInput(
   overrides: Partial<ContractNegotiationInput> = {}
 ): ContractNegotiationInput {
   return {
     player: HAPPY_PLAYER,
     mode: "roster",
-    managerNegotiation: 0,
-    managerCharisma: 0,
+    manager: makeManager(),
     budget: GENEROUS_BUDGET,
     alreadyNegotiated: false,
     random: createRandom(42),
@@ -81,8 +125,11 @@ function makeInput(
 function runToCompletion(input: ContractNegotiationInput) {
   const actor = createActor(contractNegotiationMachine, { input });
   actor.start();
-  const snap = actor.getSnapshot();
-  return snap;
+  // advance through the `result` display state so the machine reaches `done`
+  if (actor.getSnapshot().value === "result") {
+    actor.send({ type: "ADVANCE" });
+  }
+  return actor.getSnapshot();
 }
 
 // ─── Early exits ─────────────────────────────────────────────────────────────
@@ -308,7 +355,7 @@ describe("NEGOTIATE event", () => {
     // Force a high-probability accept by offering 3× the asking price
     const actor = createActor(contractNegotiationMachine, {
       input: makeInput({
-        managerNegotiation: 3,
+        manager: makeManager(3),
         random: createRandom(1)
       })
     });
@@ -320,14 +367,14 @@ describe("NEGOTIATE event", () => {
     actor.send({ type: "NEGOTIATE" });
     const snap = actor.getSnapshot();
     // Should have resolved (signed or playerWalked)
-    const done = snap.status === "done" || snap.value === "negotiating";
+    const done = snap.status === "done" || snap.value === "negotiating" || snap.value === "result";
     expect(done).toBe(true);
   });
 
   it("multiple rejected attempts reduce willingness threshold", () => {
     // Use a very low salary to guarantee rejection
     const actor = createActor(contractNegotiationMachine, {
-      input: makeInput({ managerNegotiation: -3, random: createRandom(999) })
+      input: makeInput({ manager: makeManager(-3), random: createRandom(999) })
     });
     actor.start();
     for (let i = 0; i < 20; i++) {
@@ -340,7 +387,7 @@ describe("NEGOTIATE event", () => {
       expect(snap.context.willingnessThreshold).toBeLessThan(before);
     } else {
       // playerWalked is also valid — threshold hit 0
-      expect(["playerWalked", "signed"]).toContain(snap.output?.outcome);
+      expect(["playerWalked", "signed"]).toContain(snap.context.result?.outcome ?? snap.output?.outcome);
     }
   });
 
@@ -348,7 +395,7 @@ describe("NEGOTIATE event", () => {
     // Use a seed known to produce a fast accept; force high offer
     const random = createRandom(7);
     const actor = createActor(contractNegotiationMachine, {
-      input: makeInput({ managerNegotiation: 3, random })
+      input: makeInput({ manager: makeManager(3), random })
     });
     actor.start();
     // Offer 3× base to force accept
@@ -380,7 +427,7 @@ describe("signed contract includes clause when selected", () => {
     const actor = createActor(contractNegotiationMachine, {
       input: makeInput({
         player: youngStar,
-        managerNegotiation: 3,
+        manager: makeManager(3),
         budget: GENEROUS_BUDGET,
         random: createRandom(5)
       })
@@ -407,7 +454,7 @@ describe("signed contract includes clause when selected", () => {
     const actor = createActor(contractNegotiationMachine, {
       input: makeInput({
         player: youngStar,
-        managerNegotiation: 3,
+        manager: makeManager(3),
         budget: GENEROUS_BUDGET,
         random: createRandom(6)
       })

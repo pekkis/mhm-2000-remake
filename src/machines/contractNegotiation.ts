@@ -4,7 +4,7 @@
  *
  * Each negotiation is a spawned actor. The parent passes player/manager/budget
  * data as `input`; the actor completes with a `ContractNegotiationOutput`
- * that describes the outcome. The parent writes the result to game state.
+ * that describes the outcome (including ready-to-apply `EventEffect[]`).
  *
  * QB `fat%` parameter:
  *   fat% = 1: negotiating with an existing player in a team's roster
@@ -17,6 +17,8 @@ import { setup, assign } from "xstate";
 import type { Random } from "random-js";
 import type { TeamBudget } from "@/data/mhm2000/budget";
 import type { MarketPlayer, Player, RegularContract } from "@/state/player";
+import type { HumanManager } from "@/state/game";
+import type { EventEffect } from "@/game/event-effects";
 import {
   type SpecialClause,
   computeTeamNeedsRating,
@@ -40,10 +42,7 @@ export type ContractNegotiationMode = "roster" | "market";
 export type ContractNegotiationInput = {
   player: MarketPlayer;
   mode: ContractNegotiationMode;
-  /** QB `mtaito(3, manager)` — negotiation attribute, range -3..+3. */
-  managerNegotiation: number;
-  /** QB `mtaito(5, manager)` — charisma attribute, range -3..+3. */
-  managerCharisma: number;
+  manager: HumanManager;
   /** Team's current budget sliders — provides `valb(1..5, pv)`. */
   budget: TeamBudget;
   /**
@@ -62,18 +61,18 @@ export type ContractNegotiationOutput =
       /** QB `gnome = 3` — player accepted very happily. */
       playerWasHappy: boolean;
       playerLines: string[];
+      effects: EventEffect[];
     }
-  | { outcome: "refused"; playerLines: string[] }
-  | { outcome: "playerWalked"; playerLines: string[] }
-  | { outcome: "alreadyNegotiated"; playerLines: string[] }
-  | { outcome: "cancelled" }; // manager quit — exits immediately, no lines needed
+  | { outcome: "refused"; playerLines: string[]; effects: EventEffect[] }
+  | { outcome: "playerWalked"; playerLines: string[]; effects: EventEffect[] }
+  | { outcome: "alreadyNegotiated"; playerLines: string[]; effects: EventEffect[] }
+  | { outcome: "cancelled"; effects: EventEffect[] };
 
 // ─── Internal types ───────────────────────────────────────────────────────────
 
 /**
  * Intermediate result stored in context during negotiation.
- * `playerLines` are kept separately in `context.playerLines` and merged
- * into the public output only at machine completion.
+ * `playerLines` and `effects` are assembled in the output selector.
  */
 type InternalNegotiationResult =
   | { outcome: "signed"; contract: RegularContract; playerWasHappy: boolean }
@@ -87,8 +86,7 @@ type InternalNegotiationResult =
 export type ContractNegotiationContext = {
   player: MarketPlayer;
   mode: ContractNegotiationMode;
-  managerNegotiation: number;
-  managerCharisma: number;
+  manager: HumanManager;
   budget: TeamBudget;
   random: Random;
 
@@ -133,7 +131,8 @@ type ContractNegotiationEvent =
   | { type: "DECREASE_SALARY" }
   | { type: "RESET_SALARY" }
   | { type: "NEGOTIATE" }
-  | { type: "QUIT" };
+  | { type: "QUIT" }
+  | { type: "ADVANCE" };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -203,6 +202,35 @@ function buildInitialLines(
   return [rollLine(willingnessKey, random), rollLine("openingLine", random)];
 }
 
+function buildOutputEffects(ctx: ContractNegotiationContext): EventEffect[] {
+  const result = ctx.result;
+  if (!result || result.outcome === "cancelled") {
+    return [];
+  }
+  if (result.outcome === "signed") {
+    return [
+      {
+        type: "signMarketPlayer",
+        manager: ctx.manager.id,
+        player: ctx.player,
+        contract: result.contract,
+        playerWasHappy: result.playerWasHappy
+      }
+    ];
+  }
+  if (result.outcome === "refused" || result.outcome === "playerWalked") {
+    return [
+      {
+        type: "irritateMarketPlayer",
+        managerId: ctx.manager.id,
+        playerId: ctx.player.id
+      }
+    ];
+  }
+  // alreadyNegotiated: tag already present, nothing to apply
+  return [];
+}
+
 // ─── Machine ──────────────────────────────────────────────────────────────────
 
 export const contractNegotiationMachine = setup({
@@ -219,26 +247,24 @@ export const contractNegotiationMachine = setup({
   id: "contractNegotiation",
   output: ({ context }): ContractNegotiationOutput => {
     const result = context.result ?? { outcome: "cancelled" as const };
-    if (result.outcome === "cancelled") { return result; }
-    return { ...result, playerLines: context.playerLines };
+    const effects = buildOutputEffects(context);
+    if (result.outcome === "cancelled") {
+      return { outcome: "cancelled", effects };
+    }
+    return { ...result, playerLines: context.playerLines, effects };
   },
   context: ({ input }) => {
     const teamNeedsRating = computeTeamNeedsRating(input.budget, input.player);
-
     const baseSalary = computeBaseSalary(input.player);
-
     const willingnessThreshold = computeWillingnessThreshold(
       teamNeedsRating,
-      input.managerCharisma
+      input.manager.attributes.charisma
     );
-
     const nhlOptionThreshold = computeNhlOptionThreshold(
       input.player.age,
       input.player.skill
     );
 
-    // Resolve early-exit conditions immediately so the willingness state
-    // can check context.result instead of input.
     let initialResult: InternalNegotiationResult | null = null;
     let initialLines: string[] = [];
 
@@ -261,8 +287,7 @@ export const contractNegotiationMachine = setup({
     return {
       player: input.player,
       mode: input.mode,
-      managerNegotiation: input.managerNegotiation,
-      managerCharisma: input.managerCharisma,
+      manager: input.manager,
       budget: input.budget,
       random: input.random,
       teamNeedsRating,
@@ -285,9 +310,7 @@ export const contractNegotiationMachine = setup({
      */
     willingness: {
       always: [
-        // alreadyNegotiated or refused — set in context factory
-        { guard: "earlyExit", target: "done" },
-        // Otherwise: open for negotiation
+        { guard: "earlyExit", target: "result" },
         { target: "negotiating" }
       ]
     },
@@ -350,13 +373,13 @@ export const contractNegotiationMachine = setup({
             const probability = computeAcceptanceProbability(
               context.offeredSalary,
               asking,
-              context.managerNegotiation
+              context.manager.attributes.negotiation
             );
             const attempt = attemptNegotiation(
               probability,
               context.willingnessThreshold,
               newRound,
-              context.managerNegotiation,
+              context.manager.attributes.negotiation,
               context.random.real(0, 1)
             );
 
@@ -382,7 +405,6 @@ export const contractNegotiationMachine = setup({
             const newThreshold = attempt.newThreshold;
             const newLines: string[] = [];
 
-            // Primary reaction line — based on updated patience
             if (newThreshold <= 0 || newThreshold < 30) {
               newLines.push(rollLine("veryImpatient", context.random));
             } else if (newThreshold < 50) {
@@ -391,7 +413,6 @@ export const contractNegotiationMachine = setup({
               newLines.push(rollLine("rejection", context.random));
             }
 
-            // Add-on: NHL aspirations (when duration meets eligibility threshold)
             if (
               context.nhlOptionThreshold > 0 &&
               context.duration >= context.nhlOptionThreshold
@@ -399,7 +420,6 @@ export const contractNegotiationMachine = setup({
               newLines.push(rollLine("nhlHint", context.random));
             }
 
-            // Add-on: free-fire clause complaint
             if (context.clause === "free-fire") {
               newLines.push(rollLine("freeFireComplaint", context.random));
             }
@@ -420,6 +440,7 @@ export const contractNegotiationMachine = setup({
             };
           })
         },
+        // QUIT exits immediately — no result state, no effect.
         QUIT: {
           target: "done",
           actions: assign({ result: () => ({ outcome: "cancelled" as const }) })
@@ -428,13 +449,24 @@ export const contractNegotiationMachine = setup({
       always: [
         {
           guard: ({ context }) => context.result?.outcome === "signed",
-          target: "done"
+          target: "result"
         },
         {
           guard: ({ context }) => context.result?.outcome === "playerWalked",
-          target: "done"
+          target: "result"
         }
       ]
+    },
+
+    /**
+     * Terminal display state — the player acknowledges the outcome.
+     * The machine stays alive so the UI can read `context.playerLines`
+     * and `context.result` directly. ADVANCE completes the machine.
+     */
+    result: {
+      on: {
+        ADVANCE: "done"
+      }
     },
 
     done: {

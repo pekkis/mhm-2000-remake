@@ -6,7 +6,6 @@ import type { TeamStrength } from "@/data/levels";
 import type { BudgetCategoryName, BudgetLevel } from "@/data/mhm2000/budget";
 import type { GameRecord } from "@/machines/types";
 import type { MarketPlayer, Player } from "@/state/player";
-import type { ContractNegotiationOutput } from "@/machines/contractNegotiation";
 
 export type { Player };
 
@@ -138,13 +137,5 @@ export type GameState = {
 
   transferMarket: {
     players: Record<string, MarketPlayer>;
-    /** Set when entering `negotiating` sub-state; cleared on exit. */
-    currentNegotiation: { playerId: string; managerId: string } | null;
-    /** Set on negotiation completion; cleared after player acknowledges result. */
-    pendingNegotiation: {
-      playerId: string;
-      managerId: string;
-      result: ContractNegotiationOutput;
-    } | null;
   };
 };

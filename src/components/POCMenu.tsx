@@ -31,8 +31,7 @@ const POCMenu = () => {
       player,
       alreadyNegotiated: false,
       budget: team.budget!,
-      managerCharisma: manager.attributes.charisma,
-      managerNegotiation: manager.attributes.negotiation,
+      manager,
       random: random
     }
   });

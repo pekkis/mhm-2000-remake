@@ -37,10 +37,7 @@ import {
 import type { NotificationData } from "@/machines/notification";
 import { betMachine } from "@/machines/bet";
 import { championBetMachine } from "@/machines/championBet";
-import {
-  contractNegotiationMachine,
-  type ContractNegotiationOutput
-} from "@/machines/contractNegotiation";
+import { contractNegotiationMachine } from "@/machines/contractNegotiation";
 import type { CompetitionId } from "@/types/competitions";
 import { values, entries } from "remeda";
 
@@ -1011,71 +1008,6 @@ export const gameMachine = setup({
     }),
 
     /**
-     * Store the negotiation output into `transferMarket.pendingNegotiation`
-     * so `showing_result` can render it, and tag the player as irritated so
-     * they won't talk to this manager again this round.
-     * Reads managerId/playerId from `currentNegotiation` (set on entry to
-     * `negotiating`). Runs on transition from `negotiating` → `showing_result`.
-     */
-    storePendingNegotiation: assign(
-      (
-        { context },
-        params: { result: ContractNegotiationOutput }
-      ) =>
-        produce(context, (draft) => {
-          const cur = draft.transferMarket.currentNegotiation;
-          if (!cur) {
-            return;
-          }
-          draft.transferMarket.pendingNegotiation = {
-            playerId: cur.playerId,
-            managerId: cur.managerId,
-            result: params.result
-          };
-          const player = draft.transferMarket.players[cur.playerId];
-          if (player && params.result.outcome !== "alreadyNegotiated") {
-            player.tags.push(`irritated:${cur.managerId}`);
-          }
-        })
-    ),
-
-    /**
-     * Apply the pending negotiation result to game state and clear it.
-     * Runs on ADVANCE from `showing_result`.
-     *
-     * - `signed`: remove from market, add to team roster with the new contract.
-     * - `refused` / `playerWalked` / `alreadyNegotiated`: tag already set in
-     *   `storePendingNegotiation`; nothing extra to do.
-     * - `cancelled`: unreachable here (cancelled exits to `browsing` directly).
-     */
-    applyNegotiationResult: assign(({ context }) =>
-      produce(context, (draft) => {
-        const pending = draft.transferMarket.pendingNegotiation;
-        if (!pending) {
-          return;
-        }
-        if (pending.result.outcome === "signed") {
-          const player = draft.transferMarket.players[pending.playerId];
-          const manager = draft.managers[pending.managerId];
-          if (player && manager && manager.team !== undefined) {
-            const team = draft.teams[manager.team];
-            if (team.kind === "human") {
-              team.players[player.id] = {
-                ...player,
-                type: "hired",
-                contract: pending.result.contract,
-                tags: [],
-                plannedDeparture: undefined
-              };
-            }
-            delete draft.transferMarket.players[pending.playerId];
-          }
-        }
-        draft.transferMarket.pendingNegotiation = null;
-      })
-    ),
-
-    /**
      * Generic notification dispatcher — forwards a fully-formed notification
      * to the invoked `notifications` child machine. Call sites build the
      * message; this action only handles the delivery + id assignment.
@@ -1387,17 +1319,6 @@ export const gameMachine = setup({
                   }
                 },
                 negotiating: {
-                  entry: assign(({ context, event }) => {
-                    if (event.type !== "NEGOTIATE_MARKET_PLAYER") {
-                      return {};
-                    }
-                    return {
-                      transferMarket: {
-                        ...context.transferMarket,
-                        currentNegotiation: event.payload
-                      }
-                    };
-                  }),
                   invoke: {
                     src: "contractNegotiation",
                     id: "contractNegotiation",
@@ -1415,6 +1336,7 @@ export const gameMachine = setup({
                           : undefined;
                       if (
                         !manager ||
+                        manager.kind !== "human" ||
                         !player ||
                         !team ||
                         team.kind !== "human" ||
@@ -1425,8 +1347,7 @@ export const gameMachine = setup({
                       return {
                         player,
                         mode: "market" as const,
-                        managerNegotiation: manager.attributes.negotiation,
-                        managerCharisma: manager.attributes.charisma,
+                        manager,
                         budget: team.budget,
                         alreadyNegotiated: player.tags.some(
                           (t) => t === `irritated:${managerId}`
@@ -1441,21 +1362,19 @@ export const gameMachine = setup({
                         target: "browsing"
                       },
                       {
-                        actions: {
-                          type: "storePendingNegotiation",
-                          params: ({ event }) => ({ result: event.output })
-                        },
-                        target: "showing_result"
+                        actions: enqueueActions(({ enqueue, event, context }) => {
+                          runInterpreter(context, enqueue, (draft, notify) => {
+                            applyEffects(
+                              draft,
+                              event.output.effects,
+                              spawnEvent,
+                              notify
+                            );
+                          });
+                        }),
+                        target: "browsing"
                       }
                     ]
-                  }
-                },
-                showing_result: {
-                  on: {
-                    ADVANCE: {
-                      actions: "applyNegotiationResult",
-                      target: "browsing"
-                    }
                   }
                 },
                 done: { type: "final" }

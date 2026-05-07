@@ -40,6 +40,18 @@ Pasolini` rows for the rationale and a full list of QB sites this
   now append the QB " ja." overtime marker to every score string when
   `result.overtime`.
 
+### Injury catalog decoded (DONE 2026-05-07)
+
+All 45 injury records decoded from `I.MHM` (cp850) + `INJURIES.M2K` severity table and ported to [src/data/injuries.ts](../../data/injuries.ts) as a `readonly InjuryDefinition[]` array. Key findings:
+
+- Natural post-match roll `INT(44*RND)+1` reaches ids **1..44** only.
+- **Id 44** ("gangsters") — forced by prank #5 PELAAJAN HOITELU victim-side (`SUB jaynacheck` block 2, `ILEX5.BAS:2199`).
+- **Id 45** ("kolossimainen poliisi") — forced by POLIISI enforcer (`spe=666`) victim-side (`SUB jaynacheck` block 3, `ILEX5.BAS:2209`). Unreachable from natural roll.
+- **Ids 46–47** — empty trailing slots in I.MHM, no severity rows; dead data.
+- `-1` duration = season-ending (ids 41/42/43 always; id 18 at budget 1–2).
+- JAYNAT.M2K 7-prank list + costs fully confirmed (see DATA-FILES.md).
+- `SUB muilutus` (`ILEX5.BAS:3365`) = CPU-path resolver applying `tauti/tkest` team debuff; human path uses `SUB jaynacheck` blocks 2–3 instead.
+
 ### Player generation port (DONE 2026-05-07)
 
 `borsgene` + `gene` + `rela` + `mahmax` fully ported and wired into `composeNewGameContext`.

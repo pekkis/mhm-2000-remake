@@ -13,7 +13,6 @@ import type { MarketPlayer, Player } from "@/state/player";
 import type { FC } from "react";
 import { prop, sortBy, values } from "remeda";
 import ContractNegotiationView from "./ContractNegotiationView";
-import NegotiationResultView from "./NegotiationResultView";
 
 const POSITION_ORDER: Record<Player["position"], number> = {
   g: 0,
@@ -38,13 +37,6 @@ const useActionSubState = () =>
       })
     ) {
       return "negotiating";
-    }
-    if (
-      snap.matches({
-        in_game: { executing_phases: { action: "showing_result" } }
-      })
-    ) {
-      return "showing_result";
     }
     return "browsing";
   });
@@ -128,9 +120,6 @@ const TransferMarketPage: FC = () => {
 
   if (subState === "negotiating") {
     return <ContractNegotiationView />;
-  }
-  if (subState === "showing_result") {
-    return <NegotiationResultView />;
   }
   return <TransferMarketBrowser />;
 };
