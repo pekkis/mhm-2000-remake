@@ -224,7 +224,9 @@ describe("generateTeamRoster — port of QB `gene` SUB", () => {
       for (let seed = 0; seed < 200; seed++) {
         const r = createRandom(seed);
         for (const p of Object.values(generateTeamRoster(MID_STRENGTH, r))) {
-          if (p.nationality === "FI") fiCount++;
+          if (p.nationality === "FI") {
+            fiCount++;
+          }
           total++;
         }
       }

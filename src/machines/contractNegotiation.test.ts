@@ -4,8 +4,8 @@ import { contractNegotiationMachine } from "./contractNegotiation";
 import type { ContractNegotiationInput } from "./contractNegotiation";
 import { createRandom } from "@/services/random";
 import type { TeamBudget } from "@/data/mhm2000/budget";
-import type { NegotiationPlayer } from "@/services/mhm-2000/contract-negotiation";
 import { computeBaseSalary } from "@/services/mhm-2000/contract-negotiation";
+import type { MarketPlayer } from "@/state/player";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -29,7 +29,8 @@ const TIGHT_BUDGET: TeamBudget = {
 };
 
 /** A mid-skill skater unlikely to refuse due to budget pressure. */
-const HAPPY_PLAYER: NegotiationPlayer = {
+const HAPPY_PLAYER: MarketPlayer = {
+  type: "market",
   id: "test1",
   initial: "P",
   surname: "Pasolini",
@@ -50,15 +51,14 @@ const HAPPY_PLAYER: NegotiationPlayer = {
   stats: {
     season: { games: 0, goals: 0, assists: 0 },
     total: { games: 0, goals: 0, assists: 0 }
-  },
-  hasSpecialContract: false
+  }
 };
 
 /**
  * Player that always refuses with TIGHT_BUDGET.
  * TIGHT (all 1): 1+1+2-8 = -4 → teamNeedsRating = -4 → refused.
  */
-const REFUSED_PLAYER: NegotiationPlayer = {
+const REFUSED_PLAYER: MarketPlayer = {
   ...HAPPY_PLAYER,
   skill: 8
 };
@@ -102,9 +102,9 @@ describe("early exit conditions", () => {
   });
 
   it("special-contract player is never refused even with deep budget pressure", () => {
-    const specialPlayer: NegotiationPlayer = {
+    const specialPlayer: MarketPlayer = {
       ...REFUSED_PLAYER,
-      hasSpecialContract: true
+      tags: ["zombified"]
     };
     const snap = runToCompletion(
       makeInput({ player: specialPlayer, budget: TIGHT_BUDGET })
@@ -116,7 +116,7 @@ describe("early exit conditions", () => {
   it("alreadyNegotiated takes precedence even for special-contract players", () => {
     const snap = runToCompletion(
       makeInput({
-        player: { ...HAPPY_PLAYER, hasSpecialContract: true },
+        player: { ...HAPPY_PLAYER, tags: ["zombified"] } as MarketPlayer,
         alreadyNegotiated: true
       })
     );
@@ -128,19 +128,25 @@ describe("early exit conditions", () => {
 
 describe("initial negotiating state", () => {
   it("reaches 'negotiating' state when eligible", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     expect(actor.getSnapshot().value).toBe("negotiating");
   });
 
   it("initial duration is 1", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     expect(actor.getSnapshot().context.duration).toBe(1);
   });
 
   it("initial clause is 'none'", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     expect(actor.getSnapshot().context.clause).toBe("none");
   });
@@ -159,7 +165,9 @@ describe("initial negotiating state", () => {
 
 describe("INCREASE_DURATION / DECREASE_DURATION events", () => {
   it("INCREASE_DURATION increments duration up to 4", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     actor.send({ type: "INCREASE_DURATION" });
     expect(actor.getSnapshot().context.duration).toBe(2);
@@ -170,7 +178,9 @@ describe("INCREASE_DURATION / DECREASE_DURATION events", () => {
   });
 
   it("DECREASE_DURATION decrements duration down to 1", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     actor.send({ type: "DECREASE_DURATION" });
     expect(actor.getSnapshot().context.duration).toBe(1); // already at min
@@ -185,7 +195,9 @@ describe("INCREASE_DURATION / DECREASE_DURATION events", () => {
 
 describe("NEXT_CLAUSE / PREV_CLAUSE events", () => {
   it("cycles none → nhl → free-fire → free-fire (clamped at end)", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     expect(actor.getSnapshot().context.clause).toBe("none");
     actor.send({ type: "NEXT_CLAUSE" });
@@ -197,7 +209,9 @@ describe("NEXT_CLAUSE / PREV_CLAUSE events", () => {
   });
 
   it("PREV_CLAUSE goes back (clamped at none)", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     actor.send({ type: "NEXT_CLAUSE" });
     actor.send({ type: "NEXT_CLAUSE" }); // free-fire
@@ -214,7 +228,9 @@ describe("NEXT_CLAUSE / PREV_CLAUSE events", () => {
 
 describe("INCREASE_SALARY / DECREASE_SALARY / RESET_SALARY events", () => {
   it("INCREASE_SALARY raises offeredSalary by ~1.5%", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     const before = actor.getSnapshot().context.offeredSalary;
     actor.send({ type: "INCREASE_SALARY" });
@@ -224,7 +240,9 @@ describe("INCREASE_SALARY / DECREASE_SALARY / RESET_SALARY events", () => {
   });
 
   it("DECREASE_SALARY lowers offeredSalary by ~1.5%", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     const before = actor.getSnapshot().context.offeredSalary;
     actor.send({ type: "DECREASE_SALARY" });
@@ -233,7 +251,9 @@ describe("INCREASE_SALARY / DECREASE_SALARY / RESET_SALARY events", () => {
   });
 
   it("RESET_SALARY returns offeredSalary to baseSalary", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     actor.send({ type: "INCREASE_SALARY" });
     actor.send({ type: "INCREASE_SALARY" });
@@ -247,7 +267,9 @@ describe("INCREASE_SALARY / DECREASE_SALARY / RESET_SALARY events", () => {
 
 describe("QUIT event", () => {
   it("transitions to done with 'cancelled' outcome", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     actor.send({ type: "QUIT" });
     const snap = actor.getSnapshot();
@@ -257,7 +279,9 @@ describe("QUIT event", () => {
 
   it("output defaults to cancelled when context.result is null at done", () => {
     // Machine output expression: context.result ?? { outcome: "cancelled" }
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     actor.send({ type: "QUIT" });
     expect(actor.getSnapshot().output?.outcome).toBe("cancelled");
@@ -268,7 +292,9 @@ describe("QUIT event", () => {
 
 describe("NEGOTIATE event", () => {
   it("increments negotiationRound by 2 on each attempt", () => {
-    const actor = createActor(contractNegotiationMachine, { input: makeInput() });
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput()
+    });
     actor.start();
     actor.send({ type: "NEGOTIATE" });
     const snap = actor.getSnapshot();
@@ -288,7 +314,9 @@ describe("NEGOTIATE event", () => {
     });
     actor.start();
     // Pump high salary to guarantee acceptance
-    for (let i = 0; i < 20; i++) actor.send({ type: "INCREASE_SALARY" });
+    for (let i = 0; i < 20; i++) {
+      actor.send({ type: "INCREASE_SALARY" });
+    }
     actor.send({ type: "NEGOTIATE" });
     const snap = actor.getSnapshot();
     // Should have resolved (signed or playerWalked)
@@ -302,7 +330,9 @@ describe("NEGOTIATE event", () => {
       input: makeInput({ managerNegotiation: -3, random: createRandom(999) })
     });
     actor.start();
-    for (let i = 0; i < 20; i++) actor.send({ type: "DECREASE_SALARY" });
+    for (let i = 0; i < 20; i++) {
+      actor.send({ type: "DECREASE_SALARY" });
+    }
     const before = actor.getSnapshot().context.willingnessThreshold;
     actor.send({ type: "NEGOTIATE" });
     const snap = actor.getSnapshot();
@@ -322,7 +352,9 @@ describe("NEGOTIATE event", () => {
     });
     actor.start();
     // Offer 3× base to force accept
-    for (let i = 0; i < 30; i++) actor.send({ type: "INCREASE_SALARY" });
+    for (let i = 0; i < 30; i++) {
+      actor.send({ type: "INCREASE_SALARY" });
+    }
     actor.send({ type: "INCREASE_DURATION" }); // duration=2
     actor.send({ type: "NEGOTIATE" });
     const snap = actor.getSnapshot();
@@ -339,7 +371,7 @@ describe("NEGOTIATE event", () => {
 
 describe("signed contract includes clause when selected", () => {
   it("free-fire clause appears in contract when selected", () => {
-    const youngStar: NegotiationPlayer = {
+    const youngStar: MarketPlayer = {
       ...HAPPY_PLAYER,
       age: 20,
       skill: 14,
@@ -356,7 +388,9 @@ describe("signed contract includes clause when selected", () => {
     actor.start();
     actor.send({ type: "NEXT_CLAUSE" }); // nhl
     actor.send({ type: "NEXT_CLAUSE" }); // free-fire
-    for (let i = 0; i < 30; i++) actor.send({ type: "INCREASE_SALARY" });
+    for (let i = 0; i < 30; i++) {
+      actor.send({ type: "INCREASE_SALARY" });
+    }
     actor.send({ type: "NEGOTIATE" });
     const snap = actor.getSnapshot();
     if (snap.output?.outcome === "signed") {
@@ -365,7 +399,7 @@ describe("signed contract includes clause when selected", () => {
   });
 
   it("NHL clause with duration=1 produces no specialClause (cleared per QB)", () => {
-    const youngStar: NegotiationPlayer = {
+    const youngStar: MarketPlayer = {
       ...HAPPY_PLAYER,
       age: 20,
       skill: 14
@@ -380,7 +414,9 @@ describe("signed contract includes clause when selected", () => {
     });
     actor.start();
     actor.send({ type: "NEXT_CLAUSE" }); // nhl, duration still 1
-    for (let i = 0; i < 30; i++) actor.send({ type: "INCREASE_SALARY" });
+    for (let i = 0; i < 30; i++) {
+      actor.send({ type: "INCREASE_SALARY" });
+    }
     actor.send({ type: "NEGOTIATE" });
     const snap = actor.getSnapshot();
     if (snap.output?.outcome === "signed") {

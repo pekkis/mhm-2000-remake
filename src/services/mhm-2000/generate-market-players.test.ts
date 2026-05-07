@@ -6,7 +6,7 @@ const VALID_SPECIALTIES = [
   "greedySurfer",
   "enforcer",
   "foulMouth",
-  "evangelist",
+  "evangelist"
 ] as const;
 
 describe("generateMarketPlayers — port of QB `borsgene` SUB", () => {
@@ -79,9 +79,14 @@ describe("generateMarketPlayers — port of QB `borsgene` SUB", () => {
       for (let seed = 0; seed < 20; seed++) {
         const r = createRandom(seed);
         for (const p of Object.values(generateMarketPlayers(440, r))) {
-          if (p.skill === 1) { foundOne = true; break; }
+          if (p.skill === 1) {
+            foundOne = true;
+            break;
+          }
         }
-        if (foundOne) break;
+        if (foundOne) {
+          break;
+        }
       }
       expect(foundOne).toBe(true);
     });
@@ -91,9 +96,14 @@ describe("generateMarketPlayers — port of QB `borsgene` SUB", () => {
       for (let seed = 0; seed < 20; seed++) {
         const r = createRandom(seed);
         for (const p of Object.values(generateMarketPlayers(440, r))) {
-          if (p.skill === 19) { foundNineteen = true; break; }
+          if (p.skill === 19) {
+            foundNineteen = true;
+            break;
+          }
         }
-        if (foundNineteen) break;
+        if (foundNineteen) {
+          break;
+        }
       }
       expect(foundNineteen).toBe(true);
     });
@@ -101,7 +111,9 @@ describe("generateMarketPlayers — port of QB `borsgene` SUB", () => {
     it("most players have skill in the mid-range (4..12)", () => {
       const r = createRandom(30);
       const players = Object.values(generateMarketPlayers(440, r));
-      const midRange = players.filter((p) => p.skill >= 4 && p.skill <= 12).length;
+      const midRange = players.filter(
+        (p) => p.skill >= 4 && p.skill <= 12
+      ).length;
       expect(midRange / players.length).toBeGreaterThan(0.5);
     });
   });
@@ -121,8 +133,10 @@ describe("generateMarketPlayers — port of QB `borsgene` SUB", () => {
       const lowSkill = players.filter((p) => p.skill <= 5);
       const highSkill = players.filter((p) => p.skill >= 15);
       if (lowSkill.length > 0 && highSkill.length > 0) {
-        const avgLow = lowSkill.reduce((s, p) => s + p.askingSalary, 0) / lowSkill.length;
-        const avgHigh = highSkill.reduce((s, p) => s + p.askingSalary, 0) / highSkill.length;
+        const avgLow =
+          lowSkill.reduce((s, p) => s + p.askingSalary, 0) / lowSkill.length;
+        const avgHigh =
+          highSkill.reduce((s, p) => s + p.askingSalary, 0) / highSkill.length;
         expect(avgHigh).toBeGreaterThan(avgLow);
       }
     });
@@ -139,7 +153,9 @@ describe("generateMarketPlayers — port of QB `borsgene` SUB", () => {
             break;
           }
         }
-        if (found) break;
+        if (found) {
+          break;
+        }
       }
     });
   });
@@ -179,7 +195,9 @@ describe("generateMarketPlayers — port of QB `borsgene` SUB", () => {
         evangelist: 0
       };
       for (const p of players) {
-        if (p.specialty) counts[p.specialty] = (counts[p.specialty] ?? 0) + 1;
+        if (p.specialty) {
+          counts[p.specialty] = (counts[p.specialty] ?? 0) + 1;
+        }
       }
       // greedySurfer: roll 1..10 (10 values)
       // enforcer:     roll 11..15 (5 values)
@@ -215,8 +233,23 @@ describe("generateMarketPlayers — port of QB `borsgene` SUB", () => {
 
     it("all players have a valid nationality (one of the 17 QB nations)", () => {
       const validIsos = new Set([
-        "FI", "SE", "DE", "IT", "RU", "CZ", "EE", "LV",
-        "CA", "US", "CH", "SK", "JP", "NO", "FR", "AT", "PL"
+        "FI",
+        "SE",
+        "DE",
+        "IT",
+        "RU",
+        "CZ",
+        "EE",
+        "LV",
+        "CA",
+        "US",
+        "CH",
+        "SK",
+        "JP",
+        "NO",
+        "FR",
+        "AT",
+        "PL"
       ]);
       const r = createRandom(61);
       for (const p of Object.values(generateMarketPlayers(440, r))) {

@@ -184,9 +184,13 @@ describe("generateBaseAttributes — port of QB `rela` SUB", () => {
     it("produces different results for different nations (surname pool differs)", () => {
       // FI and CA have different .MHX files → expect at least some surname differences
       const r = createRandom(777);
-      const fiSurnames = new Set(Array.from({ length: 100 }, () => generateBaseAttributes(1, r).surname));
+      const fiSurnames = new Set(
+        Array.from({ length: 100 }, () => generateBaseAttributes(1, r).surname)
+      );
       const r2 = createRandom(777);
-      const caSurnames = new Set(Array.from({ length: 100 }, () => generateBaseAttributes(9, r2).surname));
+      const caSurnames = new Set(
+        Array.from({ length: 100 }, () => generateBaseAttributes(9, r2).surname)
+      );
       // There should be some differences (different .MHX pools)
       const overlap = [...fiSurnames].filter((s) => caSurnames.has(s)).length;
       expect(overlap).toBeLessThan(100);
@@ -223,7 +227,9 @@ describe("generateBaseAttributes — port of QB `rela` SUB", () => {
       let zeros = 0;
       const N = 10000;
       for (let i = 0; i < N; i++) {
-        if (generateBaseAttributes(1, r).powerplayMod === 0) zeros++;
+        if (generateBaseAttributes(1, r).powerplayMod === 0) {
+          zeros++;
+        }
       }
       // 50/100 = 50% chance of 0
       expect(zeros / N).toBeGreaterThan(0.45);

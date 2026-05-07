@@ -6,22 +6,13 @@
  * This module exports only pure, testable functions.
  */
 
-import type { MarketPlayer } from "@/state/player";
 import type { TeamBudget } from "@/data/mhm2000/budget";
 import { computeSalary } from "./compute-salary";
+import type { MarketPlayer, Player } from "@/state/player";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export type SpecialClause = "none" | "nhl" | "free-fire";
-
-/**
- * The player's attributes relevant to contract negotiation.
- * Keeps the machine decoupled from the full Player type.
- */
-export type NegotiationPlayer = MarketPlayer & {
-  /** Whether the player is a zombie / greedySurfer (spe >= 30000 or spe = 13). */
-  hasSpecialContract: boolean;
-};
 
 /** The negotiation willingness outcome computed from `a` and player state. */
 export type WillingnessOutcome =
@@ -48,7 +39,7 @@ export type NegotiateAttemptResult =
  */
 export function computeTeamNeedsRating(
   budget: TeamBudget,
-  player: Pick<NegotiationPlayer, "position" | "skill">
+  player: Pick<MarketPlayer, "position" | "skill">
 ): number {
   const coachingBudget =
     player.position === "g" ? budget.goalieCoaching : budget.coaching;
@@ -60,12 +51,18 @@ export function computeTeamNeedsRating(
 /**
  * Willingness check — port of ILEX5.BAS:6337-6352.
  * Returns what the player's initial reaction would be.
- * (Players with `hasSpecialContract` skip this and go straight to negotiation.)
+ * (Zombies and greedy surfers skip this and go straight to negotiation.)
  */
 export function checkWillingness(teamNeedsRating: number): WillingnessOutcome {
-  if (teamNeedsRating <= -4) return "refused";
-  if (teamNeedsRating < -1) return "unhappy";
-  if (teamNeedsRating < 0) return "neutral";
+  if (teamNeedsRating <= -4) {
+    return "refused";
+  }
+  if (teamNeedsRating < -1) {
+    return "unhappy";
+  }
+  if (teamNeedsRating < 0) {
+    return "neutral";
+  }
   return "happy";
 }
 
@@ -93,26 +90,46 @@ export function computeWillingnessThreshold(
  * clause only if the contract is ≥ 2 years.
  */
 export function computeNhlOptionThreshold(age: number, skill: number): number {
-  if (age >= 26) return 0;
+  if (age >= 26) {
+    return 0;
+  }
   if (age <= 20) {
-    if (skill >= 13) return 2;
-    if (skill >= 10) return 3;
-    if (skill >= 8) return 4;
+    if (skill >= 13) {
+      return 2;
+    }
+    if (skill >= 10) {
+      return 3;
+    }
+    if (skill >= 8) {
+      return 4;
+    }
     return 0;
   }
   if (age <= 23) {
-    if (skill >= 13) return 2;
-    if (skill >= 11) return 3;
-    if (skill >= 9) return 4;
+    if (skill >= 13) {
+      return 2;
+    }
+    if (skill >= 11) {
+      return 3;
+    }
+    if (skill >= 9) {
+      return 4;
+    }
     return 0;
   }
   if (age === 24) {
-    if (skill >= 13) return 2;
-    if (skill >= 12) return 3;
+    if (skill >= 13) {
+      return 2;
+    }
+    if (skill >= 12) {
+      return 3;
+    }
     return 0;
   }
   // age = 25
-  if (skill >= 13) return 2;
+  if (skill >= 13) {
+    return 2;
+  }
   return 0;
 }
 
@@ -125,7 +142,7 @@ export function computeNhlOptionThreshold(age: number, skill: number): number {
  * to compute acceptance probability.
  */
 export function computeAskingPrice(
-  player: NegotiationPlayer,
+  player: MarketPlayer,
   baseSalary: number,
   teamNeedsRating: number,
   duration: number,
@@ -197,7 +214,9 @@ export function attemptNegotiation(
 
   // QB: if sin1 < -10, immediately zero out sopimus(2)
   let newThreshold = willingnessThreshold;
-  if (acceptanceProbability < -10) newThreshold = 0;
+  if (acceptanceProbability < -10) {
+    newThreshold = 0;
+  }
 
   // QB: sopimus(2) = sopimus(2) - d + INT(mtaito(3) * RND)
   // d has already been incremented by 2 before this call (we pass the new d).
@@ -222,6 +241,6 @@ export function adjustSalary(
 }
 
 /** Convenience: compute the base salary for a player (calls palkmaar). */
-export function computeBaseSalary(player: NegotiationPlayer): number {
+export function computeBaseSalary(player: Player): number {
   return computeSalary(player);
 }

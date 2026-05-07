@@ -28,7 +28,7 @@ const POCMenu = () => {
   const [state, send] = useMachine(contractNegotiationMachine, {
     input: {
       mode: "market",
-      player: { ...player, hasSpecialContract: false },
+      player,
       alreadyNegotiated: false,
       budget: team.budget!,
       managerCharisma: manager.attributes.charisma,

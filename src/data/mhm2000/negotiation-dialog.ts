@@ -12,22 +12,25 @@
  */
 
 export type NegotiationDialogKey =
-  | "refused"           // sano%=1  — player refuses to negotiate (a <= -4)
+  | "refused" // sano%=1  — player refuses to negotiate (a <= -4)
   | "alreadyNegotiated" // sano%=2  — already talked this round (neu=1)
-  | "unhappy"           // sano%=3  — displeased but willing (-4 < a < -1)
-  | "neutral"           // sano%=4  — slight reservations (a = -1)
-  | "happy"             // sano%=5  — happy to negotiate (a = 0)
-  | "nhlHint"           // sano%=6  — NHL aspirations add-on (eligible + duration met)
-  | "openingLine"       // sano%=7  — first-round opening (d = 0)
-  | "rejection"         // sano%=8  — standard "not enough" rejection
-  | "veryImpatient"     // sano%=9  — sopimus(2) < 30, near walkout
-  | "impatient"         // sano%=10 — sopimus(2) < 50, patience fading
-  | "acceptedOk"        // sano%=11 — accepted normally (gnome=2)
-  | "acceptedHappy"     // sano%=12 — accepted very happily (gnome=3)
+  | "unhappy" // sano%=3  — displeased but willing (-4 < a < -1)
+  | "neutral" // sano%=4  — slight reservations (a = -1)
+  | "happy" // sano%=5  — happy to negotiate (a = 0)
+  | "nhlHint" // sano%=6  — NHL aspirations add-on (eligible + duration met)
+  | "openingLine" // sano%=7  — first-round opening (d = 0)
+  | "rejection" // sano%=8  — standard "not enough" rejection
+  | "veryImpatient" // sano%=9  — sopimus(2) < 30, near walkout
+  | "impatient" // sano%=10 — sopimus(2) < 50, patience fading
+  | "acceptedOk" // sano%=11 — accepted normally (gnome=2)
+  | "acceptedHappy" // sano%=12 — accepted very happily (gnome=3)
   | "freeFireComplaint" // sano%=13 — complains about free-fire clause
-  | "zombieSound";      // sano%=14 — zombie / greedySurfer
+  | "zombieSound"; // sano%=14 — zombie / greedySurfer
 
-export const negotiationDialog: Record<NegotiationDialogKey, readonly [string, string, string, string, string, string]> = {
+export const negotiationDialog: Record<
+  NegotiationDialogKey,
+  readonly [string, string, string, string, string, string]
+> = {
   refused: [
     "Kuules nyt, hyvä herra... En näe syytä saapua neuvotteluun, sillä en pysty näkemään itseäni joukkueessanne vaikka **mikä** olisi...",
     "On turhaa jatkaa keskustelua — haukkaisin ennemmin hatullisen *paskaa* kuin liittyisin joukkueeseenne...",

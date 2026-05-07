@@ -52,7 +52,8 @@ describe("borssix data table", () => {
   it("buildSkillPool produces exactly the right bucket frequencies", () => {
     // Simulate the QB borsgene inner loop for nation 0 (FI)
     const pros: number[] = new Array(200);
-    let c = 0, d = 1;
+    let c = 0,
+      d = 1;
     for (let qwe = 0; qwe < 200; qwe++) {
       const count = borssix[0][c];
       if (count > d) {

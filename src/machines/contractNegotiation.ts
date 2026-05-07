@@ -16,9 +16,8 @@
 import { setup, assign } from "xstate";
 import type { Random } from "random-js";
 import type { TeamBudget } from "@/data/mhm2000/budget";
-import type { RegularContract } from "@/state/player";
+import type { MarketPlayer, Player, RegularContract } from "@/state/player";
 import {
-  type NegotiationPlayer,
   type SpecialClause,
   computeTeamNeedsRating,
   computeWillingnessThreshold,
@@ -39,7 +38,7 @@ import {
 export type ContractNegotiationMode = "roster" | "market";
 
 export type ContractNegotiationInput = {
-  player: NegotiationPlayer;
+  player: MarketPlayer;
   mode: ContractNegotiationMode;
   /** QB `mtaito(3, manager)` — negotiation attribute, range -3..+3. */
   managerNegotiation: number;
@@ -63,15 +62,15 @@ export type ContractNegotiationOutput =
       /** QB `gnome = 3` — player accepted very happily. */
       playerWasHappy: boolean;
     }
-  | { outcome: "refused" }           // player refused to negotiate (a <= -4)
-  | { outcome: "playerWalked" }      // player's patience hit 0
+  | { outcome: "refused" } // player refused to negotiate (a <= -4)
+  | { outcome: "playerWalked" } // player's patience hit 0
   | { outcome: "alreadyNegotiated" } // neu = 1 this round
-  | { outcome: "cancelled" };        // manager quit
+  | { outcome: "cancelled" }; // manager quit
 
 // ─── Machine context ──────────────────────────────────────────────────────────
 
 type ContractNegotiationContext = {
-  player: NegotiationPlayer;
+  player: MarketPlayer;
   mode: ContractNegotiationMode;
   managerNegotiation: number;
   managerCharisma: number;
@@ -139,7 +138,9 @@ function buildSignedContract(ctx: ContractNegotiationContext): RegularContract {
   if (ctx.clause === "nhl") {
     // NHL clause: starts fresh (freshlySigned = true).
     // Auto-cleared if svu = 1 (QB ILEX5.BAS:6558).
-    if (ctx.duration === 1) return base;
+    if (ctx.duration === 1) {
+      return base;
+    }
     return { ...base, specialClause: { kind: "nhl", freshlySigned: true } };
   }
   if (ctx.clause === "free-fire") {
@@ -153,16 +154,23 @@ function rollLine(key: NegotiationDialogKey, random: Random): string {
   return getDialogLine(key, random.integer(0, 5));
 }
 
+function isSpecial(player: Player): boolean {
+  // ZOMBIE and GREEDY SURFER ARE NOT HANDLED SIMILARLY FOR REALS
+  return (
+    player.tags.includes("zombified") || player.specialty === "greedySurfer"
+  );
+}
+
 /**
  * Build the initial player dialog lines for the negotiating state.
  * Port of QB willingness + opening-line display (ILEX5.BAS:6337-6401).
  */
 function buildInitialLines(
   teamNeedsRating: number,
-  hasSpecialContract: boolean,
+  isPlayerSpecial: boolean,
   random: Random
 ): string[] {
-  if (hasSpecialContract) {
+  if (isPlayerSpecial) {
     // Zombie / greedySurfer: skips willingness block, shows unintelligible sound
     return [rollLine("zombieSound", random)];
   }
@@ -195,11 +203,14 @@ export const contractNegotiationMachine = setup({
   output: ({ context }) => context.result ?? { outcome: "cancelled" },
   context: ({ input }) => {
     const teamNeedsRating = computeTeamNeedsRating(input.budget, input.player);
+
     const baseSalary = computeBaseSalary(input.player);
+
     const willingnessThreshold = computeWillingnessThreshold(
       teamNeedsRating,
       input.managerCharisma
     );
+
     const nhlOptionThreshold = computeNhlOptionThreshold(
       input.player.age,
       input.player.skill
@@ -210,16 +221,22 @@ export const contractNegotiationMachine = setup({
     let initialResult: ContractNegotiationOutput | null = null;
     let initialLines: string[] = [];
 
+    /*
+    There is a bug here. Surfers will probably (dig QB code) always negotiate,
+    but they will NOT make zombie sounds. Their greed is silent.
+    */
+    const isPlayerSpecial = isSpecial(input.player);
+
     if (input.alreadyNegotiated) {
       initialResult = { outcome: "alreadyNegotiated" };
       initialLines = [rollLine("alreadyNegotiated", input.random)];
-    } else if (!input.player.hasSpecialContract && teamNeedsRating <= -4) {
+    } else if (!isPlayerSpecial && teamNeedsRating <= -4) {
       initialResult = { outcome: "refused" };
       initialLines = [rollLine("refused", input.random)];
     } else {
       initialLines = buildInitialLines(
         teamNeedsRating,
-        input.player.hasSpecialContract,
+        isSpecial(input.player),
         input.random
       );
     }
@@ -286,12 +303,14 @@ export const contractNegotiationMachine = setup({
         },
         INCREASE_SALARY: {
           actions: assign({
-            offeredSalary: ({ context }) => adjustSalary(context.offeredSalary, "up")
+            offeredSalary: ({ context }) =>
+              adjustSalary(context.offeredSalary, "up")
           })
         },
         DECREASE_SALARY: {
           actions: assign({
-            offeredSalary: ({ context }) => adjustSalary(context.offeredSalary, "down")
+            offeredSalary: ({ context }) =>
+              adjustSalary(context.offeredSalary, "down")
           })
         },
         RESET_SALARY: {
@@ -334,7 +353,10 @@ export const contractNegotiationMachine = setup({
                 playerLines: [...context.playerLines, acceptLine],
                 result: {
                   outcome: "signed" as const,
-                  contract: buildSignedContract({ ...context, negotiationRound: newRound }),
+                  contract: buildSignedContract({
+                    ...context,
+                    negotiationRound: newRound
+                  }),
                   playerWasHappy: attempt.happy
                 }
               };

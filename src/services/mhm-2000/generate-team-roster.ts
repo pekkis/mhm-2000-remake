@@ -1,5 +1,5 @@
 import type { Random } from "random-js";
-import type { Player } from "@/state/player";
+import type { HiredPlayer, Player } from "@/state/player";
 import type { TeamStrength } from "@/data/levels";
 import { keisit } from "@/data/keisit";
 import { createUniqueId } from "@/services/id";
@@ -13,15 +13,31 @@ type QbPosition = Player["position"];
  * Port of the position assignment in `gene` (MHM2K.BAS:1038-1038, 1089-1089).
  */
 function positionForSlot(slot: number): QbPosition {
-  if (slot <= 2) return "g";
-  if (slot <= 8) return "d";
-  if (slot <= 12) return "lw";
-  if (slot <= 16) return "c";
-  if (slot <= 20) return "rw";
+  if (slot <= 2) {
+    return "g";
+  }
+  if (slot <= 8) {
+    return "d";
+  }
+  if (slot <= 12) {
+    return "lw";
+  }
+  if (slot <= 16) {
+    return "c";
+  }
+  if (slot <= 20) {
+    return "rw";
+  }
   // Slots 21-24: bench
-  if (slot === 21) return "d";
-  if (slot === 22) return "lw";
-  if (slot === 23) return "c";
+  if (slot === 21) {
+    return "d";
+  }
+  if (slot === 22) {
+    return "lw";
+  }
+  if (slot === 23) {
+    return "c";
+  }
   return "rw"; // slot 24
 }
 
@@ -48,7 +64,7 @@ function pickNation(random: Random): number {
 export function generateTeamRoster(
   strength: TeamStrength,
   random: Random
-): Record<string, Player> {
+): Record<string, HiredPlayer> {
   const { goalie: mw, defence: pw, attack: hw } = strength;
 
   // Target averages (CINT = round in QB)
@@ -130,7 +146,7 @@ export function generateTeamRoster(
   }
 
   // Assemble Player records
-  const result: Record<string, Player> = {};
+  const result: Record<string, HiredPlayer> = {};
 
   for (let slot = 1; slot <= 24; slot++) {
     const legacyNation = nations[slot];
@@ -141,8 +157,9 @@ export function generateTeamRoster(
     // Contract duration: bench players get 1 year, main roster 0-1 (QB svu = INT(2*RND))
     const contractDuration = slot >= 21 ? 1 : random.integer(0, 1);
 
-    const player: Player = {
+    const player: HiredPlayer = {
       ...base,
+      type: "hired",
       id,
       position,
       skill: Math.max(1, skills[slot]),
@@ -153,7 +170,11 @@ export function generateTeamRoster(
       contract: {
         type: "regular",
         duration: contractDuration,
-        salary: computeSalary({ ...base, position, skill: Math.max(1, skills[slot]) })
+        salary: computeSalary({
+          ...base,
+          position,
+          skill: Math.max(1, skills[slot])
+        })
       },
       stats: {
         season: { games: 0, goals: 0, assists: 0 },

@@ -188,7 +188,7 @@ type Tag = "muilutus:primed" | "zombified" | "national-team:selected";
  * See [VARIABLES.md → `pelaaja`](../mhm2000-qb/_NOTES/VARIABLES.md)
  * for the full per-field decoder.
  */
-export type Player = {
+export type BasePlayer = {
   id: string;
 
   /** First initial only — QB packs `nam STRING*13` as one field. */
@@ -259,21 +259,6 @@ export type Player = {
    */
   specialty: PlayerSpecialtyKey | null;
 
-  contract: Contract;
-
-  /**
-   * QB `lah` — set during `suunnitelma` (end-of-season planning,
-   * ILEX5.BAS:7170-7211); fires at ILEZ5.BAS:183-220 once `svu = 0`.
-   * Undefined = staying (QB `lah = 0`).
-   *
-   * - `cut` — QB `lah = 96`. Manager flagged for release.
-   * - `nhl` — QB `lah = 97`. Wants NHL move; **only fires when
-   *   `specialClause.kind === "nhl" && !freshlySigned`** (matured).
-   * - `foreign-return` — QB `lah = 98`. Foreign player going home.
-   * - `retirement` — QB `lah = 99`.
-   */
-  plannedDeparture?: "cut" | "nhl" | "foreign-return" | "retirement";
-
   /**
    * QB `kun` — kunto, signed fatigue. Capped above by
    * `kuntomax(MIN(age, 33))`. Per-turn movement: rest +2, light
@@ -312,6 +297,23 @@ export type Player = {
   };
 };
 
+export type HiredPlayer = BasePlayer & {
+  type: "hired";
+  contract: Contract;
+  /**
+   * QB `lah` — set during `suunnitelma` (end-of-season planning,
+   * ILEX5.BAS:7170-7211); fires at ILEZ5.BAS:183-220 once `svu = 0`.
+   * Undefined = staying (QB `lah = 0`).
+   *
+   * - `cut` — QB `lah = 96`. Manager flagged for release.
+   * - `nhl` — QB `lah = 97`. Wants NHL move; **only fires when
+   *   `specialClause.kind === "nhl" && !freshlySigned`** (matured).
+   * - `foreign-return` — QB `lah = 98`. Foreign player going home.
+   * - `retirement` — QB `lah = 99`.
+   */
+  plannedDeparture?: "cut" | "nhl" | "foreign-return" | "retirement";
+};
+
 /**
  * A player on the free-agent market (`bel()` in QB).
  *
@@ -320,7 +322,11 @@ export type Player = {
  * negotiation starting point (`askingSalary`) fed into `sopimusext`.
  * `plannedDeparture` is also meaningless outside a live contract.
  */
-export type MarketPlayer = Omit<Player, "contract" | "plannedDeparture"> & {
+export type MarketPlayer = BasePlayer & {
+  type: "market";
+
   /** QB `pel.sra` — asking salary, basis for contract negotiation. */
   askingSalary: number;
 };
+
+export type Player = HiredPlayer | MarketPlayer;

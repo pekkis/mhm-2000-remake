@@ -33,8 +33,8 @@ describe("keisit data table", () => {
     });
 
     it("specific known values from KEISIT.M2K (spot-check lines 1, 15, 100)", () => {
-      expect(keisit[0][0]).toBe(1);   // line 1
-      expect(keisit[0][14]).toBe(2);  // line 15
+      expect(keisit[0][0]).toBe(1); // line 1
+      expect(keisit[0][14]).toBe(2); // line 15
       expect(keisit[0][99]).toBe(17); // line 100
     });
   });
@@ -49,7 +49,9 @@ describe("keisit data table", () => {
 
     it("goalies (1) are the rarest position", () => {
       const counts = [0, 0, 0, 0, 0, 0]; // index 0 unused
-      for (const v of keisit[1]) counts[v]++;
+      for (const v of keisit[1]) {
+        counts[v]++;
+      }
       // Goalies should be fewest; forwards (3,4,5) should each be ~22
       expect(counts[1]).toBeLessThan(counts[3]);
       expect(counts[1]).toBeLessThan(counts[4]);
@@ -57,7 +59,7 @@ describe("keisit data table", () => {
     });
 
     it("specific known values (line 101=1, line 150=5, line 200=5)", () => {
-      expect(keisit[1][0]).toBe(1);  // line 101 (row[1][0])
+      expect(keisit[1][0]).toBe(1); // line 101 (row[1][0])
       expect(keisit[1][49]).toBe(5); // line 150
       expect(keisit[1][99]).toBe(5); // line 200
     });
@@ -92,7 +94,9 @@ describe("keisit data table", () => {
 
     it("neutral ego (10) is the most common value", () => {
       const counts = new Array(21).fill(0);
-      for (const v of keisit[3]) counts[v]++;
+      for (const v of keisit[3]) {
+        counts[v]++;
+      }
       const maxCount = Math.max(...counts);
       expect(counts[10]).toBe(maxCount);
     });

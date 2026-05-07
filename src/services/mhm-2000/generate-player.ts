@@ -37,19 +37,35 @@ function pickSurname(iso: CountryIso, random: Random): string {
 export function generateBaseAttributes(
   legacyNation: number,
   random: Random
-): Omit<Player, "id" | "skill" | "contract" | "specialty" | "effects" | "tags" | "stats" | "condition" | "plannedDeparture"> {
+): Omit<
+  Player,
+  | "id"
+  | "skill"
+  | "contract"
+  | "specialty"
+  | "effects"
+  | "tags"
+  | "stats"
+  | "condition"
+  | "plannedDeparture"
+  | "type"
+> {
   // keisit rows are 0-indexed; QB keisix(row, col) → keisit[row-1][col-1]
   const posQb = keisit[1][random.integer(0, 99)];
-  const age    = keisit[2][random.integer(0, 99)];
-  const ego    = keisit[3][random.integer(0, 99)];
+  const age = keisit[2][random.integer(0, 99)];
+  const ego = keisit[3][random.integer(0, 99)];
 
   // Leadership & charisma use triangular distribution (average of two rolls)
-  const ldrIdx = Math.floor((random.integer(0, 99) + random.integer(0, 99)) / 2);
-  const karIdx = Math.floor((random.integer(0, 99) + random.integer(0, 99)) / 2);
+  const ldrIdx = Math.floor(
+    (random.integer(0, 99) + random.integer(0, 99)) / 2
+  );
+  const karIdx = Math.floor(
+    (random.integer(0, 99) + random.integer(0, 99)) / 2
+  );
   const leadership = keisit[4][ldrIdx];
-  const charisma   = keisit[5][karIdx];
+  const charisma = keisit[5][karIdx];
 
-  const powerplayMod   = keisit[6][random.integer(0, 99)];
+  const powerplayMod = keisit[6][random.integer(0, 99)];
   const penaltyKillMod = keisit[6][random.integer(0, 99)];
 
   const position: Player["position"] = positionByQbIndex[posQb] ?? "c";

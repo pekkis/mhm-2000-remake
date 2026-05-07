@@ -69,6 +69,7 @@ export function generateMarketPlayers(
     const id = createUniqueId();
     const player: MarketPlayer = {
       ...base,
+      type: "market",
       id,
       skill,
       specialty,

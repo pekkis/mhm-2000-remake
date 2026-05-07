@@ -27,16 +27,25 @@ const KARLISA = 0.015;
  *   psk= 1 →    100  psk= 5 →    871  psk=10 →  3 311
  *   psk=12 →  5 472  psk=15 →  9 836  psk=20 → 27 073
  */
-export function computeSalary(player: {
-  skill: number;
-  position: Player["position"];
-  powerplayMod: number;
-  penaltyKillMod: number;
-  leadership: number;
-  charisma: number;
-}): number {
-  const { skill, position, powerplayMod, penaltyKillMod, leadership, charisma } =
-    player;
+export function computeSalary(
+  player: Pick<
+    Player,
+    | "skill"
+    | "position"
+    | "powerplayMod"
+    | "penaltyKillMod"
+    | "leadership"
+    | "charisma"
+  >
+): number {
+  const {
+    skill,
+    position,
+    powerplayMod,
+    penaltyKillMod,
+    leadership,
+    charisma
+  } = player;
   const exponent = POTENSSI + skill * POTENSSIPLUS;
   let salary = Math.pow(skill, exponent) * PERUSRAHA;
   if (position !== "g") {

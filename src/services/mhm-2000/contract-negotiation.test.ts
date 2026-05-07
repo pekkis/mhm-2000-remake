@@ -7,10 +7,10 @@ import {
   computeAskingPrice,
   computeAcceptanceProbability,
   attemptNegotiation,
-  adjustSalary,
-  type NegotiationPlayer
+  adjustSalary
 } from "./contract-negotiation";
 import type { TeamBudget } from "@/data/mhm2000/budget";
+import type { MarketPlayer } from "@/state/player";
 
 // ─── Test fixtures ────────────────────────────────────────────────────────────
 
@@ -42,7 +42,8 @@ const GENEROUS_BUDGET: TeamBudget = {
   juniors: 5
 };
 
-const BASE_SKATER: NegotiationPlayer = {
+const BASE_SKATER: MarketPlayer = {
+  type: "market",
   id: "test1",
   initial: "P",
   surname: "Pasolini",
@@ -63,8 +64,7 @@ const BASE_SKATER: NegotiationPlayer = {
   stats: {
     season: { games: 0, goals: 0, assists: 0 },
     total: { games: 0, goals: 0, assists: 0 }
-  },
-  hasSpecialContract: false
+  }
 };
 
 // ─── computeTeamNeedsRating ───────────────────────────────────────────────────
@@ -90,7 +90,7 @@ describe("computeTeamNeedsRating — port of QB `a` calculation", () => {
     // goalie:  5+1+2 - 8 =  0 (positive, capped)
     const budget: TeamBudget = { ...TIGHT_BUDGET, goalieCoaching: 5 };
     const skaterA = computeTeamNeedsRating(budget, { position: "c", skill: 8 });
-    const goalieA  = computeTeamNeedsRating(budget, { position: "g", skill: 8 });
+    const goalieA = computeTeamNeedsRating(budget, { position: "g", skill: 8 });
     expect(skaterA).toBe(-4);
     expect(goalieA).toBe(0);
   });
@@ -100,8 +100,11 @@ describe("computeTeamNeedsRating — port of QB `a` calculation", () => {
     // skater:  5+1+2 - 8 = 0 (surplus)
     // goalie:  1+1+2 - 8 = -4
     const budget: TeamBudget = { ...TIGHT_BUDGET, coaching: 5 };
-    const skaterA = computeTeamNeedsRating(budget, { position: "lw", skill: 8 });
-    const goalieA  = computeTeamNeedsRating(budget, { position: "g",  skill: 8 });
+    const skaterA = computeTeamNeedsRating(budget, {
+      position: "lw",
+      skill: 8
+    });
+    const goalieA = computeTeamNeedsRating(budget, { position: "g", skill: 8 });
     expect(skaterA).toBe(0);
     expect(goalieA).toBe(-4);
   });
@@ -109,15 +112,24 @@ describe("computeTeamNeedsRating — port of QB `a` calculation", () => {
   it("benefits slot is multiplied by 2 — port of QB valb(5)*2", () => {
     // coaching=1, health=1, benefits=1, skill=5 → 1+1+2-5 = -1
     // coaching=1, health=1, benefits=2, skill=5 → 1+1+4-5 =  1 → 0 (capped)
-    const low  = computeTeamNeedsRating({ ...TIGHT_BUDGET, benefits: 1 }, { position: "c", skill: 5 });
-    const high = computeTeamNeedsRating({ ...TIGHT_BUDGET, benefits: 2 }, { position: "c", skill: 5 });
+    const low = computeTeamNeedsRating(
+      { ...TIGHT_BUDGET, benefits: 1 },
+      { position: "c", skill: 5 }
+    );
+    const high = computeTeamNeedsRating(
+      { ...TIGHT_BUDGET, benefits: 2 },
+      { position: "c", skill: 5 }
+    );
     expect(low).toBe(-1);
     expect(high).toBe(0); // benefits*2 pushed it into surplus
   });
 
   it("high-skill player with tight budget: deeply negative rating", () => {
     // TIGHT (all 1): 1+1+2-15 = -11
-    const a = computeTeamNeedsRating(TIGHT_BUDGET, { position: "c", skill: 15 });
+    const a = computeTeamNeedsRating(TIGHT_BUDGET, {
+      position: "c",
+      skill: 15
+    });
     expect(a).toBe(-11);
   });
 });
@@ -246,7 +258,11 @@ describe("computeAskingPrice — port of palkehd(2) computation", () => {
     const base = computeAskingPrice(BASE_SKATER, baseSalary, 0, 1, "none", 0);
     const highEgo = computeAskingPrice(
       { ...BASE_SKATER, ego: 20 },
-      baseSalary, 0, 1, "none", 0
+      baseSalary,
+      0,
+      1,
+      "none",
+      0
     );
     expect(highEgo).toBeCloseTo(base * 1.1, 0);
   });
@@ -255,39 +271,77 @@ describe("computeAskingPrice — port of palkehd(2) computation", () => {
     const base = computeAskingPrice(BASE_SKATER, baseSalary, 0, 1, "none", 0);
     const lowEgo = computeAskingPrice(
       { ...BASE_SKATER, ego: 1 },
-      baseSalary, 0, 1, "none", 0
+      baseSalary,
+      0,
+      1,
+      "none",
+      0
     );
     expect(lowEgo).toBeCloseTo(base * (1 + (1 - 10) * 0.01), 0);
   });
 
   it("negative teamNeedsRating slightly reduces asking price", () => {
     const base = computeAskingPrice(BASE_SKATER, baseSalary, 0, 1, "none", 0);
-    const stretched = computeAskingPrice(BASE_SKATER, baseSalary, -3, 1, "none", 0);
+    const stretched = computeAskingPrice(
+      BASE_SKATER,
+      baseSalary,
+      -3,
+      1,
+      "none",
+      0
+    );
     expect(stretched).toBeLessThan(base);
   });
 
   it("longer contract increases asking price for young players (26-age premium)", () => {
     const d1 = computeAskingPrice(
-      { ...BASE_SKATER, age: 20 }, baseSalary, 0, 1, "none", 0
+      { ...BASE_SKATER, age: 20 },
+      baseSalary,
+      0,
+      1,
+      "none",
+      0
     );
     const d4 = computeAskingPrice(
-      { ...BASE_SKATER, age: 20 }, baseSalary, 0, 4, "none", 0
+      { ...BASE_SKATER, age: 20 },
+      baseSalary,
+      0,
+      4,
+      "none",
+      0
     );
     expect(d4).toBeGreaterThan(d1);
   });
 
   it("free-fire clause increases asking price", () => {
     const base = computeAskingPrice(BASE_SKATER, baseSalary, 0, 1, "none", 0);
-    const ff = computeAskingPrice(BASE_SKATER, baseSalary, 0, 1, "free-fire", 0);
+    const ff = computeAskingPrice(
+      BASE_SKATER,
+      baseSalary,
+      0,
+      1,
+      "free-fire",
+      0
+    );
     expect(ff).toBeGreaterThan(base);
   });
 
   it("free-fire premium scales with leadership", () => {
     const lowLdr = computeAskingPrice(
-      { ...BASE_SKATER, leadership: 1 }, baseSalary, 0, 1, "free-fire", 0
+      { ...BASE_SKATER, leadership: 1 },
+      baseSalary,
+      0,
+      1,
+      "free-fire",
+      0
     );
     const highLdr = computeAskingPrice(
-      { ...BASE_SKATER, leadership: 20 }, baseSalary, 0, 1, "free-fire", 0
+      { ...BASE_SKATER, leadership: 20 },
+      baseSalary,
+      0,
+      1,
+      "free-fire",
+      0
     );
     expect(highLdr).toBeGreaterThan(lowLdr);
   });
@@ -295,20 +349,40 @@ describe("computeAskingPrice — port of palkehd(2) computation", () => {
   it("long contract without NHL clause adds premium when player is eligible", () => {
     // threshold=2 means NHL clause required for 2+ year contracts
     const withNhl = computeAskingPrice(
-      { ...BASE_SKATER, age: 20, skill: 15 }, baseSalary, 0, 3, "nhl", 2
+      { ...BASE_SKATER, age: 20, skill: 15 },
+      baseSalary,
+      0,
+      3,
+      "nhl",
+      2
     );
     const withoutNhl = computeAskingPrice(
-      { ...BASE_SKATER, age: 20, skill: 15 }, baseSalary, 0, 3, "none", 2
+      { ...BASE_SKATER, age: 20, skill: 15 },
+      baseSalary,
+      0,
+      3,
+      "none",
+      2
     );
     expect(withoutNhl).toBeGreaterThan(withNhl);
   });
 
   it("NHL clause avoids the long-contract premium", () => {
     const base = computeAskingPrice(
-      { ...BASE_SKATER, age: 20, skill: 15 }, baseSalary, 0, 1, "none", 2
+      { ...BASE_SKATER, age: 20, skill: 15 },
+      baseSalary,
+      0,
+      1,
+      "none",
+      2
     );
     const nhlLong = computeAskingPrice(
-      { ...BASE_SKATER, age: 20, skill: 15 }, baseSalary, 0, 3, "nhl", 2
+      { ...BASE_SKATER, age: 20, skill: 15 },
+      baseSalary,
+      0,
+      3,
+      "nhl",
+      2
     );
     // NHL clause avoids the premium so long contract with NHL < long without
     expect(nhlLong).toBeCloseTo(base * (1 + (26 - 20) * 0.01 * (3 - 1)), 0);
