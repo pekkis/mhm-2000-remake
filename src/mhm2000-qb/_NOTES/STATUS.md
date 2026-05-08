@@ -137,6 +137,36 @@ tournament-match path. All TODO-tagged inline in the port.
     [DATA-FILES.md](DATA-FILES.md) for the canonical token-rewrite
     table.
 
+### Lineup & strength calculation decoded (2026-05-08)
+
+Full decode of `SUB voimamaar`, `SUB automa`, `SUB ketjuchk`,
+`SUB ketlaita`, `SUB kc`, `SUB pisteet`, and `KARSA.M2K`. Documented
+in new [LINEUPS.md](LINEUPS.md). Key findings:
+
+- **`ketju(1..5, 1..6, plkm)`** = 3D lineup array: position-slot ×
+  unit × manager. Units 1–3 = regular (3 D pairs + 3 forward lines),
+  4 = forward line 4 (no 4th D pair), 5 = PP (5 skaters), 6 = PK
+  (4 skaters: 2D + 2F, no RW slot).
+- **PK forward slots are position-generic** (`xxx=6` in `zzra`):
+  any LW/C/RW contributes at full strength. Confirmed by QB code —
+  only goalies/defensemen get the ×0.7 out-of-position penalty.
+  TS type uses `f1`/`f2` (not `lw`/`c`).
+- **PP forward slots ARE position-specific** (`xxx=3/4/5`): wrong
+  forward type gets −1, defenseman in forward slot gets ×0.7.
+- **`zzra` per-player evaluation**: `temp = psk + plus + erik(3)`,
+  add `yvo`/`avo` for PP/PK, then position penalty, `spe=8`
+  (greedySurfer) penalty ×0.7, condition penalty (×0.9..×0.3),
+  floor at 0.
+- **`ket` rule**: max 2 lineup units per player (regular + special).
+  `SUB kc` only counts units 1–4 (regular), not PP/PK units 5/6.
+- **`yvpelaa`/`avpelaa` fallback**: PP/PK fall back to unit 1 if
+  the dedicated unit is incomplete.
+- **`SUB pisteet`**: goal-scorer attribution uses weighted random
+  (`hketju^2.5` for forward lines, `pketju^2` for D pairs). PP goals
+  attribute from the PP unit directly.
+- **TS `Lineup` type validated** against QB. No changes needed.
+- All existing \_NOTES docs updated with decoded lineup details.
+
 ### End-of-season port progress
 
 Two `ILEZ5.BAS` SUBs are now decoded, ported, and pinned by parity
