@@ -367,7 +367,10 @@ describe("NEGOTIATE event", () => {
     actor.send({ type: "NEGOTIATE" });
     const snap = actor.getSnapshot();
     // Should have resolved (signed or playerWalked)
-    const done = snap.status === "done" || snap.value === "negotiating" || snap.value === "result";
+    const done =
+      snap.status === "done" ||
+      snap.value === "negotiating" ||
+      snap.value === "result";
     expect(done).toBe(true);
   });
 
@@ -387,7 +390,9 @@ describe("NEGOTIATE event", () => {
       expect(snap.context.willingnessThreshold).toBeLessThan(before);
     } else {
       // playerWalked is also valid — threshold hit 0
-      expect(["playerWalked", "signed"]).toContain(snap.context.result?.outcome ?? snap.output?.outcome);
+      expect(["playerWalked", "signed"]).toContain(
+        snap.context.result?.outcome ?? snap.output?.outcome
+      );
     }
   });
 

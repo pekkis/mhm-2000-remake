@@ -1362,16 +1362,22 @@ export const gameMachine = setup({
                         target: "browsing"
                       },
                       {
-                        actions: enqueueActions(({ enqueue, event, context }) => {
-                          runInterpreter(context, enqueue, (draft, notify) => {
-                            applyEffects(
-                              draft,
-                              event.output.effects,
-                              spawnEvent,
-                              notify
+                        actions: enqueueActions(
+                          ({ enqueue, event, context }) => {
+                            runInterpreter(
+                              context,
+                              enqueue,
+                              (draft, notify) => {
+                                applyEffects(
+                                  draft,
+                                  event.output.effects,
+                                  spawnEvent,
+                                  notify
+                                );
+                              }
                             );
-                          });
-                        }),
+                          }
+                        ),
                         target: "browsing"
                       }
                     ]

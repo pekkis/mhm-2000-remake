@@ -40,8 +40,12 @@ export const applyPositionPenalty = (
     case "c":
     case "rw":
       // xxx=3/4/5: D in forward slot → ×0.7, wrong forward type → −1
-      if (playerPosition === "d") return Math.trunc(0.7 * baseValue);
-      if (playerPosition !== slot) return baseValue - 1;
+      if (playerPosition === "d") {
+        return Math.trunc(0.7 * baseValue);
+      }
+      if (playerPosition !== slot) {
+        return baseValue - 1;
+      }
       return baseValue;
 
     case "pkf":
@@ -93,10 +97,18 @@ export const applyConditionPenalty = (
   condition: number,
   value: number
 ): number => {
-  if (condition >= 0) return value;
-  if (condition === -1) return Math.trunc(0.9 * value);
-  if (condition === -2) return Math.trunc(0.7 * value);
-  if (condition === -3) return Math.trunc(0.5 * value);
+  if (condition >= 0) {
+    return value;
+  }
+  if (condition === -1) {
+    return Math.trunc(0.9 * value);
+  }
+  if (condition === -2) {
+    return Math.trunc(0.7 * value);
+  }
+  if (condition === -3) {
+    return Math.trunc(0.5 * value);
+  }
   return Math.trunc(0.3 * value);
 };
 

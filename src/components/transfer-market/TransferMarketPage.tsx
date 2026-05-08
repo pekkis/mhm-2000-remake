@@ -7,7 +7,10 @@ import Heading from "@/components/ui/Heading";
 import Paragraph from "@/components/ui/Paragraph";
 import Stack from "@/components/ui/Stack";
 import { Table, Td, Th } from "@/components/ui/Table";
-import { GameMachineContext, useGameContext } from "@/context/game-machine-context";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
 import { activeManager, marketPlayers } from "@/machines/selectors";
 import type { MarketPlayer, Player } from "@/state/player";
 import type { FC } from "react";

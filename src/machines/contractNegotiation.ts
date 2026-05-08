@@ -65,7 +65,11 @@ export type ContractNegotiationOutput =
     }
   | { outcome: "refused"; playerLines: string[]; effects: EventEffect[] }
   | { outcome: "playerWalked"; playerLines: string[]; effects: EventEffect[] }
-  | { outcome: "alreadyNegotiated"; playerLines: string[]; effects: EventEffect[] }
+  | {
+      outcome: "alreadyNegotiated";
+      playerLines: string[];
+      effects: EventEffect[];
+    }
   | { outcome: "cancelled"; effects: EventEffect[] };
 
 // ─── Internal types ───────────────────────────────────────────────────────────
