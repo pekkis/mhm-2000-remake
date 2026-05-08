@@ -175,23 +175,22 @@ export const performanceModifier = (player: HiredPlayer): number =>
  * their condition is non-negative.
  */
 export const isAvailable = (player: HiredPlayer): boolean =>
-  player.effects.every((e) => e.type === "skill") &&
-  player.condition >= 0;
+  player.effects.every((e) => e.type === "skill") && player.condition >= 0;
 
 type Pool = "regular" | "pp" | "pk";
 
 /**
  * Sort key for pool ranking (QB `verrokki` GOSUB, ILEX5.BAS:912-936).
  *
- * - Regular: `psk + plus` (enforcer → 99).
- * - PP: `psk + yvo + plus` (no enforcer boost).
- * - PK: `psk + avo + plus` (no enforcer boost).
+ * - Regular: `psk + plus` (extremelyFat spe=4 → 99).
+ * - PP: `psk + yvo + plus` (no fat boost).
+ * - PK: `psk + avo + plus` (no fat boost).
  */
 const sortKey = (player: HiredPlayer, pool: Pool): number => {
   const plus = performanceModifier(player);
   switch (pool) {
     case "regular":
-      return player.specialty === "enforcer" ? 99 : player.skill + plus;
+      return player.specialty === "extremelyFat" ? 99 : player.skill + plus;
     case "pp":
       return player.skill + player.powerplayMod + plus;
     case "pk":
@@ -208,7 +207,7 @@ const compareByPool =
   (pool: Pool) =>
   (a: HiredPlayer, b: HiredPlayer): number => {
     const diff = sortKey(b, pool) - sortKey(a, pool);
-    if (diff !== 0) return diff;
+    if (diff !== 0) {return diff;}
     return a.age - b.age;
   };
 
@@ -273,26 +272,26 @@ export const autoLineup = (
     defensivePairings: [
       { ld: regD[0]?.id, rd: regD[1]?.id },
       { ld: regD[2]?.id, rd: regD[3]?.id },
-      { ld: regD[4]?.id, rd: regD[5]?.id },
+      { ld: regD[4]?.id, rd: regD[5]?.id }
     ],
     forwardLines: [
       { lw: regLW[0]?.id, c: regC[0]?.id, rw: regRW[0]?.id },
       { lw: regLW[1]?.id, c: regC[1]?.id, rw: regRW[1]?.id },
       { lw: regLW[2]?.id, c: regC[2]?.id, rw: regRW[2]?.id },
-      { lw: regLW[3]?.id, c: regC[3]?.id },
+      { lw: regLW[3]?.id, c: regC[3]?.id }
     ],
     powerplayTeam: {
       ld: ppD[0]?.id,
       rd: ppD[1]?.id,
       lw: ppLW[0]?.id,
       c: ppC[0]?.id,
-      rw: ppRW[0]?.id,
+      rw: ppRW[0]?.id
     },
     penaltyKillTeam: {
       ld: pkD[0]?.id,
       rd: pkD[1]?.id,
       f1: pkLW[0]?.id,
-      f2: pkC[0]?.id,
-    },
+      f2: pkC[0]?.id
+    }
   };
 };

@@ -167,6 +167,27 @@ in new [LINEUPS.md](LINEUPS.md). Key findings:
 - **TS `Lineup` type validated** against QB. No changes needed.
 - All existing \_NOTES docs updated with decoded lineup details.
 
+### Auto-lineup builder ported (2026-05-08)
+
+`SUB automa` (ILEX5.BAS:822-920) ported as `autoLineup()` in
+`src/services/lineup.ts`. Pure function: `(players, mode?) → Lineup`.
+
+- Two modes: `"gameday"` (default, filters injured/suspended/striking/
+  absent/overtired) and `"potential"` (uses all players regardless).
+  No separate "potential" routine exists in the QB source — verified
+  by full grep.
+- Three sorting pools (regular/PP/PK) match QB `verrokki` exactly.
+- `spe=4` (`extremelyFat`) gets sort value 99 in regular pool —
+  the **Läski-Salonen clause** guaranteeing the fat supergoalie
+  always auto-slots to starter.
+
+**Lesson learned:** `spe=4` was initially misidentified as `enforcer`
+(which is `spe=5`). The specialty array is 0-indexed and the English
+names don't match QB's integer ordering intuitively. Full mapping
+table now in GLOSSARY.md "Specialty index off-by-one trap" section.
+Always cross-reference against `playerSpecialtyByLegacyIndex` in
+`src/data/player-specialties.ts`.
+
 ### End-of-season port progress
 
 Two `ILEZ5.BAS` SUBs are now decoded, ported, and pinned by parity

@@ -116,8 +116,18 @@ auto-fill then assigns:
 - **PK** (unit 6): top 2 D by PK key → PK defense, top 1 LW/C by PK
   key → PK forwards (no RW slot per `KARSA.M2K`)
 
-The `spe = 4` (pitkäkynsi/enforcer) players get sort value 99 in pool
-1, pushing them to the top of the regular lineup regardless of skill.
+The `spe = 4` (`extremelyFat` / ÄÄRIMMÄISEN LIHAVA) players get sort
+value 99 in pool 1, guaranteeing top-line ice time regardless of skill.
+This is effectively a **Läski-Salonen clause** — the event-spawned
+supergoalie always auto-slots to starter.
+
+> **⚠ Off-by-one trap:** `spe = 4` is `extremelyFat`, NOT `enforcer`.
+> `enforcer` is `spe = 5`. The QB specialty array is 0-indexed
+> (`none=0, evangelist=1, foulMouth=2, uglyAndWeird=3,
+extremelyFat=4, enforcer=5, …`). When reading QB code like
+> `IF spe = N`, always cross-reference against
+> `src/data/player-specialties.ts:playerSpecialtyByLegacyIndex`
+> — never guess from the English name.
 
 ---
 

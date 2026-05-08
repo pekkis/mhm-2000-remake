@@ -285,9 +285,9 @@ describe("isAvailable", () => {
   });
 
   it("on strike → unavailable", () => {
-    expect(
-      isAvailable(createPlayer({ effects: [{ type: "strike" }] }))
-    ).toBe(false);
+    expect(isAvailable(createPlayer({ effects: [{ type: "strike" }] }))).toBe(
+      false
+    );
   });
 
   it("national team absence → unavailable", () => {
@@ -456,20 +456,20 @@ describe("autoLineup", () => {
     expect(lineup.penaltyKillTeam.f2).toBe("p15");
   });
 
-  it("enforcer sorts to top in regular pool", () => {
+  it("extremelyFat (spe=4) sorts to top in regular pool", () => {
     const roster = buildRoster();
-    // Make a low-skill defenseman an enforcer
+    // Make a low-skill defenseman extremely fat
     roster[6] = createPlayer({
       id: "p7",
       position: "d",
       skill: 10,
-      specialty: "enforcer"
+      specialty: "extremelyFat"
     });
 
     const lineup = autoLineup(roster);
-    // Enforcer gets sort value 99, so p7 is now first D
+    // LÄSKIPERSE gets sort value 99, so p7 is now first D
     expect(lineup.defensivePairings[0].ld).toBe("p7");
-    // But PP pool has no enforcer boost → p7 stays in normal position
+    // But PP pool has no fat boost → p7 stays in normal position
     expect(lineup.powerplayTeam.ld).not.toBe("p7");
   });
 

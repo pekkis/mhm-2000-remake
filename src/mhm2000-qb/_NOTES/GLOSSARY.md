@@ -125,6 +125,35 @@ over the QB source. `❓ TODO` = please clarify.
 | `Pier Paolo Proxy Pasolini` | **shared zero-attribute proxy manager** for every light team in the TS port. Appended to [src/data/managers.ts](../../data/managers.ts) at index 54 (last row), all six attributes 0, tags `["proxy", "light"]`. Mirrors QB's implicit zero-row at `mtaito(*, 0)` shared by all 38 light teams. Singleton by design: one manager id, every light team's `manager` field references it. **If something later breaks because two light teams accidentally co-equal each other through their manager reference, that's the moment to pivot to per-team Pasolini instances.** Until then, the singleton is the faithful port.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `chainahdus`                | CHAIN return-tag (1=stats, 2=arena)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |                                    |
 | `ensintoinen`               | "first-time" started flag                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |                                    |
+| `Läski-Salonen`             | **legendary fat goalie** — event-spawned guest player with `spe = 4` (ÄÄRIMMÄISEN LIHAVA / `extremelyFat`). The `spe = 4 → 99` sort override in `SUB automa` is effectively a Läski-Salonen clause: guarantees the fat supergoalie auto-slots to starter when he arrives. See the off-by-one warning below.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | confirmed                          |
+
+### ⚠ Specialty index off-by-one trap
+
+QB specialty values (`spe`) are **0-indexed** and easy to misidentify
+when reading raw QB code like `IF pel(...).spe = 4 THEN`:
+
+| `spe` | Key                | Finnish             |
+| ----- | ------------------ | ------------------- |
+| 0     | `none`             | (ei erikoisuutta)   |
+| 1     | `evangelist`       | VALAA USKOA MUIHIN  |
+| 2     | `foulMouth`        | RUMAN KIELENKÄYTÖN… |
+| 3     | `uglyAndWeird`     | RUMA JA OUTO MIES   |
+| 4     | `extremelyFat`     | ÄÄRIMMÄISEN LIHAVA  |
+| 5     | `enforcer`         | POLIISI             |
+| 6     | `samba`            | SAMBA SOI!          |
+| 7     | `haminator`        | HAMINAATOR          |
+| 8     | `greedySurfer`     | RAHANAHNE SURFFAAJA |
+| 9     | `moody`            | AILAHTELEVAINEN     |
+| 10    | `daddyPays`        | ISI MAKSAA JOS…     |
+| 11    | `magicalRadarPair` | KUULUU MAAGISEEN…   |
+| 12    | `agitator`         | AGITAATTORI         |
+| 13    | `zombie`           | ZOMBI               |
+
+**Always** cross-reference `spe` integer values against
+`src/data/player-specialties.ts:playerSpecialtyByLegacyIndex`. The
+table above was burned into memory after `spe = 4` was misidentified
+as `enforcer` (it's `extremelyFat`) during the `automa` port.
+Enforcer is `spe = 5`.
 
 ## Erikoistoimet — manager investment sliders
 
