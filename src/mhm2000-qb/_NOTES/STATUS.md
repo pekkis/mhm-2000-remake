@@ -188,6 +188,36 @@ table now in GLOSSARY.md "Specialty index off-by-one trap" section.
 Always cross-reference against `playerSpecialtyByLegacyIndex` in
 `src/data/player-specialties.ts`.
 
+### Strength pipeline ported (2026-05-08)
+
+The full `zzra` per-player strength evaluation (ILEX5.BAS:8545-8570)
+ported as composable pure functions in `src/services/lineup.ts`:
+
+- `applyPositionPenalty(position, slot, base)` — FIX (trunc)
+- `applySpecialtyPenalty(specialty, value)` — CINT (round), greedySurfer only
+- `applyConditionPenalty(condition, value)` — FIX (trunc)
+- `floorAtZero(value)`
+- `effectiveStrength(base, position, slot, specialty, condition)` — composed in QB order
+
+**CINT vs FIX is load-bearing.** Specialty penalty uses `Math.round`
+(QB CINT), all others use `Math.trunc` (QB FIX). The difference
+matters at boundary values (e.g. `0.7 * 15 = 10.5` → round=11, trunc=10).
+
+Also ported: `performanceModifier(player)` (sums active skill effects =
+QB `plus`), `isAvailable(player)` (availability gate = QB `inj=0 AND
+svu>0 AND kun>=0`).
+
+### Game machine wiring (2026-05-08)
+
+- `AUTO_LINEUP` event + `executeAutoLineup` action added to
+  `gameMachine`. Calls `autoLineup(values(team.players))` via
+  `assign` + `produce`.
+- `HumanTeam.players` type fixed: `Record<string, Player>` →
+  `Record<string, HiredPlayer>` (a team roster can't hold market players).
+- Skeleton pages: `/pelaajat` (Pelaajat) and `/kokoonpano` (Kokoonpano)
+  routed in `Game.tsx`.
+- `src/machines/commands.ts` deleted (dead code, zero imports).
+
 ### End-of-season port progress
 
 Two `ILEZ5.BAS` SUBs are now decoded, ported, and pinned by parity

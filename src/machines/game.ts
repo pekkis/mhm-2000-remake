@@ -40,6 +40,7 @@ import { championBetMachine } from "@/machines/championBet";
 import { contractNegotiationMachine } from "@/machines/contractNegotiation";
 import type { CompetitionId } from "@/types/competitions";
 import { values, entries } from "remeda";
+import { autoLineup } from "@/services/lineup";
 
 import {
   applyEffects,
@@ -219,6 +220,10 @@ export type GameMachineEvents =
   | {
       type: "NEGOTIATE_MARKET_PLAYER";
       payload: { managerId: string; playerId: string };
+    }
+  | {
+      type: "AUTO_LINEUP";
+      payload: { manager: string };
     };
 
 export const gameMachine = setup({
@@ -680,6 +685,24 @@ export const gameMachine = setup({
           }
           m.services[params.service] = !m.services[params.service];
         })
+    ),
+
+    /**
+     * Run the auto-lineup builder for the manager's team.
+     * Port of SUB automa (ILEX5.BAS:822-920).
+     */
+    executeAutoLineup: assign(({ context }, params: { manager: string }) =>
+      produce(context, (draft) => {
+        const m = draft.managers[params.manager];
+        if (!m || m.team === undefined || m.kind === "ai") {
+          return;
+        }
+        const team = draft.teams[m.team];
+        if (team.kind !== "human") {
+          return;
+        }
+        team.lineup = autoLineup(values(team.players));
+      })
     ),
 
     /**
@@ -1198,6 +1221,12 @@ export const gameMachine = setup({
     TOGGLE_SERVICE: {
       actions: {
         type: "executeToggleService",
+        params: ({ event }) => event.payload
+      }
+    },
+    AUTO_LINEUP: {
+      actions: {
+        type: "executeAutoLineup",
         params: ({ event }) => event.payload
       }
     },

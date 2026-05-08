@@ -5,7 +5,7 @@ import type { ManagerAttributes } from "@/data/managers";
 import type { TeamStrength } from "@/data/levels";
 import type { BudgetCategoryName, BudgetLevel } from "@/data/mhm2000/budget";
 import type { GameRecord } from "@/machines/types";
-import type { MarketPlayer, Player } from "@/state/player";
+import type { HiredPlayer, MarketPlayer, Player } from "@/state/player";
 import type { Lineup } from "@/state/lineup";
 
 export type { Player };
@@ -105,7 +105,7 @@ export type HumanTeam = BaseTeam & {
   kind: "human";
   /** QB `mw/pw/hw` — computed from roster by `orgamaar`; initially seeded from team tier. */
   strengthObj: TeamStrength;
-  players: Record<string, Player>;
+  players: Record<string, HiredPlayer>;
   lineup: Lineup;
 };
 

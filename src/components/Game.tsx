@@ -29,6 +29,8 @@ import { GameMachineContext } from "@/context/game-machine-context";
 import PlayoffBracket from "@/components/PlayoffBracket";
 import POCMenu from "@/components/POCMenu";
 import TransferMarketPage from "@/components/transfer-market/TransferMarketPage";
+import Players from "@/components/Players";
+import Lineup from "@/components/Lineup";
 
 type PhaseProps = {
   phase: string | undefined;
@@ -157,6 +159,8 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
           <Route path="/tilastot" element={<Stats />} />
           <Route path="/kutsut" element={<Invitations />} />
           <Route path="/veikkaus" element={<Betting />} />
+          <Route path="/pelaajat" element={<Players />} />
+          <Route path="/kokoonpano" element={<Lineup />} />
           <Route path="/debug" element={<DeveloperMenu />} />
           <Route path="/poc" element={<POCMenu />} />
         </Routes>

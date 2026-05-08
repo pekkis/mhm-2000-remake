@@ -41,6 +41,10 @@ const ActionMenu = () => {
             Päävalikko
           </Link>
 
+          <Link onClick={close} to="/kokoonpano">
+            Kokoonpano
+          </Link>
+
           {team.morale <= CRISIS_MORALE_MAX && (
             <Calendar when={(c) => c.crisisMeeting}>
               <Link onClick={close} to="/kriisipalaveri">
