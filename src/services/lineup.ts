@@ -1,5 +1,6 @@
 import type { HiredPlayer } from "@/state/player";
 import type { PlayerSpecialtyKey } from "@/data/player-specialties";
+import type { Lineup } from "@/state/lineup";
 
 /**
  * Lineup slot types for the position-penalty calculation.
@@ -147,3 +148,151 @@ export const effectiveStrength = (
       )
     )
   );
+
+// ---------------------------------------------------------------------------
+// Auto-lineup builder — port of SUB automa (ILEX5.BAS:822-920)
+// ---------------------------------------------------------------------------
+
+export type AutoLineupMode = "gameday" | "potential";
+
+/**
+ * Sum of active performance modifiers (QB `plus`).
+ * QB stores a single `plus`/`kest` pair; we allow multiple stacked effects.
+ */
+export const performanceModifier = (player: HiredPlayer): number =>
+  player.effects.reduce(
+    (sum, e) => sum + (e.type === "skill" ? e.amount : 0),
+    0
+  );
+
+/**
+ * Availability gate for auto-lineup assignment.
+ * Port of QB `inj = 0 AND svu > 0 AND kun >= 0` (ILEX5.BAS:828).
+ *
+ * `svu > 0` is implicit — HiredPlayer always has a contract.
+ * A player is available when they carry no blocking effects
+ * (injury, suspension, strike, national-team absence) and
+ * their condition is non-negative.
+ */
+export const isAvailable = (player: HiredPlayer): boolean =>
+  player.effects.every((e) => e.type === "skill") &&
+  player.condition >= 0;
+
+type Pool = "regular" | "pp" | "pk";
+
+/**
+ * Sort key for pool ranking (QB `verrokki` GOSUB, ILEX5.BAS:912-936).
+ *
+ * - Regular: `psk + plus` (enforcer → 99).
+ * - PP: `psk + yvo + plus` (no enforcer boost).
+ * - PK: `psk + avo + plus` (no enforcer boost).
+ */
+const sortKey = (player: HiredPlayer, pool: Pool): number => {
+  const plus = performanceModifier(player);
+  switch (pool) {
+    case "regular":
+      return player.specialty === "enforcer" ? 99 : player.skill + plus;
+    case "pp":
+      return player.skill + player.powerplayMod + plus;
+    case "pk":
+      return player.skill + player.penaltyKillMod + plus;
+  }
+};
+
+/**
+ * Comparator: descending by pool sort key, tiebreak ascending by age.
+ * Matches QB `verrokki`: when equal, younger (or same-age incumbent) wins.
+ * JS `toSorted()` is stable, so equal-age players preserve roster order.
+ */
+const compareByPool =
+  (pool: Pool) =>
+  (a: HiredPlayer, b: HiredPlayer): number => {
+    const diff = sortKey(b, pool) - sortKey(a, pool);
+    if (diff !== 0) return diff;
+    return a.age - b.age;
+  };
+
+/**
+ * Filter eligible players of a given position and sort by pool ranking.
+ */
+const rankedByPosition = (
+  eligible: readonly HiredPlayer[],
+  position: HiredPlayer["position"],
+  pool: Pool
+): HiredPlayer[] =>
+  eligible.filter((p) => p.position === position).toSorted(compareByPool(pool));
+
+/**
+ * Automatic lineup builder. Port of SUB automa (ILEX5.BAS:822-920).
+ *
+ * Fills all lineup slots with the best available players, sorted by
+ * pool-specific rating. Players can appear in multiple pools (regular +
+ * PP, regular + PK) — same as real hockey.
+ *
+ * QB algorithm:
+ * 1. Pick best goalie (regular pool sort).
+ * 2. Three pools (regular / PP / PK) × four positions (D / LW / C / RW):
+ *    sort eligible players by pool-specific key, take top N.
+ * 3. Map ranked arrays onto the lineup structure:
+ *    - 3 defensive pairings (6 D from regular pool)
+ *    - 4 forward lines (lines 1-3: LW/C/RW; line 4: LW/C only, no RW)
+ *    - PP team: 2D + LW/C/RW from PP pool
+ *    - PK team: 2D from PK pool + best PK LW + best PK C (no RW — `dad(5,6)=0`)
+ *
+ * @param mode `"gameday"` (default): skip injured / suspended / striking /
+ *   absent / overtired players. `"potential"`: use all players.
+ */
+export const autoLineup = (
+  players: readonly HiredPlayer[],
+  mode: AutoLineupMode = "gameday"
+): Lineup => {
+  const eligible = mode === "potential" ? players : players.filter(isAvailable);
+
+  // Goalie: best by regular pool sort (verrokki with zz=1)
+  const goalies = rankedByPosition(eligible, "g", "regular");
+
+  // Regular pool (zz=1)
+  const regD = rankedByPosition(eligible, "d", "regular");
+  const regLW = rankedByPosition(eligible, "lw", "regular");
+  const regC = rankedByPosition(eligible, "c", "regular");
+  const regRW = rankedByPosition(eligible, "rw", "regular");
+
+  // PP pool (zz=2)
+  const ppD = rankedByPosition(eligible, "d", "pp");
+  const ppLW = rankedByPosition(eligible, "lw", "pp");
+  const ppC = rankedByPosition(eligible, "c", "pp");
+  const ppRW = rankedByPosition(eligible, "rw", "pp");
+
+  // PK pool (zz=3) — no RW in PK (dad(5,6)=0)
+  const pkD = rankedByPosition(eligible, "d", "pk");
+  const pkLW = rankedByPosition(eligible, "lw", "pk");
+  const pkC = rankedByPosition(eligible, "c", "pk");
+
+  return {
+    g: goalies[0]?.id,
+    defensivePairings: [
+      { ld: regD[0]?.id, rd: regD[1]?.id },
+      { ld: regD[2]?.id, rd: regD[3]?.id },
+      { ld: regD[4]?.id, rd: regD[5]?.id },
+    ],
+    forwardLines: [
+      { lw: regLW[0]?.id, c: regC[0]?.id, rw: regRW[0]?.id },
+      { lw: regLW[1]?.id, c: regC[1]?.id, rw: regRW[1]?.id },
+      { lw: regLW[2]?.id, c: regC[2]?.id, rw: regRW[2]?.id },
+      { lw: regLW[3]?.id, c: regC[3]?.id },
+    ],
+    powerplayTeam: {
+      ld: ppD[0]?.id,
+      rd: ppD[1]?.id,
+      lw: ppLW[0]?.id,
+      c: ppC[0]?.id,
+      rw: ppRW[0]?.id,
+    },
+    penaltyKillTeam: {
+      ld: pkD[0]?.id,
+      rd: pkD[1]?.id,
+      f1: pkLW[0]?.id,
+      f2: pkC[0]?.id,
+    },
+  };
+};

@@ -2,8 +2,11 @@ import {
   applyConditionPenalty,
   applyPositionPenalty,
   applySpecialtyPenalty,
+  autoLineup,
   effectiveStrength,
-  floorAtZero
+  floorAtZero,
+  isAvailable,
+  performanceModifier
 } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
 import { describe, expect, it } from "vitest";
@@ -214,5 +217,348 @@ describe("effectiveStrength", () => {
   it("pkf slot: defenseman gets position penalty", () => {
     // trunc(0.7 * 10) = 7
     expect(effectiveStrength(10, "d", "pkf", null, 0)).toBe(7);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// performanceModifier
+// ---------------------------------------------------------------------------
+
+describe("performanceModifier", () => {
+  it("zero when no effects", () => {
+    expect(performanceModifier(createPlayer())).toBe(0);
+  });
+
+  it("sums skill effects", () => {
+    expect(
+      performanceModifier(
+        createPlayer({
+          effects: [
+            { type: "skill", amount: 2, duration: 5 },
+            { type: "skill", amount: -1, duration: 3 }
+          ]
+        })
+      )
+    ).toBe(1);
+  });
+
+  it("ignores non-skill effects", () => {
+    expect(
+      performanceModifier(
+        createPlayer({
+          effects: [
+            { type: "injury", duration: 3 },
+            { type: "skill", amount: 2, duration: 5 }
+          ]
+        })
+      )
+    ).toBe(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// isAvailable
+// ---------------------------------------------------------------------------
+
+describe("isAvailable", () => {
+  it("healthy player with non-negative condition", () => {
+    expect(isAvailable(createPlayer({ condition: 0 }))).toBe(true);
+    expect(isAvailable(createPlayer({ condition: 5 }))).toBe(true);
+  });
+
+  it("negative condition → unavailable", () => {
+    expect(isAvailable(createPlayer({ condition: -1 }))).toBe(false);
+  });
+
+  it("injured → unavailable", () => {
+    expect(
+      isAvailable(createPlayer({ effects: [{ type: "injury", duration: 3 }] }))
+    ).toBe(false);
+  });
+
+  it("suspended → unavailable", () => {
+    expect(
+      isAvailable(
+        createPlayer({ effects: [{ type: "suspension", duration: 2 }] })
+      )
+    ).toBe(false);
+  });
+
+  it("on strike → unavailable", () => {
+    expect(
+      isAvailable(createPlayer({ effects: [{ type: "strike" }] }))
+    ).toBe(false);
+  });
+
+  it("national team absence → unavailable", () => {
+    expect(
+      isAvailable(
+        createPlayer({ effects: [{ type: "nationals", duration: 1 }] })
+      )
+    ).toBe(false);
+  });
+
+  it("skill modifier does not block availability", () => {
+    expect(
+      isAvailable(
+        createPlayer({ effects: [{ type: "skill", amount: -2, duration: 3 }] })
+      )
+    ).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// autoLineup
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a minimal 25-player roster: 2G + 6D + 4LW + 4C + 4RW + extras.
+ * Skill descends with index so sorting is predictable.
+ */
+const buildRoster = (): HiredPlayer[] => {
+  let id = 0;
+  const p = (
+    position: HiredPlayer["position"],
+    skill: number,
+    extra: Partial<HiredPlayer> = {}
+  ): HiredPlayer =>
+    createPlayer({
+      id: `p${++id}`,
+      position,
+      skill,
+      ...extra
+    });
+
+  return [
+    // Goalies (2)
+    p("g", 15),
+    p("g", 12),
+    // Defensemen (7) — enough for 3 pairs + 1 spare
+    p("d", 14),
+    p("d", 13),
+    p("d", 12),
+    p("d", 11),
+    p("d", 10),
+    p("d", 9),
+    p("d", 8),
+    // Left wings (5)
+    p("lw", 16),
+    p("lw", 14),
+    p("lw", 12),
+    p("lw", 10),
+    p("lw", 8),
+    // Centers (5)
+    p("c", 15),
+    p("c", 13),
+    p("c", 11),
+    p("c", 9),
+    p("c", 7),
+    // Right wings (4)
+    p("rw", 14),
+    p("rw", 12),
+    p("rw", 10),
+    p("rw", 8)
+  ];
+};
+
+describe("autoLineup", () => {
+  it("assigns best goalie", () => {
+    const roster = buildRoster();
+    const lineup = autoLineup(roster);
+    // p1 is best goalie (skill 15)
+    expect(lineup.g).toBe("p1");
+  });
+
+  it("fills 3 defensive pairings sorted by skill", () => {
+    const roster = buildRoster();
+    const lineup = autoLineup(roster);
+    // D: p3(14) p4(13) p5(12) p6(11) p7(10) p8(9) — 6 needed
+    expect(lineup.defensivePairings).toEqual([
+      { ld: "p3", rd: "p4" },
+      { ld: "p5", rd: "p6" },
+      { ld: "p7", rd: "p8" }
+    ]);
+  });
+
+  it("fills forward lines 1-3 with LW/C/RW", () => {
+    const roster = buildRoster();
+    const lineup = autoLineup(roster);
+    expect(lineup.forwardLines[0]).toEqual({
+      lw: "p10",
+      c: "p15",
+      rw: "p20"
+    });
+    expect(lineup.forwardLines[1]).toEqual({
+      lw: "p11",
+      c: "p16",
+      rw: "p21"
+    });
+    expect(lineup.forwardLines[2]).toEqual({
+      lw: "p12",
+      c: "p17",
+      rw: "p22"
+    });
+  });
+
+  it("line 4 has LW + C but no RW", () => {
+    const roster = buildRoster();
+    const lineup = autoLineup(roster);
+    expect(lineup.forwardLines[3]).toEqual({
+      lw: "p13",
+      c: "p18"
+    });
+  });
+
+  it("PP team uses powerplayMod-based sort", () => {
+    const roster = buildRoster();
+    // Give a lower-skill player a huge PP mod so they jump to PP #1
+    roster[4] = createPlayer({
+      id: "p5",
+      position: "d",
+      skill: 12,
+      powerplayMod: 3
+    }); // effective PP = 15
+    roster[2] = createPlayer({
+      id: "p3",
+      position: "d",
+      skill: 14,
+      powerplayMod: -2
+    }); // effective PP = 12
+
+    const lineup = autoLineup(roster);
+    // PP D sort: p5(15) > p4(13) > p3(12) > p6(11)
+    expect(lineup.powerplayTeam.ld).toBe("p5");
+    expect(lineup.powerplayTeam.rd).toBe("p4");
+  });
+
+  it("PK team uses penaltyKillMod-based sort", () => {
+    const roster = buildRoster();
+    roster[5] = createPlayer({
+      id: "p6",
+      position: "d",
+      skill: 11,
+      penaltyKillMod: 3
+    }); // effective PK = 14
+
+    const lineup = autoLineup(roster);
+    // PK D sort: p6(14) > p3(14) → tiebreak by age (both 25 → stable)
+    // p6 at index 5 vs p3 at index 2. Both skill=14+pkmod. p6 has pkmod=3 → 14, p3 has pkmod=0 → 14.
+    // Tiebreak: same age, stable sort preserves array order → p3 first
+    expect(lineup.penaltyKillTeam.ld).toBe("p3");
+    expect(lineup.penaltyKillTeam.rd).toBe("p6");
+  });
+
+  it("PK forwards: best PK LW as f1, best PK C as f2", () => {
+    const roster = buildRoster();
+    const lineup = autoLineup(roster);
+    // Best PK LW = p10 (skill 16), best PK C = p15 (skill 15)
+    expect(lineup.penaltyKillTeam.f1).toBe("p10");
+    expect(lineup.penaltyKillTeam.f2).toBe("p15");
+  });
+
+  it("enforcer sorts to top in regular pool", () => {
+    const roster = buildRoster();
+    // Make a low-skill defenseman an enforcer
+    roster[6] = createPlayer({
+      id: "p7",
+      position: "d",
+      skill: 10,
+      specialty: "enforcer"
+    });
+
+    const lineup = autoLineup(roster);
+    // Enforcer gets sort value 99, so p7 is now first D
+    expect(lineup.defensivePairings[0].ld).toBe("p7");
+    // But PP pool has no enforcer boost → p7 stays in normal position
+    expect(lineup.powerplayTeam.ld).not.toBe("p7");
+  });
+
+  it("tiebreak: younger player wins", () => {
+    const roster = buildRoster();
+    // Two goalies with same skill, different ages
+    roster[0] = createPlayer({ id: "p1", position: "g", skill: 15, age: 30 });
+    roster[1] = createPlayer({ id: "p2", position: "g", skill: 15, age: 22 });
+
+    const lineup = autoLineup(roster);
+    expect(lineup.g).toBe("p2");
+  });
+
+  it("gameday mode: skips injured players", () => {
+    const roster = buildRoster();
+    // Injure the best goalie
+    roster[0] = createPlayer({
+      id: "p1",
+      position: "g",
+      skill: 15,
+      effects: [{ type: "injury", duration: 5 }]
+    });
+
+    const lineup = autoLineup(roster, "gameday");
+    expect(lineup.g).toBe("p2"); // fallback to 2nd goalie
+  });
+
+  it("gameday mode: skips players with negative condition", () => {
+    const roster = buildRoster();
+    roster[0] = createPlayer({
+      id: "p1",
+      position: "g",
+      skill: 15,
+      condition: -1
+    });
+
+    const lineup = autoLineup(roster, "gameday");
+    expect(lineup.g).toBe("p2");
+  });
+
+  it("potential mode: includes injured and overtired players", () => {
+    const roster = buildRoster();
+    roster[0] = createPlayer({
+      id: "p1",
+      position: "g",
+      skill: 15,
+      effects: [{ type: "injury", duration: 5 }],
+      condition: -3
+    });
+
+    const lineup = autoLineup(roster, "potential");
+    expect(lineup.g).toBe("p1"); // still the best
+  });
+
+  it("handles sparse roster (not enough players)", () => {
+    const roster = [
+      createPlayer({ id: "g1", position: "g", skill: 10 }),
+      createPlayer({ id: "d1", position: "d", skill: 10 }),
+      createPlayer({ id: "c1", position: "c", skill: 10 })
+    ];
+
+    const lineup = autoLineup(roster);
+    expect(lineup.g).toBe("g1");
+    expect(lineup.defensivePairings[0].ld).toBe("d1");
+    expect(lineup.defensivePairings[0].rd).toBeUndefined();
+    expect(lineup.forwardLines[0].c).toBe("c1");
+    expect(lineup.forwardLines[0].lw).toBeUndefined();
+    expect(lineup.forwardLines[0].rw).toBeUndefined();
+  });
+
+  it("skill modifier affects sort order", () => {
+    const roster = buildRoster();
+    // Give the 2nd goalie a big skill boost
+    roster[1] = createPlayer({
+      id: "p2",
+      position: "g",
+      skill: 12,
+      effects: [{ type: "skill", amount: 5, duration: 10 }]
+    }); // effective = 17
+
+    const lineup = autoLineup(roster);
+    expect(lineup.g).toBe("p2"); // 12+5=17 > 15
+  });
+
+  it("players can appear in both regular and special teams", () => {
+    const roster = buildRoster();
+    const lineup = autoLineup(roster);
+    // Best D should be on pair 1 AND PP
+    expect(lineup.defensivePairings[0].ld).toBe("p3");
+    expect(lineup.powerplayTeam.ld).toBe("p3");
   });
 });
