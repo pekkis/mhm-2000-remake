@@ -22,6 +22,7 @@ import difficultyLevels from "@/data/difficulty-levels";
 import random from "@/services/random";
 import { generateMarketPlayers } from "@/services/mhm-2000/generate-market-players";
 import { generateTeamRoster } from "@/services/mhm-2000/generate-team-roster";
+import { emptyLineup } from "@/services/empties";
 
 const buildHumanManager = (draft: ManagerDraft): HumanManager => {
   // Convert MHM 2000 difficulty id (1..5) to the legacy 0-based index
@@ -150,7 +151,8 @@ export const composeNewGameContext = (output: NewGameOutput): GameContext => {
         ...existingTeam,
         kind: "human",
         strengthObj,
-        players: generateTeamRoster(strengthObj, random)
+        players: generateTeamRoster(strengthObj, random),
+        lineup: emptyLineup()
       };
     }
   });

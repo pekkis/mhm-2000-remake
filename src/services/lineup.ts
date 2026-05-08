@@ -207,7 +207,9 @@ const compareByPool =
   (pool: Pool) =>
   (a: HiredPlayer, b: HiredPlayer): number => {
     const diff = sortKey(b, pool) - sortKey(a, pool);
-    if (diff !== 0) {return diff;}
+    if (diff !== 0) {
+      return diff;
+    }
     return a.age - b.age;
   };
 

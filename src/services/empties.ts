@@ -1,5 +1,6 @@
 import type { SeasonStats } from "@/state";
 import type { AchievementsStat } from "@/state/game";
+import type { Lineup } from "@/state/lineup";
 
 export const emptyAchievements = (): AchievementsStat => {
   return {
@@ -29,4 +30,13 @@ export const emptySeasonStat = (): SeasonStats => {
     worldChampionships: undefined,
     stories: {}
   } satisfies SeasonStats;
+};
+
+export const emptyLineup = (): Lineup => {
+  return {
+    forwardLines: [{}, {}, {}, {}],
+    defensivePairings: [{}, {}, {}],
+    penaltyKillTeam: {},
+    powerplayTeam: {}
+  };
 };

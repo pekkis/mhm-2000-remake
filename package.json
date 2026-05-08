@@ -1,6 +1,6 @@
 {
-  "name": "mhm-97-remake",
-  "version": "3.0.0",
+  "name": "mhm-2000-remake",
+  "version": "2.0.0",
   "description": "A remake of MHM 2000",
   "keywords": [
     "MHM 2000",
@@ -70,5 +70,5 @@
     "vite": "^8.0.10",
     "vitest": "^4.1.5"
   },
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@11.0.5"
 }
