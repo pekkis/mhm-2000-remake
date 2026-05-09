@@ -79,8 +79,8 @@ describe("competition-type", () => {
         schedule: [
           [
             {
-              home: 0,
-              away: 1,
+              home: 10,
+              away: 20,
               result: { home: 3, away: 1, overtime: false }
             }
           ]
@@ -221,8 +221,8 @@ describe("competition-type", () => {
       round: 0,
       name: "Test Cup Round",
       teams: [10, 20],
-      matchups: [[0, 1]],
-      schedule: [[{ home: 0, away: 1 }], [{ home: 1, away: 0 }]],
+      matchups: [[10, 20]],
+      schedule: [[{ home: 10, away: 20 }], [{ home: 20, away: 10 }]],
       stats: [],
       ...overrides
     });
@@ -248,12 +248,12 @@ describe("competition-type", () => {
         schedule: [
           [
             {
-              home: 0,
-              away: 1,
+              home: 10,
+              away: 20,
               result: { home: 3, away: 1, overtime: false }
             }
           ],
-          [{ home: 1, away: 0 }]
+          [{ home: 20, away: 10 }]
         ]
       });
       expect(
@@ -267,12 +267,12 @@ describe("competition-type", () => {
         schedule: [
           [
             {
-              home: 0,
-              away: 1,
+              home: 10,
+              away: 20,
               result: { home: 3, away: 1, overtime: false }
             }
           ],
-          [{ home: 1, away: 0 }]
+          [{ home: 20, away: 10 }]
         ]
       });
       expect(
@@ -285,15 +285,15 @@ describe("competition-type", () => {
         schedule: [
           [
             {
-              home: 0,
-              away: 1,
+              home: 10,
+              away: 20,
               result: { home: 3, away: 1, overtime: false }
             }
           ],
           [
             {
-              home: 1,
-              away: 0,
+              home: 20,
+              away: 10,
               result: { home: 2, away: 1, overtime: false }
             }
           ]

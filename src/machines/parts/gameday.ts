@@ -127,8 +127,8 @@ export function runGameday(draft: Draft<GameContext>): EventEffect[] {
           continue;
         }
         const pairing = pairings[x];
-        const home = draft.teams[group.teams[pairing.home]];
-        const away = draft.teams[group.teams[pairing.away]];
+        const home = draft.teams[pairing.home];
+        const away = draft.teams[pairing.away];
 
         const homeManager = draft.managers[home.manager!];
         const awayManager = draft.managers[away.manager!];

@@ -46,7 +46,7 @@ const seedFromVictors =
     const prevGroup = prev.groups[0] as CupGroup;
     const winners = cupVictors(prevGroup);
     const teams = shuffle(winners);
-    const matchups = cupPairs(teams.length);
+    const matchups = cupPairs(teams);
     const name = PHASE_NAMES[phaseIdx];
     return {
       name,
@@ -101,7 +101,7 @@ const cup: CompetitionDefinition = {
         ...AMATEUR_IDS
       ];
       const teams = shuffle(pool);
-      const matchups = cupPairs(teams.length);
+      const matchups = cupPairs(teams);
       const name = PHASE_NAMES[0];
       return {
         name,

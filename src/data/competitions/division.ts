@@ -51,7 +51,7 @@ const division: CompetitionDefinition = {
             round: 0,
             name: "runkosarja",
             teams,
-            schedule: roundRobinScheduler(teams.length, times),
+            schedule: roundRobinScheduler(teams, times),
             stats: [],
             colors: ["d", "d", "d", "d", "d", "d", "l", "l", "l", "l", "l", "l"]
           }
@@ -69,9 +69,9 @@ const division: CompetitionDefinition = {
         .concat(phlStats[phlStats.length - 1].id);
 
       const matchupList: [number, number][] = [
-        [0, 5],
-        [1, 4],
-        [2, 3]
+        [teams[0], teams[5]],
+        [teams[1], teams[4]],
+        [teams[2], teams[3]]
       ];
 
       const winsToAdvance = 3;
@@ -102,8 +102,8 @@ const division: CompetitionDefinition = {
       const teams = [phlLast, ...victors(prev).map((t) => t.id)];
 
       const matchupList: [number, number][] = [
-        [0, 3],
-        [1, 2]
+        [teams[0], teams[3]],
+        [teams[1], teams[2]]
       ];
 
       const winsToAdvance = 3;
@@ -130,7 +130,7 @@ const division: CompetitionDefinition = {
       const prev = competitions.division.phases[2].groups[0] as PlayoffGroup;
       const teams = victors(prev).map((t) => t.id);
 
-      const matchupList: [number, number][] = [[0, 1]];
+      const matchupList: [number, number][] = [[teams[0], teams[1]]];
 
       const winsToAdvance = 3;
 

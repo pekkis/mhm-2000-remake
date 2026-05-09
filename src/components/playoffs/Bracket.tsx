@@ -94,10 +94,9 @@ const BracketRound: FC<BracketRoundProps> = ({ phase, teams, managers }) => {
     const playoffGroup = group as PlayoffGroup;
     return playoffGroup.matchups.map((matchup, idx) => {
       const stat = playoffGroup.stats[idx] as MatchupStat | undefined;
-      // `matchup` indices point into the group's own `teams` array,
-      // which holds global team IDs. Stats carry the global IDs directly.
-      const homeId = stat ? stat.home.id : playoffGroup.teams[matchup[0]];
-      const awayId = stat ? stat.away.id : playoffGroup.teams[matchup[1]];
+      // `matchup` entries are team IDs directly. Stats also carry IDs.
+      const homeId = stat ? stat.home.id : matchup[0];
+      const awayId = stat ? stat.away.id : matchup[1];
       return {
         homeTeam: teams[homeId],
         awayTeam: teams[awayId],

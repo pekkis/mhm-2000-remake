@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { roundRobin, scheduler } from "@/services/round-robin";
 
+/** Create a 0-based team ID array of length n */
+const teamIds = (n: number): number[] => Array.from({ length: n }, (_, i) => i);
+
 describe("round-robin scheduler", () => {
   describe("roundRobin (base algorithm)", () => {
     it("should handle 2 teams", () => {
@@ -75,7 +78,7 @@ describe("round-robin scheduler", () => {
 
   describe("scheduler (with repetition and Pairing format)", () => {
     it("should return array of rounds with Pairing objects", () => {
-      const result = scheduler(2, 1);
+      const result = scheduler(teamIds(2), 1);
       expect(Array.isArray(result)).toBe(true);
       expect(result.length > 0).toBe(true);
 
@@ -94,7 +97,7 @@ describe("round-robin scheduler", () => {
     it("should repeat schedule correctly", () => {
       const times = 3;
       const baseResult = roundRobin(2);
-      const schedulerResult = scheduler(2, times);
+      const schedulerResult = scheduler(teamIds(2), times);
 
       // Scheduler returns: baseSchedule + reversed, repeated `times` times
       // For 2 teams: 1 round forward + 1 round backward = 2 rounds, repeated 3 times = 6 rounds
@@ -103,7 +106,7 @@ describe("round-robin scheduler", () => {
     });
 
     it("scheduler(4, 2) should produce correct structure", () => {
-      const result = scheduler(4, 2);
+      const result = scheduler(teamIds(4), 2);
 
       // 4 teams: base 3 rounds + reversed 3 rounds = 6 rounds, repeated 2 times = 12 rounds
       expect(result).toHaveLength(12);
@@ -116,7 +119,7 @@ describe("round-robin scheduler", () => {
 
     it("should have both home and away fixtures for each team", () => {
       const times = 1;
-      const result = scheduler(4, times);
+      const result = scheduler(teamIds(4), times);
 
       const homeGames = new Map<number, number>();
       const awayGames = new Map<number, number>();
@@ -138,23 +141,23 @@ describe("round-robin scheduler", () => {
     });
 
     it("should throw for single team input", () => {
-      expect(() => scheduler(1, 1)).toThrow(RangeError);
-      expect(() => scheduler(1, 1)).toThrow(
+      expect(() => scheduler(teamIds(1), 1)).toThrow(RangeError);
+      expect(() => scheduler(teamIds(1), 1)).toThrow(
         "roundRobin requires at least 2 teams"
       );
     });
 
     it("should throw for invalid times input", () => {
-      expect(() => scheduler(4, 0)).toThrow(RangeError);
-      expect(() => scheduler(4, -1)).toThrow(RangeError);
-      expect(() => scheduler(4, 1.5)).toThrow(RangeError);
-      expect(() => scheduler(4, 0)).toThrow(
+      expect(() => scheduler(teamIds(4), 0)).toThrow(RangeError);
+      expect(() => scheduler(teamIds(4), -1)).toThrow(RangeError);
+      expect(() => scheduler(teamIds(4), 1.5)).toThrow(RangeError);
+      expect(() => scheduler(teamIds(4), 0)).toThrow(
         "scheduler requires times to be a positive integer"
       );
     });
 
     it("should maintain Pairing shape through multiple repetitions", () => {
-      const result = scheduler(3, 2);
+      const result = scheduler(teamIds(3), 2);
 
       result.forEach((round) => {
         round.forEach((pairing) => {
@@ -169,7 +172,7 @@ describe("round-robin scheduler", () => {
 
   describe("practical scenarios", () => {
     it("should work for typical league size (12 teams, 2 times)", () => {
-      const result = scheduler(12, 2);
+      const result = scheduler(teamIds(12), 2);
       // 12 teams: 11 rounds forward + 11 rounds backward = 22 rounds, repeated 2 times = 44 rounds
       expect(result).toHaveLength(44);
 
@@ -180,7 +183,7 @@ describe("round-robin scheduler", () => {
     });
 
     it("should work for tournament size (8 teams, 1 time)", () => {
-      const result = scheduler(8, 1);
+      const result = scheduler(teamIds(8), 1);
       // 8 teams: 7 rounds forward + 7 rounds backward = 14 rounds
       expect(result).toHaveLength(14);
 
@@ -190,7 +193,7 @@ describe("round-robin scheduler", () => {
     });
 
     it("should generate balance: each team plays roughly equal home/away", () => {
-      const result = scheduler(8, 1);
+      const result = scheduler(teamIds(8), 1);
 
       const stats = new Map<number, { home: number; away: number }>();
       Array.from({ length: 8 }, (_, i) => i).forEach((id) =>

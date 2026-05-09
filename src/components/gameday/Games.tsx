@@ -25,8 +25,8 @@ const Games: FC<GamesProps> = ({ teams, context, round, managers }) => {
         {pairings.map((pairing, i) => (
           <MatchRow
             key={i}
-            home={teams[context.teams[pairing.home]]}
-            away={teams[context.teams[pairing.away]]}
+            home={teams[pairing.home]}
+            away={teams[pairing.away]}
             score={
               pairing.result
                 ? `${pairing.result.home}–${pairing.result.away}${

@@ -1,12 +1,12 @@
 import { roundRobin } from "./round-robin";
 import type { Pairing } from "@/types/competitions";
 
-const tournamentScheduler = (numberOfTeams: number): Pairing[][] => {
-  return roundRobin(numberOfTeams).map((round) => {
+const tournamentScheduler = (teams: number[]): Pairing[][] => {
+  return roundRobin(teams.length).map((round) => {
     return round.map((pairing) => {
       return {
-        home: pairing[0],
-        away: pairing[1]
+        home: teams[pairing[0]],
+        away: teams[pairing[1]]
       };
     });
   });

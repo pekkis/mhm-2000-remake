@@ -168,14 +168,14 @@ describe("playoffs", () => {
   describe("matchups", () => {
     it("should compute matchup stats from schedule results", () => {
       const schedule: Pairing[][] = [
-        [{ home: 0, away: 1, result: { home: 3, away: 1, overtime: false } }],
-        [{ home: 1, away: 0, result: { home: 2, away: 4, overtime: false } }],
-        [{ home: 0, away: 1, result: { home: 1, away: 2, overtime: false } }]
+        [{ home: 10, away: 20, result: { home: 3, away: 1, overtime: false } }],
+        [{ home: 20, away: 10, result: { home: 2, away: 4, overtime: false } }],
+        [{ home: 10, away: 20, result: { home: 1, away: 2, overtime: false } }]
       ];
 
       const group = makePlayoffGroup({
         teams: [10, 20],
-        matchups: [[0, 1]],
+        matchups: [[10, 20]],
         winsToAdvance: 2,
         schedule
       });
@@ -183,14 +183,14 @@ describe("playoffs", () => {
       const result = matchups(group);
       expect(result).toHaveLength(1);
 
-      // Team index 0 (id 10): won game 1 (3-1), won game 2 (4-2), lost game 3 (1-2) → 2W 1L
+      // Team 10: won game 1 (3-1), won game 2 (4-2), lost game 3 (1-2) → 2W 1L
       expect(result[0].home).toMatchObject({
         index: 0,
         id: 10,
         wins: 2,
         losses: 1
       });
-      // Team index 1 (id 20): lost game 1, lost game 2, won game 3 → 1W 2L
+      // Team 20: lost game 1, lost game 2, won game 3 → 1W 2L
       expect(result[0].away).toMatchObject({
         index: 1,
         id: 20,
@@ -201,13 +201,13 @@ describe("playoffs", () => {
 
     it("should handle games without results (not yet played)", () => {
       const schedule: Pairing[][] = [
-        [{ home: 0, away: 1, result: { home: 2, away: 1, overtime: false } }],
-        [{ home: 1, away: 0 }] // not played yet
+        [{ home: 10, away: 20, result: { home: 2, away: 1, overtime: false } }],
+        [{ home: 20, away: 10 }] // not played yet
       ];
 
       const group = makePlayoffGroup({
         teams: [10, 20],
-        matchups: [[0, 1]],
+        matchups: [[10, 20]],
         winsToAdvance: 2,
         schedule
       });
@@ -221,16 +221,16 @@ describe("playoffs", () => {
     it("should handle multiple matchups in a playoff round", () => {
       const schedule: Pairing[][] = [
         [
-          { home: 0, away: 1, result: { home: 3, away: 0, overtime: false } },
-          { home: 2, away: 3, result: { home: 1, away: 2, overtime: false } }
+          { home: 10, away: 20, result: { home: 3, away: 0, overtime: false } },
+          { home: 30, away: 40, result: { home: 1, away: 2, overtime: false } }
         ]
       ];
 
       const group = makePlayoffGroup({
         teams: [10, 20, 30, 40],
         matchups: [
-          [0, 1],
-          [2, 3]
+          [10, 20],
+          [30, 40]
         ],
         winsToAdvance: 2,
         schedule
@@ -239,11 +239,11 @@ describe("playoffs", () => {
       const result = matchups(group);
       expect(result).toHaveLength(2);
 
-      // Matchup 1: team 0 beat team 1
+      // Matchup 1: team 10 beat team 20
       expect(result[0].home.wins).toBe(1);
       expect(result[0].away.wins).toBe(0);
 
-      // Matchup 2: team 3 beat team 2
+      // Matchup 2: team 40 beat team 30
       expect(result[1].home.wins).toBe(0);
       expect(result[1].away.wins).toBe(1);
     });

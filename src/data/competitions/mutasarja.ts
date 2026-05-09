@@ -96,7 +96,7 @@ const mutasarja: CompetitionDefinition = {
             round: 0,
             name: "lohko A",
             teams: groupA,
-            schedule: roundRobinScheduler(groupA.length, times),
+            schedule: roundRobinScheduler(groupA, times),
             stats: [],
             colors
           },
@@ -106,7 +106,7 @@ const mutasarja: CompetitionDefinition = {
             round: 0,
             name: "lohko B",
             teams: groupB,
-            schedule: roundRobinScheduler(groupB.length, times),
+            schedule: roundRobinScheduler(groupB, times),
             stats: [],
             colors
           }
@@ -123,12 +123,12 @@ const mutasarja: CompetitionDefinition = {
       const teams = ranked.map((s) => s.id);
 
       const matchupList: [number, number][] = [
-        [0, 11],
-        [1, 10],
-        [2, 9],
-        [3, 8],
-        [4, 7],
-        [5, 6]
+        [teams[0], teams[11]],
+        [teams[1], teams[10]],
+        [teams[2], teams[9]],
+        [teams[3], teams[8]],
+        [teams[4], teams[7]],
+        [teams[5], teams[6]]
       ];
       const winsToAdvance = 3;
 
@@ -169,10 +169,10 @@ const mutasarja: CompetitionDefinition = {
       const teams = [divLast, divSecondLast, ...phase1Winners];
 
       const matchupList: [number, number][] = [
-        [0, 7],
-        [1, 6],
-        [2, 5],
-        [3, 4]
+        [teams[0], teams[7]],
+        [teams[1], teams[6]],
+        [teams[2], teams[5]],
+        [teams[3], teams[4]]
       ];
       const winsToAdvance = 3;
 
@@ -202,8 +202,8 @@ const mutasarja: CompetitionDefinition = {
       const teams = victors(prev).map((t) => t.id);
 
       const matchupList: [number, number][] = [
-        [0, 3],
-        [1, 2]
+        [teams[0], teams[3]],
+        [teams[1], teams[2]]
       ];
       const winsToAdvance = 3;
 

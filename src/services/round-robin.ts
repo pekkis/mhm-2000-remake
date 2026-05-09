@@ -37,19 +37,16 @@ const repeatArray = <T>(arr: T[], times: number): T[] => {
 };
 
 /** Generates a full schedule with home/away matches, repeating times times */
-export const scheduler = (
-  numberOfTeams: number,
-  times: number
-): Pairing[][] => {
-  assertValidNumberOfTeams(numberOfTeams);
+export const scheduler = (teams: number[], times: number): Pairing[][] => {
+  assertValidNumberOfTeams(teams.length);
   assertValidTimes(times);
-  const baseSchedule = roundRobin(numberOfTeams);
+  const baseSchedule = roundRobin(teams.length);
   const schedule = baseSchedule.concat(reverser(baseSchedule));
 
   return repeatArray(schedule, times).map((round) =>
     round.map((pairing) => ({
-      home: pairing[0],
-      away: pairing[1]
+      home: teams[pairing[0]],
+      away: teams[pairing[1]]
     }))
   );
 };

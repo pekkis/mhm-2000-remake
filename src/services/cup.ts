@@ -15,7 +15,7 @@ import type { CupGroup, CupMatchupStat, Pairing } from "@/types/competitions";
  */
 export const cupMatchups = (group: CupGroup): CupMatchupStat[] => {
   return group.matchups.map((matchup, i) => {
-    const [teamAIdx, teamBIdx] = matchup;
+    const [teamA, teamB] = matchup;
 
     let goalsA = 0;
     let goalsB = 0;
@@ -28,7 +28,7 @@ export const cupMatchups = (group: CupGroup): CupMatchupStat[] => {
       }
       played += 1;
       // matchup-team-A is the home team in leg 1, away team in leg 2.
-      if (game.home === teamAIdx) {
+      if (game.home === teamA) {
         goalsA += game.result.home;
         goalsB += game.result.away;
       } else {
@@ -40,8 +40,16 @@ export const cupMatchups = (group: CupGroup): CupMatchupStat[] => {
     const decided = played === group.schedule.length && goalsA !== goalsB;
 
     return {
-      home: { index: teamAIdx, id: group.teams[teamAIdx], goals: goalsA },
-      away: { index: teamBIdx, id: group.teams[teamBIdx], goals: goalsB },
+      home: {
+        index: group.teams.indexOf(teamA),
+        id: teamA,
+        goals: goalsA
+      },
+      away: {
+        index: group.teams.indexOf(teamB),
+        id: teamB,
+        goals: goalsB
+      },
       decided,
       victor: !decided ? undefined : goalsA > goalsB ? "home" : "away"
     } satisfies CupMatchupStat;
@@ -64,14 +72,14 @@ export const cupScheduler = (matchups: [number, number][]): Pairing[][] => [
 ];
 
 /**
- * Pair off `[0..n)` into adjacent matchups. Caller is expected to
- * have already shuffled the team list \u2014 cup pairings are random per
+ * Pair off adjacent teams into matchups. Caller is expected to
+ * have already shuffled the team list — cup pairings are random per
  * MHM 2000.
  */
-export const cupPairs = (count: number): [number, number][] => {
+export const cupPairs = (teams: number[]): [number, number][] => {
   const out: [number, number][] = [];
-  for (let i = 0; i + 1 < count; i += 2) {
-    out.push([i, i + 1]);
+  for (let i = 0; i + 1 < teams.length; i += 2) {
+    out.push([teams[i], teams[i + 1]]);
   }
   return out;
 };

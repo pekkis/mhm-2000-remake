@@ -252,14 +252,14 @@ describe("league", () => {
         teams: [10, 20, 30],
         schedule: [
           [
-            makePairing(0, 1, { home: 3, away: 1, overtime: false }) // 10 beats 20
-            // team 2 (id 30) has bye
+            makePairing(10, 20, { home: 3, away: 1, overtime: false }) // 10 beats 20
+            // team 30 has bye
           ],
           [
-            makePairing(1, 2, { home: 0, away: 2, overtime: false }) // 30 beats 20
+            makePairing(20, 30, { home: 0, away: 2, overtime: false }) // 30 beats 20
           ],
           [
-            makePairing(0, 2, { home: 1, away: 1, overtime: false }) // 10 draws 30
+            makePairing(10, 30, { home: 1, away: 1, overtime: false }) // 10 draws 30
           ]
         ]
       });

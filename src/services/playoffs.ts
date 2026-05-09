@@ -27,20 +27,20 @@ export const matchups = (phase: PlayoffGroup): MatchupStat[] => {
 
   return phase.matchups.map((matchup) => {
     const [home, away] = ([0, 1] as const).map((index) => {
-      const teamIndex = matchup[index];
+      const teamId = matchup[index];
 
       const games: Pairing[] = phase.schedule
         .map((pairings) =>
-          pairings.find((p) => p.home === teamIndex || p.away === teamIndex)
+          pairings.find((p) => p.home === teamId || p.away === teamId)
         )
         .filter((g): g is Pairing => g !== undefined)
         .filter((g) => g.result !== undefined);
 
-      const facts = games.map((g) => gameFacts(g, teamIndex));
+      const facts = games.map((g) => gameFacts(g, teamId));
 
       return {
-        index: teamIndex,
-        id: teams[teamIndex],
+        index: teams.indexOf(teamId),
+        id: teamId,
         wins: facts.filter((f) => f.isWin).length,
         losses: facts.filter((f) => f.isLoss).length
       } satisfies MatchupTeamStat;

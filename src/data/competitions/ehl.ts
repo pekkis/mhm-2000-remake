@@ -99,7 +99,7 @@ const ehl: CompetitionDefinition = {
           round: 0,
           name: `lohko ${groupId + 1}`,
           teams: teamSlice,
-          schedule: roundRobinScheduler(teamSlice.length, times),
+          schedule: roundRobinScheduler(teamSlice, times),
           colors: ["d", "l", "l", "l"],
           penalties: [],
           stats: []
@@ -139,7 +139,7 @@ const ehl: CompetitionDefinition = {
             teams,
             round: 0,
             name: "lopputurnaus",
-            schedule: tournamentScheduler(teams.length),
+            schedule: tournamentScheduler(teams),
             stats: []
           }
         ]

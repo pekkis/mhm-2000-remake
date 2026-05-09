@@ -59,13 +59,13 @@ export const groupStats = (group: Group): TeamStat[] => {
 
     for (const round of group.schedule) {
       for (const game of round) {
-        if (game.home !== index && game.away !== index) {
+        if (game.home !== id && game.away !== id) {
           continue;
         }
         if (!game.result) {
           continue;
         }
-        stat = changedStats(stat, game, index);
+        stat = changedStats(stat, game, id);
       }
     }
 

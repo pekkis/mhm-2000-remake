@@ -71,8 +71,8 @@ const BettingForm: FC<BettingFormProps> = ({ competition, teams, bet }) => {
             return (
               <div key={i}>
                 <div>
-                  <TeamName team={teams[group.teams[pairing.home]]} /> -{" "}
-                  <TeamName team={teams[group.teams[pairing.away]]} />
+                  <TeamName team={teams[pairing.home]} /> -{" "}
+                  <TeamName team={teams[pairing.away]} />
                 </div>
                 <div>
                   <label>

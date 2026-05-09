@@ -84,7 +84,7 @@ const tournaments: CompetitionDefinition = {
           teams: participants,
           round: 0,
           name: tournament.name,
-          schedule: tournamentScheduler(participants.length),
+          schedule: tournamentScheduler(participants),
           stats: []
         });
 
