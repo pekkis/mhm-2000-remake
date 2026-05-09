@@ -20,6 +20,8 @@ globalStyle(`${selectRoot}::picker(select)`, {
   borderRadius: vars.radius.sm,
   background: vars.color.bg,
   padding: 0,
+  maxBlockSize: "20rem",
+  overflow: "auto",
 });
 
 export const option = style({
