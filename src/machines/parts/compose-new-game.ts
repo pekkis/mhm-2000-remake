@@ -38,7 +38,7 @@ const buildHumanManager = (draft: ManagerDraft): HumanManager => {
     attributes: draft.attributes,
     difficulty: legacyDifficulty,
     pranksExecuted: 0,
-    balance: difficultyLevels[legacyDifficulty].startBalance,
+    balance: 0,
     arena: {
       name: draft.customTeam?.arena ?? "MHM 2000 Areena",
       level: 1

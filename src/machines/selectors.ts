@@ -25,7 +25,6 @@ import r from "@/services/random";
 import { victors } from "@/services/playoffs";
 import { entries, keys, pick, pickBy, values } from "remeda";
 import arenas from "@/data/arenas";
-import difficultyLevels from "@/data/difficulty-levels";
 import calendar from "@/data/calendar";
 import { CRISIS_COST, CRISIS_MORALE_MAX } from "@/data/constants";
 import type { SnapshotFrom } from "xstate";
@@ -402,7 +401,9 @@ export const canOrderPrank =
     if (!round?.pranks) {
       return false;
     }
-    const cap = difficultyLevels[m.difficulty].pranksPerSeason;
+
+    const cap = 3;
+
     if (m.pranksExecuted >= cap) {
       return false;
     }
