@@ -218,6 +218,92 @@ svu>0 AND kun>=0`).
   routed in `Game.tsx`.
 - `src/machines/commands.ts` deleted (dead code, zero imports).
 
+### Performance modifiers decoded (2026-05-09)
+
+Full archaeology of `pel.plus` / `pel.kest` — the transient per-player
+skill modifier system. QB stores a **single `plus`/`kest` pair** per
+player (TS models this as multiple effects via `PlayerEffect[]`).
+
+**Assignment sites** (5 SET + 2 RESET + 1 DECREMENT):
+
+| Site                 | File:Lines      | SUB             | plus           | kest                                   | Trigger         |
+| -------------------- | --------------- | --------------- | -------------- | -------------------------------------- | --------------- |
+| Mood events          | ILEX5:1275-1276 | `dap` CASE 3    | `mood(muud,1)` | `INT(mood(muud,3)*RND)+mood(muud,2)+1` | Random event    |
+| B-tournament accept  | ILEX5:3269-3270 | `mmkisaalku`    | `1`            | `INT(10*RND)+10`                       | Player released |
+| B-tournament decline | ILEX5:3274-3275 | `mmkisaalku`    | `INT(3*RND)-3` | `INT(10*RND)+10`                       | Player blocked  |
+| Contract accept      | ILEX5:5894      | `rstages` 68/69 | `1`            | `1000`                                 | Happy re-sign   |
+| Contract forced      | ILEX5:5894      | `rstages` 68/69 | `-2`           | `1000`                                 | Forced re-sign  |
+| Countdown            | ILEX5:1842-1843 | (per-turn)      | _cleared→0_    | `kest-1`                               | Every turn      |
+| Season reset         | ILEX5:7740-7741 | `suunnitelma`   | `0`            | `0`                                    | Season rollover |
+| Bench reset          | ILEZ5:226-227   | (bench init)    | `0`            | `0`                                    | Bench rebuild   |
+
+**Key design facts:**
+
+- **No stacking** — each assignment overwrites the previous `plus`/`kest`.
+  TS allows multiple via effects array but should maintain the "one skill
+  modifier at a time" convention at the call site.
+- **Countdown is automatic** — every turn, `kest` decrements; when it
+  hits 0, `plus` auto-clears.
+- **`kest=1000`** = effectively permanent (contract events). Only
+  season rollover wipes it.
+- **CCCP tablet** (`xavier` CASE 1) does NOT use `plus`/`kest` — it
+  directly modifies `psk` (+1 or +2, 50% chance, capped at 20).
+
+**Mood events** — the main data-driven source:
+
+- 45 definitions from `MUUDIT.M2K` (amount/durationBase/durationRange)
+  - `M.MHM` (cp850 narrative text).
+- Selection: `muud = INT(45*RND)+1` — uniform random pick.
+- Guard: `lukka=0 AND psk+amount > 0` — modifier must not reduce skill
+  to zero or below.
+- Duration formula: `INT(durationRange * RND) + durationBase + 1`.
+- Extracted to [src/data/performance-modifier.ts](../../data/performance-modifier.ts)
+  as `MoodDefinition[]` (45 entries).
+- Amount range: −5 to +14 (!!). Row 24 (metallilevy/säteily) is the
+  outlier at +14 with only 1–5 turn duration.
+
+**Non-mood sources** don't form a data table — their parameters are
+inline in the event logic (B-tournament: `mmkisaalku`, contract:
+`rstages` CASE 68/69). Will be implemented as hardcoded params in
+the respective `DeclarativeEvent.resolve` functions.
+
+### Bans (pelikielto) decoded (2026-05-09)
+
+Full archaeology of the ban/suspension system. QB uses `pel.inj` with a
+sentinel range `1001..1999` (ban duration encoded as `1000 + rounds`).
+
+**Data sources:**
+
+- `PELKIEL.M2K` — 18 static durations (1–15 rounds).
+- `PK.MHM` — 18 narrative texts (cp850 → UTF-8), 500-byte records.
+
+**Assignment via `dap` CASE 2** (ILEX5.BAS:1262-1266):
+`gnome = pelki(lukka)` → `pel(xx,pv).inj = gnome + 1000`
+
+**Countdown** (ILEX5.BAS:3804-3806): per turn `inj -= 1`;
+when `inj = 1000` → clears to 0.
+
+**Triggers:**
+
+| Code range | Trigger                                     | Source          |
+| ---------- | ------------------------------------------- | --------------- |
+| 1–16       | Post-match random roll (5% chance, uniform) | ILEX5:5649-5650 |
+| 17         | POLIISI prank enforcer (spe=666, always)    | ILEX5:2183-2186 |
+| 18         | Aggressive specialty (spe=2) + captain, 2%  | ILEX5:2190      |
+
+**Key design facts:**
+
+- **Durations are static** — no random range, just a per-code lookup.
+  Unlike mood events (which randomize duration).
+- **Uses the `inj` field** — NOT a separate field. Same field as
+  injuries, strikes, and national-team absence, disambiguated by
+  sentinel ranges.
+- `pot` in the player struct is **games played**, not bans.
+- Code 12 (attacked opponent's manager, 15 rounds) and code 15
+  (beat up a junior player, 13 rounds) are the longest.
+- Extracted to [src/data/bans.ts](../../data/bans.ts)
+  as `BanDefinition[]` (18 entries).
+
 ### End-of-season port progress
 
 Two `ILEZ5.BAS` SUBs are now decoded, ported, and pinned by parity
