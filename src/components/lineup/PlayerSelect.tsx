@@ -1,24 +1,12 @@
 import Badge from "@/components/ui/Badge";
 import type { AlertLevel } from "@/components/ui/Alert";
-import Box from "@/components/ui/Box";
-import Stack from "@/components/ui/Stack";
 import { applyPositionPenalty, performanceModifier } from "@/services/lineup";
 import type { LineupSlot } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
+import * as Select from "@radix-ui/react-select";
 import { type FC, useMemo } from "react";
 import { values } from "remeda";
-import { option, selectRoot } from "./PlayerSelect.css";
-
-declare module "react" {
-  namespace JSX {
-    interface IntrinsicElements {
-      selectedcontent: React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      >;
-    }
-  }
-}
+import { content, item, playerName, positionTag, skillValue, trigger, viewport } from "./PlayerSelect.css";
 
 /**
  * Position-adjusted skill for display & sorting in a specific slot.
@@ -43,6 +31,20 @@ const appearanceLevel = (count: number): AlertLevel | null => {
   if (count === 2) {return "warning";}
   return "danger";
 };
+
+const playerLabel = (player: HiredPlayer, slot: LineupSlot): string =>
+  `${player.surname} (${player.position.toUpperCase()} ${slotSkill(player, slot)})`;
+
+const PlayerInfo: FC<{ player: HiredPlayer; slot: LineupSlot }> = ({
+  player,
+  slot
+}) => (
+  <>
+    <span className={positionTag}>{player.position}</span>
+    <span className={playerName}>{player.surname}</span>
+    <span className={skillValue}>{slotSkill(player, slot)}</span>
+  </>
+);
 
 type Props = {
   players: Record<string, HiredPlayer>;
@@ -74,55 +76,59 @@ export const PlayerSelect: FC<Props> = ({
   const selectedPlayer = selected ? players[selected] : null;
   const selectedCount = selected ? (appearances.get(selected) ?? 0) : 0;
   const selectedBadgeLevel = appearanceLevel(selectedCount);
-  const selectId = `lineup-${label}`;
+
+  const NONE = "__none__";
 
   return (
-    <Stack gap="xs">
-      <label htmlFor={selectId}>{label}</label>
-      <select
-        id={selectId}
-        className={selectRoot}
-        value={selected ?? ""}
-        onChange={(e) => onSelect(e.target.value)}
-      >
-        <button>
+    <Select.Root
+      value={selected ?? NONE}
+      onValueChange={(value) => onSelect(value === NONE ? "" : value)}
+    >
+      <Select.Trigger className={trigger}>
+        <Select.Value>
           {selectedPlayer ? (
-            <Box p="xs">
-              {selectedPlayer.surname} (
-              {selectedPlayer.position.toUpperCase()}{" "}
-              {slotSkill(selectedPlayer, slot)}){" "}
+            <>
+              <PlayerInfo player={selectedPlayer} slot={slot} />
               {selectedBadgeLevel && (
                 <Badge level={selectedBadgeLevel}>{selectedCount}</Badge>
               )}
-            </Box>
+            </>
           ) : (
-            <Box p="xs">—</Box>
+            `${label}: —`
           )}
-        </button>
+        </Select.Value>
+      </Select.Trigger>
 
-        <option value="">—</option>
+      <Select.Portal>
+        <Select.Content className={content} position="popper" sideOffset={4}>
+          <Select.Viewport className={viewport}>
+            <Select.Item value={NONE} className={item}>
+              <Select.ItemText>—</Select.ItemText>
+            </Select.Item>
 
-        {sorted.map((player) => {
-          const count = appearances.get(player.id) ?? 0;
-          const level = appearanceLevel(count);
-          const isExcluded = excluded.has(player.id);
+            {sorted.map((player) => {
+              const count = appearances.get(player.id) ?? 0;
+              const level = appearanceLevel(count);
+              const isExcluded = excluded.has(player.id);
 
-          return (
-            <option
-              key={player.id}
-              value={player.id}
-              className={option}
-              disabled={isExcluded}
-            >
-              <Box p="xs">
-                {player.surname} ({player.position.toUpperCase()}{" "}
-                {slotSkill(player, slot)}){" "}
-                {level && <Badge level={level}>{count}</Badge>}
-              </Box>
-            </option>
-          );
-        })}
-      </select>
-    </Stack>
+              return (
+                <Select.Item
+                  key={player.id}
+                  value={player.id}
+                  className={item}
+                  disabled={isExcluded}
+                >
+                  <Select.ItemText>
+                    {playerLabel(player, slot)}
+                  </Select.ItemText>
+                  <PlayerInfo player={player} slot={slot} />
+                  {level && <Badge level={level}>{count}</Badge>}
+                </Select.Item>
+              );
+            })}
+          </Select.Viewport>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
   );
 };

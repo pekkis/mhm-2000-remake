@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from "react";
+import type { ElementType, FC, ReactNode } from "react";
 import clsx from "clsx";
 import { sprinkles } from "@/styles/sprinkles.css";
 import { vars } from "@/styles/theme.css";
@@ -10,6 +10,7 @@ type TextAlign = "start" | "center" | "end" | "justify";
 type Flex = "none" | "auto" | "0" | "1";
 
 type BoxProps = {
+  as?: ElementType;
   children?: ReactNode;
   className?: string;
   p?: SpaceKey;
@@ -26,6 +27,7 @@ type BoxProps = {
 };
 
 const Box: FC<BoxProps> = ({
+  as: Component = "div",
   children,
   className,
   p,
@@ -53,7 +55,7 @@ const Box: FC<BoxProps> = ({
     ...(textAlign !== undefined && { textAlign }),
     ...(flex !== undefined && { flex })
   });
-  return <div className={clsx(sprinkleClass, className)}>{children}</div>;
+  return <Component className={clsx(sprinkleClass, className)}>{children}</Component>;
 };
 
 Box.displayName = "Box";

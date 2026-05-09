@@ -1,8 +1,11 @@
-import { style, globalStyle } from "@vanilla-extract/css";
+import { style } from "@vanilla-extract/css";
 import { vars } from "@/styles/theme.css";
 
-export const selectRoot = style({
-  appearance: "base-select",
+export const trigger = style({
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: vars.space.sm,
   border: `1px solid ${vars.color.border}`,
   background: vars.color.bg,
   padding: vars.space.xs,
@@ -11,28 +14,59 @@ export const selectRoot = style({
   fontSize: "inherit",
   color: "inherit",
   cursor: "pointer",
-  minInlineSize: "12rem"
+  minInlineSize: "16rem"
 });
 
-globalStyle(`${selectRoot}::picker(select)`, {
-  appearance: "base-select",
+export const content = style({
   border: `1px solid ${vars.color.border}`,
   borderRadius: vars.radius.sm,
   background: vars.color.bg,
   padding: 0,
   maxBlockSize: "20rem",
-  overflow: "auto"
+  overflow: "auto",
+  minInlineSize: "var(--radix-select-trigger-width)"
 });
 
-export const option = style({
+export const viewport = style({
+  padding: vars.space.xs,
+  display: "flex",
+  flexDirection: "column",
+  gap: vars.space.xs
+});
+
+export const item = style({
+  display: "flex",
+  alignItems: "center",
+  gap: vars.space.sm,
   padding: vars.space.xs,
   cursor: "pointer",
+  borderRadius: vars.radius.sm,
+  outline: "none",
+  userSelect: "none",
   selectors: {
-    "&:hover, &:focus": {
+    "&[data-highlighted]": {
       background: vars.color.surfaceMuted
     },
-    "&:checked": {
-      fontWeight: "bold"
+    "&[data-disabled]": {
+      opacity: 0.4,
+      cursor: "not-allowed"
     }
   }
+});
+
+export const positionTag = style({
+  fontWeight: "bold",
+  textTransform: "uppercase",
+  minInlineSize: "1.5em",
+  textAlign: "center"
+});
+
+export const playerName = style({
+  flex: 1
+});
+
+export const skillValue = style({
+  fontVariantNumeric: "tabular-nums",
+  textAlign: "end",
+  minInlineSize: "2em"
 });
