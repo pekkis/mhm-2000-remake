@@ -1,0 +1,13 @@
+diff --git a/index.d.ts b/index.d.ts
+index da0affda4f3b2544621fcb786bc708bb9394b749..7ff7ba3eb2705a3bdba85f7ffd61067d81d3241f 100644
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -20215,7 +20215,7 @@ export namespace Property {
+ 
+   export type AnimationTimingFunction = Globals | DataType.EasingFunction | (string & {});
+ 
+-  export type Appearance = Globals | DataType.CompatAuto | "auto" | "menulist-button" | "none" | "textfield";
++  export type Appearance = Globals | DataType.CompatAuto | "auto" | "base-select" | "menulist-button" | "none" | "textfield";
+ 
+   export type AspectRatio = Globals | "auto" | (string & {}) | (number & {});
+ 

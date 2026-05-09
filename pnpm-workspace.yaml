@@ -9,3 +9,5 @@ allowBuilds:
 disallowWorkspaceCycles: true
 
 minimumReleaseAge: 4320
+patchedDependencies:
+  csstype@3.2.3: patches/csstype@3.2.3.patch

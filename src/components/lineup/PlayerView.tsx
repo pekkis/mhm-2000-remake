@@ -24,7 +24,7 @@ export const PlayerView: FC<Props> = ({ id, players }) => {
         <PlayerSelect
           players={players}
           selected={id}
-          handleChange={(selected) => {
+          onSelect={(selected) => {
             console.log("HA HAA", selected);
           }}
         />

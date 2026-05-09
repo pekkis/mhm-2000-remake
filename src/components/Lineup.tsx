@@ -10,7 +10,6 @@ import {
 import { activeManager, managersTeam } from "@/machines/selectors";
 import Button from "@/components/ui/Button";
 import Stack from "@/components/ui/Stack";
-import Box from "@/components/ui/Box";
 import { ForwardLineView } from "@/components/lineup/ForwardLineView";
 import { GoalieView } from "@/components/lineup/GoalieView";
 import { DefensivePairingView } from "@/components/lineup/DefencivePairingView";
