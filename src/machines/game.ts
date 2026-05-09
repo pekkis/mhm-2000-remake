@@ -40,7 +40,8 @@ import { championBetMachine } from "@/machines/championBet";
 import { contractNegotiationMachine } from "@/machines/contractNegotiation";
 import type { CompetitionId } from "@/types/competitions";
 import { values, entries } from "remeda";
-import { autoLineup } from "@/services/lineup";
+import { autoLineup, assignPlayerToLineup } from "@/services/lineup";
+import type { LineupTarget } from "@/services/lineup";
 
 import {
   applyEffects,
@@ -224,6 +225,14 @@ export type GameMachineEvents =
   | {
       type: "AUTO_LINEUP";
       payload: { manager: string };
+    }
+  | {
+      type: "ASSIGN_PLAYER_TO_LINEUP";
+      payload: {
+        manager: string;
+        target: LineupTarget;
+        playerId: string | null;
+      };
     };
 
 export const gameMachine = setup({
@@ -703,6 +712,32 @@ export const gameMachine = setup({
         }
         team.lineup = autoLineup(values(team.players));
       })
+    ),
+
+    /**
+     * Assign a single player to a specific lineup slot.
+     * Enforces the QB `ketlaita` guard: max 2 regular-line appearances.
+     */
+    executeAssignPlayerToLineup: assign(
+      (
+        { context },
+        params: {
+          manager: string;
+          target: LineupTarget;
+          playerId: string | null;
+        }
+      ) =>
+        produce(context, (draft) => {
+          const m = draft.managers[params.manager];
+          if (!m || m.team === undefined || m.kind === "ai") {
+            return;
+          }
+          const team = draft.teams[m.team];
+          if (team.kind !== "human") {
+            return;
+          }
+          assignPlayerToLineup(team.lineup, params.target, params.playerId);
+        })
     ),
 
     /**
@@ -1227,6 +1262,12 @@ export const gameMachine = setup({
     AUTO_LINEUP: {
       actions: {
         type: "executeAutoLineup",
+        params: ({ event }) => event.payload
+      }
+    },
+    ASSIGN_PLAYER_TO_LINEUP: {
+      actions: {
+        type: "executeAssignPlayerToLineup",
         params: ({ event }) => event.payload
       }
     },

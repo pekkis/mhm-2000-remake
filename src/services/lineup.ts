@@ -216,6 +216,93 @@ export const lineupAppearances = (lineup: Lineup): Map<string, number> => {
 };
 
 // ---------------------------------------------------------------------------
+// Lineup slot assignment — port of SUB ketlaita guard (ILEX5.BAS:2640)
+// ---------------------------------------------------------------------------
+
+/** Identifies a single assignable slot in the lineup. */
+export type LineupTarget =
+  | { unit: "g" }
+  | { unit: "d"; index: number; side: "ld" | "rd" }
+  | { unit: "f"; index: number; position: "lw" | "c" | "rw" };
+// TODO: PP and PK targets when those views render.
+
+/** Max regular-line appearances per player (QB `ket < 2` guard). */
+const MAX_APPEARANCES = 2;
+
+/**
+ * Assigns a player to a lineup slot, enforcing the QB `ketlaita` guard:
+ * a player may occupy at most `MAX_APPEARANCES` (2) regular-line slots.
+ *
+ * Mutates `lineup` in place (designed to run inside an immer `produce`).
+ *
+ * - Setting `playerId` to `null` clears the slot (always allowed).
+ * - Assigning a player who already occupies `MAX_APPEARANCES` slots
+ *   is rejected (returns `false`).
+ * - Otherwise the slot is set and the function returns `true`.
+ *
+ * The caller is responsible for looking up the manager → team path
+ * and running this inside `produce(context, (draft) => ...)`.
+ */
+export const assignPlayerToLineup = (
+  lineup: Lineup,
+  target: LineupTarget,
+  playerId: string | null
+): boolean => {
+  // Clearing a slot is always allowed.
+  if (playerId === null) {
+    setSlot(lineup, target, null);
+    return true;
+  }
+
+  // Guard: player may not exceed MAX_APPEARANCES across regular units.
+  const appearances = lineupAppearances(lineup);
+  const current = appearances.get(playerId) ?? 0;
+
+  // If the player is already in the target slot, it's a no-op success.
+  if (getSlot(lineup, target) === playerId) {
+    return true;
+  }
+
+  if (current >= MAX_APPEARANCES) {
+    return false;
+  }
+
+  setSlot(lineup, target, playerId);
+  return true;
+};
+
+/** Read the player id currently occupying a lineup slot. */
+const getSlot = (lineup: Lineup, target: LineupTarget): string | null => {
+  switch (target.unit) {
+    case "g":
+      return lineup.g;
+    case "d":
+      return lineup.defensivePairings[target.index][target.side];
+    case "f":
+      return lineup.forwardLines[target.index][target.position];
+  }
+};
+
+/** Write a player id into a lineup slot (mutates in place). */
+const setSlot = (
+  lineup: Lineup,
+  target: LineupTarget,
+  playerId: string | null
+): void => {
+  switch (target.unit) {
+    case "g":
+      lineup.g = playerId;
+      break;
+    case "d":
+      lineup.defensivePairings[target.index][target.side] = playerId;
+      break;
+    case "f":
+      lineup.forwardLines[target.index][target.position] = playerId;
+      break;
+  }
+};
+
+// ---------------------------------------------------------------------------
 // Auto-lineup builder — port of SUB automa (ILEX5.BAS:822-920)
 // ---------------------------------------------------------------------------
 

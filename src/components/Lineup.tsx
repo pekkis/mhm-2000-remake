@@ -14,7 +14,8 @@ import { ForwardLineView } from "@/components/lineup/ForwardLineView";
 import { GoalieView } from "@/components/lineup/GoalieView";
 import { DefensivePairingView } from "@/components/lineup/DefencivePairingView";
 import { lineupAppearances } from "@/services/lineup";
-import { useMemo } from "react";
+import type { LineupTarget } from "@/services/lineup";
+import { useCallback, useMemo } from "react";
 
 const Lineup: FC = () => {
   const manager = useGameContext(activeManager);
@@ -27,6 +28,16 @@ const Lineup: FC = () => {
   const appearances = useMemo(
     () => (lineup ? lineupAppearances(lineup) : new Map<string, number>()),
     [lineup]
+  );
+
+  const onAssign = useCallback(
+    (target: LineupTarget, playerId: string | null) => {
+      game.send({
+        type: "ASSIGN_PLAYER_TO_LINEUP",
+        payload: { manager: manager.id, target, playerId }
+      });
+    },
+    [game, manager.id]
   );
 
   if (team.kind !== "human") {
@@ -55,15 +66,22 @@ const Lineup: FC = () => {
         </Button>
 
         <Stack gap="sm">
-          <GoalieView players={team.players} g={team.lineup.g} appearances={appearances} />
+          <GoalieView
+            players={team.players}
+            g={team.lineup.g}
+            appearances={appearances}
+            onAssign={onAssign}
+          />
 
           {team.lineup.defensivePairings.map((defensivePairing, id) => {
             return (
               <DefensivePairingView
                 key={id}
+                index={id}
                 players={team.players}
                 pairing={defensivePairing}
                 appearances={appearances}
+                onAssign={onAssign}
               />
             );
           })}
@@ -72,9 +90,11 @@ const Lineup: FC = () => {
             return (
               <ForwardLineView
                 key={id}
+                index={id}
                 players={team.players}
                 line={forwardLine}
                 appearances={appearances}
+                onAssign={onAssign}
               />
             );
           })}
