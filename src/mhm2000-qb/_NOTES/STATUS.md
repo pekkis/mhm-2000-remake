@@ -196,8 +196,17 @@ ported as composable pure functions in `src/services/lineup.ts`:
 - `applyPositionPenalty(position, slot, base)` — FIX (trunc)
 - `applySpecialtyPenalty(specialty, value)` — CINT (round), greedySurfer only
 - `applyConditionPenalty(condition, value)` — FIX (trunc)
-- `floorAtZero(value)`
+- `floorStrength(value)` — min 1 (**gameplay deviation**: QB floors at 0)
 - `effectiveStrength(base, position, slot, specialty, condition)` — composed in QB order
+
+**Gameplay deviation: goalie↔skater cross-assignment.** QB hard-locks
+goalies to the goalie slot. We allow any player in any slot — goalie
+skating out or skater in goal resolves to `MIN_EFFECTIVE_STRENGTH` (1).
+See [DEVIATIONS.md](DEVIATIONS.md) §1.
+
+**Gameplay deviation: floor at 1.** QB floors at 0; we floor at 1.
+The worst possible warm body on the ice is still *a* body on the ice.
+See [DEVIATIONS.md](DEVIATIONS.md) §2.
 
 **CINT vs FIX is load-bearing.** Specialty penalty uses `Math.round`
 (QB CINT), all others use `Math.trunc` (QB FIX). The difference
@@ -206,6 +215,39 @@ matters at boundary values (e.g. `0.7 * 15 = 10.5` → round=11, trunc=10).
 Also ported: `performanceModifier(player)` (sums active skill effects =
 QB `plus`), `isAvailable(player)` (availability gate = QB `inj=0 AND
 svu>0 AND kun>=0`).
+
+### Lineup UI — customizable `<select>` (2026-05-09)
+
+Slot-aware player selection UI built using the HTML customizable
+`<select>` (`appearance: "base-select"`, Chromium 135+). Each dropdown
+sorts players by their **effective strength for that specific slot**,
+so a center shows highest in the C dropdown and lower in the LW
+dropdown (with the −1 penalty reflected).
+
+- **`PlayerSelect`** (`src/components/lineup/PlayerSelect.tsx`) takes
+  a `slot: LineupSlot` prop instead of a generic sorter. Computes
+  `slotSkill` = `applyPositionPenalty(position, slot, skill + performanceModifier)`
+  and sorts descending. Option labels show `{surname} ({POSITION} {slotSkill})`.
+- **Slot threading:** `GoalieView` → `slot="g"`, `DefencivePairingView`
+  → `slot="d"`, `ForwardLineView` → `slot="lw"/"c"/"rw"` — all via
+  `PlayerView` passthrough.
+- **Dropdown height limited:** `::picker(select)` gets
+  `maxBlockSize: 20rem` + `overflow: auto` for scrollable dropdown.
+- **csstype patch:** `appearance: "base-select"` not in csstype's
+  `Property.Appearance` type alias — patched via `pnpm patch`
+  (`patches/csstype@3.2.3.patch`). Module augmentation doesn't work
+  for type aliases (only interfaces).
+- **React JSX types:** `<selectedcontent />` declared via
+  `declare module "react"` in `PlayerSelect.tsx`.
+- **Still TODO:** `onSelect` is a `console.log` stub (not wired to
+  state). PP/PK team views not rendered yet. Line 4 not rendered.
+
+### Willful deviations log started (2026-05-09)
+
+New [DEVIATIONS.md](DEVIATIONS.md) tracks intentional gameplay
+divergences from the QB original. Currently documents:
+1. Goalie↔skater cross-assignment (QB: hard-locked; us: catastrophic penalty → 1)
+2. Effective strength floor 0 → 1 (revisit risk: medium)
 
 ### Game machine wiring (2026-05-08)
 

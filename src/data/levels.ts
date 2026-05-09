@@ -21,6 +21,15 @@
  * the team-level array name `tazo` — kept here only as archaeological
  * trivia.
  *
+ * **The scale is perfectly linear:** attack = level × 4, defence =
+ * level × 2 + 4, goalie follows a staircase of roughly +1 per 3 levels.
+ * The exponential-feeling tier gaps come from the **match engine**, not
+ * the skill table — `SUB pisteet` weights scoring lines by `hketju^2.5`
+ * and defensive pairs by `pketju^2`, so small differences at the top
+ * produce catastrophic outcome gaps while bottom-tier teams are barely
+ * distinguishable. This is a clean design separation: linear data,
+ * nonlinear consumption.
+ *
  * Human-controlled teams compute their goalie/defence/attack
  * differently and do not consult this table.
  *

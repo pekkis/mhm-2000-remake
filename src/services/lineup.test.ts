@@ -4,8 +4,9 @@ import {
   applySpecialtyPenalty,
   autoLineup,
   effectiveStrength,
-  floorAtZero,
+  floorStrength,
   isAvailable,
+  MIN_EFFECTIVE_STRENGTH,
   performanceModifier
 } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
@@ -56,9 +57,16 @@ const createPlayer = (partial: Partial<HiredPlayer> = {}): HiredPlayer => {
 };
 
 describe("applyPositionPenalty", () => {
-  it("goalie slot: no penalty regardless of position", () => {
+  it("goalie slot: goalie at full value", () => {
+    const goalie = createPlayer({ position: "g" });
+    expect(applyPositionPenalty(goalie.position, "g", 10)).toBe(10);
+  });
+
+  it("goalie slot: skater → catastrophic (MIN_EFFECTIVE_STRENGTH)", () => {
     const center = createPlayer({ position: "c" });
-    expect(applyPositionPenalty(center.position, "g", 10)).toBe(10);
+    expect(applyPositionPenalty(center.position, "g", 10)).toBe(
+      MIN_EFFECTIVE_STRENGTH
+    );
   });
 
   it("defense slot: defenseman at full value", () => {
@@ -69,6 +77,13 @@ describe("applyPositionPenalty", () => {
   it("defense slot: forward in D slot → ×0.7", () => {
     const center = createPlayer({ position: "c" });
     expect(applyPositionPenalty(center.position, "d", 10)).toBe(7);
+  });
+
+  it("defense slot: goalie → catastrophic", () => {
+    const goalie = createPlayer({ position: "g" });
+    expect(applyPositionPenalty(goalie.position, "d", 10)).toBe(
+      MIN_EFFECTIVE_STRENGTH
+    );
   });
 
   it("forward slot: correct position at full value", () => {
@@ -86,6 +101,13 @@ describe("applyPositionPenalty", () => {
     expect(applyPositionPenalty(rw.position, "lw", 10)).toBe(9);
   });
 
+  it("forward slot: goalie → catastrophic", () => {
+    const goalie = createPlayer({ position: "g" });
+    expect(applyPositionPenalty(goalie.position, "lw", 10)).toBe(
+      MIN_EFFECTIVE_STRENGTH
+    );
+  });
+
   it("PK forward slot: any forward at full value", () => {
     const rw = createPlayer({ position: "rw" });
     expect(applyPositionPenalty(rw.position, "pkf", 10)).toBe(10);
@@ -96,9 +118,11 @@ describe("applyPositionPenalty", () => {
     expect(applyPositionPenalty(def.position, "pkf", 10)).toBe(7);
   });
 
-  it("PK forward slot: goalie → ×0.7", () => {
+  it("PK forward slot: goalie → catastrophic", () => {
     const goalie = createPlayer({ position: "g" });
-    expect(applyPositionPenalty(goalie.position, "pkf", 10)).toBe(7);
+    expect(applyPositionPenalty(goalie.position, "pkf", 10)).toBe(
+      MIN_EFFECTIVE_STRENGTH
+    );
   });
 
   it("×0.7 uses Math.trunc (QB FIX), not Math.round", () => {
@@ -166,17 +190,21 @@ describe("applyConditionPenalty", () => {
   });
 });
 
-describe("floorAtZero", () => {
+describe("floorStrength", () => {
   it("positive → unchanged", () => {
-    expect(floorAtZero(5)).toBe(5);
+    expect(floorStrength(5)).toBe(5);
   });
 
-  it("zero → zero", () => {
-    expect(floorAtZero(0)).toBe(0);
+  it("one → one", () => {
+    expect(floorStrength(1)).toBe(1);
   });
 
-  it("negative → zero", () => {
-    expect(floorAtZero(-3)).toBe(0);
+  it("zero → one", () => {
+    expect(floorStrength(0)).toBe(1);
+  });
+
+  it("negative → one", () => {
+    expect(floorStrength(-3)).toBe(1);
   });
 });
 
@@ -195,13 +223,13 @@ describe("effectiveStrength", () => {
     expect(effectiveStrength(20, "c", "d", "greedySurfer", -2)).toBe(7);
   });
 
-  it("floors negative results at zero", () => {
+  it("floors negative results at 1 (minimum effective strength)", () => {
     // Wrong forward position gives −1; if base is 0, result goes negative
     // Step 1: position: LW in C slot → 0 - 1 = -1
     // Step 2: specialty: none → -1
     // Step 3: condition: 0 → -1
-    // Step 4: floor → 0
-    expect(effectiveStrength(0, "lw", "c", "none", 0)).toBe(0);
+    // Step 4: floor → 1
+    expect(effectiveStrength(0, "lw", "c", "none", 0)).toBe(1);
   });
 
   it("null specialty is fine", () => {
@@ -217,6 +245,21 @@ describe("effectiveStrength", () => {
   it("pkf slot: defenseman gets position penalty", () => {
     // trunc(0.7 * 10) = 7
     expect(effectiveStrength(10, "d", "pkf", null, 0)).toBe(7);
+  });
+
+  it("goalie in skater slot → MIN_EFFECTIVE_STRENGTH", () => {
+    expect(effectiveStrength(15, "g", "c", null, 0)).toBe(
+      MIN_EFFECTIVE_STRENGTH
+    );
+    expect(effectiveStrength(15, "g", "d", null, 0)).toBe(
+      MIN_EFFECTIVE_STRENGTH
+    );
+  });
+
+  it("skater in goalie slot → MIN_EFFECTIVE_STRENGTH", () => {
+    expect(effectiveStrength(15, "d", "g", null, 0)).toBe(
+      MIN_EFFECTIVE_STRENGTH
+    );
   });
 });
 

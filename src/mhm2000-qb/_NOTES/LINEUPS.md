@@ -310,6 +310,15 @@ When a goal is scored, the engine picks which line/pair gets credit:
 (`hketju(line)^2.5`), defense pair by weighted random
 (`pketju(pair)^2`). This means better lines produce more scorers.
 
+> **Design insight:** These nonlinear exponents (`^2.5`, `^2`) are the
+> source of the exponential-feeling tier gaps between leagues. The
+> TASOT.M2K skill table itself is **perfectly linear** (attack =
+> level × 4), but squaring and power-2.5-ing the line strengths means
+> small advantages at the top translate to huge outcome differences,
+> while bottom-tier teams (mutasarja) are barely distinguishable. This
+> is clean separation of concerns: the data layer is simple arithmetic,
+> the engine layer applies the game-feel curve.
+
 **Power play:** All 5 PP slots used directly
 (`cketju(z) = ketju(z, yvpelaa, ww)`).
 

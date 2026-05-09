@@ -4,24 +4,33 @@ import type { Lineup } from "@/state/lineup";
 
 /**
  * Lineup slot types for the position-penalty calculation.
- * Maps to QB `xxx` values in the `zzra` subroutine (ILEX5.BAS:8550-8558).
+ * Based on QB `xxx` values in `zzra` (ILEX5.BAS:8550-8558), extended
+ * to allow any player in any slot.
  *
- * - `"g"` — goalie slot (xxx=1). No penalty.
- * - `"d"` — defense slot, LD or RD (xxx=2). Non-D → ×0.7.
- * - `"lw"` / `"c"` / `"rw"` — position-specific forward (xxx=3/4/5).
- *   D in fwd slot → ×0.7, wrong forward type → −1.
- * - `"pkf"` — PK forward, position-generic (xxx=6).
- *   Goalie or D → ×0.7, any forward type → full.
+ * - `"g"` — goalie slot. Goalie → no penalty. Skater → catastrophic (→ 1).
+ * - `"d"` — defense slot. Goalie → catastrophic (→ 1). Non-D skater → ×0.7.
+ * - `"lw"` / `"c"` / `"rw"` — position-specific forward.
+ *   Goalie → catastrophic (→ 1). D → ×0.7. Wrong forward type → −1.
+ * - `"pkf"` — PK forward, position-generic.
+ *   Goalie → catastrophic (→ 1). D → ×0.7. Any forward → full.
+ *
+ * **Gameplay deviation from QB:** the original hard-locked goalies to
+ * the goalie slot and barred them from skating. We allow it — you just
+ * get an effective strength of 1, which is the worst warm body on ice.
  */
 export type LineupSlot = "g" | "d" | "lw" | "c" | "rw" | "pkf";
 
+/** Minimum effective strength — the worst possible player on the ice. */
+export const MIN_EFFECTIVE_STRENGTH = 1;
+
 /**
  * Applies the position penalty for a player in a given lineup slot.
- * Port of the `SELECT CASE xxx` block in QB `zzra` (ILEX5.BAS:8550-8558).
+ * Based on `SELECT CASE xxx` in QB `zzra` (ILEX5.BAS:8550-8558),
+ * extended for goalie↔skater cross-assignment.
  *
- * Takes a pre-computed base value (typically `psk + plus + erik(3)`,
- * with `yvo`/`avo` added by the caller for PP/PK context) and returns
- * the position-adjusted value.
+ * Catastrophic mismatches (goalie playing out, skater in goal) return
+ * `MIN_EFFECTIVE_STRENGTH` directly — no further penalties can improve
+ * or worsen the situation.
  */
 export const applyPositionPenalty = (
   playerPosition: HiredPlayer["position"],
@@ -30,28 +39,31 @@ export const applyPositionPenalty = (
 ): number => {
   switch (slot) {
     case "g":
-      // xxx=1: no position penalty (UI prevents non-goalies here)
-      return baseValue;
+      // Goalie in goal → no penalty. Skater in goal → catastrophic.
+      return playerPosition === "g" ? baseValue : MIN_EFFECTIVE_STRENGTH;
 
     case "d":
-      // xxx=2: non-defenseman in D slot → ×0.7
+      // Goalie skating defense → catastrophic.
+      if (playerPosition === "g") return MIN_EFFECTIVE_STRENGTH;
+      // Non-D skater in D slot → ×0.7 (QB xxx=2).
       return playerPosition !== "d" ? Math.trunc(0.7 * baseValue) : baseValue;
 
     case "lw":
     case "c":
     case "rw":
-      // xxx=3/4/5: D in forward slot → ×0.7, wrong forward type → −1
-      if (playerPosition === "d") {
-        return Math.trunc(0.7 * baseValue);
-      }
-      if (playerPosition !== slot) {
-        return baseValue - 1;
-      }
+      // Goalie skating forward → catastrophic.
+      if (playerPosition === "g") return MIN_EFFECTIVE_STRENGTH;
+      // D in forward slot → ×0.7 (QB xxx=3/4/5).
+      if (playerPosition === "d") return Math.trunc(0.7 * baseValue);
+      // Wrong forward type → −1.
+      if (playerPosition !== slot) return baseValue - 1;
       return baseValue;
 
     case "pkf":
-      // xxx=6: goalie or D in PK forward slot → ×0.7, any fwd → full
-      return playerPosition === "g" || playerPosition === "d"
+      // Goalie in PK forward → catastrophic.
+      if (playerPosition === "g") return MIN_EFFECTIVE_STRENGTH;
+      // D in PK forward → ×0.7 (QB xxx=6).
+      return playerPosition === "d"
         ? Math.trunc(0.7 * baseValue)
         : baseValue;
   }
@@ -114,14 +126,18 @@ export const applyConditionPenalty = (
 };
 
 /**
- * Floors at zero.
- * Port of `IF temp% < 0 THEN temp% = 0` (ILEX5.BAS:8569).
+ * Ensures no effective strength drops below `MIN_EFFECTIVE_STRENGTH`.
+ * The worst warm body on the ice is still *a* body on the ice.
+ *
+ * Replaces QB's `IF temp% < 0 THEN temp% = 0` (ILEX5.BAS:8569)
+ * with a minimum of 1 — gameplay deviation from the original.
  */
-export const floorAtZero = (value: number): number => Math.max(0, value);
+export const floorStrength = (value: number): number =>
+  Math.max(MIN_EFFECTIVE_STRENGTH, value);
 
 /**
  * Full `zzra` pipeline: computes effective strength for one player in one slot.
- * Port of SUB zzra (ILEX5.BAS:8545-8570).
+ * Based on SUB zzra (ILEX5.BAS:8545-8570).
  *
  * Caller provides a pre-computed `baseValue` (typically `psk + plus + erik(3)`,
  * with `yvo`/`avo` already added for PP/PK context).
@@ -130,7 +146,7 @@ export const floorAtZero = (value: number): number => Math.max(0, value);
  * 1. Position penalty  (SELECT CASE xxx, lines 8550-8558)
  * 2. Specialty penalty  (IF spe=8, line 8559)
  * 3. Condition penalty  (SELECT CASE kun, lines 8560-8568)
- * 4. Floor at 0         (IF temp%<0, line 8569)
+ * 4. Floor at 1         (gameplay deviation: QB floors at 0)
  */
 export const effectiveStrength = (
   baseValue: number,
@@ -139,7 +155,7 @@ export const effectiveStrength = (
   specialty: PlayerSpecialtyKey | null,
   condition: number
 ): number =>
-  floorAtZero(
+  floorStrength(
     applyConditionPenalty(
       condition,
       applySpecialtyPenalty(
