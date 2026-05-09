@@ -12,11 +12,9 @@ import {
   allEventsResolved,
   humanManagers
 } from "@/machines/selectors";
-import difficultyLevels from "@/data/difficulty-levels";
 import calendar from "@/data/calendar";
 import competitionData from "@/data/competitions";
 import tournamentList from "@/data/tournaments";
-import { CRISIS_COST } from "@/data/constants";
 import { isInvitedToTournament } from "@/machines/tournament-eligibility";
 import { computeStats } from "@/services/competition-type";
 import strategies, {
@@ -623,8 +621,10 @@ export const gameMachine = setup({
      */
     executeCrisisMeeting: enqueueActions(
       ({ context, enqueue }, params: { manager: string }) => {
+        console.log(context, enqueue, params);
         return;
 
+        /*
         const m = context.managers[params.manager];
         if (!m || m.team === undefined) {
           return;
@@ -669,6 +669,7 @@ export const gameMachine = setup({
             type: "info"
           })
         );
+        */
       }
     ),
 
