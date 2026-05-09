@@ -5,6 +5,7 @@ import Cluster from "./ui/Cluster";
 import { getEffective } from "@/services/effects";
 import { CRISIS_MORALE_MAX } from "@/data/constants";
 import Button from "./ui/Button";
+import RadioGroup from "./ui/RadioGroup";
 import {
   GameMachineContext,
   useGameContext
@@ -21,12 +22,12 @@ const themeOptions: ReadonlyArray<{ value: ThemePreference; label: string }> = [
 ];
 
 const intensityOptions: ReadonlyArray<{
-  value: 0 | 1 | 2;
+  value: "0" | "1" | "2";
   label: string;
 }> = [
-  { value: 0, label: "Laiska" },
-  { value: 1, label: "Normaali" },
-  { value: 2, label: "Hurja" }
+  { value: "0", label: "Laiska" },
+  { value: "1", label: "Normaali" },
+  { value: "2", label: "Hurja" }
 ];
 
 const ActionMenu = () => {
@@ -141,24 +142,19 @@ const ActionMenu = () => {
         </Stack>
       </Stack>
 
-      <Cluster gap="xs" justify="space-between">
-        {intensityOptions.map((opt) => (
-          <Button
-            key={opt.value}
-            type="button"
-            terse
-            secondary={team.intensity !== opt.value}
-            onClick={() =>
-              gameActor.send({
-                type: "SET_INTENSITY",
-                payload: { manager: manager.id, intensity: opt.value }
-              })
+      <RadioGroup
+        options={intensityOptions}
+        value={String(team.intensity) as "0" | "1" | "2"}
+        onValueChange={(v) =>
+          gameActor.send({
+            type: "SET_INTENSITY",
+            payload: {
+              manager: manager.id,
+              intensity: Number(v) as 0 | 1 | 2
             }
-          >
-            {opt.label}
-          </Button>
-        ))}
-      </Cluster>
+          })
+        }
+      />
 
       <Cluster gap="xs" justify="space-between">
         {themeOptions.map((opt) => (
