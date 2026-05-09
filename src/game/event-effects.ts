@@ -125,7 +125,6 @@ export type EventEffect =
       flag: string;
       value: boolean;
     }
-  | { type: "incrementServiceBasePrice"; service: string; amount: number }
 
   // ── Country strength (used by attitude-canada / attitude-usa) ──
   | { type: "alterCountryStrength"; country: CountryIso; amount: number }

@@ -2,7 +2,7 @@ import { createStore } from "@xstate/store";
 
 export type ThemePreference = "system" | "light" | "dark";
 
-const THEME_STORAGE_KEY = "mhm97:theme";
+const THEME_STORAGE_KEY = "mhm2000:theme";
 
 const readStoredTheme = (): ThemePreference => {
   if (typeof window === "undefined") {
