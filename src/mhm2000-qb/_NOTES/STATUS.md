@@ -216,31 +216,62 @@ Also ported: `performanceModifier(player)` (sums active skill effects =
 QB `plus`), `isAvailable(player)` (availability gate = QB `inj=0 AND
 svu>0 AND kun>=0`).
 
-### Lineup UI — customizable `<select>` (2026-05-09)
+### Lineup UI — Radix Select + full wiring (2026-05-09)
 
-Slot-aware player selection UI built using the HTML customizable
-`<select>` (`appearance: "base-select"`, Chromium 135+). Each dropdown
-sorts players by their **effective strength for that specific slot**,
+Interactive lineup management using `@radix-ui/react-select`. Each
+dropdown sorts players by **effective strength for that specific slot**,
 so a center shows highest in the C dropdown and lower in the LW
 dropdown (with the −1 penalty reflected).
 
-- **`PlayerSelect`** (`src/components/lineup/PlayerSelect.tsx`) takes
-  a `slot: LineupSlot` prop instead of a generic sorter. Computes
-  `slotSkill` = `applyPositionPenalty(position, slot, skill + performanceModifier)`
-  and sorts descending. Option labels show `{surname} ({POSITION} {slotSkill})`.
-- **Slot threading:** `GoalieView` → `slot="g"`, `DefencivePairingView`
-  → `slot="d"`, `ForwardLineView` → `slot="lw"/"c"/"rw"` — all via
-  `PlayerView` passthrough.
-- **Dropdown height limited:** `::picker(select)` gets
-  `maxBlockSize: 20rem` + `overflow: auto` for scrollable dropdown.
+- **`PlayerSelect`** (`src/components/lineup/PlayerSelect.tsx`) —
+  Radix Select with structured layout: position tag (bold) + player
+  name + skill value + Badge (lineup appearances). Sentinel `"__none__"`
+  for clearing a slot. Excluded players shown as disabled items.
+- **Slot threading:** `GoalieView` → `target={ unit: "g" }`,
+  `DefencivePairingView` → `target={ unit: "d", index, side }`,
+  `ForwardLineView` → `target={ unit: "f", index, position }`.
+- **PP/PK views:** `PowerPlayView` (5 slots) and `PenaltyKillView`
+  (4 slots: 2D + 2F, no RW) fully rendered in the Lineup page.
+- **`ASSIGN_PLAYER_TO_LINEUP` machine event:** wired in `gameMachine`,
+  calls `assignPlayerToLineup()` with full guards (ket < 2, excluded
+  players, goalie lock, same-unit conflicts).
+- **`excludedPlayers(lineup, target)`** — returns `Set<string>` of
+  player IDs that can't be assigned to a given slot. Three rules:
+  goalie lock, same-pairing LD/RD conflict, same-line/unit conflict.
+- **`lineupAppearances(lineup)`** — port of QB `SUB kc`. Counts
+  regular-line slots per player (units 1–4 + goalie). PP/PK excluded.
+  Drives Badge display and ket < 2 guard.
+- **Badge component** (`src/components/ui/Badge.tsx`) — pill badge
+  with AlertLevel colors for lineup appearance counts.
 - **csstype patch:** `appearance: "base-select"` not in csstype's
   `Property.Appearance` type alias — patched via `pnpm patch`
-  (`patches/csstype@3.2.3.patch`). Module augmentation doesn't work
-  for type aliases (only interfaces).
-- **React JSX types:** `<selectedcontent />` declared via
-  `declare module "react"` in `PlayerSelect.tsx`.
-- **Still TODO:** `onSelect` is a `console.log` stub (not wired to
-  state). PP/PK team views not rendered yet. Line 4 not rendered.
+  (`patches/csstype@3.2.3.patch`).
+
+### Human team strength calculation (2026-05-09)
+
+`calculateStrength()` in `src/services/team.ts` no longer returns a
+mock `rollTeamStrength()` for human teams. It now calls
+`calculateLineupStrength(lineup, players)` — a faithful port of the
+base-stat portion of `SUB voimamaar` (ILEX5.BAS:8429-8490).
+
+- **`calculateLineupStrength(lineup, players)`** in
+  `src/services/lineup.ts`: walks goalie slot, 3 defensive pairings,
+  and all 4 forward lines through the `effectiveStrength` pipeline.
+  Returns `{ goalie, defence, attack }`.
+- **Incomplete units contribute 0** — matches QB's `htarko`/`ptarko`
+  completeness flags. A pair needs both LD+RD, a line needs all 3
+  (LW+C+RW).
+- **`calculateYw(team, manager)` / `calculateAw(team, manager)`** —
+  PP/PK weights abstracted for both AI and human teams. Currently
+  uses the approximation formula `(hw/3.3 + pw/2.5) × specialTeamsMult`
+  for both. Match engine (`prepareSide`) now calls these instead of
+  inlining the formula.
+- **`playerBaseValue(player)`** = `skill + performanceModifier(player)`.
+  TODO: add `erik(3)` team investment bonus when erikoistoimet ports.
+- **TODO: human PP/PK from actual lineup slots.** QB `voimamaar`
+  computes `yw`/`aw` from the dedicated PP/PK units with per-player
+  `yvo`/`avo` bonuses + `mtaito(2)` multiplier. Currently deferred —
+  both team kinds use the base-stat approximation.
 
 ### Willful deviations log started (2026-05-09)
 

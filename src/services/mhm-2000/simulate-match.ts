@@ -74,7 +74,7 @@ import competitions from "@/data/competitions";
 import type { EventEffect } from "@/game/event-effects";
 import competitionTypes from "@/services/competition-type";
 import defaultRandom from "@/services/random";
-import { calculateStrength } from "@/services/team";
+import { calculateAw, calculateStrength, calculateYw } from "@/services/team";
 import type { Manager, Team } from "@/state/game";
 import type {
   Competition,
@@ -204,12 +204,12 @@ const prepareSide = (side: MatchSide, etu: number): SideStrength => {
 
   let { goalie, defence, attack } = strength;
 
-  // QB shadow at [ILEX5.BAS:328-329] — recomputed every gameday for
-  // every managed base team via the menu3 loop. Same formula here.
+  // QB shadow at [ILEX5.BAS:328-329] — yw/aw now computed centrally
+  // in team.ts (calculateYw / calculateAw), including the manager's
+  // specialTeams multiplier.
   // TODO: fold in `tauti(2)` / `tauti(3)` epidemic mods once modelled.
-  const specialTeamsMult = 1 + side.manager.attributes.specialTeams * 0.04;
-  let yw = (attack / 3.3 + defence / 2.5) * specialTeamsMult;
-  let aw = (attack / 4.4 + defence / 2.5) * specialTeamsMult;
+  let yw = calculateYw(side.team, side.manager);
+  let aw = calculateAw(side.team, side.manager);
 
   // QB lines 3844-3851: tautip and tre multipliers for od(z) < 49.
   // TODO: model `tautip(team)` (epidemic) and `tre(team)` (trainer).

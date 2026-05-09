@@ -1,6 +1,7 @@
 import type { HiredPlayer } from "@/state/player";
 import type { PlayerSpecialtyKey } from "@/data/player-specialties";
 import type { Lineup } from "@/state/lineup";
+import type { TeamStrength } from "@/data/levels";
 
 /**
  * Lineup slot types for the position-penalty calculation.
@@ -44,7 +45,9 @@ export const applyPositionPenalty = (
 
     case "d":
       // Goalie skating defense → catastrophic.
-      if (playerPosition === "g") {return MIN_EFFECTIVE_STRENGTH;}
+      if (playerPosition === "g") {
+        return MIN_EFFECTIVE_STRENGTH;
+      }
       // Non-D skater in D slot → ×0.7 (QB xxx=2).
       return playerPosition !== "d" ? Math.trunc(0.7 * baseValue) : baseValue;
 
@@ -52,16 +55,24 @@ export const applyPositionPenalty = (
     case "c":
     case "rw":
       // Goalie skating forward → catastrophic.
-      if (playerPosition === "g") {return MIN_EFFECTIVE_STRENGTH;}
+      if (playerPosition === "g") {
+        return MIN_EFFECTIVE_STRENGTH;
+      }
       // D in forward slot → ×0.7 (QB xxx=3/4/5).
-      if (playerPosition === "d") {return Math.trunc(0.7 * baseValue);}
+      if (playerPosition === "d") {
+        return Math.trunc(0.7 * baseValue);
+      }
       // Wrong forward type → −1.
-      if (playerPosition !== slot) {return baseValue - 1;}
+      if (playerPosition !== slot) {
+        return baseValue - 1;
+      }
       return baseValue;
 
     case "pkf":
       // Goalie in PK forward → catastrophic.
-      if (playerPosition === "g") {return MIN_EFFECTIVE_STRENGTH;}
+      if (playerPosition === "g") {
+        return MIN_EFFECTIVE_STRENGTH;
+      }
       // D in PK forward → ×0.7 (QB xxx=6).
       return playerPosition === "d" ? Math.trunc(0.7 * baseValue) : baseValue;
   }
@@ -164,6 +175,82 @@ export const effectiveStrength = (
   );
 
 // ---------------------------------------------------------------------------
+// Lineup → team strength — port of SUB voimamaar (ILEX5.BAS:8429-8490)
+// ---------------------------------------------------------------------------
+
+/**
+ * Base value for the `zzra` pipeline: `psk + plus`.
+ * QB: `temp% = pel(ccc, pv).psk + pel(ccc, pv).plus + erik(3, u(pv))`.
+ *
+ * TODO: add `erik(3)` team investment bonus when erikoistoimet system
+ * is ported. Currently defaults to 0.
+ */
+const playerBaseValue = (player: HiredPlayer): number =>
+  player.skill + performanceModifier(player);
+
+/**
+ * Compute `{ goalie, defence, attack }` from a lineup and player roster.
+ * Port of the base-stat portion of SUB voimamaar (ILEX5.BAS:8429-8490).
+ *
+ * **Incomplete units contribute 0:** a defensive pair needs both LD+RD
+ * filled, a forward line needs all three LW+C+RW filled. Matches QB's
+ * `htarko`/`ptarko` completeness flags.
+ *
+ * All 4 forward lines count all 3 positions (LW+C+RW). Line 4 differs
+ * from lines 1–3 only in having no defensive pair (`dad(1,4)=dad(2,4)=0`
+ * in KARSA.M2K), not in its forward slots.
+ */
+export const calculateLineupStrength = (
+  lineup: Lineup,
+  players: Record<string, HiredPlayer>
+): TeamStrength => {
+  const resolve = (id: string | null): HiredPlayer | undefined =>
+    id ? players[id] : undefined;
+
+  const strength = (player: HiredPlayer, slot: LineupSlot): number =>
+    effectiveStrength(
+      playerBaseValue(player),
+      player.position,
+      slot,
+      player.specialty,
+      player.condition
+    );
+
+  // Goalie: single slot, contributes even without a "complete unit" check.
+  let goalie = 0;
+  const gPlayer = resolve(lineup.g);
+  if (gPlayer) {
+    goalie = strength(gPlayer, "g");
+  }
+
+  // Defence: 3 pairings. Incomplete pair (any empty slot) contributes 0.
+  let defence = 0;
+  for (const pair of lineup.defensivePairings) {
+    const ld = resolve(pair.ld);
+    const rd = resolve(pair.rd);
+    if (ld && rd) {
+      defence += strength(ld, "d");
+      defence += strength(rd, "d");
+    }
+  }
+
+  // Attack: 4 forward lines. Incomplete line (any empty slot) contributes 0.
+  let attack = 0;
+  for (const line of lineup.forwardLines) {
+    const lw = resolve(line.lw);
+    const c = resolve(line.c);
+    const rw = resolve(line.rw);
+    if (lw && c && rw) {
+      attack += strength(lw, "lw");
+      attack += strength(c, "c");
+      attack += strength(rw, "rw");
+    }
+  }
+
+  return { goalie, defence, attack };
+};
+
+// ---------------------------------------------------------------------------
 // Lineup appearances — derived `ket` (QB SUB kc, ILEX5.BAS:2559-2568)
 // ---------------------------------------------------------------------------
 
@@ -189,7 +276,9 @@ export const lineupAppearances = (lineup: Lineup): Map<string, number> => {
   const counts = new Map<string, number>();
 
   const count = (id: string | null): void => {
-    if (id) {counts.set(id, (counts.get(id) ?? 0) + 1);}
+    if (id) {
+      counts.set(id, (counts.get(id) ?? 0) + 1);
+    }
   };
 
   // Goalie slot
@@ -256,32 +345,47 @@ export const excludedPlayers = (
   // Any player already in any non-goalie slot is excluded.
   if (target.unit === "g") {
     for (const pair of lineup.defensivePairings) {
-      if (pair.ld) {excluded.add(pair.ld);}
-      if (pair.rd) {excluded.add(pair.rd);}
+      if (pair.ld) {
+        excluded.add(pair.ld);
+      }
+      if (pair.rd) {
+        excluded.add(pair.rd);
+      }
     }
     for (const line of lineup.forwardLines) {
-      if (line.lw) {excluded.add(line.lw);}
-      if (line.c) {excluded.add(line.c);}
-      if (line.rw) {excluded.add(line.rw);}
+      if (line.lw) {
+        excluded.add(line.lw);
+      }
+      if (line.c) {
+        excluded.add(line.c);
+      }
+      if (line.rw) {
+        excluded.add(line.rw);
+      }
     }
     const pp = lineup.powerplayTeam;
     for (const pos of ["lw", "c", "rw", "ld", "rd"] as const) {
-      if (pp[pos]) {excluded.add(pp[pos]!);}
+      if (pp[pos]) {
+        excluded.add(pp[pos]!);
+      }
     }
     const pk = lineup.penaltyKillTeam;
     for (const pos of ["f1", "f2", "ld", "rd"] as const) {
-      if (pk[pos]) {excluded.add(pk[pos]!);}
+      if (pk[pos]) {
+        excluded.add(pk[pos]!);
+      }
     }
     return excluded;
   }
 
   // Rules 3 & 4: same-unit conflicts.
   switch (target.unit) {
-
     case "d": {
       const pair = lineup.defensivePairings[target.index];
       const other = target.side === "ld" ? pair.rd : pair.ld;
-      if (other) {excluded.add(other);}
+      if (other) {
+        excluded.add(other);
+      }
       break;
     }
 
@@ -496,7 +600,7 @@ const rankedByPosition = (
  *    sort eligible players by pool-specific key, take top N.
  * 3. Map ranked arrays onto the lineup structure:
  *    - 3 defensive pairings (6 D from regular pool)
- *    - 4 forward lines (lines 1-3: LW/C/RW; line 4: LW/C only, no RW)
+ *    - 4 forward lines (all LW/C/RW; line 4 has no D pair but full forwards)
  *    - PP team: 2D + LW/C/RW from PP pool
  *    - PK team: 2D from PK pool + best PK LW + best PK C (no RW — `dad(5,6)=0`)
  *

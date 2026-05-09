@@ -407,6 +407,14 @@ management (cutting, trading) is the player's responsibility.
 - **Captain (`kapu`):** Set via `SUB automa` from `suosikki(2, *, pv)`
   (fan favourite list). Captain is a lineup-adjacent concept but
   stored separately. Port TBD.
-- **Wiring `voimamaar` to the match engine:** Currently `calculateStrength`
-  in TS is a stub. Needs to implement the full `zzra` per-player
-  evaluation + aggregation pipeline.
+- **~~Wiring `voimamaar` to the match engine:~~** ✅ DONE.
+  `calculateStrength` in `src/services/team.ts` calls
+  `calculateLineupStrength(lineup, players)` for human teams — full
+  `zzra` pipeline (position/specialty/condition penalties) over goalie +
+  3 D pairs + 4 forward lines. PP/PK weights (`calculateYw`/`calculateAw`)
+  use the `hw/pw` approximation formula for now; TODO: compute from
+  actual PP/PK lineup slots with `yvo`/`avo` bonuses.
+- **PP/PK lineup-based strength:** `voimamaar` computes `yw`/`aw` from
+  the dedicated PP (unit 5) and PK (unit 6) slots with per-player
+  `yvo`/`avo` bonuses and `mtaito(2)` multiplier. Still TODO — both
+  AI and human teams currently use the base-stat approximation.

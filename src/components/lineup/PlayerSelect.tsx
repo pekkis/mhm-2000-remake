@@ -6,7 +6,15 @@ import type { HiredPlayer } from "@/state/player";
 import * as Select from "@radix-ui/react-select";
 import { type FC, useMemo } from "react";
 import { values } from "remeda";
-import { content, item, playerName, positionTag, skillValue, trigger, viewport } from "./PlayerSelect.css";
+import {
+  content,
+  item,
+  playerName,
+  positionTag,
+  skillValue,
+  trigger,
+  viewport
+} from "./PlayerSelect.css";
 
 /**
  * Position-adjusted skill for display & sorting in a specific slot.
@@ -26,9 +34,15 @@ const slotSkill = (player: HiredPlayer, slot: LineupSlot): number =>
  * 3+ = lineup bug (danger).
  */
 const appearanceLevel = (count: number): AlertLevel | null => {
-  if (count <= 0) {return null;}
-  if (count === 1) {return "info";}
-  if (count === 2) {return "warning";}
+  if (count <= 0) {
+    return null;
+  }
+  if (count === 1) {
+    return "info";
+  }
+  if (count === 2) {
+    return "warning";
+  }
   return "danger";
 };
 
@@ -118,9 +132,7 @@ export const PlayerSelect: FC<Props> = ({
                   className={item}
                   disabled={isExcluded}
                 >
-                  <Select.ItemText>
-                    {playerLabel(player, slot)}
-                  </Select.ItemText>
+                  <Select.ItemText>{playerLabel(player, slot)}</Select.ItemText>
                   <PlayerInfo player={player} slot={slot} />
                   {level && <Badge level={level}>{count}</Badge>}
                 </Select.Item>

@@ -55,7 +55,9 @@ const Box: FC<BoxProps> = ({
     ...(textAlign !== undefined && { textAlign }),
     ...(flex !== undefined && { flex })
   });
-  return <Component className={clsx(sprinkleClass, className)}>{children}</Component>;
+  return (
+    <Component className={clsx(sprinkleClass, className)}>{children}</Component>
+  );
 };
 
 Box.displayName = "Box";
