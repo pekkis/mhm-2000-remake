@@ -18,16 +18,26 @@ import {
   type PeckingOrder
 } from "@/machines/new-game";
 import { createUniqueId } from "@/services/id";
-import difficultyLevels from "@/data/difficulty-levels";
+import { initialBalanceForRankings } from "@/data/mhm2000/budget";
 import random from "@/services/random";
 import { generateMarketPlayers } from "@/services/mhm-2000/generate-market-players";
 import { generateTeamRoster } from "@/services/mhm-2000/generate-team-roster";
 import { emptyLineup } from "@/services/empties";
 
-const buildHumanManager = (draft: ManagerDraft): HumanManager => {
+const buildHumanManager = (
+  draft: ManagerDraft,
+  previousRankings: [number, number, number] | undefined
+): HumanManager => {
   // Convert MHM 2000 difficulty id (1..5) to the legacy 0-based index
   // that the runtime still uses.
   const legacyDifficulty = draft.difficulty - 1;
+
+  // Starting balance is team-strength-derived via ORGASM.M2K → ORGA.M2K,
+  // NOT zero and NOT difficulty-derived. QB: `raha(ohj)` in `SUB orgamaar`.
+  const balance = previousRankings
+    ? initialBalanceForRankings(previousRankings)
+    : 100000;
+
   return {
     id: createUniqueId(),
     stats: statsFromExperience(draft.experience),
@@ -38,7 +48,7 @@ const buildHumanManager = (draft: ManagerDraft): HumanManager => {
     attributes: draft.attributes,
     difficulty: legacyDifficulty,
     pranksExecuted: 0,
-    balance: 0,
+    balance,
     arena: {
       name: draft.customTeam?.arena ?? "MHM 2000 Areena",
       level: 1
@@ -99,13 +109,16 @@ export const composeNewGameContext = (output: NewGameOutput): GameContext => {
     const installed: { id: string; rank: number | undefined }[] = [];
 
     for (const managerDraft of output.drafts) {
-      const manager = buildHumanManager(managerDraft);
+      const team = draft.teams[managerDraft.team];
+      const manager = buildHumanManager(
+        managerDraft,
+        team?.previousRankings as [number, number, number] | undefined
+      );
       draft.managers[manager.id] = manager;
 
       // Wire the team -> manager pointer. If a custom-team override was
       // supplied, rewrite the team's name / city / arena name in place
       // (QB `omajoukkue`: pick a team to displace, then rename).
-      const team = draft.teams[managerDraft.team];
       if (team) {
         team.manager = manager.id;
         if (managerDraft.customTeam) {

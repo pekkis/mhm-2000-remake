@@ -301,32 +301,48 @@ const orgasmTable: readonly number[] = [
 ];
 
 /**
- * ORGA.M2K budget columns (5..9) — initial `valb(1..5)` per ORGA row.
- * Row 1 = weakest teams, row 13 = strongest. Each tuple:
- * [coaching, goalieCoaching, juniors, health, benefits].
+ * ORGA.M2K columns 5..11 per ORGA row (1..13, weakest → strongest):
+ *   cols  5–9:  `valb(1..5)` — initial budget slider levels
+ *   col    10:  `c`          — number of initially-scouted players (random slots 2..17)
+ *   col    11:  `raha`       — starting bank balance for human managers
  *
- * Verbatim from src/mhm2000-qb/DATA/ORGA.M2K columns 5-9.
+ * QB path (`SUB orgamaar`, MHM2K.BAS:2008-2013 / ILEZ5.BAS:1300):
+ *   INPUT #1, valb(1..5), c, raha(ohj)
+ *   ...
+ *   FOR ww = 1 TO c: skout(random 2..17) = 1: NEXT
+ *   junnu(ohj) = valb(3) * 2
+ *
+ * Verbatim from src/mhm2000-qb/DATA/ORGA.M2K columns 5-11.
  */
-const orgaBudgets: readonly (readonly [
-  BudgetLevel,
-  BudgetLevel,
-  BudgetLevel,
-  BudgetLevel,
-  BudgetLevel
-])[] = [
-  [1, 1, 1, 1, 1], // row 1  — weakest
-  [1, 1, 1, 2, 1], // row 2
-  [2, 2, 1, 2, 1], // row 3
-  [2, 2, 2, 2, 2], // row 4
-  [2, 2, 2, 3, 2], // row 5
-  [2, 2, 2, 3, 2], // row 6
-  [3, 3, 3, 3, 3], // row 7
-  [3, 3, 3, 4, 3], // row 8
-  [4, 3, 3, 4, 3], // row 9
-  [4, 4, 4, 4, 3], // row 10
-  [4, 4, 4, 5, 4], // row 11
-  [4, 4, 4, 5, 4], // row 12
-  [5, 5, 5, 5, 5] //  row 13 — strongest
+
+type OrgaRow = {
+  budget: readonly [
+    BudgetLevel,
+    BudgetLevel,
+    BudgetLevel,
+    BudgetLevel,
+    BudgetLevel
+  ];
+  /** Number of randomly-scouted player slots (2..17) at game start. */
+  scoutedCount: number;
+  /** Starting bank balance (`raha`) for human managers. */
+  startingBalance: number;
+};
+
+const orgaRows: readonly OrgaRow[] = [
+  { budget: [1, 1, 1, 1, 1], scoutedCount: 0, startingBalance: 100000 }, // row 1  — weakest
+  { budget: [1, 1, 1, 2, 1], scoutedCount: 0, startingBalance: 130000 }, // row 2
+  { budget: [2, 2, 1, 2, 1], scoutedCount: 0, startingBalance: 160000 }, // row 3
+  { budget: [2, 2, 2, 2, 2], scoutedCount: 1, startingBalance: 190000 }, // row 4
+  { budget: [2, 2, 2, 3, 2], scoutedCount: 1, startingBalance: 220000 }, // row 5
+  { budget: [2, 2, 2, 3, 2], scoutedCount: 2, startingBalance: 250000 }, // row 6
+  { budget: [3, 3, 3, 3, 3], scoutedCount: 2, startingBalance: 280000 }, // row 7
+  { budget: [3, 3, 3, 4, 3], scoutedCount: 3, startingBalance: 310000 }, // row 8
+  { budget: [4, 3, 3, 4, 3], scoutedCount: 3, startingBalance: 340000 }, // row 9
+  { budget: [4, 4, 4, 4, 3], scoutedCount: 4, startingBalance: 370000 }, // row 10
+  { budget: [4, 4, 4, 5, 4], scoutedCount: 5, startingBalance: 450000 }, // row 11
+  { budget: [4, 4, 4, 5, 4], scoutedCount: 6, startingBalance: 550000 }, // row 12
+  { budget: [5, 5, 5, 5, 5], scoutedCount: 7, startingBalance: 650000 } // row 13 — strongest
 ];
 
 /**
@@ -339,12 +355,38 @@ const orgaBudgets: readonly (readonly [
 export const initialBudgetForRankings = (
   previousRankings: readonly [number, number, number]
 ): TeamBudget => {
+  const row = orgaRowForRankings(previousRankings);
+  const [coaching, goalieCoaching, juniors, health, benefits] = row.budget;
+  return { coaching, goalieCoaching, juniors, health, benefits };
+};
+
+/**
+ * Starting bank balance for a human manager taking over a team,
+ * derived from team strength via ORGASM.M2K → ORGA.M2K column 11.
+ *
+ * Not zero — ranges from 100 000 (tier 1, weakest) to 650 000 (tier 13,
+ * strongest). QB: `raha(ohj(ork%))` set in `SUB orgamaar`.
+ */
+export const initialBalanceForRankings = (
+  previousRankings: readonly [number, number, number]
+): number => orgaRowForRankings(previousRankings).startingBalance;
+
+/**
+ * Number of initially-scouted opponent player slots (2..17) at game start.
+ * QB: `FOR ww = 1 TO c: skout(random 2..17) = 1: NEXT` in `SUB orgamaar`.
+ */
+export const initialScoutedCountForRankings = (
+  previousRankings: readonly [number, number, number]
+): number => orgaRowForRankings(previousRankings).scoutedCount;
+
+/** Shared ORGASM → ORGA row lookup. */
+const orgaRowForRankings = (
+  previousRankings: readonly [number, number, number]
+): OrgaRow => {
   const avg = Math.round(
     (previousRankings[0] + previousRankings[1] + previousRankings[2]) / 3
   );
   const clamped = Math.max(1, Math.min(48, avg));
-  const orgaRow = orgasmTable[clamped - 1];
-  const [coaching, goalieCoaching, juniors, health, benefits] =
-    orgaBudgets[orgaRow - 1];
-  return { coaching, goalieCoaching, juniors, health, benefits };
+  const orgaRowIdx = orgasmTable[clamped - 1];
+  return orgaRows[orgaRowIdx - 1];
 };
