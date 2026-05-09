@@ -1,6 +1,6 @@
 import { PlayerView } from "@/components/lineup/PlayerView";
 import Cluster from "@/components/ui/Cluster";
-import type { PowerPlayTeam } from "@/state/lineup";
+import type { Lineup, PowerPlayTeam } from "@/state/lineup";
 import type { LineupTarget } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
 import type { FC } from "react";
@@ -8,6 +8,7 @@ import type { FC } from "react";
 type Props = {
   team: PowerPlayTeam;
   players: Record<string, HiredPlayer>;
+  lineup: Lineup;
   appearances: Map<string, number>;
   onAssign: (target: LineupTarget, playerId: string | null) => void;
 };
@@ -15,8 +16,9 @@ type Props = {
 export const PowerPlayView: FC<Props> = ({
   team,
   players,
+  lineup,
   appearances,
-  onAssign,
+  onAssign
 }) => {
   return (
     <Cluster>
@@ -25,6 +27,7 @@ export const PowerPlayView: FC<Props> = ({
         id={team.ld}
         slot="d"
         target={{ unit: "pp", position: "ld" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />
@@ -33,6 +36,7 @@ export const PowerPlayView: FC<Props> = ({
         id={team.rd}
         slot="d"
         target={{ unit: "pp", position: "rd" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />
@@ -41,6 +45,7 @@ export const PowerPlayView: FC<Props> = ({
         id={team.lw}
         slot="lw"
         target={{ unit: "pp", position: "lw" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />
@@ -49,6 +54,7 @@ export const PowerPlayView: FC<Props> = ({
         id={team.c}
         slot="c"
         target={{ unit: "pp", position: "c" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />
@@ -57,6 +63,7 @@ export const PowerPlayView: FC<Props> = ({
         id={team.rw}
         slot="rw"
         target={{ unit: "pp", position: "rw" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />

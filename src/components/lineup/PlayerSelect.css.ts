@@ -11,7 +11,7 @@ export const selectRoot = style({
   fontSize: "inherit",
   color: "inherit",
   cursor: "pointer",
-  minInlineSize: "12rem",
+  minInlineSize: "12rem"
 });
 
 globalStyle(`${selectRoot}::picker(select)`, {
@@ -21,7 +21,7 @@ globalStyle(`${selectRoot}::picker(select)`, {
   background: vars.color.bg,
   padding: 0,
   maxBlockSize: "20rem",
-  overflow: "auto",
+  overflow: "auto"
 });
 
 export const option = style({
@@ -29,10 +29,10 @@ export const option = style({
   cursor: "pointer",
   selectors: {
     "&:hover, &:focus": {
-      background: vars.color.surfaceMuted,
+      background: vars.color.surfaceMuted
     },
     "&:checked": {
-      fontWeight: "bold",
-    },
-  },
+      fontWeight: "bold"
+    }
+  }
 });

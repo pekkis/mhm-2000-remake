@@ -44,7 +44,7 @@ export const applyPositionPenalty = (
 
     case "d":
       // Goalie skating defense → catastrophic.
-      if (playerPosition === "g") return MIN_EFFECTIVE_STRENGTH;
+      if (playerPosition === "g") {return MIN_EFFECTIVE_STRENGTH;}
       // Non-D skater in D slot → ×0.7 (QB xxx=2).
       return playerPosition !== "d" ? Math.trunc(0.7 * baseValue) : baseValue;
 
@@ -52,20 +52,18 @@ export const applyPositionPenalty = (
     case "c":
     case "rw":
       // Goalie skating forward → catastrophic.
-      if (playerPosition === "g") return MIN_EFFECTIVE_STRENGTH;
+      if (playerPosition === "g") {return MIN_EFFECTIVE_STRENGTH;}
       // D in forward slot → ×0.7 (QB xxx=3/4/5).
-      if (playerPosition === "d") return Math.trunc(0.7 * baseValue);
+      if (playerPosition === "d") {return Math.trunc(0.7 * baseValue);}
       // Wrong forward type → −1.
-      if (playerPosition !== slot) return baseValue - 1;
+      if (playerPosition !== slot) {return baseValue - 1;}
       return baseValue;
 
     case "pkf":
       // Goalie in PK forward → catastrophic.
-      if (playerPosition === "g") return MIN_EFFECTIVE_STRENGTH;
+      if (playerPosition === "g") {return MIN_EFFECTIVE_STRENGTH;}
       // D in PK forward → ×0.7 (QB xxx=6).
-      return playerPosition === "d"
-        ? Math.trunc(0.7 * baseValue)
-        : baseValue;
+      return playerPosition === "d" ? Math.trunc(0.7 * baseValue) : baseValue;
   }
 };
 
@@ -191,7 +189,7 @@ export const lineupAppearances = (lineup: Lineup): Map<string, number> => {
   const counts = new Map<string, number>();
 
   const count = (id: string | null): void => {
-    if (id) counts.set(id, (counts.get(id) ?? 0) + 1);
+    if (id) {counts.set(id, (counts.get(id) ?? 0) + 1);}
   };
 
   // Goalie slot
@@ -231,18 +229,106 @@ export type LineupTarget =
 const MAX_APPEARANCES = 2;
 
 /**
- * Assigns a player to a lineup slot, enforcing the QB `ketlaita` guard:
- * a player may occupy at most `MAX_APPEARANCES` (2) regular-line slots.
+ * Returns the set of player IDs that **cannot** be assigned to the
+ * given target slot. Three exclusion rules:
+ *
+ * 1. **Goalie lock:** a player assigned as goalkeeper cannot play
+ *    anywhere else. For any non-goalie target, the current goalie
+ *    is excluded.
+ * 2. **Same-pairing conflict:** a player already on one side of a
+ *    defensive pairing can't also be on the other side.
+ * 3. **Same-line conflict:** a player already in one position of a
+ *    forward line (or PP/PK unit) can't occupy another position
+ *    in the same unit.
+ */
+export const excludedPlayers = (
+  lineup: Lineup,
+  target: LineupTarget
+): Set<string> => {
+  const excluded = new Set<string>();
+
+  // Rule 1: goalie is locked to the goalie slot.
+  if (target.unit !== "g" && lineup.g) {
+    excluded.add(lineup.g);
+  }
+
+  // Rule 2: goalie target — only a completely free player can go in goal.
+  // Any player already in any non-goalie slot is excluded.
+  if (target.unit === "g") {
+    for (const pair of lineup.defensivePairings) {
+      if (pair.ld) {excluded.add(pair.ld);}
+      if (pair.rd) {excluded.add(pair.rd);}
+    }
+    for (const line of lineup.forwardLines) {
+      if (line.lw) {excluded.add(line.lw);}
+      if (line.c) {excluded.add(line.c);}
+      if (line.rw) {excluded.add(line.rw);}
+    }
+    const pp = lineup.powerplayTeam;
+    for (const pos of ["lw", "c", "rw", "ld", "rd"] as const) {
+      if (pp[pos]) {excluded.add(pp[pos]!);}
+    }
+    const pk = lineup.penaltyKillTeam;
+    for (const pos of ["f1", "f2", "ld", "rd"] as const) {
+      if (pk[pos]) {excluded.add(pk[pos]!);}
+    }
+    return excluded;
+  }
+
+  // Rules 3 & 4: same-unit conflicts.
+  switch (target.unit) {
+
+    case "d": {
+      const pair = lineup.defensivePairings[target.index];
+      const other = target.side === "ld" ? pair.rd : pair.ld;
+      if (other) {excluded.add(other);}
+      break;
+    }
+
+    case "f": {
+      const line = lineup.forwardLines[target.index];
+      for (const pos of ["lw", "c", "rw"] as const) {
+        if (pos !== target.position && line[pos]) {
+          excluded.add(line[pos]!);
+        }
+      }
+      break;
+    }
+
+    case "pp": {
+      const pp = lineup.powerplayTeam;
+      for (const pos of ["lw", "c", "rw", "ld", "rd"] as const) {
+        if (pos !== target.position && pp[pos]) {
+          excluded.add(pp[pos]!);
+        }
+      }
+      break;
+    }
+
+    case "pk": {
+      const pk = lineup.penaltyKillTeam;
+      for (const pos of ["f1", "f2", "ld", "rd"] as const) {
+        if (pos !== target.position && pk[pos]) {
+          excluded.add(pk[pos]!);
+        }
+      }
+      break;
+    }
+  }
+
+  return excluded;
+};
+
+/**
+ * Assigns a player to a lineup slot, enforcing all guards:
+ * - QB `ketlaita` guard: max 2 regular-line appearances (PP/PK exempt)
+ * - Goalie lock: goalie can't be assigned elsewhere
+ * - Same-unit conflict: can't double up within one unit
  *
  * Mutates `lineup` in place (designed to run inside an immer `produce`).
  *
  * - Setting `playerId` to `null` clears the slot (always allowed).
- * - Assigning a player who already occupies `MAX_APPEARANCES` slots
- *   is rejected (returns `false`).
- * - Otherwise the slot is set and the function returns `true`.
- *
- * The caller is responsible for looking up the manager → team path
- * and running this inside `produce(context, (draft) => ...)`.
+ * - Returns `true` on success, `false` if rejected.
  */
 export const assignPlayerToLineup = (
   lineup: Lineup,
@@ -255,6 +341,16 @@ export const assignPlayerToLineup = (
     return true;
   }
 
+  // If the player is already in the target slot, it's a no-op success.
+  if (getSlot(lineup, target) === playerId) {
+    return true;
+  }
+
+  // Guard: same-unit conflict + goalie lock.
+  if (excludedPlayers(lineup, target).has(playerId)) {
+    return false;
+  }
+
   // Guard: player may not exceed MAX_APPEARANCES across regular units.
   // PP/PK are exempt — they don't count toward `ket`.
   const isSpecialTeam = target.unit === "pp" || target.unit === "pk";
@@ -262,11 +358,6 @@ export const assignPlayerToLineup = (
   if (!isSpecialTeam) {
     const appearances = lineupAppearances(lineup);
     const current = appearances.get(playerId) ?? 0;
-
-    // If the player is already in the target slot, it's a no-op success.
-    if (getSlot(lineup, target) === playerId) {
-      return true;
-    }
 
     if (current >= MAX_APPEARANCES) {
       return false;

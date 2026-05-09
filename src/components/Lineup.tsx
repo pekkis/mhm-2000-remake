@@ -71,6 +71,7 @@ const Lineup: FC = () => {
           <GoalieView
             players={team.players}
             g={team.lineup.g}
+            lineup={team.lineup}
             appearances={appearances}
             onAssign={onAssign}
           />
@@ -82,6 +83,7 @@ const Lineup: FC = () => {
                 index={id}
                 players={team.players}
                 pairing={defensivePairing}
+                lineup={team.lineup}
                 appearances={appearances}
                 onAssign={onAssign}
               />
@@ -95,6 +97,7 @@ const Lineup: FC = () => {
                 index={id}
                 players={team.players}
                 line={forwardLine}
+                lineup={team.lineup}
                 appearances={appearances}
                 onAssign={onAssign}
               />
@@ -106,6 +109,7 @@ const Lineup: FC = () => {
         <PowerPlayView
           team={team.lineup.powerplayTeam}
           players={team.players}
+          lineup={team.lineup}
           appearances={appearances}
           onAssign={onAssign}
         />
@@ -114,6 +118,7 @@ const Lineup: FC = () => {
         <PenaltyKillView
           team={team.lineup.penaltyKillTeam}
           players={team.players}
+          lineup={team.lineup}
           appearances={appearances}
           onAssign={onAssign}
         />

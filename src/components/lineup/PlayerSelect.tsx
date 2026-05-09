@@ -1,10 +1,7 @@
 import Badge from "@/components/ui/Badge";
 import type { AlertLevel } from "@/components/ui/Alert";
 import Box from "@/components/ui/Box";
-import {
-  applyPositionPenalty,
-  performanceModifier,
-} from "@/services/lineup";
+import { applyPositionPenalty, performanceModifier } from "@/services/lineup";
 import type { LineupSlot } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
 import { type FC, useMemo } from "react";
@@ -40,9 +37,9 @@ const slotSkill = (player: HiredPlayer, slot: LineupSlot): number =>
  * 3+ = lineup bug (danger).
  */
 const appearanceLevel = (count: number): AlertLevel | null => {
-  if (count <= 0) return null;
-  if (count === 1) return "info";
-  if (count === 2) return "warning";
+  if (count <= 0) {return null;}
+  if (count === 1) {return "info";}
+  if (count === 2) {return "warning";}
   return "danger";
 };
 
@@ -51,6 +48,7 @@ type Props = {
   slot: LineupSlot;
   selected: string | null;
   appearances: Map<string, number>;
+  excluded: Set<string>;
   onSelect: (playerId: string) => void;
 };
 
@@ -59,7 +57,8 @@ export const PlayerSelect: FC<Props> = ({
   slot,
   selected,
   appearances,
-  onSelect,
+  excluded,
+  onSelect
 }) => {
   const sorted = useMemo(
     () =>
@@ -69,6 +68,10 @@ export const PlayerSelect: FC<Props> = ({
     [players, slot]
   );
 
+  const selectedPlayer = selected ? players[selected] : null;
+  const selectedCount = selected ? (appearances.get(selected) ?? 0) : 0;
+  const selectedBadgeLevel = appearanceLevel(selectedCount);
+
   return (
     <select
       className={selectRoot}
@@ -76,7 +79,17 @@ export const PlayerSelect: FC<Props> = ({
       onChange={(e) => onSelect(e.target.value)}
     >
       <button>
-        <selectedcontent />
+        {selectedPlayer ? (
+          <Box p="xs">
+            {selectedPlayer.surname} ({selectedPlayer.position.toUpperCase()}{" "}
+            {slotSkill(selectedPlayer, slot)}){" "}
+            {selectedBadgeLevel && (
+              <Badge level={selectedBadgeLevel}>{selectedCount}</Badge>
+            )}
+          </Box>
+        ) : (
+          <selectedcontent />
+        )}
       </button>
 
       <option value="">—</option>
@@ -84,9 +97,15 @@ export const PlayerSelect: FC<Props> = ({
       {sorted.map((player) => {
         const count = appearances.get(player.id) ?? 0;
         const level = appearanceLevel(count);
+        const isExcluded = excluded.has(player.id);
 
         return (
-          <option key={player.id} value={player.id} className={option}>
+          <option
+            key={player.id}
+            value={player.id}
+            className={option}
+            disabled={isExcluded}
+          >
             <Box p="xs">
               {player.surname} ({player.position.toUpperCase()}{" "}
               {slotSkill(player, slot)}){" "}

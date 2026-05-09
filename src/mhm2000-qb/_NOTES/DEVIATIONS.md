@@ -15,7 +15,7 @@ entirely — `SUB automa` never slots a goalie as a skater or vice versa.
 **Our deviation:** Any player can be placed in any slot. Cross-assigned
 players (goalie skating out, or skater in goal) resolve to
 `MIN_EFFECTIVE_STRENGTH` (1) — a catastrophic mismatch penalty that
-makes them the worst possible warm body on the ice, but still *a* body.
+makes them the worst possible warm body on the ice, but still _a_ body.
 
 **Rationale:** The hard lock was always frustrating. In edge cases
 (injuries, tiny rosters, desperation) you should be able to put anyone
@@ -28,7 +28,7 @@ so 1 is comfortably below the talent floor of any actual league.
 
 **Revisit risk:** Low. The catastrophic penalty makes this
 self-balancing. If match simulation later reveals exploits (e.g. a
-goalie with skill 20 contributing *anything* meaningful as a skater),
+goalie with skill 20 contributing _anything_ meaningful as a skater),
 revisit the penalty to ensure it truly zeroes out their contribution.
 
 **Files:** `src/services/lineup.ts` — `applyPositionPenalty()`,
@@ -47,7 +47,7 @@ are clamped to 0. A player can have effective strength 0.
 
 **Rationale:** A player with strength 0 is indistinguishable from an
 empty slot. If you're putting a warm body on the ice, they should
-contribute *something*, however negligible. This also avoids potential
+contribute _something_, however negligible. This also avoids potential
 division-by-zero or zero-weight edge cases in the match engine's
 goal-scorer attribution (`SUB pisteet` uses `hketju^2.5` / `pketju^2`
 — a zero-strength line would never score, which is arguably correct
@@ -58,7 +58,7 @@ but feels wrong for a line that's physically on the ice).
 that strength=1 doesn't produce weird edge cases vs the QB assumption
 of strength≥0. The floor-at-0 behavior may have been intentional for
 specific game-balance scenarios (e.g. a greedySurfer with base skill 1
-and bad condition *should* maybe be truly useless).
+and bad condition _should_ maybe be truly useless).
 
 **Future rebalance:** MHM 2001 adds PÖKÄLESARJA (48 teams) below
 mutasarja. When that happens, skill levels and `MIN_EFFECTIVE_STRENGTH`

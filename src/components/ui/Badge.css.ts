@@ -11,24 +11,24 @@ export const root = style({
   fontWeight: "bold",
   lineHeight: 1,
   minInlineSize: "1.5em",
-  blockSize: "1.5em",
+  blockSize: "1.5em"
 });
 
 export const level = styleVariants({
   info: {
     backgroundColor: vars.color.info,
-    color: vars.color.bg,
+    color: vars.color.bg
   },
   success: {
     backgroundColor: vars.color.success,
-    color: vars.color.bg,
+    color: vars.color.bg
   },
   warning: {
     backgroundColor: vars.color.warning,
-    color: vars.color.bg,
+    color: vars.color.bg
   },
   danger: {
     backgroundColor: vars.color.danger,
-    color: vars.color.bg,
-  },
+    color: vars.color.bg
+  }
 });

@@ -205,7 +205,7 @@ skating out or skater in goal resolves to `MIN_EFFECTIVE_STRENGTH` (1).
 See [DEVIATIONS.md](DEVIATIONS.md) §1.
 
 **Gameplay deviation: floor at 1.** QB floors at 0; we floor at 1.
-The worst possible warm body on the ice is still *a* body on the ice.
+The worst possible warm body on the ice is still _a_ body on the ice.
 See [DEVIATIONS.md](DEVIATIONS.md) §2.
 
 **CINT vs FIX is load-bearing.** Specialty penalty uses `Math.round`
@@ -246,6 +246,7 @@ dropdown (with the −1 penalty reflected).
 
 New [DEVIATIONS.md](DEVIATIONS.md) tracks intentional gameplay
 divergences from the QB original. Currently documents:
+
 1. Goalie↔skater cross-assignment (QB: hard-locked; us: catastrophic penalty → 1)
 2. Effective strength floor 0 → 1 (revisit risk: medium)
 

@@ -1,6 +1,6 @@
 import { PlayerView } from "@/components/lineup/PlayerView";
 import Cluster from "@/components/ui/Cluster";
-import type { PenaltyKillTeam } from "@/state/lineup";
+import type { Lineup, PenaltyKillTeam } from "@/state/lineup";
 import type { LineupTarget } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
 import type { FC } from "react";
@@ -8,6 +8,7 @@ import type { FC } from "react";
 type Props = {
   team: PenaltyKillTeam;
   players: Record<string, HiredPlayer>;
+  lineup: Lineup;
   appearances: Map<string, number>;
   onAssign: (target: LineupTarget, playerId: string | null) => void;
 };
@@ -15,8 +16,9 @@ type Props = {
 export const PenaltyKillView: FC<Props> = ({
   team,
   players,
+  lineup,
   appearances,
-  onAssign,
+  onAssign
 }) => {
   return (
     <Cluster>
@@ -25,6 +27,7 @@ export const PenaltyKillView: FC<Props> = ({
         id={team.ld}
         slot="d"
         target={{ unit: "pk", position: "ld" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />
@@ -33,6 +36,7 @@ export const PenaltyKillView: FC<Props> = ({
         id={team.rd}
         slot="d"
         target={{ unit: "pk", position: "rd" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />
@@ -41,6 +45,7 @@ export const PenaltyKillView: FC<Props> = ({
         id={team.f1}
         slot="pkf"
         target={{ unit: "pk", position: "f1" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />
@@ -49,6 +54,7 @@ export const PenaltyKillView: FC<Props> = ({
         id={team.f2}
         slot="pkf"
         target={{ unit: "pk", position: "f2" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />

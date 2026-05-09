@@ -1,6 +1,6 @@
 import { PlayerView } from "@/components/lineup/PlayerView";
 import Cluster from "@/components/ui/Cluster";
-import type { ForwardLine } from "@/state/lineup";
+import type { ForwardLine, Lineup } from "@/state/lineup";
 import type { LineupTarget } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
 import type { FC } from "react";
@@ -9,6 +9,7 @@ type Props = {
   index: number;
   line: ForwardLine;
   players: Record<string, HiredPlayer>;
+  lineup: Lineup;
   appearances: Map<string, number>;
   onAssign: (target: LineupTarget, playerId: string | null) => void;
 };
@@ -17,8 +18,9 @@ export const ForwardLineView: FC<Props> = ({
   index,
   players,
   line,
+  lineup,
   appearances,
-  onAssign,
+  onAssign
 }) => {
   return (
     <Cluster>
@@ -27,6 +29,7 @@ export const ForwardLineView: FC<Props> = ({
         id={line.lw}
         slot="lw"
         target={{ unit: "f", index, position: "lw" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />
@@ -35,6 +38,7 @@ export const ForwardLineView: FC<Props> = ({
         id={line.c}
         slot="c"
         target={{ unit: "f", index, position: "c" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />
@@ -43,6 +47,7 @@ export const ForwardLineView: FC<Props> = ({
         id={line.rw}
         slot="rw"
         target={{ unit: "f", index, position: "rw" }}
+        lineup={lineup}
         appearances={appearances}
         onAssign={onAssign}
       />
