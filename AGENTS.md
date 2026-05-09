@@ -399,16 +399,16 @@ stubs. **Every test file must use them.**
 
 Available factories (non-exhaustive — read the file):
 
-| Factory | Returns | Notes |
-|---|---|---|
-| `createPlayer(overrides?)` | `HiredPlayer` | Auto-incrementing id, position defaults to `"c"` |
-| `rosterMap(...players)` | `Record<id, HiredPlayer>` | |
-| `emptyLineup` | `Lineup` | All slots `null` |
-| `createAITeam(overrides?)` | `AITeam` | |
-| `createAIManager(overrides?)` | `AIManager` | Zero attributes |
-| `createHumanManager(overrides?)` | `HumanManager` | Full shape with services, flags, etc. |
-| `fixedRandom(value)` | `Random` | Always returns the same number |
-| `scriptedRandom({ integer?, real? })` | `Random` | FIFO queues, throws on exhaustion |
+| Factory                               | Returns                   | Notes                                            |
+| ------------------------------------- | ------------------------- | ------------------------------------------------ |
+| `createPlayer(overrides?)`            | `HiredPlayer`             | Auto-incrementing id, position defaults to `"c"` |
+| `rosterMap(...players)`               | `Record<id, HiredPlayer>` |                                                  |
+| `emptyLineup`                         | `Lineup`                  | All slots `null`                                 |
+| `createAITeam(overrides?)`            | `AITeam`                  |                                                  |
+| `createAIManager(overrides?)`         | `AIManager`               | Zero attributes                                  |
+| `createHumanManager(overrides?)`      | `HumanManager`            | Full shape with services, flags, etc.            |
+| `fixedRandom(value)`                  | `Random`                  | Always returns the same number                   |
+| `scriptedRandom({ integer?, real? })` | `Random`                  | FIFO queues, throws on exhaustion                |
 
 ### Why this matters
 
