@@ -21,6 +21,7 @@ import WorldChampionships from "./WorldChampionships";
 import Stats from "./Stats";
 import Invitations from "./Invitations";
 import Gala from "./Gala";
+import ConfirmBudget from "./ConfirmBudget";
 import { NotificationsContext } from "@/context/notifications-context";
 import type { ActorRefFrom } from "xstate";
 import type { notificationsMachine } from "@/machines/notifications";
@@ -74,6 +75,15 @@ const useUiPhase = (): string | undefined => {
     if (
       state.matches({
         in_game: {
+          executing_phases: { start_of_season: "confirm_budget" }
+        }
+      })
+    ) {
+      return "confirm_budget";
+    }
+    if (
+      state.matches({
+        in_game: {
           executing_phases: { start_of_season: "select_strategy" }
         }
       })
@@ -118,6 +128,9 @@ const useUiPhase = (): string | undefined => {
 
 const Phase: FC<PhaseProps> = ({ phase }) => {
   switch (true) {
+    case phase === "confirm_budget":
+      return <ConfirmBudget />;
+
     case phase === "select_strategy":
       return <SelectStrategy />;
 

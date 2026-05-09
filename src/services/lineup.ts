@@ -251,6 +251,143 @@ export const calculateLineupStrength = (
 };
 
 // ---------------------------------------------------------------------------
+// PP / PK unit strength — port of voimamaar PP/PK (ILEX5.BAS:8497-8540)
+// ---------------------------------------------------------------------------
+
+/**
+ * Effective strength for a player in a PP/PK context.
+ * QB `zzra` with `gnome=1` (PP) adds `yvo`; `gnome=2` (PK) adds `avo`.
+ */
+const specialTeamStrength = (
+  player: HiredPlayer,
+  slot: LineupSlot,
+  mod: number
+): number =>
+  effectiveStrength(
+    playerBaseValue(player) + mod,
+    player.position,
+    slot,
+    player.specialty,
+    player.condition
+  );
+
+/**
+ * Compute raw power-play strength from the PP lineup unit.
+ * Port of the `gnome = 1` branch in voimamaar (ILEX5.BAS:8510-8521).
+ *
+ * QB slot mapping (ketju indices for unit 5):
+ *   qwe 1-2 → D (xxx=2), qwe 3-5 → LW/C/RW (xxx=3/4/5).
+ *
+ * **Fallback:** if the PP unit is incomplete, QB uses line 1 as
+ * proxy. If line 1 is also incomplete, returns 0.
+ * The returned value does NOT include the `mtaito(2) * 0.04`
+ * multiplier — the caller applies that.
+ */
+export const calculatePowerPlayStrength = (
+  lineup: Lineup,
+  players: Record<string, HiredPlayer>
+): number => {
+  const resolve = (id: string | null): HiredPlayer | undefined =>
+    id ? players[id] : undefined;
+
+  // Try the dedicated PP unit first.
+  const pp = lineup.powerplayTeam;
+  const ppLd = resolve(pp.ld);
+  const ppRd = resolve(pp.rd);
+  const ppLw = resolve(pp.lw);
+  const ppC = resolve(pp.c);
+  const ppRw = resolve(pp.rw);
+
+  if (ppLd && ppRd && ppLw && ppC && ppRw) {
+    return (
+      specialTeamStrength(ppLd, "d", ppLd.powerplayMod) +
+      specialTeamStrength(ppRd, "d", ppRd.powerplayMod) +
+      specialTeamStrength(ppLw, "lw", ppLw.powerplayMod) +
+      specialTeamStrength(ppC, "c", ppC.powerplayMod) +
+      specialTeamStrength(ppRw, "rw", ppRw.powerplayMod)
+    );
+  }
+
+  // Fallback: use line 1 + D pair 1 as PP proxy (QB cupex=1).
+  const line1 = lineup.forwardLines[0];
+  const dPair1 = lineup.defensivePairings[0];
+  const fbLd = resolve(dPair1.ld);
+  const fbRd = resolve(dPair1.rd);
+  const fbLw = resolve(line1.lw);
+  const fbC = resolve(line1.c);
+  const fbRw = resolve(line1.rw);
+
+  if (!fbLd || !fbRd || !fbLw || !fbC || !fbRw) {
+    return 0;
+  }
+
+  return (
+    specialTeamStrength(fbLd, "d", fbLd.powerplayMod) +
+    specialTeamStrength(fbRd, "d", fbRd.powerplayMod) +
+    specialTeamStrength(fbLw, "lw", fbLw.powerplayMod) +
+    specialTeamStrength(fbC, "c", fbC.powerplayMod) +
+    specialTeamStrength(fbRw, "rw", fbRw.powerplayMod)
+  );
+};
+
+/**
+ * Compute raw penalty-kill strength from the PK lineup unit.
+ * Port of the `gnome = 2` branch in voimamaar (ILEX5.BAS:8524-8538).
+ *
+ * QB slot mapping (ketju indices for unit 6):
+ *   qwe 1-2 → D (xxx=2), qwe 3-4 → any-forward (xxx=6, pkf slot).
+ *
+ * **Fallback:** if the PK unit is incomplete, QB uses line 1 (ketju
+ * dim 1) — but only 4 players (2D + 2F, no 3rd forward). If line 1
+ * is also incomplete, returns 0.
+ * The returned value does NOT include the `mtaito(2) * 0.04`
+ * multiplier — the caller applies that.
+ */
+export const calculatePenaltyKillStrength = (
+  lineup: Lineup,
+  players: Record<string, HiredPlayer>
+): number => {
+  const resolve = (id: string | null): HiredPlayer | undefined =>
+    id ? players[id] : undefined;
+
+  // Try the dedicated PK unit first.
+  const pk = lineup.penaltyKillTeam;
+  const pkLd = resolve(pk.ld);
+  const pkRd = resolve(pk.rd);
+  const pkF1 = resolve(pk.f1);
+  const pkF2 = resolve(pk.f2);
+
+  if (pkLd && pkRd && pkF1 && pkF2) {
+    return (
+      specialTeamStrength(pkLd, "d", pkLd.penaltyKillMod) +
+      specialTeamStrength(pkRd, "d", pkRd.penaltyKillMod) +
+      specialTeamStrength(pkF1, "pkf", pkF1.penaltyKillMod) +
+      specialTeamStrength(pkF2, "pkf", pkF2.penaltyKillMod)
+    );
+  }
+
+  // Fallback: line 1 D pair + first 2 forwards (QB reads ketju(1..4, 1, pv)
+  // with qwe 1-2 as D, qwe 3-4 as pkf).
+  const dPair1 = lineup.defensivePairings[0];
+  const line1 = lineup.forwardLines[0];
+  const fbLd = resolve(dPair1.ld);
+  const fbRd = resolve(dPair1.rd);
+  const fbF1 = resolve(line1.lw);
+  const fbF2 = resolve(line1.c);
+
+  if (!fbLd || !fbRd || !fbF1 || !fbF2) {
+    return 0;
+  }
+
+  return (
+    specialTeamStrength(fbLd, "d", fbLd.penaltyKillMod) +
+    specialTeamStrength(fbRd, "d", fbRd.penaltyKillMod) +
+    specialTeamStrength(fbF1, "pkf", fbF1.penaltyKillMod) +
+    specialTeamStrength(fbF2, "pkf", fbF2.penaltyKillMod)
+  );
+};
+
+// ---------------------------------------------------------------------------
 // Lineup appearances — derived `ket` (QB SUB kc, ILEX5.BAS:2559-2568)
 // ---------------------------------------------------------------------------
 

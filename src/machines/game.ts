@@ -42,6 +42,7 @@ import type { CompetitionId } from "@/types/competitions";
 import { values, entries } from "remeda";
 import { autoLineup, assignPlayerToLineup } from "@/services/lineup";
 import type { LineupTarget } from "@/services/lineup";
+import type { TeamBudget } from "@/data/mhm2000/budget";
 
 import {
   applyEffects,
@@ -233,6 +234,10 @@ export type GameMachineEvents =
         target: LineupTarget;
         playerId: string | null;
       };
+    }
+  | {
+      type: "CONFIRM_BUDGET";
+      payload: { manager: string; budget: TeamBudget };
     };
 
 export const gameMachine = setup({
@@ -712,6 +717,27 @@ export const gameMachine = setup({
         }
         team.lineup = autoLineup(values(team.players));
       })
+    ),
+
+    /**
+     * Confirm budget for the manager's team.
+     * Port of SUB budget (ILEX5.BAS:1104-1150), called at kiero3=4
+     * during preseason — before strategy selection (kiero3=1).
+     *
+     * The organisaatio menu (key "o" in menu3) also shows this data
+     * alongside erikoistoimenpiteet, but budget confirmation is a
+     * season-start step.
+     */
+    executeConfirmBudget: assign(
+      ({ context }, params: { manager: string; budget: TeamBudget }) =>
+        produce(context, (draft) => {
+          const m = draft.managers[params.manager];
+          if (!m || m.team === undefined || m.kind === "ai") {
+            return;
+          }
+          const team = draft.teams[m.team];
+          team.budget = params.budget;
+        })
     ),
 
     /**
@@ -1633,7 +1659,18 @@ export const gameMachine = setup({
               states: {
                 setup: {
                   entry: "seasonStartSetup",
-                  always: "select_strategy"
+                  always: "confirm_budget"
+                },
+                confirm_budget: {
+                  on: {
+                    CONFIRM_BUDGET: {
+                      actions: {
+                        type: "executeConfirmBudget",
+                        params: ({ event }) => event.payload
+                      },
+                      target: "select_strategy"
+                    }
+                  }
                 },
                 select_strategy: {
                   on: {

@@ -72,14 +72,14 @@ describe("gameMachine", () => {
   });
 
   describe("in_game phase walk", () => {
-    it("settles in start_of_season.select_strategy on round 0 (setup auto-advances)", () => {
+    it("settles in start_of_season.confirm_budget on round 0 (setup auto-advances)", () => {
       const actor = createTestActor();
       // Round 0 calendar: ["start_of_season", "seed"].
       // Machine cascades through earlier phase checks, enters start_of_season,
-      // setup auto-advances, parks at select_strategy.
+      // setup auto-advances, parks at confirm_budget.
       expect(
         actor.getSnapshot().matches({
-          in_game: { executing_phases: { start_of_season: "select_strategy" } }
+          in_game: { executing_phases: { start_of_season: "confirm_budget" } }
         })
       ).toBe(true);
     });
@@ -87,6 +87,22 @@ describe("gameMachine", () => {
     it("ADVANCE past championship_betting auto-runs seed and lands in round 1's action", () => {
       const actor = createTestActor();
       const activeId = actor.getSnapshot().context.human.active!;
+
+      // confirm_budget → select_strategy
+      actor.send({
+        type: "CONFIRM_BUDGET",
+        payload: {
+          manager: activeId,
+          budget: {
+            coaching: 3,
+            goalieCoaching: 3,
+            juniors: 3,
+            health: 3,
+            benefits: 3
+          }
+        }
+      });
+
       actor.send({
         type: "SELECT_STRATEGY",
         payload: { manager: activeId, strategy: 2 }
@@ -113,6 +129,22 @@ describe("gameMachine", () => {
     it("seed phase populates competitions[*].phases", () => {
       const actor = createTestActor();
       const activeId = actor.getSnapshot().context.human.active!;
+
+      // confirm_budget → select_strategy
+      actor.send({
+        type: "CONFIRM_BUDGET",
+        payload: {
+          manager: activeId,
+          budget: {
+            coaching: 3,
+            goalieCoaching: 3,
+            juniors: 3,
+            health: 3,
+            benefits: 3
+          }
+        }
+      });
+
       actor.send({
         type: "SELECT_STRATEGY",
         payload: { manager: activeId, strategy: 2 }
