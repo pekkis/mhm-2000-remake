@@ -12,9 +12,9 @@ type Props = {
 export const ForwardLineView: FC<Props> = ({ players, line }) => {
   return (
     <Cluster>
-      <PlayerView players={players} id={line.lw} />
-      <PlayerView players={players} id={line.c} />
-      <PlayerView players={players} id={line.rw} />
+      <PlayerView players={players} id={line.lw} slot="lw" />
+      <PlayerView players={players} id={line.c} slot="c" />
+      <PlayerView players={players} id={line.rw} slot="rw" />
     </Cluster>
   );
 };

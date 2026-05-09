@@ -11,7 +11,7 @@ type Props = {
 export const GoalieView: FC<Props> = ({ players, g }) => {
   return (
     <Cluster>
-      <PlayerView players={players} id={g} />
+      <PlayerView players={players} id={g} slot="g" />
     </Cluster>
   );
 };

@@ -1,6 +1,11 @@
 import Box from "@/components/ui/Box";
+import {
+  applyPositionPenalty,
+  performanceModifier,
+} from "@/services/lineup";
+import type { LineupSlot } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
-import type { FC } from "react";
+import { type FC, useMemo } from "react";
 import { values } from "remeda";
 import { option, selectRoot } from "./PlayerSelect.css";
 
@@ -15,20 +20,38 @@ declare module "react" {
   }
 }
 
+/**
+ * Position-adjusted skill for display & sorting in a specific slot.
+ * Uses position penalty only (no specialty, no condition) — this is
+ * UI guidance for the human manager, not the gameday calculation.
+ */
+const slotSkill = (player: HiredPlayer, slot: LineupSlot): number =>
+  applyPositionPenalty(
+    player.position,
+    slot,
+    player.skill + performanceModifier(player)
+  );
+
 type Props = {
   players: Record<string, HiredPlayer>;
-  sorter?: (a: HiredPlayer, b: HiredPlayer) => number;
+  slot: LineupSlot;
   selected: string | null;
   onSelect: (playerId: string) => void;
 };
 
 export const PlayerSelect: FC<Props> = ({
   players,
-  sorter = (a, b) => b.skill - a.skill,
+  slot,
   selected,
   onSelect,
 }) => {
-  const sorted = values(players).toSorted(sorter);
+  const sorted = useMemo(
+    () =>
+      values(players).toSorted(
+        (a, b) => slotSkill(b, slot) - slotSkill(a, slot)
+      ),
+    [players, slot]
+  );
 
   return (
     <select
@@ -45,7 +68,8 @@ export const PlayerSelect: FC<Props> = ({
       {sorted.map((player) => (
         <option key={player.id} value={player.id} className={option}>
           <Box p="xs">
-            {player.surname} ({player.position.toUpperCase()} {player.skill})
+            {player.surname} ({player.position.toUpperCase()}{" "}
+            {slotSkill(player, slot)})
           </Box>
         </option>
       ))}
