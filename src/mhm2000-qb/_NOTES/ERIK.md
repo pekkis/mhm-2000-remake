@@ -148,11 +148,13 @@ Probability = `erik(3) * 10` to `erik(3) * 22` percent depending
 on competition type. Consequences: massive fine (−400K to −1M),
 morale −55, stats zeroed. Effectively a match-fixing nuclear option.
 
-**AI behavior:** AI teams can acquire doping organically
-(ILEX5.BAS:7810–7812) if their strength `s(xx)` exceeds a threshold
-(tier-dependent: PHL >9, Div >8, Mut >7) and they don't already
-have it. ~40% chance to lose it each round (line 7805). AI doping
-is also caught per-round with `erik(3)*10` percent chance (7784–7786).
+**AI behavior:** AI teams can acquire doping out of **desperation**
+(ILEX5.BAS:7810–7812) if their league standing `s(xx)` (sijoitus,
+higher = worse) exceeds a threshold (tier-dependent: PHL >9, Div >8,
+Mut >7) — i.e. teams sinking in the lower half of the table after
+round 33. Worse standing → higher chance. ~40% chance to voluntarily
+stop each round (line 7805). AI doping is also caught per-round
+with `erik(3)*10` percent chance (7784–7786).
 
 **Cost:** 0 / −10 000 / −20 000 per match.
 
@@ -222,14 +224,15 @@ Arrow keys left/right adjust `erik(cat, team)` between 0 and
 
 ## Port implications
 
-- **`erik()` is team-keyed**, not manager-keyed. Map to team state.
+- **`erik()` is team-keyed**, not manager-keyed. Mapped to `TeamServices`
+  on team state. Type definitions + option data in
+  [team-services.ts](../../data/mhm2000/team-services.ts).
+- **Initial values** from ORGA.M2K ported to `orgaRows` in
+  [budget.ts](../../data/mhm2000/budget.ts). Wired into
+  `defaults.ts` (game seed) and `end-of-season.ts` (AI season reset)
+  via `initialServicesForRankings()`.
 - Categories 1, 2, 4 are clean gameplay features: fan support,
   alcohol revenue, travel comfort.
-- Category 3 (doping) is the spicy one: high risk/reward with
-  catch mechanics and AI acquisition logic.
-- The cost matrix and level labels are data-driven from DATAX.M2K
-  and Y.MHM — port as typed config objects.
-- The `erik(3)` bonus feeds into both the AI strength pipeline
-  (`ode`) AND the per-player `zzra` pipeline. Our existing
-  `effectiveStrength` calculation already has an `erik(3)` slot
-  placeholder — wire it.
+- Category 3 (doping) is the spicy one — see [DOPING.md](DOPING.md)
+  for the full dual-path boost analysis, detection mechanics, and
+  AI desperation-doping behavior.

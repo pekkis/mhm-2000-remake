@@ -22,7 +22,10 @@ import type {
 import { type Draft } from "immer";
 
 import competitionData from "@/data/competitions";
-import { initialBudgetForRankings } from "@/data/mhm2000/budget";
+import {
+  initialBudgetForRankings,
+  initialServicesForRankings
+} from "@/data/mhm2000/budget";
 import { managersMainCompetition } from "@/machines/selectors";
 import { sortStats } from "@/services/league";
 import { eliminated, victors } from "@/services/playoffs";
@@ -617,5 +620,6 @@ export const runSeasonEnd = (
       continue;
     }
     team.budget = initialBudgetForRankings(team.previousRankings);
+    team.services = initialServicesForRankings(team.previousRankings);
   }
 };

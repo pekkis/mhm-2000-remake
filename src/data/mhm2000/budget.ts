@@ -56,6 +56,7 @@
 // spend, etc. No drift.
 
 import type { BudgetTierId } from "./difficulty-levels";
+import type { TeamServices } from "@/state/game";
 
 export type BudgetCategoryId = 1 | 2 | 3 | 4 | 5;
 export type BudgetLevel = 1 | 2 | 3 | 4 | 5;
@@ -301,21 +302,26 @@ const orgasmTable: readonly number[] = [
 ];
 
 /**
- * ORGA.M2K columns 5..11 per ORGA row (1..13, weakest → strongest):
- *   cols  5–9:  `valb(1..5)` — initial budget slider levels
- *   col    10:  `c`          — number of initially-scouted players (random slots 2..17)
- *   col    11:  `raha`       — starting bank balance for human managers
+ * Full ORGA.M2K row (1..13, weakest → strongest), 11 columns:
+ *   cols 1–4:   `erik(1..4)` — initial team services (fanGroup / alcoholSales / doping / travel)
+ *   cols 5–9:   `valb(1..5)` — initial budget slider levels
+ *   col   10:   `c`          — number of initially-scouted players (random slots 2..17)
+ *   col   11:   `raha`       — starting bank balance for human managers
  *
- * QB path (`SUB orgamaar`, MHM2K.BAS:2008-2013 / ILEZ5.BAS:1300):
+ * QB path (`SUB orgamaar`, MHM2K.BAS:2005-2013 / ILEZ5.BAS:1294-1300):
+ *   INPUT #1, erik(1..4, ork%)
  *   INPUT #1, valb(1..5), c, raha(ohj)
  *   ...
  *   FOR ww = 1 TO c: skout(random 2..17) = 1: NEXT
  *   junnu(ohj) = valb(3) * 2
  *
- * Verbatim from src/mhm2000-qb/DATA/ORGA.M2K columns 5-11.
+ * Verbatim from src/mhm2000-qb/DATA/ORGA.M2K.
  */
 
 type OrgaRow = {
+  /** `erik(1..4)` — initial team service levels. */
+  services: readonly [number, number, number, number];
+  /** `valb(1..5)` — initial budget slider levels. */
   budget: readonly [
     BudgetLevel,
     BudgetLevel,
@@ -329,20 +335,86 @@ type OrgaRow = {
   startingBalance: number;
 };
 
+/** Column order: erik(1..4), valb(1..5), c, raha — verbatim from ORGA.M2K. */
 const orgaRows: readonly OrgaRow[] = [
-  { budget: [1, 1, 1, 1, 1], scoutedCount: 0, startingBalance: 100000 }, // row 1  — weakest
-  { budget: [1, 1, 1, 2, 1], scoutedCount: 0, startingBalance: 130000 }, // row 2
-  { budget: [2, 2, 1, 2, 1], scoutedCount: 0, startingBalance: 160000 }, // row 3
-  { budget: [2, 2, 2, 2, 2], scoutedCount: 1, startingBalance: 190000 }, // row 4
-  { budget: [2, 2, 2, 3, 2], scoutedCount: 1, startingBalance: 220000 }, // row 5
-  { budget: [2, 2, 2, 3, 2], scoutedCount: 2, startingBalance: 250000 }, // row 6
-  { budget: [3, 3, 3, 3, 3], scoutedCount: 2, startingBalance: 280000 }, // row 7
-  { budget: [3, 3, 3, 4, 3], scoutedCount: 3, startingBalance: 310000 }, // row 8
-  { budget: [4, 3, 3, 4, 3], scoutedCount: 3, startingBalance: 340000 }, // row 9
-  { budget: [4, 4, 4, 4, 3], scoutedCount: 4, startingBalance: 370000 }, // row 10
-  { budget: [4, 4, 4, 5, 4], scoutedCount: 5, startingBalance: 450000 }, // row 11
-  { budget: [4, 4, 4, 5, 4], scoutedCount: 6, startingBalance: 550000 }, // row 12
-  { budget: [5, 5, 5, 5, 5], scoutedCount: 7, startingBalance: 650000 } // row 13 — strongest
+  {
+    services: [0, 0, 0, 0],
+    budget: [1, 1, 1, 1, 1],
+    scoutedCount: 0,
+    startingBalance: 100000
+  }, // row 1  — weakest
+  {
+    services: [0, 0, 0, 1],
+    budget: [1, 1, 1, 2, 1],
+    scoutedCount: 0,
+    startingBalance: 130000
+  }, // row 2
+  {
+    services: [0, 0, 0, 1],
+    budget: [2, 2, 1, 2, 1],
+    scoutedCount: 0,
+    startingBalance: 160000
+  }, // row 3
+  {
+    services: [0, 0, 0, 1],
+    budget: [2, 2, 2, 2, 2],
+    scoutedCount: 1,
+    startingBalance: 190000
+  }, // row 4
+  {
+    services: [0, 0, 0, 1],
+    budget: [2, 2, 2, 3, 2],
+    scoutedCount: 1,
+    startingBalance: 220000
+  }, // row 5
+  {
+    services: [0, 0, 0, 2],
+    budget: [2, 2, 2, 3, 2],
+    scoutedCount: 2,
+    startingBalance: 250000
+  }, // row 6
+  {
+    services: [0, 1, 0, 2],
+    budget: [3, 3, 3, 3, 3],
+    scoutedCount: 2,
+    startingBalance: 280000
+  }, // row 7
+  {
+    services: [1, 1, 0, 2],
+    budget: [3, 3, 3, 4, 3],
+    scoutedCount: 3,
+    startingBalance: 310000
+  }, // row 8
+  {
+    services: [1, 1, 0, 2],
+    budget: [4, 3, 3, 4, 3],
+    scoutedCount: 3,
+    startingBalance: 340000
+  }, // row 9
+  {
+    services: [1, 1, 0, 3],
+    budget: [4, 4, 4, 4, 3],
+    scoutedCount: 4,
+    startingBalance: 370000
+  }, // row 10
+  {
+    services: [1, 2, 0, 3],
+    budget: [4, 4, 4, 5, 4],
+    scoutedCount: 5,
+    startingBalance: 450000
+  }, // row 11
+  {
+    services: [2, 2, 0, 3],
+    budget: [4, 4, 4, 5, 4],
+    scoutedCount: 6,
+    startingBalance: 550000
+  }, // row 12
+  {
+    services: [2, 2, 0, 3],
+    budget: [5, 5, 5, 5, 5],
+    scoutedCount: 7,
+    startingBalance: 650000
+  } // row 13 — strongest
 ];
 
 /**
@@ -378,6 +450,21 @@ export const initialBalanceForRankings = (
 export const initialScoutedCountForRankings = (
   previousRankings: readonly [number, number, number]
 ): number => orgaRowForRankings(previousRankings).scoutedCount;
+
+/**
+ * Initial team service levels, derived from team strength via
+ * ORGASM.M2K → ORGA.M2K columns 1–4 (`erik(1..4)`).
+ *
+ * QB: `erik(1, ork%), erik(2, ork%), erik(3, ork%), erik(4, ork%)`
+ * in `SUB orgamaar`. Maps to: fanGroup / alcoholSales / doping / travel.
+ */
+export const initialServicesForRankings = (
+  previousRankings: readonly [number, number, number]
+): TeamServices => {
+  const [fanGroup, alcoholSales, doping, travel] =
+    orgaRowForRankings(previousRankings).services;
+  return { fanGroup, alcoholSales, doping, travel };
+};
 
 /** Shared ORGASM → ORGA row lookup. */
 const orgaRowForRankings = (

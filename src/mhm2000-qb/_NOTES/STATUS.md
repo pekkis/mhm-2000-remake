@@ -268,6 +268,8 @@ base-stat portion of `SUB voimamaar` (ILEX5.BAS:8429-8490).
   inlining the formula.
 - **`playerBaseValue(player)`** = `skill + performanceModifier(player)`.
   TODO: add `erik(3)` team investment bonus when erikoistoimet ports.
+  See [DOPING.md](../_NOTES/DOPING.md) for the full dual-path analysis
+  (human teams via `zzra`, AI teams via `ottpel` league-gated addition).
 - **TODO: human PP/PK from actual lineup slots.** QB `voimamaar`
   computes `yw`/`aw` from the dedicated PP/PK units with per-player
   `yvo`/`avo` bonuses + `mtaito(2)` multiplier. Currently deferred —

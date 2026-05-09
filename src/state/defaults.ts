@@ -28,7 +28,10 @@ import type { Competition, CompetitionId } from "@/types/competitions";
 import { managerFromDefinition } from "@/services/manager";
 import { createUniqueId } from "@/services/id";
 import { rollTeamStrength } from "@/services/levels";
-import { initialBudgetForRankings } from "@/data/mhm2000/budget";
+import {
+  initialBudgetForRankings,
+  initialServicesForRankings
+} from "@/data/mhm2000/budget";
 
 import random from "@/services/random";
 import { emptyTeamBudget, emptyTeamServices } from "@/services/empties";
@@ -145,8 +148,7 @@ const seedTeams = (): Team[] => {
       ? {
           budget: initialBudgetForRankings(seedable.previousRankings),
           previousRankings: seedable.previousRankings,
-          // TODO: define service levels. Probably in season start.
-          services: emptyTeamServices()
+          services: initialServicesForRankings(seedable.previousRankings)
         }
       : {
           previousRankings: undefined,
