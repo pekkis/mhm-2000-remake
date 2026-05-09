@@ -176,12 +176,6 @@ export const createDefaultGameContext = (): GameContext => {
       mauto: false,
       psycho: undefined
     },
-    serviceBasePrices: {
-      insurance: 1000,
-      coach: 3200,
-      microphone: 500,
-      cheer: 3000
-    },
 
     // ⚠️ MUST be a fresh array reference (spread/slice), NOT the imported
     // singleton `managerDefs`. Stately Inspector dedupes shared object refs

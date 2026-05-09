@@ -90,14 +90,9 @@ export type EventEffect =
   // ── Manager arena / extras / services ──
   | { type: "setArenaLevel"; manager: string; level: number }
   | { type: "renameArena"; manager: string; name: string }
-  | { type: "setExtra"; manager: string; extra: number }
-  | { type: "incrementInsuranceExtra"; manager: string; amount: number }
-  | { type: "setInsuranceExtra"; manager: string; extra: number }
   | { type: "hireManager"; manager: string; team: number }
 
   // ── Team strength / morale / readiness / strategy ──
-  | { type: "incrementStrength"; team: number; amount: number }
-  | { type: "decrementStrength"; team: number; amount: number }
   | { type: "incrementMorale"; team: number; amount: number }
   | { type: "decrementMorale"; team: number; amount: number }
   | { type: "setMorale"; team: number; value: number }

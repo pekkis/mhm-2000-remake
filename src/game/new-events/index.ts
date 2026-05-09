@@ -26,30 +26,21 @@ import attitudeCanada from "./attitude-canada";
 import attitudeUSA from "./attitude-usa";
 import bankMistake from "./bank-mistake";
 import bestManagerEver from "./best-manager-ever";
-import bloodbath from "./bloodbath";
 import book from "./book";
 import boxing from "./boxing";
 import cleandrug from "./cleandrug";
 import concert from "./concert";
-import divisionRally from "./division-rally";
 import ehlAward from "./ehl-award";
-import ekkanen from "./ekkanen";
 import enemyProtest from "./enemy-protest";
 import fanMerchandise from "./fan-merchandise";
-import florist from "./florist";
 import fortuneTeller from "./fortune-teller";
 import grossman from "./grossman";
-import haanperaDivorce from "./haanpera-divorce";
 import habadobo from "./habadobo";
-import jarasvuo from "./jarasvuo";
-import jarko from "./jarko";
 import karijurri from "./karijurri";
 import kasino from "./kasino";
 import kecklin from "./kecklin";
 import limpenius from "./limpenius";
-import makrosoft from "./makrosoft";
 import masotv from "./masotv";
-import mauto from "./mauto";
 import metterer from "./metterer";
 import moreTaxes from "./more-taxes";
 import ogilny from "./ogilny";
@@ -59,7 +50,6 @@ import pakibetteri from "./pakibetteri";
 import pauligkahvi from "./pauligkahvi";
 import pempers from "./pempers";
 import pertinPselit from "./pertin-pselit";
-import phlRally from "./phl-rally";
 import pirka from "./pirka";
 import protest from "./protest";
 import pstudio from "./pstudio";
@@ -67,11 +57,8 @@ import psychoAttack from "./psycho-attack";
 import psychoMail from "./psycho-mail";
 import psychoRelease from "./psycho-release";
 import ralliala from "./ralliala";
-import randomDude from "./random-dude";
-import russianAgent from "./russian-agent";
 import saunailta from "./saunailta";
 import scoreboard from "./scoreboard";
-import sellNarcotics from "./sell-narcotics";
 import sopupeli from "./sopupeli";
 import stalking from "./stalking";
 import suddenDeath from "./sudden-death";
@@ -90,30 +77,21 @@ const newEvents = {
   attitudeUSA,
   bankMistake,
   bestManagerEver,
-  bloodbath,
   book,
   boxing,
   cleandrug,
   concert,
-  divisionRally,
   ehlAward,
-  ekkanen,
   enemyProtest,
   fanMerchandise,
-  florist,
   fortuneTeller,
   grossman,
-  haanperaDivorce,
   habadobo,
-  jarasvuo,
-  jarko,
   karijurri,
   kasino,
   kecklin,
   limpenius,
-  makrosoft,
   masotv,
-  mauto,
   metterer,
   moreTaxes,
   ogilny,
@@ -123,7 +101,6 @@ const newEvents = {
   pauligkahvi,
   pempers,
   pertinPselit,
-  phlRally,
   pirka,
   protest,
   pstudio,
@@ -131,11 +108,8 @@ const newEvents = {
   psychoMail,
   psychoRelease,
   ralliala,
-  randomDude,
-  russianAgent,
   saunailta,
   scoreboard,
-  sellNarcotics,
   sopupeli,
   stalking,
   suddenDeath,
