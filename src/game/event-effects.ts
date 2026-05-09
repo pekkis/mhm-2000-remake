@@ -1,7 +1,7 @@
 import type { Draft } from "immer";
 
 import difficultyLevels from "@/data/difficulty-levels";
-import type { GameContext, ManagerServices } from "@/state";
+import type { GameContext } from "@/state";
 import type { GameFlags, Team, TeamEffect } from "@/state/game";
 import type { CompetitionId } from "@/types/competitions";
 import type { BaseEventCreationFields } from "@/types/base";
@@ -93,12 +93,6 @@ export type EventEffect =
   | { type: "setExtra"; manager: string; extra: number }
   | { type: "incrementInsuranceExtra"; manager: string; amount: number }
   | { type: "setInsuranceExtra"; manager: string; extra: number }
-  | {
-      type: "setService";
-      manager: string;
-      service: keyof ManagerServices;
-      value: boolean;
-    }
   | { type: "hireManager"; manager: string; team: number }
 
   // ── Team strength / morale / readiness / strategy ──
@@ -238,37 +232,7 @@ export function applyEffect(
       }
       return;
     }
-    case "setExtra": {
-      const m = humanManagerById(effect.manager)(draft);
-      if (m) {
-        m.extra = effect.extra;
-      }
-      return;
-    }
-    case "incrementInsuranceExtra": {
-      const m = humanManagerById(effect.manager)(draft);
-      if (m) {
-        m.insuranceExtra += effect.amount;
-      }
-      return;
-    }
-    case "setInsuranceExtra": {
-      const m = humanManagerById(effect.manager)(draft);
-      if (m) {
-        m.insuranceExtra = effect.extra;
-      }
-      return;
-    }
-    case "setService": {
-      const m = humanManagerById(effect.manager)(draft);
-      if (m) {
-        m.services[effect.service] = effect.value;
-      }
-      return;
-    }
     case "hireManager": {
-      // Atomic: detach from current team, attach to new team.
-      // 1-1 port of `hireManager` saga in src/sagas/manager.ts.
       const m = humanManagerById(effect.manager)(draft);
       if (!m) {
         return;
@@ -368,12 +332,6 @@ export function applyEffect(
       const m = humanManagerById(effect.manager)(draft);
       if (m) {
         m.flags[effect.flag] = effect.value;
-      }
-      return;
-    }
-    case "incrementServiceBasePrice": {
-      if (effect.service in draft.serviceBasePrices) {
-        draft.serviceBasePrices[effect.service] += effect.amount;
       }
       return;
     }

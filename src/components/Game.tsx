@@ -10,7 +10,6 @@ import Gameday from "./Gameday";
 import GamedayResults from "./GamedayResults";
 import CrisisActions from "./CrisisActions";
 import Arena from "./Arena";
-import Services from "./Services";
 import Pranks from "./Pranks";
 import Notifications from "./notifications/Notifications";
 import ModalMenu from "./ModalMenu";
@@ -165,7 +164,6 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
           <Route path="/sarjataulukot" element={<LeagueTables />} />
           <Route path="/pelaajamarkkinat" element={<TransferMarketPage />} />
           <Route path="/kriisipalaveri" element={<CrisisActions />} />
-          <Route path="/erikoistoimenpiteet" element={<Services />} />
           <Route path="/areena" element={<Arena />} />
           <Route path="/jaynat" element={<Pranks />} />
           <Route path="/playoffit" element={<PlayoffBracket />} />

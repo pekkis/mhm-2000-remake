@@ -16,7 +16,11 @@ import {
 } from "@/machines/end-of-season";
 import type { GameContext } from "@/state";
 import { createDefaultGameContext } from "@/state";
-import { emptyAchievements } from "@/services/empties";
+import {
+  emptyAchievements,
+  emptyTeamBudget,
+  emptyTeamServices
+} from "@/services/empties";
 import type { AITeam, AIManager, HumanManager } from "@/state/game";
 import type { Random } from "random-js";
 import { fixedRandom, scriptedRandom } from "@/__tests__/factories";
@@ -83,7 +87,9 @@ const buildContext = (
         tier: t.tier,
         previousRankings: t.previousRankings,
         kind: "ai",
-        strengthObj: { goalie: 50, defence: 50, attack: 50 }
+        strengthObj: { goalie: 50, defence: 50, attack: 50 },
+        budget: emptyTeamBudget(),
+        services: emptyTeamServices()
       };
       // The `kind: "human"` branch isn't covered by AITeam shape; the
       // function only checks `team.kind !== "ai"`, so we cast for the
@@ -115,15 +121,7 @@ const buildContext = (
             stats: { games: {}, achievements: emptyAchievements() },
             balance: 0,
             arena: { name: "Stadio Olimpico", level: 0 },
-            services: {
-              coach: false,
-              insurance: false,
-              microphone: false,
-              cheer: false
-            },
             pranksExecuted: 0,
-            extra: 0,
-            insuranceExtra: 0,
             flags: {}
           };
           return [m.id, human];

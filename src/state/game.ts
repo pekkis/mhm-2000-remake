@@ -7,19 +7,13 @@ import type { BudgetCategoryName, BudgetLevel } from "@/data/mhm2000/budget";
 import type { GameRecord } from "@/machines/types";
 import type { HiredPlayer, MarketPlayer, Player } from "@/state/player";
 import type { Lineup } from "@/state/lineup";
+import type { TeamServiceIdentifier } from "@/data/mhm2000/team-services";
 
 export type { Player };
 
 export type ManagerArena = {
   name: string;
   level: number;
-};
-
-export type ManagerServices = {
-  coach: boolean;
-  insurance: boolean;
-  microphone: boolean;
-  cheer: boolean;
 };
 
 export type Manager = HumanManager | AIManager;
@@ -60,10 +54,7 @@ export type HumanManager = BaseManager & {
   attributes: ManagerAttributes;
   balance: number;
   arena: ManagerArena;
-  services: ManagerServices;
   pranksExecuted: number;
-  extra: number;
-  insuranceExtra: number;
   flags: Record<string, boolean>;
   tags: string[];
 };
@@ -75,7 +66,9 @@ export type TeamEffect = {
   extra?: Record<string, unknown>;
 };
 
-type TeamBudget = Record<BudgetCategoryName, BudgetLevel>;
+export type TeamBudget = Record<BudgetCategoryName, BudgetLevel>;
+
+export type TeamServices = Record<TeamServiceIdentifier, number>;
 
 type BaseTeam = {
   id: number;
@@ -92,7 +85,8 @@ type BaseTeam = {
   manager?: string;
   tags: string[];
   tier: number;
-  budget?: TeamBudget;
+  budget: TeamBudget;
+  services: TeamServices;
   previousRankings?: [number, number, number];
 };
 
@@ -131,7 +125,6 @@ export type WorldChampionshipEntry = {
 export type GameState = {
   turn: { season: number; round: number; phase: string | undefined };
   flags: GameFlags;
-  serviceBasePrices: Record<string, number>;
   managers: Record<string, Manager>;
   competitions: Record<CompetitionId, Competition>;
   teams: Team[];

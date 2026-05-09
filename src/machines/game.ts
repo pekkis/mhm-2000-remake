@@ -2,7 +2,6 @@ import { setup, assign, sendTo, enqueueActions, stopChild } from "xstate";
 import { produce, type Draft } from "immer";
 
 import type { GameContext } from "@/state";
-import type { ManagerServices } from "@/state/game";
 import {
   managerCompetesIn,
   canImproveArena,
@@ -25,7 +24,6 @@ import strategies, {
   initialReadinessFor,
   type StrategyId
 } from "@/data/mhm2000/strategies";
-import services from "@/data/services";
 import prankTypes from "@/game/pranks";
 import arenas from "@/data/arenas";
 import playerTypes from "@/data/transfer-market";
@@ -189,10 +187,6 @@ export type GameMachineEvents =
   | {
       type: "CRISIS_MEETING";
       payload: { manager: string };
-    }
-  | {
-      type: "TOGGLE_SERVICE";
-      payload: { manager: string; service: keyof ManagerServices };
     }
   | {
       type: "TEAM_INCUR_PENALTY";
@@ -679,29 +673,6 @@ export const gameMachine = setup({
     ),
 
     /**
-     * Flip a service on or off for the manager. No cost at toggle time;
-     * service costs are deducted per-gameday by `executeGameday`. 1-1
-     * port of `toggleService()` in `src/sagas/manager.ts`.
-     */
-    executeToggleService: assign(
-      (
-        { context },
-        params: { manager: string; service: keyof ManagerServices }
-      ) =>
-        produce(context, (draft) => {
-          const m = draft.managers[params.manager];
-          if (!m) {
-            return;
-          }
-
-          if (m.kind === "ai") {
-            return;
-          }
-          m.services[params.service] = !m.services[params.service];
-        })
-    ),
-
-    /**
      * Run the auto-lineup builder for the manager's team.
      * Port of SUB automa (ILEX5.BAS:822-920).
      */
@@ -870,8 +841,6 @@ export const gameMachine = setup({
      */
     executeCalculations: assign(({ context }) =>
       produce(context, (draft) => {
-        const basePrices = draft.serviceBasePrices;
-
         // Per-team: strategy-driven readiness drift — ONLY on regular-
         // season runkosarja gamedays. QB: ILEX5.BAS:1574 sits inside
         // `CASE 1` of `SELECT CASE kiero(kr)`, so EHL/cup/playoff/
@@ -885,23 +854,6 @@ export const gameMachine = setup({
             if (delta !== 0) {
               team.readiness += delta;
             }
-          }
-        }
-
-        // Per-manager: pay for active services.
-        for (const manager of values(humanManagers(draft))) {
-          let serviceCosts = 0;
-          for (const [serviceId, active] of entries(manager.services)) {
-            if (!active) {
-              continue;
-            }
-            serviceCosts += services[serviceId].price(
-              basePrices[serviceId],
-              manager
-            );
-          }
-          if (serviceCosts !== 0) {
-            manager.balance -= serviceCosts;
           }
         }
 
@@ -1276,12 +1228,6 @@ export const gameMachine = setup({
         canCrisisMeeting(event.payload.manager)(context),
       actions: {
         type: "executeCrisisMeeting",
-        params: ({ event }) => event.payload
-      }
-    },
-    TOGGLE_SERVICE: {
-      actions: {
-        type: "executeToggleService",
         params: ({ event }) => event.payload
       }
     },

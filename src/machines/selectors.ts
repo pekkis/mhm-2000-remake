@@ -30,13 +30,7 @@ import calendar from "@/data/calendar";
 import { CRISIS_COST, CRISIS_MORALE_MAX } from "@/data/constants";
 import type { SnapshotFrom } from "xstate";
 import type { gameMachine } from "./game";
-import type {
-  GameContext,
-  Manager,
-  ManagerServices,
-  Team,
-  GameFlags
-} from "./types";
+import type { GameContext, Manager, Team, GameFlags } from "./types";
 import type {
   CompetitionId,
   Competition,
@@ -552,11 +546,6 @@ export const managersArena =
   (manager: string): ContextSelector<HumanManager["arena"] | undefined> =>
   (ctx) =>
     humanManagerById(manager)(ctx).arena;
-
-export const managerHasService =
-  (manager: string, service: keyof ManagerServices): ContextSelector<boolean> =>
-  (ctx) =>
-    humanManagerById(manager)(ctx).services[service];
 
 export const managerHasEnoughMoney =
   (manager: string, neededAmount: number): ContextSelector<boolean> =>

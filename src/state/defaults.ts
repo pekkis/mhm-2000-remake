@@ -31,6 +31,7 @@ import { rollTeamStrength } from "@/services/levels";
 import { initialBudgetForRankings } from "@/data/mhm2000/budget";
 
 import random from "@/services/random";
+import { emptyTeamBudget, emptyTeamServices } from "@/services/empties";
 
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
@@ -143,11 +144,14 @@ const seedTeams = (): Team[] => {
     const rankedData = seedable.previousRankings
       ? {
           budget: initialBudgetForRankings(seedable.previousRankings),
-          previousRankings: seedable.previousRankings
+          previousRankings: seedable.previousRankings,
+          // TODO: define service levels. Probably in season start.
+          services: emptyTeamServices()
         }
       : {
           previousRankings: undefined,
-          budget: undefined
+          budget: emptyTeamBudget(),
+          services: emptyTeamServices()
         };
 
     return {

@@ -233,7 +233,3 @@ Arrow keys left/right adjust `erik(cat, team)` between 0 and
   (`ode`) AND the per-player `zzra` pipeline. Our existing
   `effectiveStrength` calculation already has an `erik(3)` slot
   placeholder — wire it.
-- MHM 97 "erikoistoimenpiteet" (services: cheer, microphone,
-  coach, insurance) are a **completely different system**. MHM 2000
-  replaces them with these four categories. The MHM 97 services
-  must be removed.

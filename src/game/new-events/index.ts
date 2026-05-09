@@ -21,7 +21,6 @@
  *   BASIC's `< 7`.
  */
 
-import arenaBurns from "./arena-burns";
 import arilander from "./arilander";
 import attitudeCanada from "./attitude-canada";
 import attitudeUSA from "./attitude-usa";
@@ -35,28 +34,18 @@ import concert from "./concert";
 import divisionRally from "./division-rally";
 import ehlAward from "./ehl-award";
 import ekkanen from "./ekkanen";
-import embezzlement from "./embezzlement";
 import enemyProtest from "./enemy-protest";
-import etelalaAscends from "./etelala-ascends";
-import etelalaBonusFrenzy from "./etelala-bonusfrenzy";
-import etelalaDescends from "./etelala-descends";
-import etelalaGlitch from "./etelala-glitch";
 import fanMerchandise from "./fan-merchandise";
 import florist from "./florist";
 import fortuneTeller from "./fortune-teller";
 import grossman from "./grossman";
 import haanperaDivorce from "./haanpera-divorce";
 import habadobo from "./habadobo";
-import hasselgren from "./hasselgren";
-import jaralahti from "./jaralahti";
 import jarasvuo from "./jarasvuo";
 import jarko from "./jarko";
-import juznetsov from "./juznetsov";
 import karijurri from "./karijurri";
 import kasino from "./kasino";
 import kecklin from "./kecklin";
-import kuralahti from "./kuralahti";
-import laskisalonen from "./laskisalonen";
 import limpenius from "./limpenius";
 import makrosoft from "./makrosoft";
 import masotv from "./masotv";
@@ -78,7 +67,6 @@ import psychoAttack from "./psycho-attack";
 import psychoMail from "./psycho-mail";
 import psychoRelease from "./psycho-release";
 import ralliala from "./ralliala";
-import ramirez from "./ramirez";
 import randomDude from "./random-dude";
 import russianAgent from "./russian-agent";
 import saunailta from "./saunailta";
@@ -87,8 +75,6 @@ import sellNarcotics from "./sell-narcotics";
 import sopupeli from "./sopupeli";
 import stalking from "./stalking";
 import suddenDeath from "./sudden-death";
-import swedenTransfer from "./sweden-transfer";
-import taxEvasion from "./tax-evasion";
 import topGame from "./top-game";
 import undqvist from "./undqvist";
 import urheiluruuttu from "./urheiluruuttu";
@@ -99,7 +85,6 @@ import worstManagerEver from "./worst-manager-ever";
 import youStalk from "./you-stalk";
 
 const newEvents = {
-  arenaBurns,
   arilander,
   attitudeCanada,
   attitudeUSA,
@@ -113,28 +98,18 @@ const newEvents = {
   divisionRally,
   ehlAward,
   ekkanen,
-  embezzlement,
   enemyProtest,
-  etelalaAscends,
-  etelalaBonusFrenzy,
-  etelalaDescends,
-  etelalaGlitch,
   fanMerchandise,
   florist,
   fortuneTeller,
   grossman,
   haanperaDivorce,
   habadobo,
-  hasselgren,
-  jaralahti,
   jarasvuo,
   jarko,
-  juznetsov,
   karijurri,
   kasino,
   kecklin,
-  kuralahti,
-  laskisalonen,
   limpenius,
   makrosoft,
   masotv,
@@ -156,7 +131,6 @@ const newEvents = {
   psychoMail,
   psychoRelease,
   ralliala,
-  ramirez,
   randomDude,
   russianAgent,
   saunailta,
@@ -165,8 +139,6 @@ const newEvents = {
   sopupeli,
   stalking,
   suddenDeath,
-  swedenTransfer,
-  taxEvasion,
   topGame,
   undqvist,
   urheiluruuttu,

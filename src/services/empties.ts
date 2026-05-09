@@ -1,5 +1,5 @@
 import type { SeasonStats } from "@/state";
-import type { AchievementsStat } from "@/state/game";
+import type { AchievementsStat, TeamBudget, TeamServices } from "@/state/game";
 import type { Lineup } from "@/state/lineup";
 
 export const emptyAchievements = (): AchievementsStat => {
@@ -11,6 +11,25 @@ export const emptyAchievements = (): AchievementsStat => {
     cup: 0,
     promoted: 0,
     relegated: 0
+  };
+};
+
+export const emptyTeamServices = (): TeamServices => {
+  return {
+    alcoholSales: 0,
+    doping: 0,
+    fanGroup: 0,
+    travel: 0
+  };
+};
+
+export const emptyTeamBudget = (): TeamBudget => {
+  return {
+    benefits: 1,
+    coaching: 1,
+    goalieCoaching: 1,
+    health: 1,
+    juniors: 1
   };
 };
 

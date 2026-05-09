@@ -7,7 +7,7 @@ import type { HiredPlayer } from "@/state/player";
 import type { AIManager, AITeam, HumanManager } from "@/state/game";
 import type { Lineup } from "@/state/lineup";
 import type { Random } from "random-js";
-import { emptyAchievements } from "@/services/empties";
+import { emptyAchievements, emptyTeamServices } from "@/services/empties";
 
 // ---------------------------------------------------------------------------
 // Player
@@ -119,6 +119,7 @@ export const createAITeam = (overrides: Partial<AITeam> = {}): AITeam => ({
   tier: 30,
   kind: "ai",
   strengthObj: { goalie: 10, defence: 50, attack: 100 },
+  services: emptyTeamServices(),
   ...overrides
 });
 
@@ -163,10 +164,7 @@ export const createHumanManager = (
   balance: 100000,
   team: 1,
   arena: { name: "Stadio Olimpico", level: 0 },
-  services: { coach: false, insurance: false, microphone: false, cheer: false },
   pranksExecuted: 0,
-  extra: 0,
-  insuranceExtra: 0,
   flags: {},
   tags: [],
   stats: { games: {}, achievements: emptyAchievements() },

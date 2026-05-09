@@ -2,7 +2,6 @@ import type { Draft } from "immer";
 import { values } from "remeda";
 
 import type { GameContext } from "@/state";
-import difficultyLevels from "@/data/difficulty-levels";
 import {
   forcedStrategyForManager,
   initialReadinessFor
@@ -119,15 +118,7 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
 
   // Per-manager: salary, insurance extra (skipped season 0), reset extra.
   for (const manager of values(draft.managers)) {
-    if (season > 0) {
-      if (manager.kind === "human") {
-        if (manager.services.insurance) {
-          manager.insuranceExtra -= 50 * manager.arena.level;
-        }
-
-        manager.extra = difficultyLevels[manager.difficulty].extra;
-      }
-    }
+    console.log("PER MANAGER SEASON STaRT", manager);
   }
 
   // Initialize currentSeason for stats accumulation. Saga side did

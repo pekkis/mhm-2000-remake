@@ -38,19 +38,11 @@ const buildHumanManager = (draft: ManagerDraft): HumanManager => {
     attributes: draft.attributes,
     difficulty: legacyDifficulty,
     pranksExecuted: 0,
-    services: {
-      coach: false,
-      insurance: false,
-      microphone: false,
-      cheer: false
-    },
     balance: difficultyLevels[legacyDifficulty].startBalance,
     arena: {
       name: draft.customTeam?.arena ?? "MHM 2000 Areena",
       level: 1
     },
-    extra: 0,
-    insuranceExtra: 0,
     flags: {},
     team: draft.team
   };

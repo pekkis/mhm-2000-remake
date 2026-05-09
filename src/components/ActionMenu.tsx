@@ -67,10 +67,6 @@ const ActionMenu = () => {
             Areena
           </Link>
 
-          <Link onClick={close} to="/erikoistoimenpiteet">
-            Erikoistoimenpiteet
-          </Link>
-
           <Calendar when={(c) => c.pranks}>
             <Link onClick={close} to="/jaynat">
               Jäynät
