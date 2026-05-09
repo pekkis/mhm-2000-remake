@@ -13,6 +13,8 @@ import Stack from "@/components/ui/Stack";
 import { ForwardLineView } from "@/components/lineup/ForwardLineView";
 import { GoalieView } from "@/components/lineup/GoalieView";
 import { DefensivePairingView } from "@/components/lineup/DefencivePairingView";
+import { PowerPlayView } from "@/components/lineup/PowerPlayView";
+import { PenaltyKillView } from "@/components/lineup/PenaltyKillView";
 import { lineupAppearances } from "@/services/lineup";
 import type { LineupTarget } from "@/services/lineup";
 import { useCallback, useMemo } from "react";
@@ -99,6 +101,22 @@ const Lineup: FC = () => {
             );
           })}
         </Stack>
+
+        <Heading level={3}>Ylivoimakenttä</Heading>
+        <PowerPlayView
+          team={team.lineup.powerplayTeam}
+          players={team.players}
+          appearances={appearances}
+          onAssign={onAssign}
+        />
+
+        <Heading level={3}>Alivoimakenttä</Heading>
+        <PenaltyKillView
+          team={team.lineup.penaltyKillTeam}
+          players={team.players}
+          appearances={appearances}
+          onAssign={onAssign}
+        />
 
         <pre>{JSON.stringify(team.lineup, null, 2)}</pre>
       </Stack>

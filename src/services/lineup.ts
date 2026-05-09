@@ -223,8 +223,9 @@ export const lineupAppearances = (lineup: Lineup): Map<string, number> => {
 export type LineupTarget =
   | { unit: "g" }
   | { unit: "d"; index: number; side: "ld" | "rd" }
-  | { unit: "f"; index: number; position: "lw" | "c" | "rw" };
-// TODO: PP and PK targets when those views render.
+  | { unit: "f"; index: number; position: "lw" | "c" | "rw" }
+  | { unit: "pp"; position: "lw" | "c" | "rw" | "ld" | "rd" }
+  | { unit: "pk"; position: "f1" | "f2" | "ld" | "rd" };
 
 /** Max regular-line appearances per player (QB `ket < 2` guard). */
 const MAX_APPEARANCES = 2;
@@ -255,16 +256,21 @@ export const assignPlayerToLineup = (
   }
 
   // Guard: player may not exceed MAX_APPEARANCES across regular units.
-  const appearances = lineupAppearances(lineup);
-  const current = appearances.get(playerId) ?? 0;
+  // PP/PK are exempt — they don't count toward `ket`.
+  const isSpecialTeam = target.unit === "pp" || target.unit === "pk";
 
-  // If the player is already in the target slot, it's a no-op success.
-  if (getSlot(lineup, target) === playerId) {
-    return true;
-  }
+  if (!isSpecialTeam) {
+    const appearances = lineupAppearances(lineup);
+    const current = appearances.get(playerId) ?? 0;
 
-  if (current >= MAX_APPEARANCES) {
-    return false;
+    // If the player is already in the target slot, it's a no-op success.
+    if (getSlot(lineup, target) === playerId) {
+      return true;
+    }
+
+    if (current >= MAX_APPEARANCES) {
+      return false;
+    }
   }
 
   setSlot(lineup, target, playerId);
@@ -280,6 +286,10 @@ const getSlot = (lineup: Lineup, target: LineupTarget): string | null => {
       return lineup.defensivePairings[target.index][target.side];
     case "f":
       return lineup.forwardLines[target.index][target.position];
+    case "pp":
+      return lineup.powerplayTeam[target.position];
+    case "pk":
+      return lineup.penaltyKillTeam[target.position];
   }
 };
 
@@ -298,6 +308,12 @@ const setSlot = (
       break;
     case "f":
       lineup.forwardLines[target.index][target.position] = playerId;
+      break;
+    case "pp":
+      lineup.powerplayTeam[target.position] = playerId;
+      break;
+    case "pk":
+      lineup.penaltyKillTeam[target.position] = playerId;
       break;
   }
 };
