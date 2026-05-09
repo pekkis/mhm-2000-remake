@@ -50,21 +50,21 @@ record = data[(N - 1) * 500 : N * 500].decode('cp850').rstrip()
 
 ### Format tokens (`$X`)
 
-Inferred from context. Best-guess color mapping based on QB COLOR codes
-that appear in the source. **Confirm against actual rendering.**
+Confirmed from `SUB lt` ([ILEX5.BAS:3043](../ILEX5.BAS)):
+`COLOR ASC(MID$(text, e + 1, 1)) - 96` — the letter after `$` maps to
+a DOS text-mode foreground color via `ASC(letter) - 96`.
 
-| Token | Best guess                   | Frequency in E.MHM | Notes                                                        |
-| ----- | ---------------------------- | ------------------ | ------------------------------------------------------------ |
-| `$b`  | body / reset to default      | 247                | Most common. Always returns to neutral.                      |
-| `$j`  | name highlight (yellow?)     | 77                 | Wraps proper names: `$jHari Jalme$b`, `$jLentti Pindegren$b` |
-| `$n`  | number / emphasis (red?)     | 54                 | Wraps numbers, key verbs: `$nnopeasti$b`, `$nkuollut$b`      |
-| `$f`  | dramatic / money (red bold?) | 27                 | Wraps `@4 euroa`, warnings, severe news                      |
-| `$o`  | single-letter highlight      | 33                 | Always one letter, then `$b`: `$oK$borkialahden`             |
-| `$h`  | header style                 | 2 (in E.MHM)       | Common in `ST.MHM` for column headers                        |
-| `$d`  | ❓ TODO                      | 1                  | Very rare                                                    |
-
-❓ TODO: confirm exact COLOR numbers for each token from `colchk` /
-`actionprint` / `lt` SUBs in ilex5.
+| Token | COLOR | DOS Color   | Frequency in E.MHM | Semantic usage                                                |
+| ----- | ----- | ----------- | ------------------ | ------------------------------------------------------------- |
+| `$b`  | 2     | Green       | 247                | Default narrative text. Reset / end-span.                     |
+| `$d`  | 4     | Red         | 1                  | Rare dramatic red: `$dkommunisti$b`.                          |
+| `$f`  | 6     | Brown       | 27                 | Form labels, dramatic money: `@4 euroa`, warnings.            |
+| `$g`  | 7     | Light Gray  | —                  | UI separators & column headers (not in narrative .MHM files). |
+| `$h`  | 8     | Dark Gray   | 2                  | Dark emphasis/shadow: `$hmustat$b pilvet`, `$hsynkkää$b`.     |
+| `$i`  | 9     | Light Blue  | —                  | Critic voice (Ari Lehto commentary, not in narrative .MHMs).  |
+| `$j`  | 10    | Light Green | 77                 | Proper names: `$jLentti Pindegren$b`, `$jElvis$b`.            |
+| `$n`  | 14    | Yellow      | 54                 | Key verbs/emphasis: `$nkuollut$b`, `$nnopeasti$b`.            |
+| `$o`  | 15    | White       | 33                 | Single-letter accent: `$oK$borkialahden`.                     |
 
 ### Porting tokens to Markdown (the canonical mapping)
 
@@ -73,17 +73,17 @@ component ([src/components/Markdown.tsx](../../components/Markdown.tsx)).
 The QB DOS color soup collapses into a small number of semantic
 intents the renderer already supports out of the box:
 
-| QB token  | Markdown                      | Why                                                  |
-| --------- | ----------------------------- | ---------------------------------------------------- |
-| `$b`      | _(end span)_                  | Closes whatever the previous opener started.         |
-| `$j…$b`   | `**…**` (bold)                | Proper nouns / manager names — same intent as bold.  |
-| `$n…$b`   | `**…**` (bold)                | Numeric / key-verb emphasis — collapse to bold.      |
-| `$f…$b`   | `**…**` (bold)                | "Dramatic" — bold reads correctly in modern UIs.     |
-| `$o…$b`   | `_…_` (italic)                | Single-letter accent — italic reads as accent.       |
-| `$h…$b`   | use a heading element         | Header style — wrap the line in `## …` if isolated.  |
-| `$d…$b`   | `_…_` (italic)                | Rare, treat as soft emphasis until proven otherwise. |
-| `@4` (€)  | `€{n.toLocaleString(…)}`      | Money — go through proper currency formatting.       |
-| Other `@` | template-literal substitution | Replace with the appropriate runtime value.          |
+| QB token  | Markdown                      | Why                                                 |
+| --------- | ----------------------------- | --------------------------------------------------- |
+| `$b`      | _(end span)_                  | Closes whatever the previous opener started.        |
+| `$j…$b`   | `**…**` (bold)                | Proper nouns / manager names — same intent as bold. |
+| `$n…$b`   | `**…**` (bold)                | Numeric / key-verb emphasis — collapse to bold.     |
+| `$f…$b`   | `**…**` (bold)                | "Dramatic" — bold reads correctly in modern UIs.    |
+| `$o…$b`   | `_…_` (italic)                | Single-letter accent — italic reads as accent.      |
+| `$h…$b`   | `_…_` (italic)                | Dark gray — shadow/mood emphasis. Not a heading.    |
+| `$d…$b`   | `_…_` (italic)                | Red — rare dramatic. Soft emphasis in modern UI.    |
+| `@4` (€)  | `€{n.toLocaleString(…)}`      | Money — go through proper currency formatting.      |
+| Other `@` | template-literal substitution | Replace with the appropriate runtime value.         |
 
 **Rules of thumb**
 

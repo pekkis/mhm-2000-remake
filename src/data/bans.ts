@@ -18,7 +18,7 @@
 export type BanDefinition = {
   /** Ban duration in rounds/games. QB `pelki(code)` from PELKIEL.M2K. */
   duration: number;
-  /** Ban narrative text from PK.MHM, cp850 → UTF-8. Contains markup tokens ($b, $n, $j, etc). */
+  /** Ban narrative text from PK.MHM, cp850 → UTF-8. QB color tokens converted to Markdown (bold/italic). */
   explanation: string;
 };
 
@@ -33,91 +33,91 @@ export const banDefinitions: readonly BanDefinition[] = [
   {
     duration: 6,
     explanation:
-      "$bHän sai äkillisen raivokohtauksen kentällä, ja $nkeihästi$b vastustajan melkolailla törkeästi. $jIlta-Pekkis$b nimeää hänet 'Aikamme Gladiaattoriksi'."
+      "Hän sai äkillisen raivokohtauksen kentällä, ja **keihästi** vastustajan melkolailla törkeästi. **Ilta-Pekkis** nimeää hänet 'Aikamme Gladiaattoriksi'."
   },
   {
     duration: 4,
     explanation:
-      "$bHän potkaisi vastustajaa rumasti $nnivusiin$b. 'Maatalousoppilaitokseen kastroitavaksi tuollainen sika', uhoaa $jIlta-Pekkis$b."
+      "Hän potkaisi vastustajaa rumasti **nivusiin**. 'Maatalousoppilaitokseen kastroitavaksi tuollainen sika', uhoaa **Ilta-Pekkis**."
   },
   {
     duration: 3,
     explanation:
-      "$bHän $nsylkäisi$b mällipaakkunsa erotuomarin silmään. 'Vahinkoja sattuu, mutta pitääkö ihmistä rankaista niistä?', hän ihmettelee."
+      "Hän **sylkäisi** mällipaakkunsa erotuomarin silmään. 'Vahinkoja sattuu, mutta pitääkö ihmistä rankaista niistä?', hän ihmettelee."
   },
   {
     duration: 1,
     explanation:
-      "$bHän otti yhteen vastustajan kovanaaman kanssa pelirangaistuksen arvoisesti. 'Ja sain vielä $nturpaani$b', pelaaja harmittelee."
+      "Hän otti yhteen vastustajan kovanaaman kanssa pelirangaistuksen arvoisesti. 'Ja sain vielä **turpaani**', pelaaja harmittelee."
   },
   {
     duration: 1,
     explanation:
-      "$bHänen krediittinsä kymppien suhteen ovat loppuneet, ja automaattisena seuraamuksena hänen ylleen lankeaa $npakkoloma$b."
+      "Hänen krediittinsä kymppien suhteen ovat loppuneet, ja automaattisena seuraamuksena hänen ylleen lankeaa **pakkoloma**."
   },
   {
     duration: 4,
     explanation:
-      "$bHän syyllistyi todella rumaan laitataklaukseen. 'Puhdas kuin vauvan $npeppu$b', kommentoi pelaaja tapahtumaa harteitaan kohauttaen."
+      "Hän syyllistyi todella rumaan laitataklaukseen. 'Puhdas kuin vauvan **peppu**', kommentoi pelaaja tapahtumaa harteitaan kohauttaen."
   },
   {
     duration: 7,
     explanation:
-      "$bHänen paikallisen hammaslääkärin sponsoroima nyrkkinsä heilui taas kerran, lennättäen $npurukalustoa$b elämännesteen kera joka puolelle kaukaloa! 'Sain kenties pelikiellon', pelaaja toteaa, 'mutta bonukset ovat melkomoiset!'"
+      "Hänen paikallisen hammaslääkärin sponsoroima nyrkkinsä heilui taas kerran, lennättäen **purukalustoa** elämännesteen kera joka puolelle kaukaloa! 'Sain kenties pelikiellon', pelaaja toteaa, 'mutta bonukset ovat melkomoiset!'"
   },
   {
     duration: 2,
     explanation:
-      "$bHän taklasi viheliäisesti viheltäneen tuomarin vasten päätypleksiä, mikä oikein sille lasisilmälle olikin. Suihku kutsui miekkosta valtavien $naplodien$b saattelemana."
+      "Hän taklasi viheliäisesti viheltäneen tuomarin vasten päätypleksiä, mikä oikein sille lasisilmälle olikin. Suihku kutsui miekkosta valtavien **aplodien** saattelemana."
   },
   {
     duration: 1,
     explanation:
-      "$bHän $nläväisi$b vastustajan maalivahtia mailalla päähän ankaran maalinedustalla tapahtuneen väännön jälkeen. 'Se löi minua ensin sääreen', pelaaja puolustelee tekoaan."
+      "Hän **läväisi** vastustajan maalivahtia mailalla päähän ankaran maalinedustalla tapahtuneen väännön jälkeen. 'Se löi minua ensin sääreen', pelaaja puolustelee tekoaan."
   },
   {
     duration: 1,
     explanation:
-      "$bTuomarin aina-niin-valppaat $nlasisilmät$b näkivät hänen otteissaan jotain mätää: raitapaita lätkäisi mukavan 2+5+20 minuutin jäähyn ties kuinka monesta samanaikaisesta vakavasta rikkeestä. 'Mitä mä oikein tein?', hämmentynyt pelaaja ihmettelee."
+      "Tuomarin aina-niin-valppaat **lasisilmät** näkivät hänen otteissaan jotain mätää: raitapaita lätkäisi mukavan 2+5+20 minuutin jäähyn ties kuinka monesta samanaikaisesta vakavasta rikkeestä. 'Mitä mä oikein tein?', hämmentynyt pelaaja ihmettelee."
   },
   {
     duration: 2,
     explanation:
-      "$bVastustajan vikkeläkinttuinen hyökkääjä onnistui väistämään jytisevän taklauksen, tuomari valitettavasti ei. Vaikka kyseessä olikin puhdas vahinkotilanne, päätti tuomari $nkostonhimossaan$b passittaa pelaajan pukukopin puolelle."
+      "Vastustajan vikkeläkinttuinen hyökkääjä onnistui väistämään jytisevän taklauksen, tuomari valitettavasti ei. Vaikka kyseessä olikin puhdas vahinkotilanne, päätti tuomari **kostonhimossaan** passittaa pelaajan pukukopin puolelle."
   },
   {
     duration: 15,
     explanation:
-      "$bHän kävi vastustajan managerin kimppuun kesken pelin! Poliisi kärräsi miehen putkaan, ja hänen pelinsä ovat hetkeksi aikaa pelattu. Vastustajan manageri kommentoi: 'Täysin järjetön aggressio minua kohtaan. Onneksi järjestysmiehet pelastivat $nhenkeni$b, elämäni rullasi jo filminä silmissäni!'"
+      "Hän kävi vastustajan managerin kimppuun kesken pelin! Poliisi kärräsi miehen putkaan, ja hänen pelinsä ovat hetkeksi aikaa pelattu. Vastustajan manageri kommentoi: 'Täysin järjetön aggressio minua kohtaan. Onneksi järjestysmiehet pelastivat **henkeni**, elämäni rullasi jo filminä silmissäni!'"
   },
   {
     duration: 3,
     explanation:
-      "$bHänen pelihanskastaan löytyi rutiinitarkastuksessa hevosenkenkä. 'Lisäämään peliesitysten $npainoarvoa$b', pelaaja selittää sinulle nolona."
+      "Hänen pelihanskastaan löytyi rutiinitarkastuksessa hevosenkenkä. 'Lisäämään peliesitysten **painoarvoa**', pelaaja selittää sinulle nolona."
   },
   {
     duration: 1,
     explanation:
-      "$bMies pelasi jatkuvasi kuin mikäkin sika, ja sai lopulta ansionsa mukaan: 5 minuuttia väkivaltaisuudesta ja päälle $npelirangaistus$b."
+      "Mies pelasi jatkuvasi kuin mikäkin sika, ja sai lopulta ansionsa mukaan: 5 minuuttia väkivaltaisuudesta ja päälle **pelirangaistus**."
   },
   {
     duration: 13,
     explanation:
-      "$bHän takoi vastustajan vielä juniori-ikäisen pelaajan teho-osastolle keräämään voimia. Vastustajan manageri kommentoi: 'Sairasta. Vankilaan moinen $nsosiopaatti$b'. Pelaaja itse ei muista tapahtumista yhtään mitään, ja lähtee oma-aloitteisesti kärsimään pelikieltoaan $jTiukukoskelle$b. 'En tiedä, mikä minuun meni', hän sanoo vilpittömästi pahoillaan tapahtuneesta."
+      "Hän takoi vastustajan vielä juniori-ikäisen pelaajan teho-osastolle keräämään voimia. Vastustajan manageri kommentoi: 'Sairasta. Vankilaan moinen **sosiopaatti**'. Pelaaja itse ei muista tapahtumista yhtään mitään, ja lähtee oma-aloitteisesti kärsimään pelikieltoaan **Tiukukoskelle**. 'En tiedä, mikä minuun meni', hän sanoo vilpittömästi pahoillaan tapahtuneesta."
   },
   {
     duration: 4,
     explanation:
-      "$bHeti ottelun alusta kismaa alkoi kasaantua hänen ja erään vastustajan välille. Toisen erän puolivälissä tappelu lähetti kumpaisenkin suihkun puolelle, mutta tämäpä ei pojille riittänyt: he päättivät jatkaa $nmittelöään$b pukuhuoneessa. $jIlta-Pekkiksellä$b on jälleen jytylööppi! (perustuu tositapahtumiin, Mal Davis #17 tule takaisin)"
+      "Heti ottelun alusta kismaa alkoi kasaantua hänen ja erään vastustajan välille. Toisen erän puolivälissä tappelu lähetti kumpaisenkin suihkun puolelle, mutta tämäpä ei pojille riittänyt: he päättivät jatkaa **mittelöään** pukuhuoneessa. **Ilta-Pekkiksellä** on jälleen jytylööppi! (perustuu tositapahtumiin, Mal Davis #17 tule takaisin)"
   },
   {
     duration: 7,
     explanation:
-      "$bHän $nrusikoi$b erään vastustajan pelaajan vuodeosastolle lepäämään. Vastustajan manageri kommentoi: 'Tämänkaltainen ylhäältä kontrolloitu vastustajan tarkoituksellinen satuttaminen on saatava loppumaan. Toivon pelaajayhdistyksen puuttuvan asiaan välittömästi ja armottomasti.'"
+      "Hän **rusikoi** erään vastustajan pelaajan vuodeosastolle lepäämään. Vastustajan manageri kommentoi: 'Tämänkaltainen ylhäältä kontrolloitu vastustajan tarkoituksellinen satuttaminen on saatava loppumaan. Toivon pelaajayhdistyksen puuttuvan asiaan välittömästi ja armottomasti.'"
   },
   {
     duration: 3,
     explanation:
-      "$bHän ei sanalla sanoen juurikaan pitänyt ottelun tuomarista, ja päätti lopulta avata $nsanallisen$b arkkunsa: '(sensuroitu) (sensuroitu)'"
+      "Hän ei sanalla sanoen juurikaan pitänyt ottelun tuomarista, ja päätti lopulta avata **sanallisen** arkkunsa: '(sensuroitu) (sensuroitu)'"
   }
 ];
