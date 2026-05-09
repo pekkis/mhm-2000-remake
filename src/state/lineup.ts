@@ -1,5 +1,5 @@
 export type Lineup = {
-  g?: string;
+  g: string | null;
   forwardLines: [ForwardLine, ForwardLine, ForwardLine, ForwardLine];
   defensivePairings: [DefensivePairing, DefensivePairing, DefensivePairing];
   powerplayTeam: PowerPlayTeam;
@@ -7,27 +7,27 @@ export type Lineup = {
 };
 
 export type ForwardLine = {
-  lw?: string;
-  c?: string;
-  rw?: string;
+  lw: string | null;
+  c: string | null;
+  rw: string | null;
 };
 
 export type DefensivePairing = {
-  ld?: string;
-  rd?: string;
+  ld: string | null;
+  rd: string | null;
 };
 
 export type PowerPlayTeam = {
-  lw?: string;
-  c?: string;
-  rw?: string;
-  ld?: string;
-  rd?: string;
+  lw: string | null;
+  c: string | null;
+  rw: string | null;
+  ld: string | null;
+  rd: string | null;
 };
 
 export type PenaltyKillTeam = {
-  f1?: string;
-  f2?: string;
-  ld?: string;
-  rd?: string;
+  f1: string | null;
+  f2: string | null;
+  ld: string | null;
+  rd: string | null;
 };

@@ -34,9 +34,56 @@ export const emptySeasonStat = (): SeasonStats => {
 
 export const emptyLineup = (): Lineup => {
   return {
-    forwardLines: [{}, {}, {}, {}],
-    defensivePairings: [{}, {}, {}],
-    penaltyKillTeam: {},
-    powerplayTeam: {}
+    g: null,
+
+    forwardLines: [
+      {
+        lw: null,
+        c: null,
+        rw: null
+      },
+      {
+        lw: null,
+        c: null,
+        rw: null
+      },
+      {
+        lw: null,
+        c: null,
+        rw: null
+      },
+      {
+        lw: null,
+        c: null,
+        rw: null
+      }
+    ],
+    defensivePairings: [
+      {
+        ld: null,
+        rd: null
+      },
+      {
+        ld: null,
+        rd: null
+      },
+      {
+        ld: null,
+        rd: null
+      }
+    ],
+    penaltyKillTeam: {
+      f1: null,
+      f2: null,
+      ld: null,
+      rd: null
+    },
+    powerplayTeam: {
+      lw: null,
+      c: null,
+      rw: null,
+      ld: null,
+      rd: null
+    }
   };
 };

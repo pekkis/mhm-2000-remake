@@ -380,7 +380,7 @@ describe("autoLineup", () => {
     ]);
   });
 
-  it("fills forward lines 1-3 with LW/C/RW", () => {
+  it("fills forward lines 1-4 with LW/C/RW", () => {
     const roster = buildRoster();
     const lineup = autoLineup(roster);
     expect(lineup.forwardLines[0]).toEqual({
@@ -398,14 +398,11 @@ describe("autoLineup", () => {
       c: "p17",
       rw: "p22"
     });
-  });
 
-  it("line 4 has LW + C but no RW", () => {
-    const roster = buildRoster();
-    const lineup = autoLineup(roster);
     expect(lineup.forwardLines[3]).toEqual({
       lw: "p13",
-      c: "p18"
+      c: "p18",
+      rw: "p23"
     });
   });
 

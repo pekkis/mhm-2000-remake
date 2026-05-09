@@ -9,6 +9,11 @@ import {
 } from "@/context/game-machine-context";
 import { activeManager, managersTeam } from "@/machines/selectors";
 import Button from "@/components/ui/Button";
+import Stack from "@/components/ui/Stack";
+import Box from "@/components/ui/Box";
+import { ForwardLineView } from "@/components/lineup/ForwardLineView";
+import { GoalieView } from "@/components/lineup/GoalieView";
+import { DefensivePairingView } from "@/components/lineup/DefencivePairingView";
 
 const Lineup: FC = () => {
   const manager = useGameContext(activeManager);
@@ -27,20 +32,46 @@ const Lineup: FC = () => {
     >
       <Heading level={2}>Kokoonpano</Heading>
 
-      <Button
-        onClick={() => {
-          game.send({
-            type: "AUTO_LINEUP",
-            payload: {
-              manager: manager.id
-            }
-          });
-        }}
-      >
-        AUTO
-      </Button>
+      <Stack gap="lg">
+        <Button
+          onClick={() => {
+            game.send({
+              type: "AUTO_LINEUP",
+              payload: {
+                manager: manager.id
+              }
+            });
+          }}
+        >
+          AUTO
+        </Button>
 
-      <pre>{JSON.stringify(team.lineup, null, 2)}</pre>
+        <Stack gap="sm">
+          <GoalieView players={team.players} g={team.lineup.g} />
+
+          {team.lineup.defensivePairings.map((defensivePairing, id) => {
+            return (
+              <DefensivePairingView
+                key={id}
+                players={team.players}
+                pairing={defensivePairing}
+              />
+            );
+          })}
+
+          {team.lineup.forwardLines.map((forwardLine, id) => {
+            return (
+              <ForwardLineView
+                key={id}
+                players={team.players}
+                line={forwardLine}
+              />
+            );
+          })}
+        </Stack>
+
+        <pre>{JSON.stringify(team.lineup, null, 2)}</pre>
+      </Stack>
     </AdvancedHeaderedPage>
   );
 };

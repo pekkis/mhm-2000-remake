@@ -280,7 +280,7 @@ export const autoLineup = (
       { lw: regLW[0]?.id, c: regC[0]?.id, rw: regRW[0]?.id },
       { lw: regLW[1]?.id, c: regC[1]?.id, rw: regRW[1]?.id },
       { lw: regLW[2]?.id, c: regC[2]?.id, rw: regRW[2]?.id },
-      { lw: regLW[3]?.id, c: regC[3]?.id }
+      { lw: regLW[3]?.id, c: regC[3]?.id, rw: regRW[3]?.id }
     ],
     powerplayTeam: {
       ld: ppD[0]?.id,
