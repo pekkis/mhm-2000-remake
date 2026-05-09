@@ -1,6 +1,7 @@
 import Badge from "@/components/ui/Badge";
 import type { AlertLevel } from "@/components/ui/Alert";
 import Box from "@/components/ui/Box";
+import Stack from "@/components/ui/Stack";
 import { applyPositionPenalty, performanceModifier } from "@/services/lineup";
 import type { LineupSlot } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
@@ -46,6 +47,7 @@ const appearanceLevel = (count: number): AlertLevel | null => {
 type Props = {
   players: Record<string, HiredPlayer>;
   slot: LineupSlot;
+  label: string;
   selected: string | null;
   appearances: Map<string, number>;
   excluded: Set<string>;
@@ -55,6 +57,7 @@ type Props = {
 export const PlayerSelect: FC<Props> = ({
   players,
   slot,
+  label,
   selected,
   appearances,
   excluded,
@@ -71,49 +74,55 @@ export const PlayerSelect: FC<Props> = ({
   const selectedPlayer = selected ? players[selected] : null;
   const selectedCount = selected ? (appearances.get(selected) ?? 0) : 0;
   const selectedBadgeLevel = appearanceLevel(selectedCount);
+  const selectId = `lineup-${label}`;
 
   return (
-    <select
-      className={selectRoot}
-      value={selected ?? ""}
-      onChange={(e) => onSelect(e.target.value)}
-    >
-      <button>
-        {selectedPlayer ? (
-          <Box p="xs">
-            {selectedPlayer.surname} ({selectedPlayer.position.toUpperCase()}{" "}
-            {slotSkill(selectedPlayer, slot)}){" "}
-            {selectedBadgeLevel && (
-              <Badge level={selectedBadgeLevel}>{selectedCount}</Badge>
-            )}
-          </Box>
-        ) : (
-          <selectedcontent />
-        )}
-      </button>
-
-      <option value="">—</option>
-
-      {sorted.map((player) => {
-        const count = appearances.get(player.id) ?? 0;
-        const level = appearanceLevel(count);
-        const isExcluded = excluded.has(player.id);
-
-        return (
-          <option
-            key={player.id}
-            value={player.id}
-            className={option}
-            disabled={isExcluded}
-          >
+    <Stack gap="xs">
+      <label htmlFor={selectId}>{label}</label>
+      <select
+        id={selectId}
+        className={selectRoot}
+        value={selected ?? ""}
+        onChange={(e) => onSelect(e.target.value)}
+      >
+        <button>
+          {selectedPlayer ? (
             <Box p="xs">
-              {player.surname} ({player.position.toUpperCase()}{" "}
-              {slotSkill(player, slot)}){" "}
-              {level && <Badge level={level}>{count}</Badge>}
+              {selectedPlayer.surname} (
+              {selectedPlayer.position.toUpperCase()}{" "}
+              {slotSkill(selectedPlayer, slot)}){" "}
+              {selectedBadgeLevel && (
+                <Badge level={selectedBadgeLevel}>{selectedCount}</Badge>
+              )}
             </Box>
-          </option>
-        );
-      })}
-    </select>
+          ) : (
+            <Box p="xs">—</Box>
+          )}
+        </button>
+
+        <option value="">—</option>
+
+        {sorted.map((player) => {
+          const count = appearances.get(player.id) ?? 0;
+          const level = appearanceLevel(count);
+          const isExcluded = excluded.has(player.id);
+
+          return (
+            <option
+              key={player.id}
+              value={player.id}
+              className={option}
+              disabled={isExcluded}
+            >
+              <Box p="xs">
+                {player.surname} ({player.position.toUpperCase()}{" "}
+                {slotSkill(player, slot)}){" "}
+                {level && <Badge level={level}>{count}</Badge>}
+              </Box>
+            </option>
+          );
+        })}
+      </select>
+    </Stack>
   );
 };

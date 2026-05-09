@@ -7,6 +7,21 @@ import type { Lineup } from "@/state/lineup";
 import type { HiredPlayer } from "@/state/player";
 import { type FC, useMemo } from "react";
 
+const labelFromTarget = (target: LineupTarget): string => {
+  switch (target.unit) {
+    case "g":
+      return "g";
+    case "d":
+      return target.side;
+    case "f":
+      return target.position;
+    case "pp":
+      return target.position;
+    case "pk":
+      return target.position;
+  }
+};
+
 type Props = {
   players: Record<string, HiredPlayer>;
   id: string | null;
@@ -34,10 +49,10 @@ export const PlayerView: FC<Props> = ({
   return (
     <Box p="xs">
       <Stack gap="xs">
-        POSITION TITLE HERE
         <PlayerSelect
           players={players}
           slot={slot}
+          label={labelFromTarget(target)}
           selected={id}
           appearances={appearances}
           excluded={excluded}
