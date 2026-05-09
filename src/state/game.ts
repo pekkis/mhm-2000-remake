@@ -88,6 +88,7 @@ type BaseTeam = {
   budget: TeamBudget;
   services: TeamServices;
   previousRankings?: [number, number, number];
+  intensity: 0 | 1 | 2;
 };
 
 export type AITeam = BaseTeam & {

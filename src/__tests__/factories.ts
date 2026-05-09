@@ -104,6 +104,7 @@ const defaultBudget = {
 export const createAITeam = (overrides: Partial<AITeam> = {}): AITeam => ({
   id: 0,
   uid: "test-team",
+  intensity: 1,
   name: "Pasolini United",
   city: "Bologna",
   arena: defaultArena,

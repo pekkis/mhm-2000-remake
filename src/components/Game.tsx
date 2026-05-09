@@ -31,6 +31,7 @@ import POCMenu from "@/components/POCMenu";
 import TransferMarketPage from "@/components/transfer-market/TransferMarketPage";
 import Players from "@/components/Players";
 import Lineup from "@/components/Lineup";
+import Organisaatio from "@/components/Organisaatio";
 
 type PhaseProps = {
   phase: string | undefined;
@@ -172,6 +173,7 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
           <Route path="/veikkaus" element={<Betting />} />
           <Route path="/pelaajat" element={<Players />} />
           <Route path="/kokoonpano" element={<Lineup />} />
+          <Route path="/organisaatio" element={<Organisaatio />} />
           <Route path="/debug" element={<DeveloperMenu />} />
           <Route path="/poc" element={<POCMenu />} />
         </Routes>

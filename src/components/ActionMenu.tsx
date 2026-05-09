@@ -20,10 +20,20 @@ const themeOptions: ReadonlyArray<{ value: ThemePreference; label: string }> = [
   { value: "dark", label: "Tumma" }
 ];
 
+const intensityOptions: ReadonlyArray<{
+  value: 0 | 1 | 2;
+  label: string;
+}> = [
+  { value: 0, label: "Laiska" },
+  { value: 1, label: "Normaali" },
+  { value: 2, label: "Hurja" }
+];
+
 const ActionMenu = () => {
   const manager = useGameContext(activeManager);
   const teams = useGameContext((ctx) => ctx.teams);
   const appActor = AppMachineContext.useActorRef();
+  const gameActor = GameMachineContext.useActorRef();
   const team = getEffective(teams[manager.team!]);
   const theme = useSelector(uiStore, (s) => s.context.theme);
 
@@ -43,6 +53,10 @@ const ActionMenu = () => {
 
           <Link onClick={close} to="/kokoonpano">
             Kokoonpano
+          </Link>
+
+          <Link onClick={close} to="/organisaatio">
+            Organisaatio
           </Link>
 
           {team.morale <= CRISIS_MORALE_MAX && (
@@ -126,6 +140,25 @@ const ActionMenu = () => {
           </Button>
         </Stack>
       </Stack>
+
+      <Cluster gap="xs" justify="space-between">
+        {intensityOptions.map((opt) => (
+          <Button
+            key={opt.value}
+            type="button"
+            terse
+            secondary={team.intensity !== opt.value}
+            onClick={() =>
+              gameActor.send({
+                type: "SET_INTENSITY",
+                payload: { manager: manager.id, intensity: opt.value }
+              })
+            }
+          >
+            {opt.label}
+          </Button>
+        ))}
+      </Cluster>
 
       <Cluster gap="xs" justify="space-between">
         {themeOptions.map((opt) => (

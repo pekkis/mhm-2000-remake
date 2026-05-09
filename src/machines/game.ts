@@ -39,6 +39,7 @@ import { values, entries } from "remeda";
 import { autoLineup, assignPlayerToLineup } from "@/services/lineup";
 import type { LineupTarget } from "@/services/lineup";
 import type { TeamBudget } from "@/data/mhm2000/budget";
+import type { TeamServiceIdentifier } from "@/data/mhm2000/team-services";
 
 import {
   applyEffects,
@@ -230,6 +231,21 @@ export type GameMachineEvents =
   | {
       type: "CONFIRM_BUDGET";
       payload: { manager: string; budget: TeamBudget };
+    }
+  | {
+      type: "SET_TEAM_SERVICE";
+      payload: {
+        manager: string;
+        service: TeamServiceIdentifier;
+        level: number;
+      };
+    }
+  | {
+      type: "SET_INTENSITY";
+      payload: {
+        manager: string;
+        intensity: 0 | 1 | 2;
+      };
     };
 
 export const gameMachine = setup({
@@ -709,6 +725,43 @@ export const gameMachine = setup({
           }
           const team = draft.teams[m.team];
           team.budget = params.budget;
+        })
+    ),
+
+    executeSetTeamService: assign(
+      (
+        { context },
+        params: {
+          manager: string;
+          service: TeamServiceIdentifier;
+          level: number;
+        }
+      ) =>
+        produce(context, (draft) => {
+          const m = draft.managers[params.manager];
+          if (!m || m.team === undefined || m.kind === "ai") {
+            return;
+          }
+          const team = draft.teams[m.team];
+          team.services[params.service] = params.level;
+        })
+    ),
+
+    executeSetIntensity: assign(
+      (
+        { context },
+        params: {
+          manager: string;
+          intensity: 0 | 1 | 2;
+        }
+      ) =>
+        produce(context, (draft) => {
+          const m = draft.managers[params.manager];
+          if (!m || m.team === undefined || m.kind === "ai") {
+            return;
+          }
+          const team = draft.teams[m.team];
+          team.intensity = params.intensity;
         })
     ),
 
@@ -1241,6 +1294,18 @@ export const gameMachine = setup({
     ASSIGN_PLAYER_TO_LINEUP: {
       actions: {
         type: "executeAssignPlayerToLineup",
+        params: ({ event }) => event.payload
+      }
+    },
+    SET_TEAM_SERVICE: {
+      actions: {
+        type: "executeSetTeamService",
+        params: ({ event }) => event.payload
+      }
+    },
+    SET_INTENSITY: {
+      actions: {
+        type: "executeSetIntensity",
         params: ({ event }) => event.payload
       }
     },

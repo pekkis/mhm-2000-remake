@@ -89,7 +89,8 @@ const buildContext = (
         kind: "ai",
         strengthObj: { goalie: 50, defence: 50, attack: 50 },
         budget: emptyTeamBudget(),
-        services: emptyTeamServices()
+        services: emptyTeamServices(),
+        intensity: 1
       };
       // The `kind: "human"` branch isn't covered by AITeam shape; the
       // function only checks `team.kind !== "ai"`, so we cast for the

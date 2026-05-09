@@ -161,6 +161,7 @@ const seedTeams = (): Team[] => {
       id,
       kind: "ai",
       strengthObj: rollTeamStrength(seedable.tier),
+      intensity: 1,
       ...rankedData
     };
   });
