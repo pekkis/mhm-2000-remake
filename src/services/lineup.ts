@@ -166,6 +166,56 @@ export const effectiveStrength = (
   );
 
 // ---------------------------------------------------------------------------
+// Lineup appearances — derived `ket` (QB SUB kc, ILEX5.BAS:2559-2568)
+// ---------------------------------------------------------------------------
+
+/**
+ * Counts how many **regular-line** slots each player occupies in the
+ * lineup. Port of QB `SUB kc` (ILEX5.BAS:2559-2568), computed on
+ * demand instead of stored on the player.
+ *
+ * **Only units 1–4 count** (3 full lines + line 4 forwards-only) plus
+ * the goalie slot. PP (unit 5) and PK (unit 6) are **excluded** — a
+ * player on line 1 + PP has appearances = 1, not 2.
+ *
+ * QB caps at 2 via the `ket < 2` guard in `SUB ketlaita`
+ * (ILEX5.BAS:2640). Values above 2 indicate a lineup bug.
+ *
+ * Consumers:
+ * - Fatigue: `ket > 1` → extra −1 condition per turn
+ * - Assignment guard: `ket < 2` required to slot a player
+ * - UI: 0 = bench (gray), 1 = one unit (yellow), 2 = two units (blue)
+ * - Event targeting: `ket > 0` = "active player" for random picks
+ */
+export const lineupAppearances = (lineup: Lineup): Map<string, number> => {
+  const counts = new Map<string, number>();
+
+  const count = (id: string | null): void => {
+    if (id) counts.set(id, (counts.get(id) ?? 0) + 1);
+  };
+
+  // Goalie slot
+  count(lineup.g);
+
+  // Units 1–4: 3 full forward lines + line 4 (forwards only, no 4th D pair)
+  for (const line of lineup.forwardLines) {
+    count(line.lw);
+    count(line.c);
+    count(line.rw);
+  }
+
+  // Units 1–3: 3 defensive pairings
+  for (const pair of lineup.defensivePairings) {
+    count(pair.ld);
+    count(pair.rd);
+  }
+
+  // PP (unit 5) and PK (unit 6) are intentionally excluded per QB kc.
+
+  return counts;
+};
+
+// ---------------------------------------------------------------------------
 // Auto-lineup builder — port of SUB automa (ILEX5.BAS:822-920)
 // ---------------------------------------------------------------------------
 

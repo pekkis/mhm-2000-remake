@@ -1,3 +1,5 @@
+import Badge from "@/components/ui/Badge";
+import type { AlertLevel } from "@/components/ui/Alert";
 import Box from "@/components/ui/Box";
 import {
   applyPositionPenalty,
@@ -32,10 +34,23 @@ const slotSkill = (player: HiredPlayer, slot: LineupSlot): number =>
     player.skill + performanceModifier(player)
   );
 
+/**
+ * Badge level for lineup appearance count (QB `ket`).
+ * 0 = bench (no badge), 1 = normal (info), 2 = double-duty (warning),
+ * 3+ = lineup bug (danger).
+ */
+const appearanceLevel = (count: number): AlertLevel | null => {
+  if (count <= 0) return null;
+  if (count === 1) return "info";
+  if (count === 2) return "warning";
+  return "danger";
+};
+
 type Props = {
   players: Record<string, HiredPlayer>;
   slot: LineupSlot;
   selected: string | null;
+  appearances: Map<string, number>;
   onSelect: (playerId: string) => void;
 };
 
@@ -43,6 +58,7 @@ export const PlayerSelect: FC<Props> = ({
   players,
   slot,
   selected,
+  appearances,
   onSelect,
 }) => {
   const sorted = useMemo(
@@ -65,14 +81,20 @@ export const PlayerSelect: FC<Props> = ({
 
       <option value="">—</option>
 
-      {sorted.map((player) => (
-        <option key={player.id} value={player.id} className={option}>
-          <Box p="xs">
-            {player.surname} ({player.position.toUpperCase()}{" "}
-            {slotSkill(player, slot)})
-          </Box>
-        </option>
-      ))}
+      {sorted.map((player) => {
+        const count = appearances.get(player.id) ?? 0;
+        const level = appearanceLevel(count);
+
+        return (
+          <option key={player.id} value={player.id} className={option}>
+            <Box p="xs">
+              {player.surname} ({player.position.toUpperCase()}{" "}
+              {slotSkill(player, slot)}){" "}
+              {level && <Badge level={level}>{count}</Badge>}
+            </Box>
+          </option>
+        );
+      })}
     </select>
   );
 };

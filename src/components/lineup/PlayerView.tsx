@@ -10,9 +10,10 @@ type Props = {
   players: Record<string, HiredPlayer>;
   id: string | null;
   slot: LineupSlot;
+  appearances: Map<string, number>;
 };
 
-export const PlayerView: FC<Props> = ({ id, players, slot }) => {
+export const PlayerView: FC<Props> = ({ id, players, slot, appearances }) => {
   const player = id ? players[id] : null;
 
   if (!player) {
@@ -27,6 +28,7 @@ export const PlayerView: FC<Props> = ({ id, players, slot }) => {
           players={players}
           slot={slot}
           selected={id}
+          appearances={appearances}
           onSelect={(selected) => {
             console.log("HA HAA", selected);
           }}

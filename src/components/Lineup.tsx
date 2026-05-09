@@ -13,6 +13,8 @@ import Stack from "@/components/ui/Stack";
 import { ForwardLineView } from "@/components/lineup/ForwardLineView";
 import { GoalieView } from "@/components/lineup/GoalieView";
 import { DefensivePairingView } from "@/components/lineup/DefencivePairingView";
+import { lineupAppearances } from "@/services/lineup";
+import { useMemo } from "react";
 
 const Lineup: FC = () => {
   const manager = useGameContext(activeManager);
@@ -20,7 +22,14 @@ const Lineup: FC = () => {
 
   const game = GameMachineContext.useActorRef();
 
-  if (team.kind === "ai") {
+  const lineup = team.kind === "human" ? team.lineup : undefined;
+
+  const appearances = useMemo(
+    () => (lineup ? lineupAppearances(lineup) : new Map<string, number>()),
+    [lineup]
+  );
+
+  if (team.kind !== "human") {
     return;
   }
 
@@ -46,7 +55,7 @@ const Lineup: FC = () => {
         </Button>
 
         <Stack gap="sm">
-          <GoalieView players={team.players} g={team.lineup.g} />
+          <GoalieView players={team.players} g={team.lineup.g} appearances={appearances} />
 
           {team.lineup.defensivePairings.map((defensivePairing, id) => {
             return (
@@ -54,6 +63,7 @@ const Lineup: FC = () => {
                 key={id}
                 players={team.players}
                 pairing={defensivePairing}
+                appearances={appearances}
               />
             );
           })}
@@ -64,6 +74,7 @@ const Lineup: FC = () => {
                 key={id}
                 players={team.players}
                 line={forwardLine}
+                appearances={appearances}
               />
             );
           })}

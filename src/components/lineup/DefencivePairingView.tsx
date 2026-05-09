@@ -7,13 +7,14 @@ import type { FC } from "react";
 type Props = {
   pairing: DefensivePairing;
   players: Record<string, HiredPlayer>;
+  appearances: Map<string, number>;
 };
 
-export const DefensivePairingView: FC<Props> = ({ players, pairing }) => {
+export const DefensivePairingView: FC<Props> = ({ players, pairing, appearances }) => {
   return (
     <Cluster>
-      <PlayerView players={players} id={pairing.ld} slot="d" />
-      <PlayerView players={players} id={pairing.rd} slot="d" />
+      <PlayerView players={players} id={pairing.ld} slot="d" appearances={appearances} />
+      <PlayerView players={players} id={pairing.rd} slot="d" appearances={appearances} />
     </Cluster>
   );
 };
