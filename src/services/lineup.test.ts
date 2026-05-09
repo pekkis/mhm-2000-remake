@@ -10,51 +10,8 @@ import {
   performanceModifier
 } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
+import { createPlayer } from "@/__tests__/factories";
 import { describe, expect, it } from "vitest";
-
-const createPlayer = (partial: Partial<HiredPlayer> = {}): HiredPlayer => {
-  const base: HiredPlayer = {
-    id: "pasolini",
-    initial: "P",
-    surname: "Pasolini",
-    nationality: "IT",
-    age: 25,
-    charisma: 10,
-    condition: 0,
-    contract: {
-      duration: 1,
-      salary: 1000,
-      type: "regular"
-    },
-    effects: [],
-    ego: 0,
-    leadership: 0,
-    penaltyKillMod: 0,
-    position: "c",
-    powerplayMod: 0,
-    skill: 10,
-    specialty: "none",
-    stats: {
-      season: {
-        assists: 0,
-        games: 0,
-        goals: 0
-      },
-      total: {
-        assists: 0,
-        games: 0,
-        goals: 0
-      }
-    },
-    tags: [],
-    type: "hired"
-  };
-
-  return {
-    ...base,
-    ...partial
-  };
-};
 
 describe("applyPositionPenalty", () => {
   it("goalie slot: goalie at full value", () => {

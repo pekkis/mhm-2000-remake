@@ -21,66 +21,12 @@ import {
   calculatePowerPlayStrength
 } from "@/services/lineup";
 import type { Lineup } from "@/state/lineup";
-import type { HiredPlayer } from "@/state/player";
+import {
+  createPlayer as player,
+  rosterMap,
+  emptyLineup
+} from "@/__tests__/factories";
 import { describe, expect, it } from "vitest";
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-let nextId = 0;
-
-const player = (
-  overrides: Partial<HiredPlayer> & { position: HiredPlayer["position"] }
-): HiredPlayer => ({
-  id: `t${++nextId}`,
-  initial: "P",
-  surname: "Pasolini",
-  nationality: "IT",
-  age: 25,
-  charisma: 10,
-  condition: 0,
-  contract: { duration: 1, salary: 1000, type: "regular" },
-  effects: [],
-  ego: 0,
-  leadership: 0,
-  penaltyKillMod: 0,
-  powerplayMod: 0,
-  skill: 10,
-  specialty: "none",
-  stats: {
-    season: { assists: 0, games: 0, goals: 0 },
-    total: { assists: 0, games: 0, goals: 0 }
-  },
-  tags: [],
-  type: "hired",
-  ...overrides
-});
-
-const rosterMap = (...players: HiredPlayer[]): Record<string, HiredPlayer> => {
-  const map: Record<string, HiredPlayer> = {};
-  for (const p of players) {
-    map[p.id] = p;
-  }
-  return map;
-};
-
-const emptyLineup: Lineup = {
-  g: null,
-  forwardLines: [
-    { lw: null, c: null, rw: null },
-    { lw: null, c: null, rw: null },
-    { lw: null, c: null, rw: null },
-    { lw: null, c: null, rw: null }
-  ],
-  defensivePairings: [
-    { ld: null, rd: null },
-    { ld: null, rd: null },
-    { ld: null, rd: null }
-  ],
-  powerplayTeam: { lw: null, c: null, rw: null, ld: null, rd: null },
-  penaltyKillTeam: { f1: null, f2: null, ld: null, rd: null }
-};
 
 // ---------------------------------------------------------------------------
 // calculateLineupStrength

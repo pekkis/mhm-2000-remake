@@ -17,71 +17,27 @@ import { teamLevels } from "@/data/levels";
 import competitionDefinitions from "@/data/competitions";
 import type { AIManager, AITeam } from "@/state/game";
 import type { Group, Phase } from "@/types/competitions";
-import { emptyAchievements } from "@/services/empties";
+import { createAITeam, createAIManager } from "@/__tests__/factories";
 
 const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => {
   const tier = overrides.tier ?? 30;
   const lvl = teamLevels[tier - 1];
-  return {
-    id: 0,
-    uid: "test-team",
+  return createAITeam({
     name: "Pasolini United",
     city: "Bologna",
-    kind: "ai",
-    tags: [],
     tier,
     strengthObj: {
       goalie: lvl.goalie,
       defence: lvl.defence,
       attack: lvl.attack
     },
-    budget: {
-      coaching: 3,
-      benefits: 3,
-      goalieCoaching: 3,
-      health: 3,
-      juniors: 3
-    },
-
-    arena: {
-      level: 1,
-      standingCount: 0,
-      seatedCount: 0,
-      hasBoxes: false,
-      valuePoints: 0
-    },
-    domestic: true,
-    morale: 0,
-    strategy: 0,
     readiness: 10,
-    effects: [],
-    opponentEffects: [],
-    manager: undefined,
     ...overrides
-  };
+  });
 };
 
-const makeManager = (overrides: Partial<AIManager> = {}): AIManager => ({
-  id: "ai-manager",
-  name: "AI Manager",
-  nationality: "FI",
-  stats: {
-    games: {},
-    achievements: emptyAchievements()
-  },
-  attributes: {
-    strategy: 0,
-    specialTeams: 0,
-    negotiation: 0,
-    resourcefulness: 0,
-    charisma: 0,
-    luck: 0
-  },
-  tags: [],
-  kind: "ai",
-  difficulty: 2,
-  ...overrides
-});
+const makeManager = (overrides: Partial<AIManager> = {}): AIManager =>
+  createAIManager(overrides);
 
 const sideFromTier = (
   id: number,

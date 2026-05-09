@@ -2,40 +2,18 @@ import { describe, it, expect } from "vitest";
 import { getEffective, getEffectiveOpponent } from "@/services/effects";
 import type { AITeam, TeamEffect } from "@/state/game";
 import { rollTeamStrength } from "@/services/levels";
+import { createAITeam } from "@/__tests__/factories";
 
-const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => ({
-  id: 0,
-  uid: "salo",
-  kind: "ai",
-  tier: 30,
-  strengthObj: rollTeamStrength(30),
-  name: "Pier Paolo Pasolini FC",
-  city: "Bologna",
-  tags: [],
-  arena: {
-    level: 1,
-    standingCount: 0,
-    seatedCount: 0,
-    hasBoxes: false,
-    valuePoints: 0
-  },
-  budget: {
-    coaching: 3,
-    benefits: 3,
-    goalieCoaching: 3,
-    health: 3,
-    juniors: 3
-  },
-
-  domestic: true,
-  morale: 50,
-  strategy: 0,
-  readiness: 0,
-  effects: [],
-  opponentEffects: [],
-  manager: undefined,
-  ...overrides
-});
+const makeTeam = (overrides: Partial<AITeam> = {}): AITeam =>
+  createAITeam({
+    uid: "salo",
+    name: "Pier Paolo Pasolini FC",
+    city: "Bologna",
+    morale: 50,
+    readiness: 0,
+    strengthObj: rollTeamStrength(30),
+    ...overrides
+  });
 
 describe("effects", () => {
   describe("getEffective", () => {

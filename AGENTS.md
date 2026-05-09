@@ -379,6 +379,52 @@ time, then everything downstream is UTF-8.
 
 ---
 
+## Testing Conventions
+
+### Use shared factories — always
+
+[src/\_\_tests\_\_/factories.ts](src/__tests__/factories.ts) contains
+shared test factories for players, teams, managers, lineups, and random
+stubs. **Every test file must use them.**
+
+- **Before writing a local helper**, check if a factory already exists
+  in `factories.ts`. If it does, import and use it — don't redefine.
+- **If no factory exists** for what you need, **add it to
+  `factories.ts` first**, then import it. Don't write a one-off local
+  copy.
+- **Thin local wrappers** are fine when a test needs specific defaults
+  (e.g. `const makeTeam = (o) => createAITeam({ morale: 50, ...o })`).
+  The wrapper delegates to the shared factory — it doesn't duplicate the
+  full object shape.
+
+Available factories (non-exhaustive — read the file):
+
+| Factory | Returns | Notes |
+|---|---|---|
+| `createPlayer(overrides?)` | `HiredPlayer` | Auto-incrementing id, position defaults to `"c"` |
+| `rosterMap(...players)` | `Record<id, HiredPlayer>` | |
+| `emptyLineup` | `Lineup` | All slots `null` |
+| `createAITeam(overrides?)` | `AITeam` | |
+| `createAIManager(overrides?)` | `AIManager` | Zero attributes |
+| `createHumanManager(overrides?)` | `HumanManager` | Full shape with services, flags, etc. |
+| `fixedRandom(value)` | `Random` | Always returns the same number |
+| `scriptedRandom({ integer?, real? })` | `Random` | FIFO queues, throws on exhaustion |
+
+### Why this matters
+
+Duplicated factory code is the #1 source of test maintenance pain. When
+a type shape changes (new required field on `AITeam`, `HumanManager`
+grows a field), **one update in `factories.ts` fixes every test**.
+Scattered inline object literals mean N files break and N files need
+identical fixes.
+
+### Test subject
+
+**Pier Paolo Pasolini** is the preferred recurring name for test/mock
+data. The factories already default to this.
+
+---
+
 ## Verification Checklist
 
 ```sh

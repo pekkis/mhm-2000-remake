@@ -11,98 +11,23 @@
  */
 import { calculateAw, calculateStrength, calculateYw } from "@/services/team";
 import type { AITeam, HumanManager, HumanTeam } from "@/state/game";
-import type { HiredPlayer } from "@/state/player";
 import type { Lineup } from "@/state/lineup";
+import {
+  createAITeam,
+  createHumanManager,
+  createPlayer as mkPlayer,
+  emptyLineup,
+  rosterMap
+} from "@/__tests__/factories";
 import { describe, expect, it } from "vitest";
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-let nextId = 0;
-
-const mkPlayer = (
-  overrides: Partial<HiredPlayer> & { position: HiredPlayer["position"] }
-): HiredPlayer => ({
-  id: `tp${++nextId}`,
-  initial: "P",
-  surname: "Pasolini",
-  nationality: "IT",
-  age: 25,
-  charisma: 10,
-  condition: 0,
-  contract: { duration: 1, salary: 1000, type: "regular" },
-  effects: [],
-  ego: 0,
-  leadership: 0,
-  penaltyKillMod: 0,
-  powerplayMod: 0,
-  skill: 10,
-  specialty: "none",
-  stats: {
-    season: { assists: 0, games: 0, goals: 0 },
-    total: { assists: 0, games: 0, goals: 0 }
-  },
-  tags: [],
-  type: "hired",
-  ...overrides
-});
-
-const rosterMap = (...players: HiredPlayer[]): Record<string, HiredPlayer> => {
-  const map: Record<string, HiredPlayer> = {};
-  for (const p of players) {
-    map[p.id] = p;
-  }
-  return map;
-};
-
-const emptyLineup: Lineup = {
-  g: null,
-  forwardLines: [
-    { lw: null, c: null, rw: null },
-    { lw: null, c: null, rw: null },
-    { lw: null, c: null, rw: null },
-    { lw: null, c: null, rw: null }
-  ],
-  defensivePairings: [
-    { ld: null, rd: null },
-    { ld: null, rd: null },
-    { ld: null, rd: null }
-  ],
-  powerplayTeam: { lw: null, c: null, rw: null, ld: null, rd: null },
-  penaltyKillTeam: { f1: null, f2: null, ld: null, rd: null }
-};
-
-const baseTeamFields = {
-  id: 1,
-  uid: "test-team",
-  name: "Turmion Kätilöt",
-  city: "Turku",
-  arena: {
-    name: "Pasolini Arena",
-    level: 3 as const,
-    standingCount: 20,
-    seatedCount: 30,
-    hasBoxes: false,
-    valuePoints: 50
-  },
-  domestic: true,
-  morale: 0,
-  strategy: 1,
-  readiness: 1,
-  effects: [] as HumanTeam["effects"],
-  opponentEffects: [] as HumanTeam["opponentEffects"],
-  tags: [] as string[],
-  tier: 1
-};
-
+/** Shorthand: create a human manager with only `specialTeams` varied. */
 const mkManager = (specialTeams: number): HumanManager =>
-  ({
-    id: "mgr",
-    name: "Pier Paolo",
-    nationality: "IT",
-    kind: "human",
-    difficulty: 2,
+  createHumanManager({
     attributes: {
       strategy: 5,
       specialTeams,
@@ -110,27 +35,8 @@ const mkManager = (specialTeams: number): HumanManager =>
       resourcefulness: 5,
       charisma: 5,
       luck: 5
-    },
-    balance: 100000,
-    arena: { name: "Arena", tier: 1, capacity: 5000 },
-    services: {},
-    pranksExecuted: 0,
-    extra: 0,
-    insuranceExtra: 0,
-    flags: {},
-    tags: [],
-    team: 1,
-    stats: {
-      games: {
-        wins: 0,
-        draws: 0,
-        losses: 0,
-        goalsScored: 0,
-        goalsConceded: 0
-      },
-      achievements: {}
     }
-  }) as unknown as HumanManager;
+  });
 
 // ---------------------------------------------------------------------------
 // calculateStrength
@@ -138,11 +44,9 @@ const mkManager = (specialTeams: number): HumanManager =>
 
 describe("calculateStrength", () => {
   it("AI team: returns strengthObj directly", () => {
-    const team: AITeam = {
-      ...baseTeamFields,
-      kind: "ai",
+    const team = createAITeam({
       strengthObj: { goalie: 12, defence: 45, attack: 60 }
-    };
+    });
     expect(calculateStrength(team)).toEqual({
       goalie: 12,
       defence: 45,
@@ -175,7 +79,7 @@ describe("calculateStrength", () => {
     };
 
     const team: HumanTeam = {
-      ...baseTeamFields,
+      ...createAITeam(),
       kind: "human",
       strengthObj: { goalie: 0, defence: 0, attack: 0 },
       players: rosterMap(g, ld, rd, lw, c, rw),
@@ -196,11 +100,9 @@ describe("calculateStrength", () => {
 describe("calculateYw", () => {
   describe("AI teams (approximation formula)", () => {
     it("specialTeams=0: yw = attack/3.3 + defence/2.5", () => {
-      const team: AITeam = {
-        ...baseTeamFields,
-        kind: "ai",
+      const team = createAITeam({
         strengthObj: { goalie: 10, defence: 50, attack: 66 }
-      };
+      });
       const mgr = mkManager(0);
       // (66/3.3 + 50/2.5) * (1 + 0*0.04)
       // = (20 + 20) * 1 = 40
@@ -208,22 +110,18 @@ describe("calculateYw", () => {
     });
 
     it("specialTeams=5: multiplier is 1.2", () => {
-      const team: AITeam = {
-        ...baseTeamFields,
-        kind: "ai",
+      const team = createAITeam({
         strengthObj: { goalie: 10, defence: 50, attack: 66 }
-      };
+      });
       const mgr = mkManager(5);
       // (66/3.3 + 50/2.5) * (1 + 5*0.04) = 40 * 1.2 = 48
       expect(calculateYw(team, mgr)).toBe(48);
     });
 
     it("specialTeams=10: multiplier is 1.4", () => {
-      const team: AITeam = {
-        ...baseTeamFields,
-        kind: "ai",
+      const team = createAITeam({
         strengthObj: { goalie: 10, defence: 25, attack: 33 }
-      };
+      });
       const mgr = mkManager(10);
       // (33/3.3 + 25/2.5) * (1 + 10*0.04) = (10+10) * 1.4 = 28
       expect(calculateYw(team, mgr)).toBe(28);
@@ -275,7 +173,7 @@ describe("calculateYw", () => {
       };
 
       const team: HumanTeam = {
-        ...baseTeamFields,
+        ...createAITeam(),
         kind: "human",
         strengthObj: { goalie: 0, defence: 0, attack: 0 },
         players: rosterMap(ppLd, ppRd, ppLw, ppC, ppRw),
@@ -335,7 +233,7 @@ describe("calculateYw", () => {
       };
 
       const team: HumanTeam = {
-        ...baseTeamFields,
+        ...createAITeam(),
         kind: "human",
         strengthObj: { goalie: 0, defence: 0, attack: 0 },
         players: rosterMap(ppLd, ppRd, ppLw, ppC, ppRw),
@@ -349,7 +247,7 @@ describe("calculateYw", () => {
 
     it("empty PP + empty lineup → 0 regardless of specialTeams", () => {
       const team: HumanTeam = {
-        ...baseTeamFields,
+        ...createAITeam(),
         kind: "human",
         strengthObj: { goalie: 0, defence: 0, attack: 0 },
         players: {},
@@ -369,7 +267,7 @@ describe("calculateAw", () => {
   describe("AI teams (approximation formula)", () => {
     it("specialTeams=0: aw = attack/4.4 + defence/2.5", () => {
       const team: AITeam = {
-        ...baseTeamFields,
+        ...createAITeam(),
         kind: "ai",
         strengthObj: { goalie: 10, defence: 50, attack: 44 }
       };
@@ -380,7 +278,7 @@ describe("calculateAw", () => {
 
     it("specialTeams=5: multiplier is 1.2", () => {
       const team: AITeam = {
-        ...baseTeamFields,
+        ...createAITeam(),
         kind: "ai",
         strengthObj: { goalie: 10, defence: 50, attack: 44 }
       };
@@ -423,7 +321,7 @@ describe("calculateAw", () => {
       };
 
       const team: HumanTeam = {
-        ...baseTeamFields,
+        ...createAITeam(),
         kind: "human",
         strengthObj: { goalie: 0, defence: 0, attack: 0 },
         players: rosterMap(pkLd, pkRd, pkF1, pkF2),
@@ -471,7 +369,7 @@ describe("calculateAw", () => {
       };
 
       const team: HumanTeam = {
-        ...baseTeamFields,
+        ...createAITeam(),
         kind: "human",
         strengthObj: { goalie: 0, defence: 0, attack: 0 },
         players: rosterMap(pkLd, pkRd, pkF1, pkF2),
@@ -485,7 +383,7 @@ describe("calculateAw", () => {
 
     it("empty PK + empty lineup → 0", () => {
       const team: HumanTeam = {
-        ...baseTeamFields,
+        ...createAITeam(),
         kind: "human",
         strengthObj: { goalie: 0, defence: 0, attack: 0 },
         players: {},
@@ -501,7 +399,7 @@ describe("calculateAw", () => {
       // Set up an AI team and a human team with identical base stats
       // but different PK slot compositions, showing they compute differently.
       const aiTeam: AITeam = {
-        ...baseTeamFields,
+        ...createAITeam(),
         kind: "ai",
         strengthObj: { goalie: 10, defence: 50, attack: 44 }
       };
@@ -533,7 +431,7 @@ describe("calculateAw", () => {
       });
 
       const humanTeam: HumanTeam = {
-        ...baseTeamFields,
+        ...createAITeam(),
         kind: "human",
         strengthObj: { goalie: 10, defence: 50, attack: 44 },
         players: rosterMap(pkLd, pkRd, pkF1, pkF2),
@@ -624,7 +522,7 @@ describe("yw vs aw cross-check", () => {
     };
 
     const team: HumanTeam = {
-      ...baseTeamFields,
+      ...createAITeam(),
       kind: "human",
       strengthObj: { goalie: 0, defence: 0, attack: 0 },
       players: rosterMap(d1, d2, lw, c, rw),

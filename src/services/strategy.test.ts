@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MersenneTwister19937, Random } from "random-js";
+import { MersenneTwister19937 } from "random-js";
 import {
   competitionStrengthAverages,
   distributeAIStrategies,
@@ -13,7 +13,11 @@ import { createRandomWithEngine } from "@/services/random";
 import type { AIManager, AITeam, Manager } from "@/state/game";
 import type { TeamStrength } from "@/data/levels";
 import type { StrategyId } from "@/data/mhm2000/strategies";
-import { emptyAchievements } from "@/services/empties";
+import {
+  createAITeam,
+  createAIManager,
+  fixedRandom
+} from "@/__tests__/factories";
 
 /**
  * Tests for the QB `SUB valitsestrattie` port. Cross-references
@@ -27,73 +31,16 @@ const makeStrength = (overrides: Partial<TeamStrength> = {}): TeamStrength => ({
   ...overrides
 });
 
-const makeTeam = (overrides: Partial<AITeam> = {}): AITeam => ({
-  id: 0,
-  uid: "t",
-  name: "Team",
-  city: "City",
-  arena: {
-    level: 1,
-    standingCount: 0,
-    seatedCount: 0,
-    hasBoxes: false,
-    valuePoints: 0
-  },
-  budget: {
-    coaching: 3,
-    benefits: 3,
-    goalieCoaching: 3,
-    health: 3,
-    juniors: 3
-  },
-  domestic: true,
-  morale: 0,
-  strategy: 0,
-  readiness: 1,
-  effects: [],
-  opponentEffects: [],
-  manager: undefined,
-  tags: [],
-  tier: 30,
-  kind: "ai",
-  strengthObj: makeStrength(),
-  ...overrides
-});
-
-const makeManager = (overrides: Partial<AIManager> = {}): AIManager => ({
-  id: "m",
-  name: "Manager",
-  nationality: "FI",
-  stats: {
-    games: {},
-    achievements: emptyAchievements()
-  },
-  attributes: {
+const makeTeam = (overrides: Partial<AITeam> = {}): AITeam =>
+  createAITeam({
     strategy: 0,
-    specialTeams: 0,
-    negotiation: 0,
-    resourcefulness: 0,
-    charisma: 0,
-    luck: 0
-  },
-  tags: [],
-  kind: "ai",
-  difficulty: 2,
-  ...overrides
-});
+    readiness: 1,
+    strengthObj: makeStrength(),
+    ...overrides
+  });
 
-/**
- * Deterministic stub that always returns the boundary values of every
- * `random.integer(min, max)` call, so we can directly assert which
- * weight band a roll falls into.
- */
-const fixedRandom = (value: number): Random =>
-  ({
-    integer: () => value,
-    real: () => value,
-    bool: () => false,
-    pick: <T>(arr: T[]) => arr[0]
-  }) as unknown as Random;
+const makeManager = (overrides: Partial<AIManager> = {}): AIManager =>
+  createAIManager(overrides);
 
 describe("strategy / valitsestrattie port", () => {
   describe("competitionStrengthAverages", () => {

@@ -19,47 +19,7 @@ import { createDefaultGameContext } from "@/state";
 import { emptyAchievements } from "@/services/empties";
 import type { AITeam, AIManager, HumanManager } from "@/state/game";
 import type { Random } from "random-js";
-
-// ---------------------------------------------------------------------------
-// Random stubs
-// ---------------------------------------------------------------------------
-
-/** Always returns the same value for every call. */
-const fixedRandom = (value: number): Random =>
-  ({
-    integer: () => value,
-    real: () => value,
-    bool: () => false,
-    pick: <T>(arr: T[]) => arr[0]
-  }) as unknown as Random;
-
-/**
- * Scriptable random: pop integers and reals from independent FIFO queues.
- * Throws when a queue is exhausted to surface accidental extra rolls.
- */
-const scriptedRandom = (script: {
-  integer?: number[];
-  real?: number[];
-}): Random => {
-  const intq = [...(script.integer ?? [])];
-  const realq = [...(script.real ?? [])];
-  return {
-    integer: () => {
-      if (intq.length === 0) {
-        throw new Error("scriptedRandom: integer queue exhausted");
-      }
-      return intq.shift()!;
-    },
-    real: () => {
-      if (realq.length === 0) {
-        throw new Error("scriptedRandom: real queue exhausted");
-      }
-      return realq.shift()!;
-    },
-    bool: () => false,
-    pick: <T>(arr: T[]) => arr[0]
-  } as unknown as Random;
-};
+import { fixedRandom, scriptedRandom } from "@/__tests__/factories";
 
 // ---------------------------------------------------------------------------
 // Context builders — keep the surface tiny: a runTasomuut-only ctx.
