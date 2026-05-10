@@ -9,7 +9,13 @@ import type { LineupSlot, LineupTarget } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
 import { use, type FC } from "react";
 import { values } from "remeda";
-import { select, option, playerName, positionTag, skillValue } from "./PlayerSelect.css";
+import {
+  select,
+  option,
+  playerName,
+  positionTag,
+  skillValue
+} from "./PlayerSelect.css";
 import { LineupContext } from "./LineupContext";
 
 /**

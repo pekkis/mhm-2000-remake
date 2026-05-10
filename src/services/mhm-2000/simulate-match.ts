@@ -50,9 +50,6 @@
  *     would then zero out yw/aw entirely. Almost certainly initialised
  *     to 1.0 elsewhere. Until decoded, we assume 1.0.).
  *   - `tautip(team)` epidemic multiplier — same TODO; assume 1.0.
- *   - `inte(team)` interest meter (-0.15..+0.10 etu swing) — human-only.
- *   - `treeni(team)` training intensity etu bonus (`* .03`) — TODO
- *     confirm AI-team default; almost certainly 0.
  *   - `spx(3, team)` voodoo curse / `spx(4, team)` dance troupe boosts —
  *     human-only consumables.
  *   - `pel().spe = 4 / 10` (extremelyFat / daddyPays) per-roster
@@ -115,6 +112,8 @@ export type MatchSide = {
 
 export type Overtime = "none" | "regular" | "sudden-death";
 
+export type Intensity = 0 | 1 | 2;
+
 export type MatchResult = {
   /** Final score. */
   homeGoals: number;
@@ -122,12 +121,18 @@ export type MatchResult = {
   /** True iff overtime was needed to break a tie. */
   overtime: boolean;
   /**
+   * Effective intensity per side. Equals `team.intensity` for league/
+   * cup/playoff, forced to 1 (normaali) for tournament/practice.
+   * The caller uses this to apply post-match fatigue (`kun`) deltas.
+   */
+  homeIntensity: Intensity;
+  awayIntensity: Intensity;
+  /**
    * Morale deltas to apply post-match (winner +1 / loser -1, no change
    * on a tie). Mirrors the `morttivertti:` block at
    * [ILEX5.BAS:3953-3960]. Tournament matches (`turnauz <> 0`) skip
    * this — out of scope for this function.
    */
-
   effects: EventEffect[];
 };
 
@@ -164,6 +169,38 @@ const applyMoraleEtu = (etu: number, morale: number): number => {
   }
   if (morale > 0) {
     return etu + morale / 155;
+  }
+  return etu;
+};
+
+/**
+ * Resolve the effective intensity for a side. The team's own
+ * `intensity` is used in league / cup / playoff matches;
+ * tournament and practice matches force normaali (1).
+ *
+ * QB guard: `kiero(kr) <> 4 AND turnauz = 0`.
+ */
+const effectiveIntensity = (
+  intensity: Intensity,
+  phaseType: Phase["type"]
+): Intensity => {
+  if (phaseType === "tournament" || phaseType === "independent-games") {
+    return 1;
+  }
+  return intensity;
+};
+
+/**
+ * Apply the intensity tweak to `etu`, matching [ILEX5.BAS:3778-3780]:
+ *   IF inte(zz) = 0 THEN etu -= 0.15   (LAISKA)
+ *   IF inte(zz) = 2 THEN etu += 0.10   (HURJA)
+ */
+const applyIntensityEtu = (etu: number, intensity: Intensity): number => {
+  if (intensity === 0) {
+    return etu - 0.15;
+  }
+  if (intensity === 2) {
+    return etu + 0.1;
   }
   return etu;
 };
@@ -367,8 +404,15 @@ export const simulateMatch = (
   // 1. Round-type baseline etu, then morale tweak per side.
   //    QB: SELECT CASE kiero(kr) [3711], then mo(...) tweak [3771-3772].
   const etuBase = computeEtu(context);
-  const etuHome = applyMoraleEtu(etuBase.home, home.team.morale);
-  const etuAway = applyMoraleEtu(etuBase.away, away.team.morale);
+  let etuHome = applyMoraleEtu(etuBase.home, home.team.morale);
+  let etuAway = applyMoraleEtu(etuBase.away, away.team.morale);
+
+  // Intensity modifier. QB [ILEX5.BAS:3778-3780].
+  const homeEffIntensity = effectiveIntensity(home.team.intensity, phase.type);
+  const awayEffIntensity = effectiveIntensity(away.team.intensity, phase.type);
+
+  etuHome = applyIntensityEtu(etuHome, homeEffIntensity);
+  etuAway = applyIntensityEtu(etuAway, awayEffIntensity);
 
   // TODO: league comeback handicap [ILEX5.BAS:3754-3762] — needs
   // standings position `s(team)` and season match counter `ot`. Skip.
@@ -409,8 +453,6 @@ export const simulateMatch = (
   //    Per-competition dispatch lives in `competition-type.ts`.
   const type = competitionTypes[phase.type];
   const overtime = type.overtime(result, group, round, matchup);
-
-  console.log("OVERTIME", overtime);
 
   if (overtime !== "none") {
     const isSuddenDeath = overtime === "sudden-death";
@@ -464,7 +506,8 @@ export const simulateMatch = (
     homeGoals,
     awayGoals,
     overtime: overtime !== "none",
-
+    homeIntensity: homeEffIntensity,
+    awayIntensity: awayEffIntensity,
     effects: [
       { type: "incrementMorale", team: home.team.id, amount: homeMoraleChange },
       { type: "incrementMorale", team: away.team.id, amount: awayMoraleChange }
