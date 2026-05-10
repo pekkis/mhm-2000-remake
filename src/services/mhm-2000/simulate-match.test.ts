@@ -155,43 +155,17 @@ describe("simulateMatch", () => {
       if (r.homeGoals === r.awayGoals) {
         tieSeen = true;
         expect(r.overtime).toBe(true);
-
-        expect(r.effects).toEqual([
-          {
-            amount: 0,
-            team: 1,
-            type: "incrementMorale"
-          },
-          {
-            amount: 0,
-            team: 2,
-            type: "incrementMorale"
-          }
-        ]);
       }
     }
     expect(tieSeen).toBe(true);
   });
 
-  it("winner gets +1 morale, loser -1", () => {
+  it("winner gets more goals than loser", () => {
     // Heavily mismatched teams to make a decisive result very likely.
     const strong = sideFromTier(1, "Strong", 50);
     const weak = sideFromTier(2, "Weak", 5);
     const r = simulateMatch(strong, weak, regularContext, createRandom(99));
     expect(r.homeGoals).toBeGreaterThan(r.awayGoals);
-
-    expect(r.effects).toEqual([
-      {
-        amount: 1,
-        team: 1,
-        type: "incrementMorale"
-      },
-      {
-        amount: -1,
-        team: 2,
-        type: "incrementMorale"
-      }
-    ]);
   });
 
   it("home advantage shows up over many samples", () => {
@@ -252,8 +226,11 @@ describe("simulateMatch", () => {
       let laiskaWins = 0;
       for (let i = 0; i < 500; i += 1) {
         const r = simulateMatch(hurja, laiska, regularContext, random);
-        if (r.homeGoals > r.awayGoals) {hurjaWins += 1;}
-        else if (r.awayGoals > r.homeGoals) {laiskaWins += 1;}
+        if (r.homeGoals > r.awayGoals) {
+          hurjaWins += 1;
+        } else if (r.awayGoals > r.homeGoals) {
+          laiskaWins += 1;
+        }
       }
       expect(hurjaWins).toBeGreaterThan(laiskaWins);
     });
@@ -323,8 +300,11 @@ describe("simulateMatch", () => {
       let noFansWins = 0;
       for (let i = 0; i < 500; i += 1) {
         const r = simulateMatch(withFans, noFans, regularContext, random);
-        if (r.homeGoals > r.awayGoals) {fansWins += 1;}
-        else if (r.awayGoals > r.homeGoals) {noFansWins += 1;}
+        if (r.homeGoals > r.awayGoals) {
+          fansWins += 1;
+        } else if (r.awayGoals > r.homeGoals) {
+          noFansWins += 1;
+        }
       }
       // fanGroup=2 gives +0.02 etu to both home AND away matches
       // plus the regular home advantage → should win more
@@ -333,8 +313,8 @@ describe("simulateMatch", () => {
 
     it("fanGroup is NOT applied in tournament context", () => {
       // Two identical teams, one with fanGroup=2. In a tournament
-      // competition (doesTravelApply → false), services are gated off,
-      // so results should be identical to two teams without services.
+      // phase type, services are gated off, so results should be
+      // identical to two teams without services.
       const withFans = sideFromTier(1, "Fans", 25);
       withFans.team = makeTeam({
         id: 1,
@@ -344,6 +324,16 @@ describe("simulateMatch", () => {
       });
       const noFans = sideFromTier(2, "NoFans", 25);
 
+      const tournamentGroup: Group = {
+        type: "tournament",
+        round: 0,
+        name: "test-tournament-group",
+        teams: [],
+        schedule: [],
+        stats: [],
+        penalties: [],
+        colors: []
+      };
       const tournamentContext: MatchContext = {
         competition: competitionDefinitions.tournaments.data,
         phase: {
@@ -352,7 +342,7 @@ describe("simulateMatch", () => {
           teams: [],
           groups: []
         },
-        group: regularContext.group,
+        group: tournamentGroup,
         round: 0,
         matchup: 0
       };
@@ -411,8 +401,12 @@ describe("simulateMatch", () => {
       for (let i = 0; i < 500; i += 1) {
         const r1 = simulateMatch(home, awayWithTravel, regularContext, random1);
         const r2 = simulateMatch(home, awayNoTravel, regularContext, random2);
-        if (r1.awayGoals > r1.homeGoals) {winsWithTravel += 1;}
-        if (r2.awayGoals > r2.homeGoals) {winsNoTravel += 1;}
+        if (r1.awayGoals > r1.homeGoals) {
+          winsWithTravel += 1;
+        }
+        if (r2.awayGoals > r2.homeGoals) {
+          winsNoTravel += 1;
+        }
       }
       // travel=4 gives +0.08 etu to the away side → more away wins
       expect(winsWithTravel).toBeGreaterThan(winsNoTravel);
@@ -429,6 +423,16 @@ describe("simulateMatch", () => {
       });
       const awayNoTravel = sideFromTier(3, "AwayNoTravel", 25);
 
+      const tournamentGroup: Group = {
+        type: "tournament",
+        round: 0,
+        name: "test-tournament-group",
+        teams: [],
+        schedule: [],
+        stats: [],
+        penalties: [],
+        colors: []
+      };
       const tournamentContext: MatchContext = {
         competition: competitionDefinitions.tournaments.data,
         phase: {
@@ -437,7 +441,7 @@ describe("simulateMatch", () => {
           teams: [],
           groups: []
         },
-        group: regularContext.group,
+        group: tournamentGroup,
         round: 0,
         matchup: 0
       };

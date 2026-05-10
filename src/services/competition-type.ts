@@ -27,10 +27,19 @@ type CompetitionType<T extends Group["type"]> = {
     matchup: number
   ) => Overtime;
   stats: (group: GroupOfType<T>) => GroupOfType<T>["stats"];
+  doesAffectMorale: () => boolean;
+  /**
+   * Whether fan group (erik(1)) and travel (erik(4)) etu modifiers
+   * apply in this phase type. QB gate: `turnauz = 0` for tournaments,
+   * `kiero(kr) <> 4` for practice. Both collapse to phase-type here.
+   */
+  doesTravelApply: () => boolean;
 };
 
 const competitionTypes: { [K in Group["type"]]: CompetitionType<K> } = {
   "round-robin": {
+    doesAffectMorale: () => true,
+    doesTravelApply: () => true,
     playMatch: () => true,
     overtime: (result) => {
       if (result.home === result.away) {
@@ -43,7 +52,10 @@ const competitionTypes: { [K in Group["type"]]: CompetitionType<K> } = {
     stats: (group) => table(group)
   },
   tournament: {
+    doesAffectMorale: () => false,
+    doesTravelApply: () => false,
     playMatch: () => true,
+
     overtime: (result) => {
       if (result.home === result.away) {
         return "regular";
@@ -54,6 +66,8 @@ const competitionTypes: { [K in Group["type"]]: CompetitionType<K> } = {
     stats: (group) => table(group)
   },
   playoffs: {
+    doesAffectMorale: () => true,
+    doesTravelApply: () => true,
     stats: (group) => matchups(group),
     playMatch: (phase, _round, matchup) => {
       const p = phase as PlayoffGroup;
@@ -78,11 +92,15 @@ const competitionTypes: { [K in Group["type"]]: CompetitionType<K> } = {
     }
   },
   "independent-games": {
+    doesAffectMorale: () => true,
+    doesTravelApply: () => false,
     playMatch: () => true,
     overtime: () => "none",
     stats: () => []
   },
   cup: {
+    doesAffectMorale: () => true,
+    doesTravelApply: () => true,
     playMatch: () => true,
     /**
      * Sudden-death overtime in leg 2 only, and only if the

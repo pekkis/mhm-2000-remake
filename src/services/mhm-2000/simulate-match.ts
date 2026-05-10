@@ -38,18 +38,10 @@
  * What this function intentionally does NOT model (yet) — every one of
  * these gets a TODO at its call site below:
  *
- *   - Light teams (`od(z) >= 49` — TEAMS.NHL / FOR / ALA): they take a
- *     simpler path in QB (no `specialTeams` multiplier, no roster
- *     scan, no `tre`/`tautip`). Collapsed via proxy defaults: Pasolini
- *     proxy manager (zero attributes), proxy service levels per origin
- *     (travel 4 for foreign/NHL, 0 for amateur; all others 0).
- *   - `tre(team)` readiness multiplier — ✅ wired to `team.readiness`
- *     (season-arc multiplier ~0.7..1.3, see strategies.ts).
- *   - `tautip(team)` epidemic multiplier — TODO; assume 1.0.
+ *   - `tautip(team)` epidemic multiplier — TODO; assume 1.0. Needs
+ *     the `tauti(1..3)` illness system to be ported first.
  *   - `spx(3, team)` voodoo curse / `spx(4, team)` dance troupe boosts —
- *     human-only consumables.
- *   - `pel().spe = 4 / 10` (extremelyFat / daddyPays) per-roster
- *     adjustments — needs roster modelling.
+ *     human-only consumables. Needs consumable system.
  *   - `jaynax(2, team)` boycott prank (forces 0-N or N-0 final) and
  *     `jaynax(6, team)` (zeroes ode) — needs prank pipeline.
  *   - The "league comeback handicap" at [ILEX5.BAS:3754-3762] which
@@ -60,11 +52,35 @@
  *     [ILEX5.BAS:3856-3860]. Triggers only when one of the `ode`
  *     stats is non-positive after multipliers, which can't happen
  *     here yet (mw/pw/hw are always >= 0 and the multipliers we apply
- *     are >= 0.7).
+ *     are >= 0.7). Becomes reachable once `jaynax(6)` zeroing prank
+ *     is wired.
+ *   - Tournament post-match morale skip (`turnauz <> 0` bypasses the
+ *     win/loss ±1 morale delta at [ILEX5.BAS:3929-3938] — morale
+ *     still affects match strength via etu, it just doesn't change
+ *     after tournament games). Not blocking — tournaments aren't
+ *     fully wired yet.
+ *
+ * What IS modelled (for reference):
+ *
+ *   - ✅ Home/away etu baselines (all 7 competitions, phase-aware)
+ *   - ✅ Morale etu modifier (QB `mo` / 125 or / 155)
+ *   - ✅ Intensity etu modifier + tournament forcing to normaali
+ *   - ✅ Fan group etu (erik(1)) — gated by phase type (not tournaments/practice)
+ *   - ✅ Travel etu (erik(4)) — away team only, gated by phase type
+ *   - ✅ Doping strength bonus (erik(3)) — AI path in `calculateStrength`,
+ *     human path per-player in `calculateLineupStrength`
+ *   - ✅ Manager `specialTeams` PP/PK multiplier
+ *   - ✅ `tre(team)` readiness multiplier — `team.readiness` (~0.7..1.3)
+ *   - ✅ Even-strength / power-play / overtime possession loops
+ *   - ✅ Regular OT (single attempt) vs sudden-death (cup/playoff)
+ *   - ✅ `pel().spe` roster adjustments (extremelyFat / greedySurfer /
+ *     condition penalties) — handled in `effectiveStrength` (lineup.ts)
+ *     for human teams; AI teams skip roster scan by design.
+ *   - ✅ Light teams collapsed via proxy defaults (Pasolini proxy manager
+ *     with zero attributes, proxy service levels per origin).
  */
 
 import competitions from "@/data/competitions";
-import type { EventEffect } from "@/game/event-effects";
 import competitionTypes from "@/services/competition-type";
 import defaultRandom from "@/services/random";
 import { calculateAw, calculateStrength, calculateYw } from "@/services/team";
@@ -82,24 +98,28 @@ import type { Random } from "random-js";
  * One side of the match — a Team (AI or human) plus the Manager that
  * controls it.
  *
- * The match engine reads three things:
+ * The match engine reads from each side:
  *
  *   - `calculateStrength(team)` — yields the `{ goalie, defence,
- *     attack }` triple, the QB `mw / pw / hw`. AI teams read this
- *     directly from `team.strengthObj` (TASOT.M2K-derived); human
- *     teams compute it from the roster. The discrimination lives in
- *     [../team.ts](../team.ts) — this engine just calls and consumes.
+ *     attack }` triple, the QB `mw / pw / hw`. AI teams read from
+ *     `team.strengthObj` (TASOT.M2K-derived) + doping bonus; human
+ *     teams compute from the roster (with per-player doping). The
+ *     discrimination lives in [../team.ts](../team.ts) — this engine
+ *     just calls and consumes.
  *   - `team.morale` — QB `mo(team)`, clamped to -10..+10 elsewhere.
+ *   - `team.readiness` — QB `tre(team)`, season-arc multiplier
+ *     (~0.7..1.3). Scales ode + yw + aw.
+ *   - `team.intensity` — QB `inte(team)` ∈ {0, 1, 2}. Forced to 1
+ *     in tournaments/practice.
+ *   - `team.services` — QB `erik(1..4, team)`. Fan group and travel
+ *     modify etu; doping modifies strength (handled upstream).
  *   - `manager.attributes.specialTeams` — QB `mtaito(2, man(team))`,
- *     range -3..+3. Multiplier on PP/PK weights:
- *     `yw *= 1 + 0.04 * specialTeams` (and same for `aw`). Per-team
- *     stat in QB; per-manager in TS, dereferenced on call.
+ *     range -3..+3. Multiplier on PP/PK weights.
  *
- *     Only applied for managed base teams (`od(z) < 49`); light teams
- *     (NHL / foreign / amateur, `od(z) >= 49`) skip it — see the
- *     SELECT CASE at [ILEX5.BAS:326-334](../../mhm2000-qb/ILEX5.BAS).
- *     Light-team support is TODO; for now both sides are assumed to
- *     be managed base teams.
+ *     Light teams (NHL / foreign / amateur) are handled transparently
+ *     via proxy defaults: Pasolini proxy manager (zero attributes),
+ *     proxy service levels per origin (travel 4 for foreign/NHL, 0
+ *     for amateur; all others 0). No special branching needed.
  */
 export type MatchSide = {
   team: Team;
@@ -111,6 +131,9 @@ export type Overtime = "none" | "regular" | "sudden-death";
 export type Intensity = 0 | 1 | 2;
 
 export type MatchResult = {
+  home: MatchSide;
+  away: MatchSide;
+
   /** Final score. */
   homeGoals: number;
   awayGoals: number;
@@ -123,13 +146,8 @@ export type MatchResult = {
    */
   homeIntensity: Intensity;
   awayIntensity: Intensity;
-  /**
-   * Morale deltas to apply post-match (winner +1 / loser -1, no change
-   * on a tie). Mirrors the `morttivertti:` block at
-   * [ILEX5.BAS:3953-3960]. Tournament matches (`turnauz <> 0`) skip
-   * this — out of scope for this function.
-   */
-  effects: EventEffect[];
+
+  context: MatchContext;
 };
 
 // ─── helpers ─────────────────────────────────────────────────────────
@@ -206,7 +224,7 @@ const applyIntensityEtu = (etu: number, intensity: Intensity): number => {
  * z=1 (home): level >= 1 (kotiottelut) → +0.02
  * z=2 (away): level >= 2 (kaikki ottelut) → +0.02
  *
- * Gated by `doesTravelApply` (same competitions as travel — not
+ * Gated by phase type (`doesTravelApply` on `CompetitionType` — not
  * practice, not tournaments). With proxy values (light teams have 0),
  * the QB `od(z) < 49` guard collapses.
  */
@@ -226,7 +244,7 @@ const applyFanGroupEtu = (
  * Apply the travel `etu` bonus for the away team, matching
  * [ILEX5.BAS:3715]: `etu(2) = etu(2) + .02 * erik(4, od(2))`.
  *
- * Only called for the away side. Gated by `doesTravelApply`.
+ * Only called for the away side. Gated by phase type.
  */
 const applyTravelEtu = (etu: number, travelLevel: number): number => {
   return etu + 0.02 * travelLevel;
@@ -412,14 +430,13 @@ export type MatchContext = {
 // ─── public API ──────────────────────────────────────────────────────
 
 /**
- * Simulate a single match between two managed base teams (AI or
- * human; the engine is symmetric over the two).
+ * Simulate a single match. Symmetric over AI and human teams — the
+ * engine reads `calculateStrength`, `team.readiness`, `team.services`,
+ * etc. without caring which kind of team it is.
  *
- * Pure function modulo the Random. Faithful port of `SUB ottpel`
- * for the managed-base-team sub-case; see the module docstring for
- * the list of TODOs that need decoded inputs before light-team
- * matches and the human-only mechanics (services, consumables,
- * pranks) come online.
+ * Pure function modulo the Random. Faithful port of `SUB ottpel`.
+ * See the module docstring for the remaining TODOs (epidemics,
+ * consumables, pranks, league comeback handicap).
  */
 export const simulateMatch = (
   home: MatchSide,
@@ -442,10 +459,10 @@ export const simulateMatch = (
   etuAway = applyIntensityEtu(etuAway, awayEffIntensity);
 
   // Service-derived etu modifiers. QB [ILEX5.BAS:3715-3739].
-  // Gated by doesTravelApply — same competitions gate as the QB
-  // SELECT CASE (not practice, not tournaments).
-  const def = competitions[context.competition.id];
-  if (def.doesTravelApply(context.competition.phase)) {
+  // Gated by phase type: tournaments and practice skip these (QB
+  // `turnauz = 0` / `kiero(kr) <> 4`).
+  const compType = competitionTypes[context.group.type];
+  if (compType.doesTravelApply()) {
     // erik(1) — fan group: +0.02 if level >= threshold (1 home, 2 away)
     etuHome = applyFanGroupEtu(etuHome, home.team.services.fanGroup, true);
     etuAway = applyFanGroupEtu(etuAway, away.team.services.fanGroup, false);
@@ -525,31 +542,14 @@ export const simulateMatch = (
     }
   }
 
-  // 5. Morale deltas. QB `morttivertti:` [3953-3960]:
-  //      winner: mor team, +1
-  //      loser:  mor team, -1
-  //    `mor` clamps to [-10, +10] but that's the caller's job here.
-  //    TODO: tournament matches (turnauz <> 0) skip this; out of scope
-  //          for this isolated function.
-  let homeMoraleChange = 0;
-  let awayMoraleChange = 0;
-  if (homeGoals > awayGoals) {
-    homeMoraleChange = 1;
-    awayMoraleChange = -1;
-  } else if (awayGoals > homeGoals) {
-    homeMoraleChange = -1;
-    awayMoraleChange = 1;
-  }
-
   return {
+    home,
+    away,
     homeGoals,
     awayGoals,
     overtime: overtime !== "none",
     homeIntensity: homeEffIntensity,
     awayIntensity: awayEffIntensity,
-    effects: [
-      { type: "incrementMorale", team: home.team.id, amount: homeMoraleChange },
-      { type: "incrementMorale", team: away.team.id, amount: awayMoraleChange }
-    ]
+    context
   };
 };

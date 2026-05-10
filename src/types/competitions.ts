@@ -199,8 +199,6 @@ export type CompetitionDefinition = {
 
   homeAndAwayTeamAdvantages: (phase: number) => HomeAndAwayTeamAdvantages;
 
-  doesTravelApply: (phase: number) => boolean;
-
   moraleBoost: (phase: number, facts: GameFacts, manager: Manager) => number;
   seed: Array<
     (competitions: Record<CompetitionId, Competition>, context?: any) => Phase

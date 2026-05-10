@@ -9,6 +9,7 @@ import { computeStats } from "@/services/competition-type";
 import { resultFacts } from "@/services/game";
 import { simulate, toGameResult } from "@/services/mhm-2000/game";
 import type { EventEffect } from "@/game/event-effects";
+import { generateEffectsFromMatchResult } from "@/services/mhm-2000/match-effects";
 
 const emptyStreak = { win: 0, draw: 0, loss: 0, noLoss: 0, noWin: 0 } as const;
 const emptyGameRecord = { win: 0, draw: 0, loss: 0 } as const;
@@ -152,7 +153,7 @@ export function runGameday(draft: Draft<GameContext>): EventEffect[] {
           }
         });
 
-        effects = effects.concat(result.effects);
+        effects = effects.concat(generateEffectsFromMatchResult(result));
 
         const legacyResult = toGameResult(result);
 

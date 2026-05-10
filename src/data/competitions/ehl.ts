@@ -67,14 +67,6 @@ const ehl: CompetitionDefinition = {
     phases: []
   },
 
-  doesTravelApply: (phase) => {
-    if (phase === 1) {
-      return false;
-    }
-
-    return true;
-  },
-
   homeAndAwayTeamAdvantages: (phase) => {
     if (phase === 1) {
       return {

@@ -80,8 +80,6 @@ const cup: CompetitionDefinition = {
   relegateTo: false,
   promoteTo: false,
 
-  doesTravelApply: (_phase) => true,
-
   homeAndAwayTeamAdvantages: (_phase) => {
     return {
       home: 1.0,
