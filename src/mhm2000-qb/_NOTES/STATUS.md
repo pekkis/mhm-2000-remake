@@ -504,9 +504,14 @@ param`). MHM 2000 expanded MHM 97's 75-round calendar.
 
 ### High value — unblocks porting
 
-1. **`sattuma` SUB** in `ILEX5.BAS:5527` — the main random-event roller.
-   Decoding this maps E.MHM record indices to event triggers (which
-   record fires under which condition).
+1. ~~**`sattuma` SUB** in `ILEX5.BAS:5527` — the main random-event roller.~~
+   **DECODED 2026-05-10.** Full archaeology in
+   [RANDOM-EVENTS.md](RANDOM-EVENTS.md): all 5 layers (KONKKA banner,
+   sopupeli detection, TV bonus, `dap` post-match trinity, `dat%`
+   pool of ~70 cases out of a 1..521 roll), every event-effect kind
+   catalogued and mapped against the existing `EventEffect` union,
+   data files involved, MHM record references, archetype mapping,
+   and a recommended port order. Open follow-ups now live there.
 2. **`ottpel` / `ottul` SUBs** — gameday simulation core. Untangling
    these gives us the match engine.
    _(`ottpel` ported managed-base-team subset — see Phase 2 progress.
@@ -551,7 +556,10 @@ param`). MHM 2000 expanded MHM 97's 75-round calendar.
    `specialClause` (NHL/free-fire) decode is documented there.
    Player salaries are placeholder (`psk*1000`) — the real salary
    curve from `sopimusext` will replace them.
-2. Decode `sattuma` → unlock event-system porting.
+2. ~~Decode `sattuma` → unlock event-system porting.~~ **DONE.** See
+   [RANDOM-EVENTS.md](RANDOM-EVENTS.md). Next is to extract E.MHM and
+   V.MHM to raw JSON and start extending the `EventEffect` union with
+   the NEW kinds catalogued in §7 of that doc.
 3. Port `orgamaar` — human team strength recalculation from actual
    player roster (`mw = max(pel(*).psk)` for goalies, `pw/hw` from
    sums). `HumanTeam.strengthObj` is now wired and ready.
