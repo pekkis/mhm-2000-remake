@@ -40,10 +40,9 @@
  *
  *   - Light teams (`od(z) >= 49` — TEAMS.NHL / FOR / ALA): they take a
  *     simpler path in QB (no `specialTeams` multiplier, no roster
- *     scan, no `tre`/`tautip`). Add an explicit branch when EHL /
- *     cup pairings against light teams come online.
- *   - `erik(1..4, team)` services (faniryhmä, alkoholi, doping,
- *     travel) — only human managers buy these; AI `erik = 0`.
+ *     scan, no `tre`/`tautip`). Collapsed via proxy defaults: Pasolini
+ *     proxy manager (zero attributes), proxy service levels per origin
+ *     (travel 4 for foreign/NHL, 0 for amateur; all others 0).
  *   - `tre(team)` trainer multiplier — TODO confirm AI-team default
  *     is 1.0 (looks that way; `tasomaar` doesn't set it, so it stays
  *     at the QB DIM-time zero-fill, but the read at line 3846/3850
@@ -145,13 +144,11 @@ export type MatchResult = {
 const rnd = (random: Random): number => random.real(0, 1);
 
 /**
- * Compute the home/away `etu` (advantage) multipliers for a round.
+ * Compute the home/away `etu` (advantage) baseline for a round.
  *
- * Mirrors the SELECT CASE at [ILEX5.BAS:3711-3749] for the
- * managed-base-team subset. Cases collapse because every
- * `erik(1, …)` / `erik(4, …)` term is currently 0 (services not
- * modelled — TODO) and every `od(z) >= 49` branch is unreachable
- * (light teams not modelled — TODO).
+ * Mirrors the SELECT CASE at [ILEX5.BAS:3711-3749]. Returns the
+ * competition-defined baseline before team-specific modifiers
+ * (morale, intensity, services) are layered on.
  */
 const computeEtu = (context: MatchContext): HomeAndAwayTeamAdvantages => {
   const def = competitions[context.competition.id];
@@ -206,6 +203,39 @@ const applyIntensityEtu = (etu: number, intensity: Intensity): number => {
 };
 
 /**
+ * Apply the fan group `etu` bonus, matching [ILEX5.BAS:3717-3719]:
+ *   IF erik(1, od(z)) >= z THEN etu(z) = etu(z) + .02
+ *
+ * z=1 (home): level >= 1 (kotiottelut) → +0.02
+ * z=2 (away): level >= 2 (kaikki ottelut) → +0.02
+ *
+ * Gated by `doesTravelApply` (same competitions as travel — not
+ * practice, not tournaments). With proxy values (light teams have 0),
+ * the QB `od(z) < 49` guard collapses.
+ */
+const applyFanGroupEtu = (
+  etu: number,
+  fanGroupLevel: number,
+  isHome: boolean
+): number => {
+  const threshold = isHome ? 1 : 2;
+  if (fanGroupLevel >= threshold) {
+    return etu + 0.02;
+  }
+  return etu;
+};
+
+/**
+ * Apply the travel `etu` bonus for the away team, matching
+ * [ILEX5.BAS:3715]: `etu(2) = etu(2) + .02 * erik(4, od(2))`.
+ *
+ * Only called for the away side. Gated by `doesTravelApply`.
+ */
+const applyTravelEtu = (etu: number, travelLevel: number): number => {
+  return etu + 0.02 * travelLevel;
+};
+
+/**
  * Strength tuple `ode(1..3, z)` for one side, after all multipliers.
  * Indices are 1-based in QB; we use named fields here.
  *
@@ -224,10 +254,9 @@ type SideStrength = {
 /**
  * Prep one side's `ode(*, z)` + `yw` / `aw` for the possession loop.
  *
- * Mirrors lines [ILEX5.BAS:3764-3879] folded down to the
- * managed-base-team case (no services, no consumables, no pranks, no
- * roster scan, no doping). All the omitted bits are tagged TODO in
- * the file header.
+ * Mirrors lines [ILEX5.BAS:3764-3879]. Doping (`erik(3)`) is handled
+ * upstream in `calculateStrength` / `calculateYw` / `calculateAw`
+ * (AI path) or per-player in the roster calculation (human path).
  */
 const prepareSide = (side: MatchSide, etu: number): SideStrength => {
   // Pre-multiplier raw stats. QB:
@@ -243,7 +272,9 @@ const prepareSide = (side: MatchSide, etu: number): SideStrength => {
 
   // QB shadow at [ILEX5.BAS:328-329] — yw/aw now computed centrally
   // in team.ts (calculateYw / calculateAw), including the manager's
-  // specialTeams multiplier.
+  // specialTeams multiplier. Doping (erik(3)) is folded into the AI
+  // path there; human teams apply doping per-player in the roster
+  // calculation.
   // TODO: fold in `tauti(2)` / `tauti(3)` epidemic mods once modelled.
   let yw = calculateYw(side.team, side.manager);
   let aw = calculateAw(side.team, side.manager);
@@ -410,9 +441,20 @@ export const simulateMatch = (
   // Intensity modifier. QB [ILEX5.BAS:3778-3780].
   const homeEffIntensity = effectiveIntensity(home.team.intensity, phase.type);
   const awayEffIntensity = effectiveIntensity(away.team.intensity, phase.type);
-
   etuHome = applyIntensityEtu(etuHome, homeEffIntensity);
   etuAway = applyIntensityEtu(etuAway, awayEffIntensity);
+
+  // Service-derived etu modifiers. QB [ILEX5.BAS:3715-3739].
+  // Gated by doesTravelApply — same competitions gate as the QB
+  // SELECT CASE (not practice, not tournaments).
+  const def = competitions[context.competition.id];
+  if (def.doesTravelApply(context.competition.phase)) {
+    // erik(1) — fan group: +0.02 if level >= threshold (1 home, 2 away)
+    etuHome = applyFanGroupEtu(etuHome, home.team.services.fanGroup, true);
+    etuAway = applyFanGroupEtu(etuAway, away.team.services.fanGroup, false);
+    // erik(4) — travel: away team only, +0.02 per level
+    etuAway = applyTravelEtu(etuAway, away.team.services.travel);
+  }
 
   // TODO: league comeback handicap [ILEX5.BAS:3754-3762] — needs
   // standings position `s(team)` and season match counter `ot`. Skip.

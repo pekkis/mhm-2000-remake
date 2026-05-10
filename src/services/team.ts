@@ -16,10 +16,20 @@ import type { Manager, Team } from "@/state";
  */
 export const calculateStrength = (team: Team): TeamStrength => {
   if (team.kind === "ai") {
-    return team.strengthObj;
+    const { goalie, defence, attack } = team.strengthObj;
+    const doping = team.services.doping;
+    return {
+      goalie: goalie + doping,
+      defence: defence + doping * 6,
+      attack: attack + doping * 12
+    };
   }
 
-  return calculateLineupStrength(team.lineup, team.players);
+  return calculateLineupStrength(
+    team.lineup,
+    team.players,
+    team.services.doping
+  );
 };
 
 /**
@@ -36,11 +46,17 @@ export const calculateYw = (team: Team, manager: Manager): number => {
 
   if (team.kind === "ai") {
     const { defence, attack } = calculateStrength(team);
-    return (attack / 3.3 + defence / 2.5) * specialTeamsMult;
+    const doping = team.services.doping;
+    // QB adds erik(3)*5 AFTER the specialTeams multiplier.
+    return (attack / 3.3 + defence / 2.5) * specialTeamsMult + doping * 5;
   }
 
   return (
-    calculatePowerPlayStrength(team.lineup, team.players) * specialTeamsMult
+    calculatePowerPlayStrength(
+      team.lineup,
+      team.players,
+      team.services.doping
+    ) * specialTeamsMult
   );
 };
 
@@ -58,10 +74,16 @@ export const calculateAw = (team: Team, manager: Manager): number => {
 
   if (team.kind === "ai") {
     const { defence, attack } = calculateStrength(team);
-    return (attack / 4.4 + defence / 2.5) * specialTeamsMult;
+    const doping = team.services.doping;
+    // QB adds erik(3)*4 AFTER the specialTeams multiplier.
+    return (attack / 4.4 + defence / 2.5) * specialTeamsMult + doping * 4;
   }
 
   return (
-    calculatePenaltyKillStrength(team.lineup, team.players) * specialTeamsMult
+    calculatePenaltyKillStrength(
+      team.lineup,
+      team.players,
+      team.services.doping
+    ) * specialTeamsMult
   );
 };

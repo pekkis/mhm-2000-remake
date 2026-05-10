@@ -179,14 +179,14 @@ export const effectiveStrength = (
 // ---------------------------------------------------------------------------
 
 /**
- * Base value for the `zzra` pipeline: `psk + plus`.
+ * Base value for the `zzra` pipeline: `psk + plus + erik(3)`.
  * QB: `temp% = pel(ccc, pv).psk + pel(ccc, pv).plus + erik(3, u(pv))`.
  *
- * TODO: add `erik(3)` team investment bonus when erikoistoimet system
- * is ported. Currently defaults to 0.
+ * `doping` is the team-level `services.doping` value (0–2), added
+ * to every player's base before position/specialty/condition penalties.
  */
-const playerBaseValue = (player: HiredPlayer): number =>
-  player.skill + performanceModifier(player);
+const playerBaseValue = (player: HiredPlayer, doping: number): number =>
+  player.skill + performanceModifier(player) + doping;
 
 /**
  * Compute `{ goalie, defence, attack }` from a lineup and player roster.
@@ -202,14 +202,15 @@ const playerBaseValue = (player: HiredPlayer): number =>
  */
 export const calculateLineupStrength = (
   lineup: Lineup,
-  players: Record<string, HiredPlayer>
+  players: Record<string, HiredPlayer>,
+  doping = 0
 ): TeamStrength => {
   const resolve = (id: string | null): HiredPlayer | undefined =>
     id ? players[id] : undefined;
 
   const strength = (player: HiredPlayer, slot: LineupSlot): number =>
     effectiveStrength(
-      playerBaseValue(player),
+      playerBaseValue(player, doping),
       player.position,
       slot,
       player.specialty,
@@ -261,10 +262,11 @@ export const calculateLineupStrength = (
 const specialTeamStrength = (
   player: HiredPlayer,
   slot: LineupSlot,
-  mod: number
+  mod: number,
+  doping: number
 ): number =>
   effectiveStrength(
-    playerBaseValue(player) + mod,
+    playerBaseValue(player, doping) + mod,
     player.position,
     slot,
     player.specialty,
@@ -285,7 +287,8 @@ const specialTeamStrength = (
  */
 export const calculatePowerPlayStrength = (
   lineup: Lineup,
-  players: Record<string, HiredPlayer>
+  players: Record<string, HiredPlayer>,
+  doping = 0
 ): number => {
   const resolve = (id: string | null): HiredPlayer | undefined =>
     id ? players[id] : undefined;
@@ -300,11 +303,11 @@ export const calculatePowerPlayStrength = (
 
   if (ppLd && ppRd && ppLw && ppC && ppRw) {
     return (
-      specialTeamStrength(ppLd, "d", ppLd.powerplayMod) +
-      specialTeamStrength(ppRd, "d", ppRd.powerplayMod) +
-      specialTeamStrength(ppLw, "lw", ppLw.powerplayMod) +
-      specialTeamStrength(ppC, "c", ppC.powerplayMod) +
-      specialTeamStrength(ppRw, "rw", ppRw.powerplayMod)
+      specialTeamStrength(ppLd, "d", ppLd.powerplayMod, doping) +
+      specialTeamStrength(ppRd, "d", ppRd.powerplayMod, doping) +
+      specialTeamStrength(ppLw, "lw", ppLw.powerplayMod, doping) +
+      specialTeamStrength(ppC, "c", ppC.powerplayMod, doping) +
+      specialTeamStrength(ppRw, "rw", ppRw.powerplayMod, doping)
     );
   }
 
@@ -322,11 +325,11 @@ export const calculatePowerPlayStrength = (
   }
 
   return (
-    specialTeamStrength(fbLd, "d", fbLd.powerplayMod) +
-    specialTeamStrength(fbRd, "d", fbRd.powerplayMod) +
-    specialTeamStrength(fbLw, "lw", fbLw.powerplayMod) +
-    specialTeamStrength(fbC, "c", fbC.powerplayMod) +
-    specialTeamStrength(fbRw, "rw", fbRw.powerplayMod)
+    specialTeamStrength(fbLd, "d", fbLd.powerplayMod, doping) +
+    specialTeamStrength(fbRd, "d", fbRd.powerplayMod, doping) +
+    specialTeamStrength(fbLw, "lw", fbLw.powerplayMod, doping) +
+    specialTeamStrength(fbC, "c", fbC.powerplayMod, doping) +
+    specialTeamStrength(fbRw, "rw", fbRw.powerplayMod, doping)
   );
 };
 
@@ -345,7 +348,8 @@ export const calculatePowerPlayStrength = (
  */
 export const calculatePenaltyKillStrength = (
   lineup: Lineup,
-  players: Record<string, HiredPlayer>
+  players: Record<string, HiredPlayer>,
+  doping = 0
 ): number => {
   const resolve = (id: string | null): HiredPlayer | undefined =>
     id ? players[id] : undefined;
@@ -359,10 +363,10 @@ export const calculatePenaltyKillStrength = (
 
   if (pkLd && pkRd && pkF1 && pkF2) {
     return (
-      specialTeamStrength(pkLd, "d", pkLd.penaltyKillMod) +
-      specialTeamStrength(pkRd, "d", pkRd.penaltyKillMod) +
-      specialTeamStrength(pkF1, "pkf", pkF1.penaltyKillMod) +
-      specialTeamStrength(pkF2, "pkf", pkF2.penaltyKillMod)
+      specialTeamStrength(pkLd, "d", pkLd.penaltyKillMod, doping) +
+      specialTeamStrength(pkRd, "d", pkRd.penaltyKillMod, doping) +
+      specialTeamStrength(pkF1, "pkf", pkF1.penaltyKillMod, doping) +
+      specialTeamStrength(pkF2, "pkf", pkF2.penaltyKillMod, doping)
     );
   }
 
@@ -380,10 +384,10 @@ export const calculatePenaltyKillStrength = (
   }
 
   return (
-    specialTeamStrength(fbLd, "d", fbLd.penaltyKillMod) +
-    specialTeamStrength(fbRd, "d", fbRd.penaltyKillMod) +
-    specialTeamStrength(fbF1, "pkf", fbF1.penaltyKillMod) +
-    specialTeamStrength(fbF2, "pkf", fbF2.penaltyKillMod)
+    specialTeamStrength(fbLd, "d", fbLd.penaltyKillMod, doping) +
+    specialTeamStrength(fbRd, "d", fbRd.penaltyKillMod, doping) +
+    specialTeamStrength(fbF1, "pkf", fbF1.penaltyKillMod, doping) +
+    specialTeamStrength(fbF2, "pkf", fbF2.penaltyKillMod, doping)
   );
 };
 
