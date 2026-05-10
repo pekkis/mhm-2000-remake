@@ -43,12 +43,9 @@
  *     scan, no `tre`/`tautip`). Collapsed via proxy defaults: Pasolini
  *     proxy manager (zero attributes), proxy service levels per origin
  *     (travel 4 for foreign/NHL, 0 for amateur; all others 0).
- *   - `tre(team)` trainer multiplier — TODO confirm AI-team default
- *     is 1.0 (looks that way; `tasomaar` doesn't set it, so it stays
- *     at the QB DIM-time zero-fill, but the read at line 3846/3850
- *     would then zero out yw/aw entirely. Almost certainly initialised
- *     to 1.0 elsewhere. Until decoded, we assume 1.0.).
- *   - `tautip(team)` epidemic multiplier — same TODO; assume 1.0.
+ *   - `tre(team)` readiness multiplier — ✅ wired to `team.readiness`
+ *     (season-arc multiplier ~0.7..1.3, see strategies.ts).
+ *   - `tautip(team)` epidemic multiplier — TODO; assume 1.0.
  *   - `spx(3, team)` voodoo curse / `spx(4, team)` dance troupe boosts —
  *     human-only consumables.
  *   - `pel().spe = 4 / 10` (extremelyFat / daddyPays) per-roster
@@ -280,11 +277,11 @@ const prepareSide = (side: MatchSide, etu: number): SideStrength => {
   let aw = calculateAw(side.team, side.manager);
 
   // QB lines 3844-3851: tautip and tre multipliers for od(z) < 49.
-  // TODO: model `tautip(team)` (epidemic) and `tre(team)` (trainer).
-  //       Both default to 1.0 (assumed; needs decode of `orgamaar` /
-  //       `tasomaar` initialisation).
+  // TODO: model `tautip(team)` (epidemic). Defaults to 1.0.
   const tautip = 1.0;
-  const tre = 1.0;
+  // `tre(team)` = team.readiness — season-arc multiplier (~0.7..1.3),
+  // ported in strategies.ts, drifts per regular-season gameday.
+  const tre = side.team.readiness;
   yw *= tautip * tre;
   aw *= tautip * tre;
 

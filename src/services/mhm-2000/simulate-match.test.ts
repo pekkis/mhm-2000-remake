@@ -252,8 +252,8 @@ describe("simulateMatch", () => {
       let laiskaWins = 0;
       for (let i = 0; i < 500; i += 1) {
         const r = simulateMatch(hurja, laiska, regularContext, random);
-        if (r.homeGoals > r.awayGoals) hurjaWins += 1;
-        else if (r.awayGoals > r.homeGoals) laiskaWins += 1;
+        if (r.homeGoals > r.awayGoals) {hurjaWins += 1;}
+        else if (r.awayGoals > r.homeGoals) {laiskaWins += 1;}
       }
       expect(hurjaWins).toBeGreaterThan(laiskaWins);
     });
@@ -323,8 +323,8 @@ describe("simulateMatch", () => {
       let noFansWins = 0;
       for (let i = 0; i < 500; i += 1) {
         const r = simulateMatch(withFans, noFans, regularContext, random);
-        if (r.homeGoals > r.awayGoals) fansWins += 1;
-        else if (r.awayGoals > r.homeGoals) noFansWins += 1;
+        if (r.homeGoals > r.awayGoals) {fansWins += 1;}
+        else if (r.awayGoals > r.homeGoals) {noFansWins += 1;}
       }
       // fanGroup=2 gives +0.02 etu to both home AND away matches
       // plus the regular home advantage → should win more
@@ -411,8 +411,8 @@ describe("simulateMatch", () => {
       for (let i = 0; i < 500; i += 1) {
         const r1 = simulateMatch(home, awayWithTravel, regularContext, random1);
         const r2 = simulateMatch(home, awayNoTravel, regularContext, random2);
-        if (r1.awayGoals > r1.homeGoals) winsWithTravel += 1;
-        if (r2.awayGoals > r2.homeGoals) winsNoTravel += 1;
+        if (r1.awayGoals > r1.homeGoals) {winsWithTravel += 1;}
+        if (r2.awayGoals > r2.homeGoals) {winsNoTravel += 1;}
       }
       // travel=4 gives +0.08 etu to the away side → more away wins
       expect(winsWithTravel).toBeGreaterThan(winsNoTravel);

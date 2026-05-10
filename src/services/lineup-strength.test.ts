@@ -1356,14 +1356,45 @@ describe("doping (erik(3)) bonus", () => {
 
   describe("calculatePowerPlayStrength with doping", () => {
     it("doping=0 matches no-arg call", () => {
-      const ppLd = player({ id: "ppLd", position: "d", skill: 12, powerplayMod: 1 });
-      const ppRd = player({ id: "ppRd", position: "d", skill: 10, powerplayMod: 0 });
-      const ppLw = player({ id: "ppLw", position: "lw", skill: 14, powerplayMod: 2 });
-      const ppC = player({ id: "ppC", position: "c", skill: 13, powerplayMod: 0 });
-      const ppRw = player({ id: "ppRw", position: "rw", skill: 11, powerplayMod: 0 });
+      const ppLd = player({
+        id: "ppLd",
+        position: "d",
+        skill: 12,
+        powerplayMod: 1
+      });
+      const ppRd = player({
+        id: "ppRd",
+        position: "d",
+        skill: 10,
+        powerplayMod: 0
+      });
+      const ppLw = player({
+        id: "ppLw",
+        position: "lw",
+        skill: 14,
+        powerplayMod: 2
+      });
+      const ppC = player({
+        id: "ppC",
+        position: "c",
+        skill: 13,
+        powerplayMod: 0
+      });
+      const ppRw = player({
+        id: "ppRw",
+        position: "rw",
+        skill: 11,
+        powerplayMod: 0
+      });
       const lineup: Lineup = {
         ...emptyLineup,
-        powerplayTeam: { ld: "ppLd", rd: "ppRd", lw: "ppLw", c: "ppC", rw: "ppRw" }
+        powerplayTeam: {
+          ld: "ppLd",
+          rd: "ppRd",
+          lw: "ppLw",
+          c: "ppC",
+          rw: "ppRw"
+        }
       };
       const roster = rosterMap(ppLd, ppRd, ppLw, ppC, ppRw);
       expect(calculatePowerPlayStrength(lineup, roster, 0)).toBe(
@@ -1372,29 +1403,84 @@ describe("doping (erik(3)) bonus", () => {
     });
 
     it("doping adds to each PP slot's base (before yvo)", () => {
-      const ppLd = player({ id: "ppLd", position: "d", skill: 10, powerplayMod: 2 });
-      const ppRd = player({ id: "ppRd", position: "d", skill: 10, powerplayMod: 0 });
-      const ppLw = player({ id: "ppLw", position: "lw", skill: 10, powerplayMod: 0 });
-      const ppC = player({ id: "ppC", position: "c", skill: 10, powerplayMod: 0 });
-      const ppRw = player({ id: "ppRw", position: "rw", skill: 10, powerplayMod: 0 });
+      const ppLd = player({
+        id: "ppLd",
+        position: "d",
+        skill: 10,
+        powerplayMod: 2
+      });
+      const ppRd = player({
+        id: "ppRd",
+        position: "d",
+        skill: 10,
+        powerplayMod: 0
+      });
+      const ppLw = player({
+        id: "ppLw",
+        position: "lw",
+        skill: 10,
+        powerplayMod: 0
+      });
+      const ppC = player({
+        id: "ppC",
+        position: "c",
+        skill: 10,
+        powerplayMod: 0
+      });
+      const ppRw = player({
+        id: "ppRw",
+        position: "rw",
+        skill: 10,
+        powerplayMod: 0
+      });
       const lineup: Lineup = {
         ...emptyLineup,
-        powerplayTeam: { ld: "ppLd", rd: "ppRd", lw: "ppLw", c: "ppC", rw: "ppRw" }
+        powerplayTeam: {
+          ld: "ppLd",
+          rd: "ppRd",
+          lw: "ppLw",
+          c: "ppC",
+          rw: "ppRw"
+        }
       };
       // ppLd: base = 10+1(doping) + 2(yvo) = 13
       // others: base = 10+1 + 0 = 11 each
       // Total: 13 + 11 + 11 + 11 + 11 = 57
       expect(
-        calculatePowerPlayStrength(lineup, rosterMap(ppLd, ppRd, ppLw, ppC, ppRw), 1)
+        calculatePowerPlayStrength(
+          lineup,
+          rosterMap(ppLd, ppRd, ppLw, ppC, ppRw),
+          1
+        )
       ).toBe(57);
     });
 
     it("doping in PP fallback path (incomplete PP, uses line 1)", () => {
-      const ld = player({ id: "ld1", position: "d", skill: 10, powerplayMod: 0 });
-      const rd = player({ id: "rd1", position: "d", skill: 10, powerplayMod: 0 });
-      const lw = player({ id: "lw1", position: "lw", skill: 10, powerplayMod: 0 });
+      const ld = player({
+        id: "ld1",
+        position: "d",
+        skill: 10,
+        powerplayMod: 0
+      });
+      const rd = player({
+        id: "rd1",
+        position: "d",
+        skill: 10,
+        powerplayMod: 0
+      });
+      const lw = player({
+        id: "lw1",
+        position: "lw",
+        skill: 10,
+        powerplayMod: 0
+      });
       const c = player({ id: "c1", position: "c", skill: 10, powerplayMod: 0 });
-      const rw = player({ id: "rw1", position: "rw", skill: 10, powerplayMod: 0 });
+      const rw = player({
+        id: "rw1",
+        position: "rw",
+        skill: 10,
+        powerplayMod: 0
+      });
       const lineup: Lineup = {
         ...emptyLineup,
         powerplayTeam: { ld: "ld1", rd: "rd1", lw: "lw1", c: "c1", rw: null },
@@ -1419,10 +1505,30 @@ describe("doping (erik(3)) bonus", () => {
 
   describe("calculatePenaltyKillStrength with doping", () => {
     it("doping=0 matches no-arg call", () => {
-      const pkLd = player({ id: "pkLd", position: "d", skill: 12, penaltyKillMod: 1 });
-      const pkRd = player({ id: "pkRd", position: "d", skill: 10, penaltyKillMod: 0 });
-      const pkF1 = player({ id: "pkF1", position: "lw", skill: 14, penaltyKillMod: 2 });
-      const pkF2 = player({ id: "pkF2", position: "c", skill: 13, penaltyKillMod: 0 });
+      const pkLd = player({
+        id: "pkLd",
+        position: "d",
+        skill: 12,
+        penaltyKillMod: 1
+      });
+      const pkRd = player({
+        id: "pkRd",
+        position: "d",
+        skill: 10,
+        penaltyKillMod: 0
+      });
+      const pkF1 = player({
+        id: "pkF1",
+        position: "lw",
+        skill: 14,
+        penaltyKillMod: 2
+      });
+      const pkF2 = player({
+        id: "pkF2",
+        position: "c",
+        skill: 13,
+        penaltyKillMod: 0
+      });
       const lineup: Lineup = {
         ...emptyLineup,
         penaltyKillTeam: { ld: "pkLd", rd: "pkRd", f1: "pkF1", f2: "pkF2" }
@@ -1434,10 +1540,30 @@ describe("doping (erik(3)) bonus", () => {
     });
 
     it("doping adds to each PK slot's base (before avo)", () => {
-      const pkLd = player({ id: "pkLd", position: "d", skill: 10, penaltyKillMod: 1 });
-      const pkRd = player({ id: "pkRd", position: "d", skill: 10, penaltyKillMod: 0 });
-      const pkF1 = player({ id: "pkF1", position: "lw", skill: 10, penaltyKillMod: 0 });
-      const pkF2 = player({ id: "pkF2", position: "c", skill: 10, penaltyKillMod: 0 });
+      const pkLd = player({
+        id: "pkLd",
+        position: "d",
+        skill: 10,
+        penaltyKillMod: 1
+      });
+      const pkRd = player({
+        id: "pkRd",
+        position: "d",
+        skill: 10,
+        penaltyKillMod: 0
+      });
+      const pkF1 = player({
+        id: "pkF1",
+        position: "lw",
+        skill: 10,
+        penaltyKillMod: 0
+      });
+      const pkF2 = player({
+        id: "pkF2",
+        position: "c",
+        skill: 10,
+        penaltyKillMod: 0
+      });
       const lineup: Lineup = {
         ...emptyLineup,
         penaltyKillTeam: { ld: "pkLd", rd: "pkRd", f1: "pkF1", f2: "pkF2" }
@@ -1446,15 +1572,39 @@ describe("doping (erik(3)) bonus", () => {
       // pkF1: 10+2+0 = 12, pkF2: 10+2+0 = 12
       // Total: 13 + 12 + 12 + 12 = 49
       expect(
-        calculatePenaltyKillStrength(lineup, rosterMap(pkLd, pkRd, pkF1, pkF2), 2)
+        calculatePenaltyKillStrength(
+          lineup,
+          rosterMap(pkLd, pkRd, pkF1, pkF2),
+          2
+        )
       ).toBe(49);
     });
 
     it("doping in PK fallback path (incomplete PK, uses line 1)", () => {
-      const ld = player({ id: "ld1", position: "d", skill: 10, penaltyKillMod: 0 });
-      const rd = player({ id: "rd1", position: "d", skill: 10, penaltyKillMod: 0 });
-      const lw = player({ id: "lw1", position: "lw", skill: 10, penaltyKillMod: 0 });
-      const c = player({ id: "c1", position: "c", skill: 10, penaltyKillMod: 0 });
+      const ld = player({
+        id: "ld1",
+        position: "d",
+        skill: 10,
+        penaltyKillMod: 0
+      });
+      const rd = player({
+        id: "rd1",
+        position: "d",
+        skill: 10,
+        penaltyKillMod: 0
+      });
+      const lw = player({
+        id: "lw1",
+        position: "lw",
+        skill: 10,
+        penaltyKillMod: 0
+      });
+      const c = player({
+        id: "c1",
+        position: "c",
+        skill: 10,
+        penaltyKillMod: 0
+      });
       const lineup: Lineup = {
         ...emptyLineup,
         penaltyKillTeam: { ld: "ld1", rd: "rd1", f1: "lw1", f2: null },
@@ -1477,10 +1627,30 @@ describe("doping (erik(3)) bonus", () => {
     });
 
     it("doping stacks with position penalty: D in pkf + doping=2", () => {
-      const pkLd = player({ id: "pkLd", position: "d", skill: 10, penaltyKillMod: 0 });
-      const pkRd = player({ id: "pkRd", position: "d", skill: 10, penaltyKillMod: 0 });
-      const pkF1 = player({ id: "pkF1", position: "d", skill: 15, penaltyKillMod: 0 });
-      const pkF2 = player({ id: "pkF2", position: "c", skill: 10, penaltyKillMod: 0 });
+      const pkLd = player({
+        id: "pkLd",
+        position: "d",
+        skill: 10,
+        penaltyKillMod: 0
+      });
+      const pkRd = player({
+        id: "pkRd",
+        position: "d",
+        skill: 10,
+        penaltyKillMod: 0
+      });
+      const pkF1 = player({
+        id: "pkF1",
+        position: "d",
+        skill: 15,
+        penaltyKillMod: 0
+      });
+      const pkF2 = player({
+        id: "pkF2",
+        position: "c",
+        skill: 10,
+        penaltyKillMod: 0
+      });
       const lineup: Lineup = {
         ...emptyLineup,
         penaltyKillTeam: { ld: "pkLd", rd: "pkRd", f1: "pkF1", f2: "pkF2" }
@@ -1489,7 +1659,11 @@ describe("doping (erik(3)) bonus", () => {
       // pkLd: 10+2 = 12, pkRd: 10+2 = 12, pkF2: 10+2 = 12
       // Total: 12 + 12 + 11 + 12 = 47
       expect(
-        calculatePenaltyKillStrength(lineup, rosterMap(pkLd, pkRd, pkF1, pkF2), 2)
+        calculatePenaltyKillStrength(
+          lineup,
+          rosterMap(pkLd, pkRd, pkF1, pkF2),
+          2
+        )
       ).toBe(47);
     });
   });
