@@ -68,8 +68,18 @@ All 45 injury records decoded from `I.MHM` (cp850) + `INJURIES.M2K` severity tab
 - **RND() → random-js verified:** all QB `INT(N*RND)` patterns confirmed; the triangular double-roll `INT(((100*RND)+(100*RND))/2)` → `Math.floor((r(0,99)+r(0,99))/2)` same range and shape. Full mapping table in the test files.
 - 27 test files, 502 tests passing.
 
-**Still on the Phase-2 punch list:** `tre` / `tautip` / `erik` services,
-`inte` / `treeni` etu modifiers, `spx(3/4)` consumables, `pel(*).spe`
+### Tauti / epidemic system decoded (2026-06-11)
+
+Full two-layer team debuff system documented in [TAUTI.md](TAUTI.md):
+
+- **Layer 1:** `tauti(1..3)` + `tkest(1..3)` — AI-only per-stat (goalie/defence/attack) debuffs, additive to `ode(d)`.
+- **Layer 2:** `tautip` + `tautik` — per-team multiplicative match-strength modifier (0.75–1.1), affects AI and human teams.
+- Writers: `sattuma` cases 29-30/50-51 (human), `uutisia` case pool (AI), `muilutus` prank (AI).
+- Countdown per round, season reset in `topmaar`.
+- TS TODO: wire `tautip` placeholder in `simulate-match.ts` + add `tauti` stat debuffs.
+
+**Still on the Phase-2 punch list:** `tautip` / `tauti` epidemic port,
+`spx(3/4)` consumables, `pel(*).spe`
 roster effects (extremelyFat, daddyPays), `jaynax(2/6)` prank wiring,
 league comeback handicap ([ILEX5.BAS:3754-3762](../ILEX5.BAS)),
 tournament-match path. All TODO-tagged inline in the port.
