@@ -1,11 +1,13 @@
-import { PlayerSelect } from "@/components/lineup/PlayerSelect";
+import {
+  PlayerSlotTrigger,
+  PlayerPicker
+} from "@/components/lineup/PlayerSelect";
 import Box from "@/components/ui/Box";
 import Stack from "@/components/ui/Stack";
-import { excludedPlayers } from "@/services/lineup";
 import type { LineupSlot, LineupTarget } from "@/services/lineup";
-import type { Lineup } from "@/state/lineup";
-import type { HiredPlayer } from "@/state/player";
 import type { FC } from "react";
+import { use } from "react";
+import { LineupContext } from "./LineupContext";
 
 const labelFromTarget = (target: LineupTarget): string => {
   switch (target.unit) {
@@ -22,41 +24,32 @@ const labelFromTarget = (target: LineupTarget): string => {
   }
 };
 
+const targetsMatch = (a: LineupTarget, b: LineupTarget): boolean =>
+  JSON.stringify(a) === JSON.stringify(b);
+
 type Props = {
-  players: Record<string, HiredPlayer>;
   id: string | null;
   slot: LineupSlot;
   target: LineupTarget;
-  lineup: Lineup;
-  appearances: Map<string, number>;
-  onAssign: (target: LineupTarget, playerId: string | null) => void;
 };
 
-export const PlayerView: FC<Props> = ({
-  id,
-  players,
-  slot,
-  target,
-  lineup,
-  appearances,
-  onAssign
-}) => {
-  const excluded = excludedPlayers(lineup, target);
+export const PlayerView: FC<Props> = ({ id, slot, target }) => {
+  const { activeTarget, activeSlot } = use(LineupContext)!;
+  const isActive = activeTarget !== null && targetsMatch(activeTarget, target);
 
   return (
     <Box p="xs">
       <Stack gap="xs">
-        <PlayerSelect
-          players={players}
-          slot={slot}
-          label={labelFromTarget(target)}
-          selected={id}
-          appearances={appearances}
-          excluded={excluded}
-          onSelect={(playerId) => {
-            onAssign(target, playerId || null);
-          }}
-        />
+        {isActive && activeSlot ? (
+          <PlayerPicker slot={activeSlot} selected={id} />
+        ) : (
+          <PlayerSlotTrigger
+            id={id}
+            slot={slot}
+            label={labelFromTarget(target)}
+            target={target}
+          />
+        )}
       </Stack>
     </Box>
   );

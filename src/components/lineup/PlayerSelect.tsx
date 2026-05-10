@@ -1,10 +1,14 @@
 import Badge from "@/components/ui/Badge";
 import type { AlertLevel } from "@/components/ui/Alert";
-import { applyPositionPenalty, performanceModifier } from "@/services/lineup";
-import type { LineupSlot } from "@/services/lineup";
+import {
+  applyPositionPenalty,
+  performanceModifier,
+  excludedPlayers
+} from "@/services/lineup";
+import type { LineupSlot, LineupTarget } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
 import * as Select from "@radix-ui/react-select";
-import type { FC } from "react";
+import { use, type FC } from "react";
 import { values } from "remeda";
 import {
   content,
@@ -15,13 +19,14 @@ import {
   trigger,
   viewport
 } from "./PlayerSelect.css";
+import { LineupContext } from "./LineupContext";
 
 /**
  * Position-adjusted skill for display & sorting in a specific slot.
  * Uses position penalty only (no specialty, no condition) — this is
  * UI guidance for the human manager, not the gameday calculation.
  */
-const slotSkill = (player: HiredPlayer, slot: LineupSlot): number =>
+export const slotSkill = (player: HiredPlayer, slot: LineupSlot): number =>
   applyPositionPenalty(
     player.position,
     slot,
@@ -33,7 +38,7 @@ const slotSkill = (player: HiredPlayer, slot: LineupSlot): number =>
  * 0 = bench (no badge), 1 = normal (info), 2 = double-duty (warning),
  * 3+ = lineup bug (danger).
  */
-const appearanceLevel = (count: number): AlertLevel | null => {
+export const appearanceLevel = (count: number): AlertLevel | null => {
   if (count <= 0) {
     return null;
   }
@@ -60,25 +65,64 @@ const PlayerInfo: FC<{ player: HiredPlayer; slot: LineupSlot }> = ({
   </>
 );
 
-type Props = {
-  players: Record<string, HiredPlayer>;
+/**
+ * Cheap button trigger — renders the current player (or empty label).
+ * Clicking opens the single shared picker for this slot.
+ */
+type SlotTriggerProps = {
+  id: string | null;
   slot: LineupSlot;
   label: string;
-  selected: string | null;
-  appearances: Map<string, number>;
-  excluded: Set<string>;
-  onSelect: (playerId: string) => void;
+  target: LineupTarget;
 };
 
-export const PlayerSelect: FC<Props> = ({
-  players,
+export const PlayerSlotTrigger: FC<SlotTriggerProps> = ({
+  id,
   slot,
   label,
-  selected,
-  appearances,
-  excluded,
-  onSelect
+  target
 }) => {
+  const ctx = use(LineupContext)!;
+  const { players, appearances, openSlot } = ctx;
+
+  const selectedPlayer = id ? players[id] : null;
+  const selectedCount = id ? (appearances.get(id) ?? 0) : 0;
+  const badgeLevel = appearanceLevel(selectedCount);
+
+  return (
+    <button
+      type="button"
+      className={trigger}
+      onClick={() => openSlot(target, slot)}
+    >
+      {selectedPlayer ? (
+        <>
+          <PlayerInfo player={selectedPlayer} slot={slot} />
+          {badgeLevel && <Badge level={badgeLevel}>{selectedCount}</Badge>}
+        </>
+      ) : (
+        `${label}: —`
+      )}
+    </button>
+  );
+};
+
+/**
+ * Full Radix Select — mounted only for the one active slot.
+ * Opens immediately via `defaultOpen`, closes → resets active slot.
+ */
+type PickerProps = {
+  slot: LineupSlot;
+  selected: string | null;
+};
+
+export const PlayerPicker: FC<PickerProps> = ({ slot, selected }) => {
+  const ctx = use(LineupContext)!;
+  const { players, appearances, onAssign, activeTarget, closeSlot } = ctx;
+  const excluded = activeTarget
+    ? excludedPlayers(ctx.lineup, activeTarget)
+    : new Set<string>();
+
   const sorted = values(players).toSorted(
     (a, b) => slotSkill(b, slot) - slotSkill(a, slot)
   );
@@ -91,8 +135,19 @@ export const PlayerSelect: FC<Props> = ({
 
   return (
     <Select.Root
+      defaultOpen
       value={selected ?? NONE}
-      onValueChange={(value) => onSelect(value === NONE ? "" : value)}
+      onValueChange={(value) => {
+        if (activeTarget) {
+          onAssign(activeTarget, value === NONE ? null : value);
+        }
+        closeSlot();
+      }}
+      onOpenChange={(open) => {
+        if (!open) {
+          closeSlot();
+        }
+      }}
     >
       <Select.Trigger className={trigger}>
         <Select.Value>
@@ -104,7 +159,7 @@ export const PlayerSelect: FC<Props> = ({
               )}
             </>
           ) : (
-            `${label}: —`
+            `— `
           )}
         </Select.Value>
       </Select.Trigger>

@@ -128,7 +128,7 @@ hard way during the MHM 97 modernization; deviations cause subtle bugs.
 - **`gameMachine`** owns all gameplay state. Its context is `GameContext` extended with round-management scratch fields. Compound states for round flow.
 - **`@xstate/store` instances** for ephemeral or cross-cutting UI state. Components read via `useSelector` from `@xstate/store-react`.
 - **`useState`** for component-local state (form drafts, tab indices).
-- **NEVER React Context as a state layer** — Context is for dependency injection (e.g. providing the `gameActor`). State lives in machines/stores or `useState`.
+- **React Context is for dependency injection, not game state.** All game state lives in machines / stores / `useState`. Context is the right tool for scoped DI within a UI concern — e.g. providing the `gameActor`, or injecting shared data + callbacks into a component subtree to avoid prop drilling (see `LineupContext` in [src/components/lineup/LineupContext.ts](src/components/lineup/LineupContext.ts)).
 
 ### Page / leaf component boundary
 
@@ -322,9 +322,9 @@ One concern per change set. Keep diffs reviewable.
   - Prefer CSS nesting, `:has()`, `:is()`, container queries, `light-dark()`, logical properties — modern CSS removes most historical reasons to reach for a global rule.
   - `globalStyle` is reserved for genuine globals: element resets in [src/styles/global.css.ts](src/styles/global.css.ts), `:root` tokens, `@font-face`. Not for styling a third-party component or "just this one descendant".
 
-### 5. State homes: machines/stores or `useState` — nothing in between
+### 5. State homes & React Context
 
-See "Architecture Conventions" above. No React Context as a state layer.
+Game state lives in machines / `@xstate/store` / `useState`. React Context is **not** a game state layer — but it is the right tool for UI-scoped dependency injection (shared data + callbacks within a component subtree, avoiding prop drilling). See `LineupContext` for a clean example.
 
 ### 6. Page / leaf boundary
 

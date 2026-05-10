@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { type FC, useState } from "react";
 import ManagerInfo from "./ManagerInfo";
 import StickyMenu from "./StickyMenu";
 import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
@@ -16,19 +16,22 @@ import { DefensivePairingView } from "@/components/lineup/DefencivePairingView";
 import { PowerPlayView } from "@/components/lineup/PowerPlayView";
 import { PenaltyKillView } from "@/components/lineup/PenaltyKillView";
 import { lineupAppearances } from "@/services/lineup";
-import type { LineupTarget } from "@/services/lineup";
+import type { LineupSlot, LineupTarget } from "@/services/lineup";
+import { LineupContext } from "@/components/lineup/LineupContext";
 
 const Lineup: FC = () => {
   const manager = useGameContext(activeManager);
   const team = useGameContext(managersTeam(manager.id));
-
   const game = GameMachineContext.useActorRef();
 
-  const lineup = team.kind === "human" ? team.lineup : undefined;
+  const [activeTarget, setActiveTarget] = useState<LineupTarget | null>(null);
+  const [activeSlot, setActiveSlot] = useState<LineupSlot | null>(null);
 
-  const appearances = lineup
-    ? lineupAppearances(lineup)
-    : new Map<string, number>();
+  if (team.kind !== "human") {
+    return;
+  }
+
+  const appearances = lineupAppearances(team.lineup);
 
   const onAssign = (target: LineupTarget, playerId: string | null) => {
     game.send({
@@ -37,89 +40,74 @@ const Lineup: FC = () => {
     });
   };
 
-  if (team.kind !== "human") {
-    return;
-  }
+  const openSlot = (target: LineupTarget, slot: LineupSlot) => {
+    setActiveTarget(target);
+    setActiveSlot(slot);
+  };
+
+  const closeSlot = () => {
+    setActiveTarget(null);
+    setActiveSlot(null);
+  };
 
   return (
-    <AdvancedHeaderedPage
-      escTo="/"
-      stickyMenu={<StickyMenu back />}
-      managerInfo={<ManagerInfo details />}
+    <LineupContext
+      value={{
+        players: team.players,
+        lineup: team.lineup,
+        appearances,
+        onAssign,
+        activeTarget,
+        openSlot,
+        closeSlot,
+        activeSlot
+      }}
     >
-      <Heading level={2}>Kokoonpano</Heading>
+      <AdvancedHeaderedPage
+        escTo="/"
+        stickyMenu={<StickyMenu back />}
+        managerInfo={<ManagerInfo details />}
+      >
+        <Heading level={2}>Kokoonpano</Heading>
 
-      <Stack gap="lg">
-        <Button
-          onClick={() => {
-            game.send({
-              type: "AUTO_LINEUP",
-              payload: {
-                manager: manager.id
-              }
-            });
-          }}
-        >
-          AUTO
-        </Button>
+        <Stack gap="lg">
+          <Button
+            onClick={() => {
+              game.send({
+                type: "AUTO_LINEUP",
+                payload: {
+                  manager: manager.id
+                }
+              });
+            }}
+          >
+            AUTO
+          </Button>
 
-        <Stack gap="sm">
-          <GoalieView
-            players={team.players}
-            g={team.lineup.g}
-            lineup={team.lineup}
-            appearances={appearances}
-            onAssign={onAssign}
-          />
+          <Stack gap="sm">
+            <GoalieView g={team.lineup.g} />
 
-          {team.lineup.defensivePairings.map((defensivePairing, id) => {
-            return (
+            {team.lineup.defensivePairings.map((defensivePairing, id) => (
               <DefensivePairingView
                 key={id}
                 index={id}
-                players={team.players}
                 pairing={defensivePairing}
-                lineup={team.lineup}
-                appearances={appearances}
-                onAssign={onAssign}
               />
-            );
-          })}
+            ))}
 
-          {team.lineup.forwardLines.map((forwardLine, id) => {
-            return (
-              <ForwardLineView
-                key={id}
-                index={id}
-                players={team.players}
-                line={forwardLine}
-                lineup={team.lineup}
-                appearances={appearances}
-                onAssign={onAssign}
-              />
-            );
-          })}
+            {team.lineup.forwardLines.map((forwardLine, id) => (
+              <ForwardLineView key={id} index={id} line={forwardLine} />
+            ))}
+          </Stack>
+
+          <Heading level={3}>Ylivoimakenttä</Heading>
+          <PowerPlayView team={team.lineup.powerplayTeam} />
+
+          <Heading level={3}>Alivoimakenttä</Heading>
+          <PenaltyKillView team={team.lineup.penaltyKillTeam} />
         </Stack>
-
-        <Heading level={3}>Ylivoimakenttä</Heading>
-        <PowerPlayView
-          team={team.lineup.powerplayTeam}
-          players={team.players}
-          lineup={team.lineup}
-          appearances={appearances}
-          onAssign={onAssign}
-        />
-
-        <Heading level={3}>Alivoimakenttä</Heading>
-        <PenaltyKillView
-          team={team.lineup.penaltyKillTeam}
-          players={team.players}
-          lineup={team.lineup}
-          appearances={appearances}
-          onAssign={onAssign}
-        />
-      </Stack>
-    </AdvancedHeaderedPage>
+      </AdvancedHeaderedPage>
+    </LineupContext>
   );
 };
 
