@@ -434,6 +434,11 @@ tests:
   world-generation pipeline (`oppnas2` → `vihat`), save-file layout,
   XState mapping cheat sheet. **Required reading before touching the
   new-game flow.**
+- [SPONSORS.md](SPONSORS.md) — `SUB sponsorit` + `SUB annarahaa` +
+  `SUB sporvagen` end-to-end: preseason 3-candidate negotiation, 4
+  goal categories (PHL / DIV-MUT / CUP / EHL), 20 payout slots, base
+  offer formula, NEUVOTTELE roll mechanics, the "two-walked
+  lockout", every payout trigger site, CPU-team open question.
 
 ## What we already know (verified)
 
