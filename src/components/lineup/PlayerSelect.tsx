@@ -12,17 +12,6 @@ import { values } from "remeda";
 import { select, option, playerName, positionTag, skillValue } from "./PlayerSelect.css";
 import { LineupContext } from "./LineupContext";
 
-declare module "react" {
-  namespace JSX {
-    interface IntrinsicElements {
-      selectedcontent: React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      >;
-    }
-  }
-}
-
 /**
  * Position-adjusted skill for display & sorting in a specific slot.
  * Uses position penalty only (no specialty, no condition) — this is
@@ -81,6 +70,7 @@ export const PlayerSelect: FC<Props> = ({ slot, label, selected, target }) => {
     (a, b) => slotSkill(b, slot) - slotSkill(a, slot)
   );
 
+  const selectedPlayer = selected ? players[selected] : null;
   const selectedCount = selected ? (appearances.get(selected) ?? 0) : 0;
   const selectedBadgeLevel = appearanceLevel(selectedCount);
 
@@ -93,7 +83,16 @@ export const PlayerSelect: FC<Props> = ({ slot, label, selected, target }) => {
       }}
     >
       <button type="button">
-        <selectedcontent />
+        {selectedPlayer ? (
+          <>
+            <PlayerInfo player={selectedPlayer} slot={slot} />
+            {selectedBadgeLevel && (
+              <Badge level={selectedBadgeLevel}>{selectedCount}</Badge>
+            )}
+          </>
+        ) : (
+          <span>{label}: —</span>
+        )}
       </button>
 
       <option value={NONE} className={option}>
@@ -113,12 +112,7 @@ export const PlayerSelect: FC<Props> = ({ slot, label, selected, target }) => {
             disabled={isExcluded}
           >
             <PlayerInfo player={player} slot={slot} />
-            {selectedBadgeLevel && selected === player.id && (
-              <Badge level={selectedBadgeLevel}>{selectedCount}</Badge>
-            )}
-            {level && selected !== player.id && (
-              <Badge level={level}>{count}</Badge>
-            )}
+            {level && <Badge level={level}>{count}</Badge>}
           </option>
         );
       })}
