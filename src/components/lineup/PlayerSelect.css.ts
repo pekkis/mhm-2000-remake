@@ -1,7 +1,8 @@
-import { style } from "@vanilla-extract/css";
+import { globalStyle, style } from "@vanilla-extract/css";
 import { vars } from "@/styles/theme.css";
 
-export const trigger = style({
+export const select = style({
+  appearance: "base-select",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "space-between",
@@ -17,24 +18,16 @@ export const trigger = style({
   minInlineSize: "16rem"
 });
 
-export const content = style({
+globalStyle(`${select}::picker(select)`, {
+  appearance: "base-select",
   border: `1px solid ${vars.color.border}`,
   borderRadius: vars.radius.sm,
   background: vars.color.bg,
   padding: 0,
-  maxBlockSize: "20rem",
-  overflow: "auto",
-  minInlineSize: "var(--radix-select-trigger-width)"
+  maxBlockSize: "20rem"
 });
 
-export const viewport = style({
-  padding: vars.space.xs,
-  display: "flex",
-  flexDirection: "column",
-  gap: vars.space.xs
-});
-
-export const item = style({
+export const option = style({
   display: "flex",
   alignItems: "center",
   gap: vars.space.sm,
@@ -44,10 +37,13 @@ export const item = style({
   outline: "none",
   userSelect: "none",
   selectors: {
-    "&[data-highlighted]": {
+    "&:hover, &:focus": {
       background: vars.color.surfaceMuted
     },
-    "&[data-disabled]": {
+    "&:checked": {
+      fontWeight: "bold"
+    },
+    "&:disabled": {
       opacity: 0.4,
       cursor: "not-allowed"
     }

@@ -1,4 +1,4 @@
-import { type FC, useState } from "react";
+import type { FC } from "react";
 import ManagerInfo from "./ManagerInfo";
 import StickyMenu from "./StickyMenu";
 import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
@@ -16,16 +16,13 @@ import { DefensivePairingView } from "@/components/lineup/DefencivePairingView";
 import { PowerPlayView } from "@/components/lineup/PowerPlayView";
 import { PenaltyKillView } from "@/components/lineup/PenaltyKillView";
 import { lineupAppearances } from "@/services/lineup";
-import type { LineupSlot, LineupTarget } from "@/services/lineup";
+import type { LineupTarget } from "@/services/lineup";
 import { LineupContext } from "@/components/lineup/LineupContext";
 
 const Lineup: FC = () => {
   const manager = useGameContext(activeManager);
   const team = useGameContext(managersTeam(manager.id));
   const game = GameMachineContext.useActorRef();
-
-  const [activeTarget, setActiveTarget] = useState<LineupTarget | null>(null);
-  const [activeSlot, setActiveSlot] = useState<LineupSlot | null>(null);
 
   if (team.kind !== "human") {
     return;
@@ -40,27 +37,13 @@ const Lineup: FC = () => {
     });
   };
 
-  const openSlot = (target: LineupTarget, slot: LineupSlot) => {
-    setActiveTarget(target);
-    setActiveSlot(slot);
-  };
-
-  const closeSlot = () => {
-    setActiveTarget(null);
-    setActiveSlot(null);
-  };
-
   return (
     <LineupContext
       value={{
         players: team.players,
         lineup: team.lineup,
         appearances,
-        onAssign,
-        activeTarget,
-        openSlot,
-        closeSlot,
-        activeSlot
+        onAssign
       }}
     >
       <AdvancedHeaderedPage
