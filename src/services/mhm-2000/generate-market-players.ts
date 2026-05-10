@@ -5,7 +5,6 @@ import { keisit } from "@/data/keisit";
 import { borssix } from "@/data/borssix";
 import { createUniqueId } from "@/services/id";
 import { generateBaseAttributes } from "./generate-player";
-import { computeSalary } from "./compute-salary";
 
 /**
  * Build the weighted 200-slot skill-bucket array for one nation.
@@ -76,7 +75,6 @@ export function generateMarketPlayers(
       effects: [],
       tags: [],
       condition: 0,
-      askingSalary: computeSalary({ ...base, skill }),
       stats: {
         season: { games: 0, goals: 0, assists: 0 },
         total: { games: 0, goals: 0, assists: 0 }

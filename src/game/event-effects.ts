@@ -375,7 +375,7 @@ export function applyEffect(
       if (!team || team.kind !== "human") {
         return;
       }
-      const { askingSalary: _, type: __, ...baseFields } = effect.player;
+      const { type: _, ...baseFields } = effect.player;
       team.players[effect.player.id] = {
         ...baseFields,
         type: "hired",

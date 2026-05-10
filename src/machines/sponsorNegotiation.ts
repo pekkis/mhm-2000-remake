@@ -89,6 +89,8 @@ export type CandidateState = {
   haggleCount: number;
   /** Whether the candidate has walked away (failed haggle roll). */
   walked: boolean;
+  /** Result of the most recent haggle attempt, if any. */
+  lastHaggleResult: "success" | "failure" | null;
 };
 
 // ─── Public types ─────────────────────────────────────────────────────────────
@@ -157,7 +159,7 @@ const buildCandidate = (
     ehl: 1
   };
   const payouts = buildOfferPayouts(base, goals, leagueTier, jitter);
-  return { name, jitter, goals, payouts, haggleCount: 0, walked: false };
+  return { name, jitter, goals, payouts, haggleCount: 0, walked: false, lastHaggleResult: null };
 };
 
 /** Rebuild payouts from current goals. Used when goals change. */
@@ -328,7 +330,8 @@ export const sponsorNegotiationMachine = setup({
                   return {
                     ...c,
                     walked: true,
-                    payouts: { ...emptySponsorPayouts }
+                    payouts: { ...emptySponsorPayouts },
+                    lastHaggleResult: "failure" as const
                   };
                 }
                 // Success: bump positive slots + increment haggle count
@@ -337,7 +340,8 @@ export const sponsorNegotiationMachine = setup({
                 return {
                   ...c,
                   haggleCount: c.haggleCount + 1,
-                  payouts: bumpedPayouts
+                  payouts: bumpedPayouts,
+                  lastHaggleResult: "success" as const
                 };
               }) as [CandidateState, CandidateState, CandidateState];
             }

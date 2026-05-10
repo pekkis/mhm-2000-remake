@@ -7,8 +7,7 @@
  */
 
 import type { TeamBudget } from "@/data/mhm2000/budget";
-import { computeSalary } from "./compute-salary";
-import type { MarketPlayer, Player } from "@/state/player";
+import type { MarketPlayer } from "@/state/player";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -238,9 +237,4 @@ export function adjustSalary(
     return Math.round(current + current * 0.015);
   }
   return Math.max(50, Math.round(current - current * 0.015));
-}
-
-/** Convenience: compute the base salary for a player (calls palkmaar). */
-export function computeBaseSalary(player: Player): number {
-  return computeSalary(player);
 }

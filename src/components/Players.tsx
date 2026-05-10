@@ -1,5 +1,7 @@
 import { useState, type FC, type ReactNode } from "react";
 import { prop, sortBy, values } from "remeda";
+import { useNavigate } from "react-router-dom";
+import { useHotkeys } from "@mantine/hooks";
 import ManagerInfo from "./ManagerInfo";
 import StickyMenu from "./StickyMenu";
 import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
@@ -443,6 +445,9 @@ const Players: FC = () => {
   const manager = useGameContext(activeManager);
   const team = useGameContext(managersTeam(manager.id));
   const [tab, setTab] = useState(0);
+  const navigate = useNavigate();
+
+  useHotkeys([["q", () => navigate("/kokoonpano")]]);
 
   if (team.kind !== "human") {
     return null;

@@ -32,6 +32,7 @@ const MainMenu = () => {
 
   useHotkeys([
     ["a", () => navigate("/pelaajat")],
+    ["b", () => navigate("/kokoonpano")],
     [
       "shift+ArrowUp",
       () => {

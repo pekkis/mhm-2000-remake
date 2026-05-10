@@ -1,4 +1,6 @@
 import type { FC } from "react";
+import { useNavigate } from "react-router-dom";
+import { useHotkeys } from "@mantine/hooks";
 import ManagerInfo from "./ManagerInfo";
 import StickyMenu from "./StickyMenu";
 import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
@@ -23,6 +25,9 @@ const Lineup: FC = () => {
   const manager = useGameContext(activeManager);
   const team = useGameContext(managersTeam(manager.id));
   const game = GameMachineContext.useActorRef();
+  const navigate = useNavigate();
+
+  useHotkeys([["q", () => navigate("/pelaajat")]]);
 
   if (team.kind !== "human") {
     return;

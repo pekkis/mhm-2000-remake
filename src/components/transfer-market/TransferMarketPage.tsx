@@ -20,6 +20,7 @@ import type { MarketPlayer, Player } from "@/state/player";
 import type { FC } from "react";
 import { prop, sortBy, values } from "remeda";
 import ContractNegotiationView from "./ContractNegotiationView";
+import { Link } from "react-router-dom";
 
 const POSITION_ORDER: Record<Player["position"], number> = {
   g: 0,
@@ -75,10 +76,14 @@ const TransferMarketBrowser: FC = () => {
           }
         >
           {!budgetDone && (
-            <Paragraph>
-              Puhelinliittymäsi on suljettu. Se hankaloittaa neuvotteluja.
-              Määrittele budjetti, se auttaa!
-            </Paragraph>
+            <>
+              <Paragraph>
+                GSM-liittymäsi on valitettavasti suljettu, eikä toimiston faksi
+                laula sulosointuja.{" "}
+                <Link to="/budjetti">Budjetoinnin jälkeen</Link> sihteeri kyllä
+                juoksee pankkiin maksamaan kaikki erääntyneet laskut!
+              </Paragraph>
+            </>
           )}
           <Table>
             <thead>

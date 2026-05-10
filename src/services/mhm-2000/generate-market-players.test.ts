@@ -118,48 +118,6 @@ describe("generateMarketPlayers — port of QB `borsgene` SUB", () => {
     });
   });
 
-  describe("askingSalary", () => {
-    it("askingSalary is strictly positive for every player", () => {
-      const r = createRandom(40);
-      for (const p of Object.values(generateMarketPlayers(50, r))) {
-        expect(p.askingSalary).toBeGreaterThan(0);
-      }
-    });
-
-    it("askingSalary increases with skill (higher skill → higher asking salary)", () => {
-      // Generate many players and verify the correlation holds on average
-      const r = createRandom(41);
-      const players = Object.values(generateMarketPlayers(440, r));
-      const lowSkill = players.filter((p) => p.skill <= 5);
-      const highSkill = players.filter((p) => p.skill >= 15);
-      if (lowSkill.length > 0 && highSkill.length > 0) {
-        const avgLow =
-          lowSkill.reduce((s, p) => s + p.askingSalary, 0) / lowSkill.length;
-        const avgHigh =
-          highSkill.reduce((s, p) => s + p.askingSalary, 0) / highSkill.length;
-        expect(avgHigh).toBeGreaterThan(avgLow);
-      }
-    });
-
-    it("psk=1 player has askingSalary ~100", () => {
-      // At skill=1, neutral mods: 1^1.205 * 100 = 100
-      let found = false;
-      for (let seed = 0; seed < 30; seed++) {
-        const r = createRandom(seed);
-        for (const p of Object.values(generateMarketPlayers(440, r))) {
-          if (p.skill === 1) {
-            expect(p.askingSalary).toBeCloseTo(100, -2);
-            found = true;
-            break;
-          }
-        }
-        if (found) {
-          break;
-        }
-      }
-    });
-  });
-
   describe("specialty — QB borsgene gate: only when psk > 6", () => {
     it("players with skill <= 6 always have specialty=null", () => {
       const r = createRandom(50);

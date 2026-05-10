@@ -61,6 +61,14 @@ const ActionMenu = () => {
             Päävalikko
           </Link>
 
+          <Link onClick={close} to="/pelaajat" title="a">
+            Pelaajarinki
+          </Link>
+
+          <Link onClick={close} to="/kokoonpano" title="b">
+            Ketjukokoonpano
+          </Link>
+
           <Link onClick={close} to="/budjetti">
             Budjetointi {budgetDone ? "✓" : "○"}
           </Link>
@@ -92,10 +100,6 @@ const ActionMenu = () => {
               Sponsorineuvottelut ○
             </a>
           )}
-
-          <Link onClick={close} to="/kokoonpano">
-            Kokoonpano
-          </Link>
 
           <Link onClick={close} to="/organisaatio">
             Organisaatio

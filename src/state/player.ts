@@ -322,15 +322,13 @@ export type HiredPlayer = BasePlayer & {
  * A player on the free-agent market (`bel()` in QB).
  *
  * Copied from `pel()` with `pok = 0` (total stats reset) and `neu`
- * toggled. No active contract exists — `sra` in QB becomes the
- * negotiation starting point (`askingSalary`) fed into `sopimusext`.
- * `plannedDeparture` is also meaningless outside a live contract.
+ * toggled. No active contract — salary is computed on the fly from
+ * the player's stats via `computeSalary` (port of QB `palkmaar`)
+ * at negotiation start. `plannedDeparture` is also meaningless
+ * outside a live contract.
  */
 export type MarketPlayer = BasePlayer & {
   type: "market";
-
-  /** QB `pel.sra` — asking salary, basis for contract negotiation. */
-  askingSalary: number;
 };
 
 export type Player = HiredPlayer | MarketPlayer;

@@ -4,7 +4,7 @@ import { contractNegotiationMachine } from "./contractNegotiation";
 import type { ContractNegotiationInput } from "./contractNegotiation";
 import { createRandom } from "@/services/random";
 import type { TeamBudget } from "@/data/mhm2000/budget";
-import { computeBaseSalary } from "@/services/mhm-2000/contract-negotiation";
+import { computeSalary } from "@/services/mhm-2000/compute-salary";
 import type { MarketPlayer } from "@/state/player";
 import type { HumanManager } from "@/state/game";
 
@@ -48,7 +48,6 @@ const HAPPY_PLAYER: MarketPlayer = {
   effects: [],
   tags: [],
   condition: 0,
-  askingSalary: 8000,
   stats: {
     season: { games: 0, goals: 0, assists: 0 },
     total: { games: 0, goals: 0, assists: 0 }
@@ -198,7 +197,7 @@ describe("initial negotiating state", () => {
     actor.start();
     const ctx = actor.getSnapshot().context;
     expect(ctx.offeredSalary).toBe(ctx.baseSalary);
-    expect(ctx.baseSalary).toBe(computeBaseSalary(HAPPY_PLAYER));
+    expect(ctx.baseSalary).toBe(computeSalary(HAPPY_PLAYER));
   });
 });
 

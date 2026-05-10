@@ -17,6 +17,7 @@ import {
   negotiationActionLabels
 } from "@/data/mhm2000/sponsors";
 import type { GoalCategoryId, GoalLevel } from "@/data/mhm2000/sponsors";
+import { payoutPulse, haggleShake } from "./SponsorNegotiationView.css";
 
 const CandidateTab: React.FC<{
   candidate: CandidateState;
@@ -24,7 +25,12 @@ const CandidateTab: React.FC<{
   isActive: boolean;
   onSelect: () => void;
 }> = ({ candidate, index, isActive, onSelect }) => (
-  <Button onClick={onSelect} secondary={!isActive} disabled={candidate.walked}>
+  <Button
+    onClick={onSelect}
+    secondary={!isActive}
+    disabled={candidate.walked}
+    className={candidate.lastHaggleResult === "failure" ? haggleShake : undefined}
+  >
     {index + 1}. {candidate.name}
     {candidate.walked && " (POISTUNUT)"}
   </Button>
@@ -70,48 +76,52 @@ const SponsorNegotiationView = () => {
           ))}
         </Cluster>
 
-        {canSetGoals && (
-          <Stack gap="sm">
-            <Heading level={3}>Tavoitteet</Heading>
-            {categories
-              .filter((cat) => cat.maxLevel > 0)
-              .map((cat) => (
-                <Cluster key={cat.id}>
-                  <strong>{goalCategoryLabel[cat.id]}:</strong>
-                  {goalLevelLabels[cat.id].map((label, idx) => {
-                    const level = (idx + 1) as GoalLevel;
-                    if (level > cat.maxLevel) {
-                      return null;
-                    }
-                    const isSelected = active.goals[cat.id] === level;
-                    return (
-                      <Button
-                        key={level}
-                        disabled={!canSetGoals}
-                        secondary={!isSelected}
-                        onClick={() =>
-                          send({
-                            type: "SET_GOAL",
-                            category: cat.id as GoalCategoryId,
-                            level
-                          })
-                        }
-                      >
-                        {label}
-                      </Button>
-                    );
-                  })}
-                </Cluster>
-              ))}
-          </Stack>
-        )}
-
         <Stack gap="sm">
-          <Heading level={3}>Tarjous: {active.name}</Heading>
+          <Heading level={3}>Tavoitteet</Heading>
+          {categories
+            .filter((cat) => cat.maxLevel > 0)
+            .map((cat) => (
+              <Cluster key={cat.id}>
+                <strong>{goalCategoryLabel[cat.id]}:</strong>
+                {goalLevelLabels[cat.id].map((label, idx) => {
+                  const level = (idx + 1) as GoalLevel;
+                  if (level > cat.maxLevel) {
+                    return null;
+                  }
+                  const isSelected = active.goals[cat.id] === level;
+                  return (
+                    <Button
+                      key={level}
+                      disabled={!canSetGoals && !isSelected}
+                      secondary={!isSelected}
+                      onClick={() =>
+                        send({
+                          type: "SET_GOAL",
+                          category: cat.id as GoalCategoryId,
+                          level
+                        })
+                      }
+                    >
+                      {label}
+                    </Button>
+                  );
+                })}
+              </Cluster>
+            ))}
+        </Stack>
+
+        <Stack gap="sm" key={`${activeCandidateIndex}-${active.haggleCount}-${active.walked}`}>
+          <Heading level={3} className={active.lastHaggleResult === "failure" ? haggleShake : undefined}>
+            Tarjous: {active.name}
+            {active.walked && " — neuvottelu päättyi"}
+          </Heading>
           {sponsorPayoutSlots
             .filter((s) => active.payouts[s] !== 0)
             .map((slot) => (
-              <div key={slot}>
+              <div
+                key={slot}
+                className={active.lastHaggleResult === "success" ? payoutPulse : undefined}
+              >
                 {sponsorSlotLabel[slot]}:{" "}
                 {active.payouts[slot].toLocaleString("fi-FI")} mk
               </div>

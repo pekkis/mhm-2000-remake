@@ -27,9 +27,9 @@ import {
   computeAskingPrice,
   computeAcceptanceProbability,
   attemptNegotiation,
-  adjustSalary,
-  computeBaseSalary
+  adjustSalary
 } from "@/services/mhm-2000/contract-negotiation";
+import { computeSalary } from "@/services/mhm-2000/compute-salary";
 import {
   type NegotiationDialogKey,
   getDialogLine
@@ -259,7 +259,7 @@ export const contractNegotiationMachine = setup({
   },
   context: ({ input }) => {
     const teamNeedsRating = computeTeamNeedsRating(input.budget, input.player);
-    const baseSalary = computeBaseSalary(input.player);
+    const baseSalary = computeSalary(input.player);
     const willingnessThreshold = computeWillingnessThreshold(
       teamNeedsRating,
       input.manager.attributes.charisma

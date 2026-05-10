@@ -60,7 +60,6 @@ const BASE_SKATER: MarketPlayer = {
   effects: [],
   tags: [],
   condition: 0,
-  askingSalary: 10000,
   stats: {
     season: { games: 0, goals: 0, assists: 0 },
     total: { games: 0, goals: 0, assists: 0 }
