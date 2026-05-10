@@ -132,13 +132,13 @@ and intercepts three escape sigils: `$X` (color tokens, see above),
 | Token | Substitution                                                                                                                                            | Source                          |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
 | `@0`  | newline (`PRINT`)                                                                                                                                       | `lt` CASE 0 at `:3079`          |
-| `@1`  | current player full description: `name (age, pos, psk)` — uses `pel(xx, pv)`                                                                            | `lt` CASE 1 at `:3081`          |
+| `@1`  | current player full description: `` `name (age, pos, psk)` `` — uses `pel(xx, pv)`                                                                      | `lt` CASE 1 at `:3081`          |
 | `@2`  | top scorer name from opposition: `top(tox(xx), 1).nam`                                                                                                  | `lt` CASE 2 at `:3083`          |
 | `@3`  | nationality name: `kansap(xx)`                                                                                                                          | `lt` CASE 3 at `:3085`          |
 | `@4`  | money amount: `LTRIM$(STR$(ABS(rahna)))` — note: ALWAYS positive, so the surrounding text supplies the sign ("MAKSAT @4 EUROA" / "SAAT @4 EUROA")       | `lt` CASE 4 at `:3087`          |
 | `@5`  | generic integer: `LTRIM$(STR$(gnome))` — `gnome` is the throwaway scratch INTEGER used by every event for "the number you should print here"            | `lt` CASE 5 at `:3089`          |
 | `@6`  | current manager name: `mana(man(u(pv))).nam` (in colorchecked color)                                                                                    | `lt` CASE 6 at `:3091`          |
-| `@7`  | secondary player full description: `name (age, pos, psk)` — uses `pel(yy, pv)` (different player slot than `xx`)                                        | `lt` CASE 7 at `:3094`          |
+| `@7`  | secondary player full description: `` `name (age, pos, psk)` `` — uses `pel(yy, pv)` (different player slot than `xx`)                                  | `lt` CASE 7 at `:3094`          |
 
 #### `£N` table (one-digit decimal team/manager placeholders)
 

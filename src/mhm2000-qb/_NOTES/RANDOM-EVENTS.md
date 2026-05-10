@@ -510,7 +510,7 @@ added (or modeled differently) for MHM 2000.
 | `rahna = N: rah` (positive)       | money +                                         | `incrementBalance` ✅                                                                                                  |
 | `rahna = -N: rah`                 | money −                                         | `decrementBalance` ✅                                                                                                  |
 | `raha(pv) = raha(pv) - .1 * raha` | money percentage                                | **NEW** — `decrementBalancePercent` (or compute amount in `resolve`, then `decrementBalance`). Used by case 25.       |
-| `raha(pv) = -raha(pv)`            | wipe to negation                                | **NEW** (and likely a QB bug — preserve verbatim?). Used by case 48-49.                                               |
+| `raha(pv) = -raha(pv)`            | wipe to negation                                | **NEW** (and likely a QB bug — preserve verbatim?). Negates the balance regardless of sign (positive ↔ negative). Used by case 48-49.        |
 | `mor team, ±N`                    | morale ±                                        | `incrementMorale` / `decrementMorale` ✅                                                                               |
 | `tre(team) += 0.02 / -= 0.02`     | readiness drift                                 | **NEW** — `incrementReadiness` (was previously deleted with the MHM 97 readiness arc; **add back** with delta scale). |
 | `potti(pv) += amount`             | jackpot pool +                                  | **NEW** — `incrementJackpot` (case 59). The jackpot pool pays out elsewhere; just need a way to feed it.              |
@@ -524,7 +524,7 @@ added (or modeled differently) for MHM 2000.
 | `sovtap(pv) = 1`                  | match-fixing forced-loss queued            | **NEW** — `setMatchFixingForced(team)` or generic team-effect.                                                          |
 | `krapu(pv) = 1/2`                 | hangover state (1 = mild, 2 = pikku-ukot)  | **NEW** — visible in lineup screen + drives mood-event guard.                                                           |
 | `kuume(pv) = 1`                   | fever                                      | **NEW** — drives match-engine penalty.                                                                                  |
-| `tautip(pv) = 0.8/0.9/1`          | illness severity multiplier                | **NEW** — single SINGLE; clamps match performance.                                                                      |
+| `tautip(pv) = 0.8/0.9/1`          | illness severity multiplier                | **NEW** — SINGLE-precision float; clamps match performance.                                                             |
 | `tautik(pv) = N`                  | illness duration in rounds                 | **NEW** — countdown.                                                                                                    |
 | `uhka(pv) = 1/2`                  | pending threat from UH.MHM                 | **NEW** — set here, consumed later via "l" hotkey UI moment.                                                            |
 | `verk% = xx`                      | betting tip flag                           | **NEW** — and ❓ TODO understand the full mechanic (where does `verk%` get read?).                                      |
