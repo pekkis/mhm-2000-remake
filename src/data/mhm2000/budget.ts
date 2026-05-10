@@ -468,9 +468,9 @@ export const initialServicesForRankings = (
 
 export const initialServicesForEliteForeignTeams = (): TeamServices => {
   return {
-    alcoholSales: 2,
+    alcoholSales: 0,
     doping: 0,
-    fanGroup: 2,
+    fanGroup: 0,
     travel: 4
   };
 };

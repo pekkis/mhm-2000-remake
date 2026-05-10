@@ -38,7 +38,7 @@ const tournaments: CompetitionDefinition = {
   homeAndAwayTeamAdvantages: () => {
     return {
       home: 1.0,
-      away: 0.85
+      away: 1.0
     };
   },
 

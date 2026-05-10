@@ -36,7 +36,7 @@ const practice: CompetitionDefinition = {
     phases: []
   },
 
-  doesTravelApply: (_phase) => true,
+  doesTravelApply: (_phase) => false,
 
   homeAndAwayTeamAdvantages: (_phase) => {
     return {

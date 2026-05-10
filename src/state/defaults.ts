@@ -38,7 +38,6 @@ import {
 } from "@/data/mhm2000/budget";
 
 import random from "@/services/random";
-import { emptyTeamBudget } from "@/services/empties";
 
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
@@ -158,22 +157,13 @@ const seedTeams = (): Team[] => {
   ];
 
   return seedables.map((seedable, id) => {
-    const rankedData = seedable.previousRankings
-      ? {
-          previousRankings: seedable.previousRankings
-        }
-      : {
-          budget: emptyTeamBudget()
-        };
-
     return {
       ...seedable,
       id,
       kind: "ai",
       strengthObj: rollTeamStrength(seedable.tier),
       intensity: 1,
-      fixMatch: false,
-      ...rankedData
+      fixMatch: false
     } satisfies Team;
   });
 };
