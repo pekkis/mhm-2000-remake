@@ -10,6 +10,7 @@
 // cross-reference, not as a runtime dependency.
 
 import type { CompetitionId } from "@/types/competitions";
+import type { SeasonAction } from "@/state/game";
 
 export type Seed = {
   competition: CompetitionId;
@@ -27,6 +28,7 @@ export type CalendarEntry = {
   createRandomEvent: boolean;
   pranks: boolean;
   tags: string[];
+  requiredActions?: SeasonAction[];
 };
 
 type RawCalendarEntry = Omit<CalendarEntry, "round">;

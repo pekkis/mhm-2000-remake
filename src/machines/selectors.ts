@@ -36,7 +36,7 @@ import type {
   PlayoffGroup,
   TeamStat
 } from "@/types/competitions";
-import type { HumanManager } from "@/state/game";
+import type { HumanManager, SeasonAction } from "@/state/game";
 import type { MarketPlayer } from "@/state/player";
 
 // ---------------------------------------------------------------------------
@@ -632,6 +632,49 @@ export const interestingCompetitions: ContextSelector<string[]> = (ctx) => {
     const comp = ctx.competitions[id];
     return comp.phases.some((phase) =>
       phase.groups.some((group) => group.teams.includes(team.id))
+    );
+  });
+};
+
+// ---------------------------------------------------------------------------
+// Season actions
+// ---------------------------------------------------------------------------
+
+/** Whether a manager has completed a specific season action. */
+export const hasCompletedAction =
+  (managerId: string, action: SeasonAction): ContextSelector<boolean> =>
+  (ctx) => {
+    const manager = ctx.managers[managerId];
+    if (!manager || manager.kind !== "human") {return false;}
+    return manager.completedActions.includes(action);
+  };
+
+/** Season actions a human manager has not yet completed. */
+export const pendingActions =
+  (managerId: string): ContextSelector<SeasonAction[]> =>
+  (ctx) => {
+    const entry = calendar[ctx.turn.round];
+    if (!entry?.requiredActions?.length) {return [];}
+    const manager = ctx.managers[managerId];
+    if (!manager || manager.kind !== "human") {return [];}
+    return entry.requiredActions.filter(
+      (a) => !manager.completedActions.includes(a)
+    );
+  };
+
+/**
+ * True iff every human manager has completed all actions required by
+ * the current round's `requiredActions`. Used as the ADVANCE guard on
+ * deadline rounds.
+ */
+export const allRequiredActionsComplete: ContextSelector<boolean> = (ctx) => {
+  const entry = calendar[ctx.turn.round];
+  if (!entry?.requiredActions?.length) {return true;}
+  return ctx.human.order.every((managerId) => {
+    const manager = ctx.managers[managerId];
+    if (!manager || manager.kind !== "human") {return true;}
+    return entry.requiredActions!.every((a) =>
+      manager.completedActions.includes(a)
     );
   });
 };

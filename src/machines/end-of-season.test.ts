@@ -125,7 +125,8 @@ const buildContext = (
             arena: { name: "Stadio Olimpico", level: 0 },
             pranksExecuted: 0,
             flags: {},
-            sponsor: undefined
+            sponsor: undefined,
+            completedActions: []
           };
           return [m.id, human];
         }
