@@ -1,6 +1,6 @@
 import Button from "./ui/Button";
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import ManagerInfo from "./ManagerInfo";
 import Calendar from "./ui/Calendar";
 import Heading from "@/components/ui/Heading";
@@ -28,6 +28,7 @@ const CrisisActions = () => {
 
   return (
     <AdvancedHeaderedPage
+      escTo="/"
       stickyMenu={<StickyMenu back />}
       managerInfo={<ManagerInfo details />}
     >

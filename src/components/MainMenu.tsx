@@ -6,7 +6,7 @@ import Current from "./context-sensitive/Current";
 
 import { useGameContext } from "@/context/game-machine-context";
 import { activeManager, interestingCompetitions } from "@/machines/selectors";
-import AdvancedHeaderedPage from "@/components/ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import Stack from "@/components/ui/Stack";
 
 const MainMenu = () => {

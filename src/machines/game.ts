@@ -246,6 +246,13 @@ export type GameMachineEvents =
         manager: string;
         intensity: 0 | 1 | 2;
       };
+    }
+  | {
+      type: "SET_FIX_MATCH";
+      payload: {
+        manager: string;
+        fixMatch: boolean;
+      };
     };
 
 export const gameMachine = setup({
@@ -762,6 +769,24 @@ export const gameMachine = setup({
           }
           const team = draft.teams[m.team];
           team.intensity = params.intensity;
+        })
+    ),
+
+    executeSetFixMatch: assign(
+      (
+        { context },
+        params: {
+          manager: string;
+          fixMatch: boolean;
+        }
+      ) =>
+        produce(context, (draft) => {
+          const m = draft.managers[params.manager];
+          if (!m || m.team === undefined || m.kind === "ai") {
+            return;
+          }
+          const team = draft.teams[m.team];
+          team.fixMatch = params.fixMatch;
         })
     ),
 
@@ -1306,6 +1331,12 @@ export const gameMachine = setup({
     SET_INTENSITY: {
       actions: {
         type: "executeSetIntensity",
+        params: ({ event }) => event.payload
+      }
+    },
+    SET_FIX_MATCH: {
+      actions: {
+        type: "executeSetFixMatch",
         params: ({ event }) => event.payload
       }
     },

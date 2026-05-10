@@ -2,7 +2,7 @@ import Stack from "@/components/ui/Stack";
 import EventsList from "./events/Events";
 import ManagerInfo from "./ManagerInfo";
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import {
   GameMachineContext,
   useGameContext

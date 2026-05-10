@@ -1,5 +1,5 @@
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import { getEffective } from "@/services/effects";
 import {
   GameMachineContext,
@@ -44,7 +44,7 @@ const DeveloperMenu = () => {
   );
 
   return (
-    <AdvancedHeaderedPage stickyMenu={<StickyMenu back />}>
+    <AdvancedHeaderedPage escTo="/" stickyMenu={<StickyMenu back />}>
       <Stack gap="lg">
         <Heading level={2}>Devausinfo</Heading>
 

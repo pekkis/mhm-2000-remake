@@ -1,6 +1,6 @@
 import News from "./news/News";
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import Season from "./data/Season";
 import Announcements from "./events/Announcements";
 

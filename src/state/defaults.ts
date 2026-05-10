@@ -162,8 +162,9 @@ const seedTeams = (): Team[] => {
       kind: "ai",
       strengthObj: rollTeamStrength(seedable.tier),
       intensity: 1,
+      fixMatch: false,
       ...rankedData
-    };
+    } satisfies Team;
   });
 };
 

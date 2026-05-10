@@ -90,6 +90,7 @@ const buildContext = (
         strengthObj: { goalie: 50, defence: 50, attack: 50 },
         budget: emptyTeamBudget(),
         services: emptyTeamServices(),
+        fixMatch: false,
         intensity: 1
       };
       // The `kind: "human"` branch isn't covered by AITeam shape; the

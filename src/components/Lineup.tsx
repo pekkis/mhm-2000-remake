@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import ManagerInfo from "./ManagerInfo";
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import Heading from "@/components/ui/Heading";
 import {
   GameMachineContext,
@@ -48,6 +48,7 @@ const Lineup: FC = () => {
 
   return (
     <AdvancedHeaderedPage
+      escTo="/"
       stickyMenu={<StickyMenu back />}
       managerInfo={<ManagerInfo details />}
     >

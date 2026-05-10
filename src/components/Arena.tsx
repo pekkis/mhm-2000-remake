@@ -1,5 +1,5 @@
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import ManagerInfo from "./ManagerInfo";
 import Button from "./ui/Button";
 import arenas from "@/data/arenas";
@@ -25,6 +25,7 @@ const Arenas = () => {
 
   return (
     <AdvancedHeaderedPage
+      escTo="/"
       stickyMenu={<StickyMenu back />}
       managerInfo={<ManagerInfo details />}
     >

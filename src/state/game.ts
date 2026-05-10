@@ -89,6 +89,7 @@ type BaseTeam = {
   services: TeamServices;
   previousRankings?: [number, number, number];
   intensity: 0 | 1 | 2;
+  fixMatch: boolean;
 };
 
 export type AITeam = BaseTeam & {

@@ -9,7 +9,8 @@ import { activeManager, activeManagersTeam } from "@/machines/selectors";
 import { GameMachineContext } from "@/context/game-machine-context";
 import Heading from "./ui/Heading";
 import Stack from "./ui/Stack";
-import AdvancedHeaderedPage from "@/components/ui/AdvancedHeaderedPage";
+import Slider from "./ui/Slider";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import ManagerInfo from "@/components/ManagerInfo";
 
 const ServiceSlider: FC<{
@@ -24,14 +25,12 @@ const ServiceSlider: FC<{
     <Stack gap="sm">
       <Heading level={3}>{def.name}</Heading>
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        <input
-          type="range"
+        <Slider
           min={0}
           max={maxLevel}
           step={1}
           value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
-          style={{ flex: 1 }}
+          onValueChange={onChange}
         />
         <span style={{ minInlineSize: "12rem" }}>
           {def.options[value].label}
@@ -56,7 +55,7 @@ const Organisaatio = () => {
   const actor = GameMachineContext.useActorRef();
 
   return (
-    <AdvancedHeaderedPage managerInfo={<ManagerInfo details />}>
+    <AdvancedHeaderedPage escTo="/" managerInfo={<ManagerInfo details />}>
       <Stack>
         <Heading level={2}>Organisaatio</Heading>
 

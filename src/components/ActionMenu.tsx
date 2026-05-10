@@ -6,6 +6,7 @@ import { getEffective } from "@/services/effects";
 import { CRISIS_MORALE_MAX } from "@/data/constants";
 import Button from "./ui/Button";
 import RadioGroup from "./ui/RadioGroup";
+import Switch from "./ui/Switch";
 import {
   GameMachineContext,
   useGameContext
@@ -154,6 +155,17 @@ const ActionMenu = () => {
             }
           })
         }
+      />
+
+      <Switch
+        checked={team.fixMatch}
+        onCheckedChange={(checked) =>
+          gameActor.send({
+            type: "SET_FIX_MATCH",
+            payload: { manager: manager.id, fixMatch: checked }
+          })
+        }
+        label="Sopupeli"
       />
 
       <Cluster gap="xs" justify="space-between">

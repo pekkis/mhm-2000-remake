@@ -20,7 +20,7 @@ import Button from "./ui/Button";
 import Heading from "./ui/Heading";
 import Markdown from "./Markdown";
 import Stack from "./ui/Stack";
-import AdvancedHeaderedPage from "@/components/ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import ManagerInfo from "@/components/ManagerInfo";
 
 const levelLabels: readonly string[] = ["1", "2", "3", "4", "5"];

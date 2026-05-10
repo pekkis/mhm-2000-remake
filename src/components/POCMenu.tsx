@@ -7,7 +7,7 @@ import random from "@/services/random";
 import { useMachine } from "@xstate/react";
 import { values } from "remeda";
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import Markdown from "@/components/Markdown";
 import Button from "@/components/ui/Button";
 import Cluster from "@/components/ui/Cluster";
@@ -37,7 +37,7 @@ const POCMenu = () => {
   });
 
   return (
-    <AdvancedHeaderedPage stickyMenu={<StickyMenu back />}>
+    <AdvancedHeaderedPage escTo="/" stickyMenu={<StickyMenu back />}>
       <Stack gap="lg">
         <Heading level={2}>Neuvottele pelaajan kanssa</Heading>
 

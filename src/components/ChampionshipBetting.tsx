@@ -1,5 +1,5 @@
 import ManagerInfo from "./ManagerInfo";
-import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import Button from "./ui/Button";
 import BettingForm from "./championship-betting/BettingForm";
 import { GameMachineContext } from "@/context/game-machine-context";
@@ -19,7 +19,7 @@ const ChampionshipBetting = () => {
   const actor = GameMachineContext.useActorRef();
 
   return (
-    <AdvancedHeaderedPage managerInfo={<ManagerInfo details />}>
+    <AdvancedHeaderedPage escTo="/" managerInfo={<ManagerInfo details />}>
       <Stack>
         <Heading level={2}>Mestariveikkaus</Heading>
 

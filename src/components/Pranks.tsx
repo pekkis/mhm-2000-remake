@@ -1,6 +1,6 @@
 import ManagerInfo from "./ManagerInfo";
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "./ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 
 import SelectVictim from "./pranks/SelectVictim";
 import SelectType from "./pranks/SelectType";
@@ -33,6 +33,7 @@ const Pranks = () => {
 
   return (
     <AdvancedHeaderedPage
+      escTo="/"
       stickyMenu={<StickyMenu back />}
       managerInfo={<ManagerInfo details />}
     >

@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useForm, Controller } from "react-hook-form";
-import Slider from "@/components/ui/form/Slider";
+import Slider from "@/components/ui/Slider";
 import { currency } from "@/services/format";
 import odds from "@/data/championship-betting";
 import Button from "@/components/ui/Button";
@@ -91,7 +91,7 @@ const BettingForm: FC<ChampionshipBettingFormProps> = ({
                   max={1000000}
                   step={10000}
                   value={field.value}
-                  onChange={field.onChange}
+                  onValueChange={field.onChange}
                 />
               )}
             />

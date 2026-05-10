@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useForm, Controller } from "react-hook-form";
-import Slider from "@/components/ui/form/Slider";
+import Slider from "@/components/ui/Slider";
 import { currency } from "@/services/format";
 import Button from "@/components/ui/Button";
 import TeamName from "@/components/team/Name";
@@ -116,7 +116,7 @@ const BettingForm: FC<BettingFormProps> = ({ competition, teams, bet }) => {
                   max={1000000}
                   step={10000}
                   value={field.value}
-                  onChange={field.onChange}
+                  onValueChange={field.onChange}
                 />
               )}
             />

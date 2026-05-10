@@ -8,7 +8,7 @@ import Markdown from "./Markdown";
 import Stack from "./ui/Stack";
 import { activeManager } from "@/machines/selectors";
 import { GameMachineContext } from "@/context/game-machine-context";
-import AdvancedHeaderedPage from "@/components/ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import ManagerInfo from "@/components/ManagerInfo";
 
 const SelectStrategy = () => {

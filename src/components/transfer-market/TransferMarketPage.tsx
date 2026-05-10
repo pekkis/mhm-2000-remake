@@ -1,6 +1,6 @@
 import ManagerInfo from "@/components/ManagerInfo";
 import StickyMenu from "@/components/StickyMenu";
-import AdvancedHeaderedPage from "@/components/ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import Button from "@/components/ui/Button";
 import Calendar from "@/components/ui/Calendar";
 import Heading from "@/components/ui/Heading";
@@ -53,6 +53,7 @@ const TransferMarketBrowser: FC = () => {
 
   return (
     <AdvancedHeaderedPage
+      escTo="/"
       stickyMenu={<StickyMenu back />}
       managerInfo={<ManagerInfo details />}
     >

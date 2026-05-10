@@ -2,7 +2,7 @@ import { useSelector } from "@xstate/react";
 import type { AnyActorRef } from "xstate";
 import type { ContractNegotiationContext } from "@/machines/contractNegotiation";
 import { GameMachineContext } from "@/context/game-machine-context";
-import AdvancedHeaderedPage from "@/components/ui/AdvancedHeaderedPage";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import ManagerInfo from "@/components/ManagerInfo";
 import Heading from "@/components/ui/Heading";
 import Paragraph from "@/components/ui/Paragraph";
