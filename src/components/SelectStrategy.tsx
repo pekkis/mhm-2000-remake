@@ -5,6 +5,7 @@ import Button from "./ui/Button";
 import Paragraph from "./ui/Paragraph";
 import Heading from "./ui/Heading";
 import Markdown from "./Markdown";
+import Meter from "./ui/Meter";
 import Stack from "./ui/Stack";
 import {
   activeManager,
@@ -17,6 +18,11 @@ import {
 } from "@/context/game-machine-context";
 import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import ManagerInfo from "@/components/ManagerInfo";
+
+/** Readiness meter calibration — tightened to the practical range
+ *  across all strategies + max manager skill bonus (3 × 0.007). */
+const READINESS_MIN = 0.9;
+const READINESS_MAX = 1.1;
 
 const SelectStrategy = () => {
   const manager = GameMachineContext.useSelector((state) =>
@@ -36,6 +42,16 @@ const SelectStrategy = () => {
         <Stack>
           <Heading level={3}>{currentStrategy?.name}</Heading>
           <Markdown>{currentStrategy?.description ?? ""}</Markdown>
+          <Meter
+            value={team.readiness}
+            min={READINESS_MIN}
+            max={READINESS_MAX}
+            low={0.975}
+            high={1.0}
+            optimum={READINESS_MAX}
+            label="Valmius"
+          />
+          {team.readiness}
           <Paragraph>Strategia valittu ✓</Paragraph>
         </Stack>
       </AdvancedHeaderedPage>

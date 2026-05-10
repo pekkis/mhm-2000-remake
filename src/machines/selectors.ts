@@ -653,7 +653,9 @@ export const hasCompletedAction =
   (managerId: string, action: SeasonAction): ContextSelector<boolean> =>
   (ctx) => {
     const manager = ctx.managers[managerId];
-    if (!manager || manager.kind !== "human") {return false;}
+    if (!manager || manager.kind !== "human") {
+      return false;
+    }
     return manager.completedActions.includes(action);
   };
 
@@ -662,9 +664,13 @@ export const pendingActions =
   (managerId: string): ContextSelector<SeasonAction[]> =>
   (ctx) => {
     const entry = calendar[ctx.turn.round];
-    if (!entry?.requiredActions?.length) {return [];}
+    if (!entry?.requiredActions?.length) {
+      return [];
+    }
     const manager = ctx.managers[managerId];
-    if (!manager || manager.kind !== "human") {return [];}
+    if (!manager || manager.kind !== "human") {
+      return [];
+    }
     return entry.requiredActions.filter(
       (a) => !manager.completedActions.includes(a)
     );
@@ -677,10 +683,14 @@ export const pendingActions =
  */
 export const allRequiredActionsComplete: ContextSelector<boolean> = (ctx) => {
   const entry = calendar[ctx.turn.round];
-  if (!entry?.requiredActions?.length) {return true;}
+  if (!entry?.requiredActions?.length) {
+    return true;
+  }
   return ctx.human.order.every((managerId) => {
     const manager = ctx.managers[managerId];
-    if (!manager || manager.kind !== "human") {return true;}
+    if (!manager || manager.kind !== "human") {
+      return true;
+    }
     return entry.requiredActions!.every((a) =>
       manager.completedActions.includes(a)
     );

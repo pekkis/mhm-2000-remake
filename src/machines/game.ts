@@ -1492,10 +1492,7 @@ export const gameMachine = setup({
                     },
                     START_SPONSOR_NEGOTIATION: {
                       guard: ({ context, event }) =>
-                        !hasCompletedAction(
-                          event.manager,
-                          "sponsor"
-                        )(context),
+                        !hasCompletedAction(event.manager, "sponsor")(context),
                       target: "sponsorNegotiating"
                     },
                     CONFIRM_BUDGET: {
@@ -1653,9 +1650,13 @@ export const gameMachine = setup({
                           const { deal } =
                             event.output as SponsorNegotiationOutput;
                           const managerId = draft.human.active;
-                          if (!managerId) {return;}
+                          if (!managerId) {
+                            return;
+                          }
                           const m = draft.managers[managerId];
-                          if (!m || m.kind !== "human") {return;}
+                          if (!m || m.kind !== "human") {
+                            return;
+                          }
                           m.sponsor = deal;
                           m.completedActions.push("sponsor");
                         })

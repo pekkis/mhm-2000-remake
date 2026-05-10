@@ -19,7 +19,9 @@ const StickyMenu: FC<Props> = ({ forward = "Eteenpäin!", onAdvance }) => {
   const game = GameMachineContext.useActorRef();
 
   const handleAdvance = () => {
-    if (!advanceEnabled) {return;}
+    if (!advanceEnabled) {
+      return;
+    }
     if (onAdvance) {
       onAdvance();
     } else {
@@ -34,11 +36,7 @@ const StickyMenu: FC<Props> = ({ forward = "Eteenpäin!", onAdvance }) => {
       <Stack direction="row">
         <>
           <Box flex="1">
-            <Button
-              block
-              disabled={!advanceEnabled}
-              onClick={handleAdvance}
-            >
+            <Button block disabled={!advanceEnabled} onClick={handleAdvance}>
               {forward}
             </Button>
           </Box>

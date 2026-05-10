@@ -41,9 +41,7 @@ const ActionMenu = () => {
   const betDone = useGameContext(
     hasCompletedAction(manager.id, "championshipBet")
   );
-  const sponsorDone = useGameContext(
-    hasCompletedAction(manager.id, "sponsor")
-  );
+  const sponsorDone = useGameContext(hasCompletedAction(manager.id, "sponsor"));
   const appActor = AppMachineContext.useActorRef();
   const gameActor = GameMachineContext.useActorRef();
   const team = getEffective(teams[manager.team!]);
