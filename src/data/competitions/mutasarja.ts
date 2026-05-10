@@ -48,6 +48,8 @@ const mutasarja: CompetitionDefinition = {
     phases: []
   },
 
+  doesTravelApply: (_phase) => true,
+
   homeAndAwayTeamAdvantages: (_phase) => {
     return {
       home: 1.0,

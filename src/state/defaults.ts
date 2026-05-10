@@ -29,12 +29,16 @@ import { managerFromDefinition } from "@/services/manager";
 import { createUniqueId } from "@/services/id";
 import { rollTeamStrength } from "@/services/levels";
 import {
+  initialBudgetForAmateurTeams,
+  initialBudgetForEliteForeignTeams,
   initialBudgetForRankings,
+  initialServicesForAmateurTeams,
+  initialServicesForEliteForeignTeams,
   initialServicesForRankings
 } from "@/data/mhm2000/budget";
 
 import random from "@/services/random";
-import { emptyTeamBudget, emptyTeamServices } from "@/services/empties";
+import { emptyTeamBudget } from "@/services/empties";
 
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
@@ -77,7 +81,9 @@ const seedTeams = (): Team[] => {
       opponentEffects: [],
       tags: t.tags,
       tier: t.tier,
-      previousRankings: t.previousRankings
+      previousRankings: t.previousRankings,
+      services: initialServicesForRankings(t.previousRankings),
+      budget: initialBudgetForRankings(t.previousRankings)
     })),
     ...divisioonaSource.map((t) => ({
       uid: createUniqueId(),
@@ -92,7 +98,9 @@ const seedTeams = (): Team[] => {
       opponentEffects: [],
       tags: t.tags,
       tier: t.tier,
-      previousRankings: t.previousRankings
+      previousRankings: t.previousRankings,
+      services: initialServicesForRankings(t.previousRankings),
+      budget: initialBudgetForRankings(t.previousRankings)
     })),
     ...mutasarjaSource.map((t) => ({
       uid: createUniqueId(),
@@ -107,7 +115,9 @@ const seedTeams = (): Team[] => {
       opponentEffects: [],
       tags: t.tags,
       tier: t.tier,
-      previousRankings: t.previousRankings
+      previousRankings: t.previousRankings,
+      services: initialServicesForRankings(t.previousRankings),
+      budget: initialBudgetForRankings(t.previousRankings)
     })),
     ...ehlForeign.map((t) => ({
       uid: createUniqueId(),
@@ -122,7 +132,9 @@ const seedTeams = (): Team[] => {
       opponentEffects: [],
       tags: t.tags,
       tier: t.tier,
-      previousRankings: undefined
+      previousRankings: undefined,
+      services: initialServicesForEliteForeignTeams(),
+      budget: initialBudgetForEliteForeignTeams()
     })),
     // Finnish amateur clubs (TEAMS.ALA) at ids 118..133. They participate
     // only in the PA Cup first round (16 first-round bye-fodder teams).
@@ -139,21 +151,19 @@ const seedTeams = (): Team[] => {
       opponentEffects: [],
       tags: t.tags,
       tier: t.tier,
-      previousRankings: undefined
+      previousRankings: undefined,
+      services: initialServicesForAmateurTeams(),
+      budget: initialBudgetForAmateurTeams()
     }))
   ];
 
   return seedables.map((seedable, id) => {
     const rankedData = seedable.previousRankings
       ? {
-          budget: initialBudgetForRankings(seedable.previousRankings),
-          previousRankings: seedable.previousRankings,
-          services: initialServicesForRankings(seedable.previousRankings)
+          previousRankings: seedable.previousRankings
         }
       : {
-          previousRankings: undefined,
-          budget: emptyTeamBudget(),
-          services: emptyTeamServices()
+          budget: emptyTeamBudget()
         };
 
     return {

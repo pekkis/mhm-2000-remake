@@ -33,7 +33,9 @@ const tournaments: CompetitionDefinition = {
   relegateTo: false,
   promoteTo: false,
 
-  homeAndAwayTeamAdvantages: (_phase) => {
+  doesTravelApply: (_phase) => false,
+
+  homeAndAwayTeamAdvantages: () => {
     return {
       home: 1.0,
       away: 0.85

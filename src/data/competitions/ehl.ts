@@ -67,8 +67,22 @@ const ehl: CompetitionDefinition = {
     phases: []
   },
 
-  // TODO: check. I have a remembrance of these being different for EHL vs others.
-  homeAndAwayTeamAdvantages: (_phase) => {
+  doesTravelApply: (phase) => {
+    if (phase === 1) {
+      return false;
+    }
+
+    return true;
+  },
+
+  homeAndAwayTeamAdvantages: (phase) => {
+    if (phase === 1) {
+      return {
+        home: 1.0,
+        away: 1.0
+      };
+    }
+
     return {
       home: 1.0,
       away: 0.85

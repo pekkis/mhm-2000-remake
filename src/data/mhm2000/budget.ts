@@ -466,6 +466,44 @@ export const initialServicesForRankings = (
   return { fanGroup, alcoholSales, doping, travel };
 };
 
+export const initialServicesForEliteForeignTeams = (): TeamServices => {
+  return {
+    alcoholSales: 2,
+    doping: 0,
+    fanGroup: 2,
+    travel: 4
+  };
+};
+
+export const initialServicesForAmateurTeams = (): TeamServices => {
+  return {
+    alcoholSales: 0,
+    doping: 0,
+    fanGroup: 0,
+    travel: 0
+  };
+};
+
+export const initialBudgetForAmateurTeams = (): TeamBudget => {
+  return {
+    benefits: 1,
+    coaching: 1,
+    goalieCoaching: 1,
+    health: 1,
+    juniors: 1
+  };
+};
+
+export const initialBudgetForEliteForeignTeams = (): TeamBudget => {
+  return {
+    benefits: 5,
+    coaching: 5,
+    goalieCoaching: 5,
+    health: 5,
+    juniors: 5
+  };
+};
+
 /** Shared ORGASM → ORGA row lookup. */
 const orgaRowForRankings = (
   previousRankings: readonly [number, number, number]

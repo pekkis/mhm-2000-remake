@@ -131,28 +131,98 @@ Saved per team in the save file alongside all other `erik` values:
 - The `simulateMatch` `computeEtu()` call goes through competition
   definitions that return bare `{ home: 1.0, away: 0.85 }`.
 
+## Light-team proxy travel levels
+
+Same pattern as the Pasolini proxy manager. In QB, light teams
+(`od(z) >= 49`) have no `erik()` array. The proxy travel level
+depends on the light team's **origin**:
+
+### `"nhl"` and `"foreign"` → `travel: 4`
+
+The EHL branch (`kiero=2`) explicitly gives non-managed away teams
+`0.02 * 4 = 0.08` — as if they arrive by charter. These teams only
+appear in EHL, where the ELSE branch replicates this. Setting
+`travel: 4` makes the formula `0.02 * level` produce the right
+value without branching.
+
+### `"amateur"` → `travel: 0`
+
+Amateur light teams (Pökälesarja clubs, `TEAMS.ALA`, id 71–86)
+appear in **cup** early rounds. The cup branch (`CASE 3`) has the
+`IF od(2) < 49` guard — amateur light teams skip it entirely,
+getting no travel bonus. These are small-town Finnish clubs;
+privaattisuihkari would be absurd. `travel: 0` (oma-aloitteinen)
+is the faithful proxy.
+
+### Net result
+
+```
+origin === "nhl" || origin === "foreign"  →  services.travel = 4
+origin === "amateur"                       →  services.travel = 0
+```
+
+`applyTravelEtu(etu, team.services.travel)` works unconditionally
+for all team kinds — no `if (team.kind === "light")` branching
+needed. The origin-based proxy values replicate the QB behavior
+exactly.
+
+All other light-team services stay at 0 (the `emptyTeamServices()`
+default): no fan group, no alcohol, no doping. This matches QB
+where light teams have no `erik()` data at all.
+
 ## TS port — design question
 
 The travel bonus is team-specific, so it can't live inside
 `homeAndAwayTeamAdvantages()` (which doesn't know about the teams).
-Options:
 
-1. **Apply in `simulateMatch` after `computeEtu()`** — a separate
-   `applyTravelEtu()` helper, same pattern as `applyIntensityEtu()`.
-   The competition definition provides a flag or method indicating
-   whether travel applies (and the light-team default if relevant).
+**`travelApplies` must be a function of `(phase)`, not a flat boolean.**
+EHL is the clearest example:
 
-2. **Change `homeAndAwayTeamAdvantages` signature** to accept the
-   teams — breaks the clean separation but puts all etu logic in one
-   place.
+- **Phase 0** (runkosarja, `round-robin`): home/away matches, travel
+  applies. Away baseline 0.85. QB `kiero = 2`.
+- **Phase 1** (lopputurnaus, `tournament`): neutral venue, no home/away
+  split. Both sides at 1.0. Travel does not apply. QB `turnauz <> 0`.
 
-3. **Add a `travelApplies: boolean` (or `awayTravelDefault: number`)
-   field to `CompetitionDefinition`** — the match simulator reads it
-   and applies the formula. Competition definitions declare whether
-   travel matters and what the light-team fallback is.
+Similarly, `homeAndAwayTeamAdvantages` for EHL is currently wrong —
+it returns `away: 0.85` for both phases. Phase 1 should be
+`{ home: 1.0, away: 1.0 }` (neutral venue).
 
-Option 1 is simplest and follows the existing pattern (intensity
-already works this way). Option 3 is cleanest long-term.
+### Options
+
+1. **`travelApplies: (phase: number) => boolean`** on
+   `CompetitionDefinition`. The match simulator calls it and applies
+   `0.02 * team.services.travel` only when true. Clean, minimal.
+
+2. **Gate on `phase.type`** in the match simulator: travel applies
+   unless `phase.type === "tournament"` or
+   `phase.type === "independent-games"`. Same guard pattern as
+   intensity. Simpler but less explicit — relies on phase type
+   always correctly mapping to the QB semantics.
+
+3. **Fold into `homeAndAwayTeamAdvantages`** by changing its signature
+   to accept the away team — over-engineering for one `0.02 * level`.
+
+Option 2 is the simplest and already proven (intensity uses the same
+guard). The phase type already encodes the tournament/non-tournament
+distinction. If a future competition needs a non-tournament phase
+without travel, we can upgrade to option 1 then.
+
+### The `homeAndAwayTeamAdvantages` phase bug
+
+EHL `homeAndAwayTeamAdvantages` ignores the `_phase` parameter and
+always returns `away: 0.85`. It should be phase-aware:
+
+```ts
+homeAndAwayTeamAdvantages: (phase) => {
+  if (phase > 0) {
+    // lopputurnaus — neutral venue
+    return { home: 1.0, away: 1.0 };
+  }
+  return { home: 1.0, away: 0.85 };
+},
+```
+
+Same applies to any future competition with a tournament final phase.
 
 ### Bugs found
 
