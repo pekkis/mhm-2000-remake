@@ -2,7 +2,7 @@ import Stack from "@/components/ui/Stack";
 import EventsList from "./events/Events";
 import ManagerInfo from "./ManagerInfo";
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
+import PageLayout from "@/components/page/PageLayout";
 import {
   GameMachineContext,
   useGameContext
@@ -16,7 +16,7 @@ const Events = () => {
   const events = useGameContext((ctx) => ctx.event.events);
 
   return (
-    <AdvancedHeaderedPage
+    <PageLayout
       stickyMenu={<StickyMenu />}
       managerInfo={<ManagerInfo details />}
     >
@@ -34,7 +34,7 @@ const Events = () => {
           }
         />
       </Stack>
-    </AdvancedHeaderedPage>
+    </PageLayout>
   );
 };
 

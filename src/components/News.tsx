@@ -1,7 +1,7 @@
 import Announcements from "./events/Announcements";
 import ManagerInfo from "./ManagerInfo";
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
+import PageLayout from "@/components/page/PageLayout";
 import { useGameContext } from "@/context/game-machine-context";
 import { activeManager } from "@/machines/selectors";
 import EventsList from "./events/Events";
@@ -14,7 +14,7 @@ const News = () => {
   const events = useGameContext((ctx) => ctx.event.events);
 
   return (
-    <AdvancedHeaderedPage
+    <PageLayout
       stickyMenu={<StickyMenu />}
       managerInfo={<ManagerInfo details />}
     >
@@ -32,7 +32,7 @@ const News = () => {
           announcements={announcements[manager.id.toString()] || []}
         />
       </Stack>
-    </AdvancedHeaderedPage>
+    </PageLayout>
   );
 };
 

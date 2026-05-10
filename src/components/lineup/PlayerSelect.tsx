@@ -4,7 +4,7 @@ import { applyPositionPenalty, performanceModifier } from "@/services/lineup";
 import type { LineupSlot } from "@/services/lineup";
 import type { HiredPlayer } from "@/state/player";
 import * as Select from "@radix-ui/react-select";
-import { type FC, useMemo } from "react";
+import type { FC } from "react";
 import { values } from "remeda";
 import {
   content,
@@ -79,12 +79,8 @@ export const PlayerSelect: FC<Props> = ({
   excluded,
   onSelect
 }) => {
-  const sorted = useMemo(
-    () =>
-      values(players).toSorted(
-        (a, b) => slotSkill(b, slot) - slotSkill(a, slot)
-      ),
-    [players, slot]
+  const sorted = values(players).toSorted(
+    (a, b) => slotSkill(b, slot) - slotSkill(a, slot)
   );
 
   const selectedPlayer = selected ? players[selected] : null;

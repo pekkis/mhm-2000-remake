@@ -1,5 +1,5 @@
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
+import PageLayout from "@/components/page/PageLayout";
 
 import Heading from "@/components/ui/Heading";
 import Stack from "@/components/ui/Stack";
@@ -16,7 +16,7 @@ const WorldChampionships = () => {
   const turn = useGameContext((ctx) => ctx.turn);
 
   return (
-    <AdvancedHeaderedPage stickyMenu={<StickyMenu forward="Palkintogaala" />}>
+    <PageLayout stickyMenu={<StickyMenu forward="Palkintogaala" />}>
       <Stack gap="lg">
         <Heading level={2}>Maailmanmestaruuskisat {turn.season + 1}</Heading>
 
@@ -45,7 +45,7 @@ const WorldChampionships = () => {
           </ol>
         </Stack>
       </Stack>
-    </AdvancedHeaderedPage>
+    </PageLayout>
   );
 };
 

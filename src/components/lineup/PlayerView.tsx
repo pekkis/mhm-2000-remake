@@ -5,7 +5,7 @@ import { excludedPlayers } from "@/services/lineup";
 import type { LineupSlot, LineupTarget } from "@/services/lineup";
 import type { Lineup } from "@/state/lineup";
 import type { HiredPlayer } from "@/state/player";
-import { type FC, useMemo } from "react";
+import type { FC } from "react";
 
 const labelFromTarget = (target: LineupTarget): string => {
   switch (target.unit) {
@@ -41,10 +41,7 @@ export const PlayerView: FC<Props> = ({
   appearances,
   onAssign
 }) => {
-  const excluded = useMemo(
-    () => excludedPlayers(lineup, target),
-    [lineup, target]
-  );
+  const excluded = excludedPlayers(lineup, target);
 
   return (
     <Box p="xs">

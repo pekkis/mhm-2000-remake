@@ -2,7 +2,7 @@ import { useSelector } from "@xstate/react";
 import type { AnyActorRef } from "xstate";
 import type { ContractNegotiationContext } from "@/machines/contractNegotiation";
 import { GameMachineContext } from "@/context/game-machine-context";
-import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
+import PageLayout from "@/components/page/PageLayout";
 import ManagerInfo from "@/components/ManagerInfo";
 import Heading from "@/components/ui/Heading";
 import Paragraph from "@/components/ui/Paragraph";
@@ -39,7 +39,7 @@ const ContractNegotiationView = () => {
   const send = (type: string) => negotiationActor.send({ type });
 
   return (
-    <AdvancedHeaderedPage managerInfo={<ManagerInfo details />}>
+    <PageLayout managerInfo={<ManagerInfo details />}>
       <Stack gap="lg">
         <Heading level={2}>Sopimusneuvottelu</Heading>
 
@@ -102,7 +102,7 @@ const ContractNegotiationView = () => {
           </>
         )}
       </Stack>
-    </AdvancedHeaderedPage>
+    </PageLayout>
   );
 };
 

@@ -20,7 +20,7 @@ import Button from "./ui/Button";
 import Heading from "./ui/Heading";
 import Markdown from "./Markdown";
 import Stack from "./ui/Stack";
-import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
+import PageLayout from "@/components/page/PageLayout";
 import ManagerInfo from "@/components/ManagerInfo";
 
 const levelLabels: readonly string[] = ["1", "2", "3", "4", "5"];
@@ -74,7 +74,7 @@ const ConfirmBudget = () => {
   const total = totalBudgetPerRound(budgetTier, levels, rosterSize);
 
   return (
-    <AdvancedHeaderedPage managerInfo={<ManagerInfo details />}>
+    <PageLayout managerInfo={<ManagerInfo details />}>
       <Heading level={2}>Budjetointi</Heading>
 
       <Stack>
@@ -140,7 +140,7 @@ const ConfirmBudget = () => {
           </Button>
         </Stack>
       </Stack>
-    </AdvancedHeaderedPage>
+    </PageLayout>
   );
 };
 

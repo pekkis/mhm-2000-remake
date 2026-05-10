@@ -1,10 +1,8 @@
 import type { FC, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useHotkeys } from "@mantine/hooks";
-import Centerer from "@/components/Centerer";
-import * as styles from "./AdvancedHeaderedPage.css";
-import Box from "@/components/ui/Box";
 import ActionMenu from "@/components/ActionMenu";
+import PageLayout from "@/components/page/PageLayout";
 
 type Props = {
   stickyMenu?: ReactNode;
@@ -21,20 +19,15 @@ const AdvancedHeaderedPage: FC<Props> = ({
 }) => {
   const navigate = useNavigate();
   useHotkeys(escTo ? [["Escape", () => navigate(escTo)]] : []);
-  return (
-    <Box className={styles.root}>
-      <Box className={styles.content} my="md">
-        <Centerer>
-          <Box px="md">{children}</Box>
-        </Centerer>
-      </Box>
 
-      <Box className={styles.sidebar}>
-        {stickyMenu}
-        <Box>{managerInfo}</Box>
-        <ActionMenu />
-      </Box>
-    </Box>
+  return (
+    <PageLayout
+      stickyMenu={stickyMenu}
+      managerInfo={managerInfo}
+      sidebar={<ActionMenu />}
+    >
+      {children}
+    </PageLayout>
   );
 };
 

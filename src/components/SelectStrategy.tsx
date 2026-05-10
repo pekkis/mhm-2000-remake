@@ -8,7 +8,7 @@ import Markdown from "./Markdown";
 import Stack from "./ui/Stack";
 import { activeManager } from "@/machines/selectors";
 import { GameMachineContext } from "@/context/game-machine-context";
-import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
+import PageLayout from "@/components/page/PageLayout";
 import ManagerInfo from "@/components/ManagerInfo";
 
 const SelectStrategy = () => {
@@ -18,7 +18,7 @@ const SelectStrategy = () => {
   const actor = GameMachineContext.useActorRef();
 
   return (
-    <AdvancedHeaderedPage managerInfo={<ManagerInfo details />}>
+    <PageLayout managerInfo={<ManagerInfo details />}>
       <Heading level={2}>Valitse harjoittelustrategia</Heading>
 
       <Paragraph>
@@ -48,7 +48,7 @@ const SelectStrategy = () => {
           </Stack>
         ))}
       </Stack>
-    </AdvancedHeaderedPage>
+    </PageLayout>
   );
 };
 

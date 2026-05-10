@@ -1,7 +1,7 @@
 import calendar from "@/data/calendar";
 import Table from "./league-table/LeagueTable";
 import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
+import PageLayout from "@/components/page/PageLayout";
 import Games from "./gameday/Games";
 import Box from "./ui/Box";
 import { useGameContext } from "@/context/game-machine-context";
@@ -22,7 +22,7 @@ const Gameday = () => {
   );
 
   return (
-    <AdvancedHeaderedPage stickyMenu={<StickyMenu />}>
+    <PageLayout stickyMenu={<StickyMenu />}>
       <Stack gap="lg">
         <Heading level={2}>Pelipäivä</Heading>
 
@@ -64,7 +64,7 @@ const Gameday = () => {
           );
         })}
       </Stack>
-    </AdvancedHeaderedPage>
+    </PageLayout>
   );
 };
 

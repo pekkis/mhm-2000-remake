@@ -17,7 +17,6 @@ import { PowerPlayView } from "@/components/lineup/PowerPlayView";
 import { PenaltyKillView } from "@/components/lineup/PenaltyKillView";
 import { lineupAppearances } from "@/services/lineup";
 import type { LineupTarget } from "@/services/lineup";
-import { useCallback, useMemo } from "react";
 
 const Lineup: FC = () => {
   const manager = useGameContext(activeManager);
@@ -27,20 +26,16 @@ const Lineup: FC = () => {
 
   const lineup = team.kind === "human" ? team.lineup : undefined;
 
-  const appearances = useMemo(
-    () => (lineup ? lineupAppearances(lineup) : new Map<string, number>()),
-    [lineup]
-  );
+  const appearances = lineup
+    ? lineupAppearances(lineup)
+    : new Map<string, number>();
 
-  const onAssign = useCallback(
-    (target: LineupTarget, playerId: string | null) => {
-      game.send({
-        type: "ASSIGN_PLAYER_TO_LINEUP",
-        payload: { manager: manager.id, target, playerId }
-      });
-    },
-    [game, manager.id]
-  );
+  const onAssign = (target: LineupTarget, playerId: string | null) => {
+    game.send({
+      type: "ASSIGN_PLAYER_TO_LINEUP",
+      payload: { manager: manager.id, target, playerId }
+    });
+  };
 
   if (team.kind !== "human") {
     return;
@@ -123,8 +118,6 @@ const Lineup: FC = () => {
           appearances={appearances}
           onAssign={onAssign}
         />
-
-        <pre>{JSON.stringify(team.lineup, null, 2)}</pre>
       </Stack>
     </AdvancedHeaderedPage>
   );
