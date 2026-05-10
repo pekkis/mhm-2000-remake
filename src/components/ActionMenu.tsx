@@ -13,7 +13,7 @@ import {
 } from "@/context/game-machine-context";
 import { AppMachineContext } from "@/context/app-machine-context";
 import { uiStore, type ThemePreference } from "@/stores/ui";
-import { activeManager } from "@/machines/selectors";
+import { activeManager, hasCompletedAction } from "@/machines/selectors";
 import Stack from "@/components/ui/Stack";
 
 const themeOptions: ReadonlyArray<{ value: ThemePreference; label: string }> = [
@@ -34,6 +34,13 @@ const intensityOptions: ReadonlyArray<{
 const ActionMenu = () => {
   const manager = useGameContext(activeManager);
   const teams = useGameContext((ctx) => ctx.teams);
+  const budgetDone = useGameContext(hasCompletedAction(manager.id, "budget"));
+  const strategyDone = useGameContext(
+    hasCompletedAction(manager.id, "strategy")
+  );
+  const betDone = useGameContext(
+    hasCompletedAction(manager.id, "championshipBet")
+  );
   const appActor = AppMachineContext.useActorRef();
   const gameActor = GameMachineContext.useActorRef();
   const team = getEffective(teams[manager.team!]);
@@ -51,6 +58,18 @@ const ActionMenu = () => {
         <Stack as="nav" gap="xs" align="center">
           <Link onClick={close} to="/">
             Päävalikko
+          </Link>
+
+          <Link onClick={close} to="/budjetti">
+            Budjetointi {budgetDone ? "✓" : "○"}
+          </Link>
+
+          <Link onClick={close} to="/strategia">
+            Strategia {strategyDone ? "✓" : "○"}
+          </Link>
+
+          <Link onClick={close} to="/mestariveikkaus">
+            Mestariveikkaus {betDone ? "✓" : "○"}
           </Link>
 
           <Link onClick={close} to="/kokoonpano">

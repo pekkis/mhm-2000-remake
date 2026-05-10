@@ -14,13 +14,18 @@ import type {
 } from "@/data/mhm2000/budget";
 import { difficultyLevelById } from "@/data/mhm2000/difficulty-levels";
 import type { DifficultyLevelId } from "@/data/mhm2000/difficulty-levels";
-import { activeManager, activeManagersTeam } from "@/machines/selectors";
+import {
+  activeManager,
+  activeManagersTeam,
+  hasCompletedAction
+} from "@/machines/selectors";
 import { GameMachineContext } from "@/context/game-machine-context";
+import { useGameContext } from "@/context/game-machine-context";
 import Button from "./ui/Button";
 import Heading from "./ui/Heading";
 import Markdown from "./Markdown";
 import Stack from "./ui/Stack";
-import PageLayout from "@/components/page/PageLayout";
+import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import ManagerInfo from "@/components/ManagerInfo";
 
 const levelLabels: readonly string[] = ["1", "2", "3", "4", "5"];
@@ -33,6 +38,7 @@ const ConfirmBudget = () => {
     activeManagersTeam(state.context)
   );
   const actor = GameMachineContext.useActorRef();
+  const done = useGameContext(hasCompletedAction(manager.id, "budget"));
 
   const initialBudget = team.budget ?? {
     coaching: 1 as BudgetLevel,
@@ -73,8 +79,30 @@ const ConfirmBudget = () => {
 
   const total = totalBudgetPerRound(budgetTier, levels, rosterSize);
 
+  if (done) {
+    return (
+      <AdvancedHeaderedPage escTo="/" managerInfo={<ManagerInfo details />}>
+        <Heading level={2}>Budjetointi</Heading>
+        <Stack>
+          {categoryOrder.map((name) => {
+            const cat = budgetCategoryMap[name];
+            const level = initialBudget[name];
+            return (
+              <Stack key={name} gap="sm">
+                <Heading level={3}>{cat.name}</Heading>
+                <Markdown>{cat.descriptions[level - 1]}</Markdown>
+                <div>Taso: {level}</div>
+              </Stack>
+            );
+          })}
+          <Heading level={3}>Budjetti vahvistettu ✓</Heading>
+        </Stack>
+      </AdvancedHeaderedPage>
+    );
+  }
+
   return (
-    <PageLayout managerInfo={<ManagerInfo details />}>
+    <AdvancedHeaderedPage escTo="/" managerInfo={<ManagerInfo details />}>
       <Heading level={2}>Budjetointi</Heading>
 
       <Stack>
@@ -140,7 +168,7 @@ const ConfirmBudget = () => {
           </Button>
         </Stack>
       </Stack>
-    </PageLayout>
+    </AdvancedHeaderedPage>
   );
 };
 

@@ -81,16 +81,24 @@ export const allEventsResolved: ContextSelector<boolean> = (ctx) =>
   !values(ctx.event.events).some((e) => !e.resolved);
 
 /**
- * Advance is enabled unless we're parked on the event phase with at
- * least one unresolved event. This is a `SnapshotSelector` because
- * the gating predicate needs to know which machine state we're in,
- * not just the context. Read with
+ * Advance/end-turn is enabled unless:
+ * - we're in the event phase with unresolved events, or
+ * - we're in the action phase with incomplete required actions.
+ *
+ * This is a `SnapshotSelector` because the gating predicate needs to
+ * know which machine state we're in, not just the context. Read with
  * `GameMachineContext.useSelector(advanceEnabled)`, NOT
  * `useGameContext(advanceEnabled)`.
  */
-export const advanceEnabled: SnapshotSelector<boolean> = (snap) =>
-  !snap.matches({ in_game: { executing_phases: "event" } }) ||
-  allEventsResolved(snap.context);
+export const advanceEnabled: SnapshotSelector<boolean> = (snap) => {
+  if (snap.matches({ in_game: { executing_phases: "event" } })) {
+    return allEventsResolved(snap.context);
+  }
+  if (snap.matches({ in_game: { executing_phases: "action" } })) {
+    return allRequiredActionsComplete(snap.context);
+  }
+  return true;
+};
 
 // ---------------------------------------------------------------------------
 // Teams

@@ -4,7 +4,10 @@ import StickyMenu from "./StickyMenu";
 import Forward from "./context-sensitive/Forward";
 import Current from "./context-sensitive/Current";
 
-import { useGameContext } from "@/context/game-machine-context";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
 import { activeManager, interestingCompetitions } from "@/machines/selectors";
 import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import Stack from "@/components/ui/Stack";
@@ -14,10 +17,19 @@ const MainMenu = () => {
   const teams = useGameContext((ctx) => ctx.teams);
   const competitions = useGameContext((ctx) => ctx.competitions);
   const interesting = useGameContext(interestingCompetitions);
+  const gameActor = GameMachineContext.useActorRef();
 
   return (
     <AdvancedHeaderedPage
-      stickyMenu={<StickyMenu menu forward={<Forward />} />}
+      stickyMenu={
+        <StickyMenu
+          menu
+          forward={<Forward />}
+          onAdvance={() =>
+            gameActor.send({ type: "END_TURN", manager: manager.id })
+          }
+        />
+      }
       managerInfo={<ManagerInfo details />}
     >
       <Stack gap="lg">

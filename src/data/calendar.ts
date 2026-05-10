@@ -62,7 +62,8 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: false,
     pranks: false,
-    tags: ["preseason", "preRound:bors-init", "todo:wire-bors-mass-gen"]
+    tags: ["preseason", "preRound:bors-init", "todo:wire-bors-mass-gen"],
+    requiredActions: ["budget"]
   },
   // round 1 (KIERO.M2K row 2, type 99) — preseason: sponsorit (sponsor draw)
   {
@@ -122,7 +123,8 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: false,
     pranks: false,
-    tags: ["preseason"]
+    tags: ["preseason"],
+    requiredActions: ["strategy"]
   },
   // round 6 (KIERO.M2K row 7, type 4) — training match
   {
@@ -202,6 +204,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
+    requiredActions: ["championshipBet", "sponsor"],
     tags: [
       "preseason",
       "training",

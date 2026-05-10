@@ -11,7 +11,11 @@ import {
   GameMachineContext,
   useGameContext
 } from "@/context/game-machine-context";
-import { activeManager, marketPlayers } from "@/machines/selectors";
+import {
+  activeManager,
+  hasCompletedAction,
+  marketPlayers
+} from "@/machines/selectors";
 import type { MarketPlayer, Player } from "@/state/player";
 import type { FC } from "react";
 import { prop, sortBy, values } from "remeda";
@@ -48,6 +52,7 @@ const TransferMarketBrowser: FC = () => {
   const players = useGameContext(marketPlayers);
   const manager = useGameContext(activeManager);
   const gameActor = GameMachineContext.useActorRef();
+  const budgetDone = useGameContext(hasCompletedAction(manager.id, "budget"));
 
   const sortedPlayers = playerSorter(values(players));
 
@@ -69,6 +74,12 @@ const TransferMarketBrowser: FC = () => {
             </Paragraph>
           }
         >
+          {!budgetDone && (
+            <Paragraph>
+              Puhelinliittymäsi on suljettu. Se hankaloittaa neuvotteluja.
+              Määrittele budjetti, se auttaa!
+            </Paragraph>
+          )}
           <Table>
             <thead>
               <tr>
@@ -94,7 +105,7 @@ const TransferMarketBrowser: FC = () => {
                     <Td>{player.skill}</Td>
                     <Td>
                       <Button
-                        disabled={alreadyNegotiated}
+                        disabled={alreadyNegotiated || !budgetDone}
                         onClick={() =>
                           gameActor.send({
                             type: "NEGOTIATE_MARKET_PLAYER",

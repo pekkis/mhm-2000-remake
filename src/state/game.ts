@@ -10,7 +10,11 @@ import type { CountryIso } from "@/data/countries";
  *
  * Stored per `HumanManager` in `completedActions`, cleared at season start.
  */
-export type SeasonAction = "budget" | "strategy" | "sponsor";
+export type SeasonAction =
+  | "budget"
+  | "strategy"
+  | "championshipBet"
+  | "sponsor";
 import type { ManagerAttributes } from "@/data/managers";
 import type { TeamStrength } from "@/data/levels";
 import type { BudgetCategoryName, BudgetLevel } from "@/data/mhm2000/budget";

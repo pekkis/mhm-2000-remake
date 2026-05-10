@@ -72,33 +72,6 @@ const useUiPhase = (): string | undefined => {
     ) {
       return "invitations_create";
     }
-    if (
-      state.matches({
-        in_game: {
-          executing_phases: { start_of_season: "confirm_budget" }
-        }
-      })
-    ) {
-      return "confirm_budget";
-    }
-    if (
-      state.matches({
-        in_game: {
-          executing_phases: { start_of_season: "select_strategy" }
-        }
-      })
-    ) {
-      return "select_strategy";
-    }
-    if (
-      state.matches({
-        in_game: {
-          executing_phases: { start_of_season: "championship_betting" }
-        }
-      })
-    ) {
-      return "championship_betting";
-    }
     if (state.matches({ in_game: { executing_phases: "seed" } })) {
       return "seed";
     }
@@ -128,15 +101,6 @@ const useUiPhase = (): string | undefined => {
 
 const Phase: FC<PhaseProps> = ({ phase }) => {
   switch (true) {
-    case phase === "confirm_budget":
-      return <ConfirmBudget />;
-
-    case phase === "select_strategy":
-      return <SelectStrategy />;
-
-    case phase === "championship_betting":
-      return <ChampionshipBetting />;
-
     case phase === "event":
       return <Events />;
 
@@ -174,6 +138,9 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
           <Route path="/pelaajat" element={<Players />} />
           <Route path="/kokoonpano" element={<Lineup />} />
           <Route path="/organisaatio" element={<Organisaatio />} />
+          <Route path="/budjetti" element={<ConfirmBudget />} />
+          <Route path="/strategia" element={<SelectStrategy />} />
+          <Route path="/mestariveikkaus" element={<ChampionshipBetting />} />
           <Route path="/debug" element={<DeveloperMenu />} />
           <Route path="/poc" element={<POCMenu />} />
         </Routes>

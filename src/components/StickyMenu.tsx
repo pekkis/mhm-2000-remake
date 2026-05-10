@@ -9,9 +9,10 @@ type Props = {
   back?: boolean;
   menu?: boolean;
   forward?: React.ReactNode;
+  onAdvance?: () => void;
 };
 
-const StickyMenu: FC<Props> = ({ forward = "Eteenpäin!" }) => {
+const StickyMenu: FC<Props> = ({ forward = "Eteenpäin!", onAdvance }) => {
   const advanceEnabled = GameMachineContext.useSelector(advanceEnabledSelector);
 
   const game = GameMachineContext.useActorRef();
@@ -25,7 +26,11 @@ const StickyMenu: FC<Props> = ({ forward = "Eteenpäin!" }) => {
               block
               disabled={!advanceEnabled}
               onClick={() => {
-                game.send({ type: "ADVANCE" });
+                if (onAdvance) {
+                  onAdvance();
+                } else {
+                  game.send({ type: "ADVANCE" });
+                }
               }}
             >
               {forward}

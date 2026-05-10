@@ -10,6 +10,8 @@ import {
   canSellPlayer,
   canCrisisMeeting,
   allEventsResolved,
+  allRequiredActionsComplete,
+  hasCompletedAction,
   humanManagers
 } from "@/machines/selectors";
 import calendar from "@/data/calendar";
@@ -150,6 +152,7 @@ export type GameAssign<TParams = undefined> = ReturnType<
 
 export type GameMachineEvents =
   | { type: "ADVANCE" }
+  | { type: "END_TURN"; manager: string }
   | {
       type: "SELECT_STRATEGY";
       payload: { manager: string; strategy: StrategyId };
@@ -162,6 +165,10 @@ export type GameMachineEvents =
         amount: number;
         odds: number;
       };
+    }
+  | {
+      type: "SKIP_CHAMPION_BET";
+      payload: { manager: string };
     }
   | {
       type: "PLACE_BET";
@@ -331,6 +338,9 @@ export const gameMachine = setup({
             params.strategy,
             manager.attributes.strategy
           );
+          if (manager.kind === "human") {
+            manager.completedActions.push("strategy");
+          }
         })
     ),
 
@@ -367,7 +377,18 @@ export const gameMachine = setup({
               }
             })
           );
+          m.completedActions.push("championshipBet");
         })
+    ),
+
+    skipChampionshipBet: assign(({ context }, params: { manager: string }) =>
+      produce(context, (draft) => {
+        const m = draft.managers[params.manager];
+        if (!m || m.kind === "ai") {
+          return;
+        }
+        m.completedActions.push("championshipBet");
+      })
     ),
 
     /**
@@ -732,6 +753,7 @@ export const gameMachine = setup({
           }
           const team = draft.teams[m.team];
           team.budget = params.budget;
+          m.completedActions.push("budget");
         })
     ),
 
@@ -1151,6 +1173,7 @@ export const gameMachine = setup({
      * true for tournaments — regular competitions exhaust their schedule
      * in the single round dedicated to them in the calendar.
      */
+    allActionsComplete: ({ context }) => allRequiredActionsComplete(context),
     tournamentHasMoreRounds: ({ context }) => {
       const gamedays = calendar[context.turn.round]?.gamedays ?? [];
       for (const id of gamedays) {
@@ -1453,8 +1476,67 @@ export const gameMachine = setup({
               states: {
                 browsing: {
                   on: {
-                    NEGOTIATE_MARKET_PLAYER: "negotiating",
-                    ADVANCE: "done"
+                    NEGOTIATE_MARKET_PLAYER: {
+                      guard: ({ context, event }) =>
+                        hasCompletedAction(
+                          event.payload.managerId,
+                          "budget"
+                        )(context),
+                      target: "negotiating"
+                    },
+                    CONFIRM_BUDGET: {
+                      actions: {
+                        type: "executeConfirmBudget",
+                        params: ({ event }) => event.payload
+                      }
+                    },
+                    SELECT_STRATEGY: {
+                      actions: {
+                        type: "selectStrategy",
+                        params: ({ event }) => event.payload
+                      }
+                    },
+                    PLACE_CHAMPION_BET: {
+                      actions: [
+                        {
+                          type: "placeChampionBet",
+                          params: ({ event }) => event.payload
+                        },
+                        {
+                          type: "notify",
+                          params: ({ event }) => ({
+                            notification: {
+                              manager: event.payload.manager,
+                              message:
+                                "Kiikutat mestarusveikkauskuponkisi S-kioskille. Olkoon onni myötä!",
+                              type: "info"
+                            }
+                          })
+                        }
+                      ]
+                    },
+                    SKIP_CHAMPION_BET: {
+                      actions: {
+                        type: "skipChampionshipBet",
+                        params: ({ event }) => event.payload
+                      }
+                    },
+                    END_TURN: [
+                      { guard: "allActionsComplete", target: "done" },
+                      {
+                        actions: {
+                          type: "notify",
+                          params: ({ event }) => ({
+                            notification: {
+                              manager: event.manager,
+                              message:
+                                "Et voi edetä ennen kuin kaikki pakolliset toimenpiteet on suoritettu!",
+                              type: "warning"
+                            }
+                          })
+                        }
+                      }
+                    ]
                   }
                 },
                 negotiating: {
@@ -1697,64 +1779,8 @@ export const gameMachine = setup({
               ]
             },
             start_of_season: {
-              initial: "setup",
-              onDone: "seed_check",
-              states: {
-                setup: {
-                  entry: "seasonStartSetup",
-                  always: "confirm_budget"
-                },
-                confirm_budget: {
-                  on: {
-                    CONFIRM_BUDGET: {
-                      actions: {
-                        type: "executeConfirmBudget",
-                        params: ({ event }) => event.payload
-                      },
-                      target: "select_strategy"
-                    }
-                  }
-                },
-                select_strategy: {
-                  on: {
-                    SELECT_STRATEGY: {
-                      actions: [
-                        {
-                          type: "selectStrategy",
-                          params: ({ event }) => event.payload
-                        }
-                      ],
-                      target: "championship_betting"
-                    }
-                  }
-                },
-                championship_betting: {
-                  on: {
-                    PLACE_CHAMPION_BET: {
-                      actions: [
-                        {
-                          type: "placeChampionBet",
-                          params: ({ event }) => event.payload
-                        },
-                        {
-                          type: "notify",
-                          params: ({ event }) => ({
-                            notification: {
-                              manager: event.payload.manager,
-                              message:
-                                "Kiikutat mestarusveikkauskuponkisi S-kioskille. Olkoon onni myötä!",
-                              type: "info"
-                            }
-                          })
-                        }
-                      ],
-                      target: "done"
-                    },
-                    ADVANCE: "done"
-                  }
-                },
-                done: { type: "final" }
-              }
+              entry: "seasonStartSetup",
+              always: "seed_check"
             },
 
             seed_check: {
