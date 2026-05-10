@@ -231,4 +231,238 @@ describe("simulateMatch", () => {
     }
     expect(homeWins).toBeGreaterThan(awayWins * 2);
   });
+
+  // -------------------------------------------------------------------------
+  // Intensity
+  // -------------------------------------------------------------------------
+
+  describe("intensity modifier", () => {
+    it("HURJA (2) team beats LAISKA (0) team over many samples", () => {
+      const hurja = sideFromTier(1, "Hurja", 25);
+      hurja.team = makeTeam({ id: 1, name: "Hurja", tier: 25, intensity: 2 });
+      const laiska = sideFromTier(2, "Laiska", 25);
+      laiska.team = makeTeam({
+        id: 2,
+        name: "Laiska",
+        tier: 25,
+        intensity: 0
+      });
+      const random = createRandom(808);
+      let hurjaWins = 0;
+      let laiskaWins = 0;
+      for (let i = 0; i < 500; i += 1) {
+        const r = simulateMatch(hurja, laiska, regularContext, random);
+        if (r.homeGoals > r.awayGoals) hurjaWins += 1;
+        else if (r.awayGoals > r.homeGoals) laiskaWins += 1;
+      }
+      expect(hurjaWins).toBeGreaterThan(laiskaWins);
+    });
+
+    it("effective intensity is forced to normaali in tournaments", () => {
+      const hurja = sideFromTier(1, "Hurja", 25);
+      hurja.team = makeTeam({ id: 1, name: "Hurja", tier: 25, intensity: 2 });
+      const laiska = sideFromTier(2, "Laiska", 25);
+      laiska.team = makeTeam({
+        id: 2,
+        name: "Laiska",
+        tier: 25,
+        intensity: 0
+      });
+
+      const tournamentContext: MatchContext = {
+        ...regularContext,
+        phase: {
+          type: "tournament",
+          name: "test-tournament",
+          teams: [],
+          groups: []
+        }
+      };
+
+      const random = createRandom(808);
+      const results = Array.from({ length: 100 }, () =>
+        simulateMatch(hurja, laiska, tournamentContext, random)
+      );
+
+      // Both should report effective intensity 1 (normaali)
+      for (const r of results) {
+        expect(r.homeIntensity).toBe(1);
+        expect(r.awayIntensity).toBe(1);
+      }
+    });
+
+    it("result carries effective intensity values", () => {
+      const home = sideFromTier(1, "Home", 25);
+      home.team = makeTeam({ id: 1, name: "Home", tier: 25, intensity: 2 });
+      const away = sideFromTier(2, "Away", 25);
+      away.team = makeTeam({ id: 2, name: "Away", tier: 25, intensity: 0 });
+
+      const r = simulateMatch(home, away, regularContext, createRandom(1));
+      expect(r.homeIntensity).toBe(2);
+      expect(r.awayIntensity).toBe(0);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Fan group (erik(1))
+  // -------------------------------------------------------------------------
+
+  describe("fan group service", () => {
+    it("fanGroup=2 team outperforms fanGroup=0 team over many samples", () => {
+      const withFans = sideFromTier(1, "Fans", 25);
+      withFans.team = makeTeam({
+        id: 1,
+        name: "Fans",
+        tier: 25,
+        services: { fanGroup: 2, alcoholSales: 0, doping: 0, travel: 0 }
+      });
+      const noFans = sideFromTier(2, "NoFans", 25);
+
+      const random = createRandom(303);
+      let fansWins = 0;
+      let noFansWins = 0;
+      for (let i = 0; i < 500; i += 1) {
+        const r = simulateMatch(withFans, noFans, regularContext, random);
+        if (r.homeGoals > r.awayGoals) fansWins += 1;
+        else if (r.awayGoals > r.homeGoals) noFansWins += 1;
+      }
+      // fanGroup=2 gives +0.02 etu to both home AND away matches
+      // plus the regular home advantage → should win more
+      expect(fansWins).toBeGreaterThan(noFansWins);
+    });
+
+    it("fanGroup is NOT applied in tournament context", () => {
+      // Two identical teams, one with fanGroup=2. In a tournament
+      // competition (doesTravelApply → false), services are gated off,
+      // so results should be identical to two teams without services.
+      const withFans = sideFromTier(1, "Fans", 25);
+      withFans.team = makeTeam({
+        id: 1,
+        name: "Fans",
+        tier: 25,
+        services: { fanGroup: 2, alcoholSales: 0, doping: 0, travel: 0 }
+      });
+      const noFans = sideFromTier(2, "NoFans", 25);
+
+      const tournamentContext: MatchContext = {
+        competition: competitionDefinitions.tournaments.data,
+        phase: {
+          type: "tournament",
+          name: "test-tournament",
+          teams: [],
+          groups: []
+        },
+        group: regularContext.group,
+        round: 0,
+        matchup: 0
+      };
+
+      const seed = 555;
+      // Same two teams but both with no services, same seed
+      const baseline1 = sideFromTier(1, "Base1", 25);
+      const baseline2 = sideFromTier(2, "Base2", 25);
+
+      const withServices = Array.from({ length: 100 }, (_, i) =>
+        simulateMatch(
+          withFans,
+          noFans,
+          tournamentContext,
+          createRandom(seed + i)
+        )
+      );
+      const withoutServices = Array.from({ length: 100 }, (_, i) =>
+        simulateMatch(
+          baseline1,
+          baseline2,
+          tournamentContext,
+          createRandom(seed + i)
+        )
+      );
+
+      // Identical seeds + identical effective params → identical results
+      expect(withServices.map((r) => r.homeGoals)).toEqual(
+        withoutServices.map((r) => r.homeGoals)
+      );
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Travel (erik(4))
+  // -------------------------------------------------------------------------
+
+  describe("travel service", () => {
+    it("away team with travel=4 outperforms away team with travel=0", () => {
+      // Home team is the same in both runs. Compare away win rates.
+      const home = sideFromTier(1, "Home", 25);
+      const awayWithTravel = sideFromTier(2, "AwayTravel", 25);
+      awayWithTravel.team = makeTeam({
+        id: 2,
+        name: "AwayTravel",
+        tier: 25,
+        services: { fanGroup: 0, alcoholSales: 0, doping: 0, travel: 4 }
+      });
+      const awayNoTravel = sideFromTier(3, "AwayNoTravel", 25);
+
+      const random1 = createRandom(777);
+      const random2 = createRandom(777);
+      let winsWithTravel = 0;
+      let winsNoTravel = 0;
+
+      for (let i = 0; i < 500; i += 1) {
+        const r1 = simulateMatch(home, awayWithTravel, regularContext, random1);
+        const r2 = simulateMatch(home, awayNoTravel, regularContext, random2);
+        if (r1.awayGoals > r1.homeGoals) winsWithTravel += 1;
+        if (r2.awayGoals > r2.homeGoals) winsNoTravel += 1;
+      }
+      // travel=4 gives +0.08 etu to the away side → more away wins
+      expect(winsWithTravel).toBeGreaterThan(winsNoTravel);
+    });
+
+    it("travel is NOT applied in tournament context", () => {
+      const home = sideFromTier(1, "Home", 25);
+      const awayWithTravel = sideFromTier(2, "AwayTravel", 25);
+      awayWithTravel.team = makeTeam({
+        id: 2,
+        name: "AwayTravel",
+        tier: 25,
+        services: { fanGroup: 0, alcoholSales: 0, doping: 0, travel: 4 }
+      });
+      const awayNoTravel = sideFromTier(3, "AwayNoTravel", 25);
+
+      const tournamentContext: MatchContext = {
+        competition: competitionDefinitions.tournaments.data,
+        phase: {
+          type: "tournament",
+          name: "test-tournament",
+          teams: [],
+          groups: []
+        },
+        group: regularContext.group,
+        round: 0,
+        matchup: 0
+      };
+
+      // Same seed → identical results when services are gated off
+      const withTravel = Array.from({ length: 50 }, (_, i) =>
+        simulateMatch(
+          home,
+          awayWithTravel,
+          tournamentContext,
+          createRandom(900 + i)
+        )
+      );
+      const withoutTravel = Array.from({ length: 50 }, (_, i) =>
+        simulateMatch(
+          home,
+          awayNoTravel,
+          tournamentContext,
+          createRandom(900 + i)
+        )
+      );
+
+      expect(withTravel.map((r) => r.awayGoals)).toEqual(
+        withoutTravel.map((r) => r.awayGoals)
+      );
+    });
+  });
 });

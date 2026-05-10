@@ -7,7 +7,7 @@
  * the voimamaar loop logic (ILEX5.BAS:8429-8540).
  *
  * QB pipeline per slot:
- *   temp% = psk + plus + erik(3)           [erik(3)=0 in our port for now]
+ *   temp% = psk + plus + erik(3)
  *   IF gnome=1: temp% += yvo               [PP context]
  *   IF gnome=2: temp% += avo               [PK context]
  *   position penalty (SELECT CASE xxx)
@@ -1244,5 +1244,290 @@ describe("floor at MIN_EFFECTIVE_STRENGTH", () => {
     expect(
       calculatePowerPlayStrength(lineup, rosterMap(ppLd, ppRd, ppLw, ppC, ppRw))
     ).toBe(41);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Doping (erik(3)) — team-level bonus added to every player's base value
+// ---------------------------------------------------------------------------
+
+describe("doping (erik(3)) bonus", () => {
+  describe("calculateLineupStrength with doping", () => {
+    it("doping=0 matches no-arg call (backward compat)", () => {
+      const g = player({ id: "g1", position: "g", skill: 12 });
+      const lineup: Lineup = { ...emptyLineup, g: "g1" };
+      const roster = rosterMap(g);
+      expect(calculateLineupStrength(lineup, roster, 0)).toEqual(
+        calculateLineupStrength(lineup, roster)
+      );
+    });
+
+    it("doping adds to goalie base value", () => {
+      const g = player({ id: "g1", position: "g", skill: 12 });
+      const lineup: Lineup = { ...emptyLineup, g: "g1" };
+      // base = 12 + 0(plus) + 2(doping) = 14
+      expect(calculateLineupStrength(lineup, rosterMap(g), 2).goalie).toBe(14);
+    });
+
+    it("doping adds to each defender in a pair", () => {
+      const ld = player({ id: "ld1", position: "d", skill: 10 });
+      const rd = player({ id: "rd1", position: "d", skill: 8 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        defensivePairings: [
+          { ld: "ld1", rd: "rd1" },
+          { ld: null, rd: null },
+          { ld: null, rd: null }
+        ]
+      };
+      // ld: 10+1 = 11, rd: 8+1 = 9 → 20
+      expect(
+        calculateLineupStrength(lineup, rosterMap(ld, rd), 1).defence
+      ).toBe(20);
+    });
+
+    it("doping adds to each forward in a line", () => {
+      const lw = player({ id: "lw1", position: "lw", skill: 10 });
+      const c = player({ id: "c1", position: "c", skill: 10 });
+      const rw = player({ id: "rw1", position: "rw", skill: 10 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        forwardLines: [
+          { lw: "lw1", c: "c1", rw: "rw1" },
+          { lw: null, c: null, rw: null },
+          { lw: null, c: null, rw: null },
+          { lw: null, c: null, rw: null }
+        ]
+      };
+      // Each: 10 + 2 = 12, total 36 (vs 30 without doping)
+      expect(
+        calculateLineupStrength(lineup, rosterMap(lw, c, rw), 2).attack
+      ).toBe(36);
+    });
+
+    it("doping interacts with position penalty: D in LW, doping=2", () => {
+      const d = player({ id: "d1", position: "d", skill: 10 });
+      const c = player({ id: "c1", position: "c", skill: 10 });
+      const rw = player({ id: "rw1", position: "rw", skill: 10 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        forwardLines: [
+          { lw: "d1", c: "c1", rw: "rw1" },
+          { lw: null, c: null, rw: null },
+          { lw: null, c: null, rw: null },
+          { lw: null, c: null, rw: null }
+        ]
+      };
+      // d in LW: base = 10+2 = 12, FIX(0.7*12) = FIX(8.4) = 8
+      // c: 10+2 = 12, rw: 10+2 = 12
+      // Total: 8 + 12 + 12 = 32
+      expect(
+        calculateLineupStrength(lineup, rosterMap(d, c, rw), 2).attack
+      ).toBe(32);
+    });
+
+    it("doping interacts with greedySurfer + condition penalty", () => {
+      const surfer = player({
+        id: "d1",
+        position: "d",
+        skill: 10,
+        specialty: "greedySurfer",
+        condition: -1
+      });
+      const d2 = player({ id: "d2", position: "d", skill: 10 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        defensivePairings: [
+          { ld: "d1", rd: "d2" },
+          { ld: null, rd: null },
+          { ld: null, rd: null }
+        ]
+      };
+      // d1: base = 10+1 = 11, pos D in D → 11,
+      //   greedySurfer → round(0.7*11) = round(7.7) = 8,
+      //   condition -1 → FIX(0.9*8) = 7
+      // d2: base = 10+1 = 11
+      // Total: 7 + 11 = 18
+      expect(
+        calculateLineupStrength(lineup, rosterMap(surfer, d2), 1).defence
+      ).toBe(18);
+    });
+  });
+
+  describe("calculatePowerPlayStrength with doping", () => {
+    it("doping=0 matches no-arg call", () => {
+      const ppLd = player({ id: "ppLd", position: "d", skill: 12, powerplayMod: 1 });
+      const ppRd = player({ id: "ppRd", position: "d", skill: 10, powerplayMod: 0 });
+      const ppLw = player({ id: "ppLw", position: "lw", skill: 14, powerplayMod: 2 });
+      const ppC = player({ id: "ppC", position: "c", skill: 13, powerplayMod: 0 });
+      const ppRw = player({ id: "ppRw", position: "rw", skill: 11, powerplayMod: 0 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        powerplayTeam: { ld: "ppLd", rd: "ppRd", lw: "ppLw", c: "ppC", rw: "ppRw" }
+      };
+      const roster = rosterMap(ppLd, ppRd, ppLw, ppC, ppRw);
+      expect(calculatePowerPlayStrength(lineup, roster, 0)).toBe(
+        calculatePowerPlayStrength(lineup, roster)
+      );
+    });
+
+    it("doping adds to each PP slot's base (before yvo)", () => {
+      const ppLd = player({ id: "ppLd", position: "d", skill: 10, powerplayMod: 2 });
+      const ppRd = player({ id: "ppRd", position: "d", skill: 10, powerplayMod: 0 });
+      const ppLw = player({ id: "ppLw", position: "lw", skill: 10, powerplayMod: 0 });
+      const ppC = player({ id: "ppC", position: "c", skill: 10, powerplayMod: 0 });
+      const ppRw = player({ id: "ppRw", position: "rw", skill: 10, powerplayMod: 0 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        powerplayTeam: { ld: "ppLd", rd: "ppRd", lw: "ppLw", c: "ppC", rw: "ppRw" }
+      };
+      // ppLd: base = 10+1(doping) + 2(yvo) = 13
+      // others: base = 10+1 + 0 = 11 each
+      // Total: 13 + 11 + 11 + 11 + 11 = 57
+      expect(
+        calculatePowerPlayStrength(lineup, rosterMap(ppLd, ppRd, ppLw, ppC, ppRw), 1)
+      ).toBe(57);
+    });
+
+    it("doping in PP fallback path (incomplete PP, uses line 1)", () => {
+      const ld = player({ id: "ld1", position: "d", skill: 10, powerplayMod: 0 });
+      const rd = player({ id: "rd1", position: "d", skill: 10, powerplayMod: 0 });
+      const lw = player({ id: "lw1", position: "lw", skill: 10, powerplayMod: 0 });
+      const c = player({ id: "c1", position: "c", skill: 10, powerplayMod: 0 });
+      const rw = player({ id: "rw1", position: "rw", skill: 10, powerplayMod: 0 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        powerplayTeam: { ld: "ld1", rd: "rd1", lw: "lw1", c: "c1", rw: null },
+        forwardLines: [
+          { lw: "lw1", c: "c1", rw: "rw1" },
+          { lw: null, c: null, rw: null },
+          { lw: null, c: null, rw: null },
+          { lw: null, c: null, rw: null }
+        ],
+        defensivePairings: [
+          { ld: "ld1", rd: "rd1" },
+          { ld: null, rd: null },
+          { ld: null, rd: null }
+        ]
+      };
+      // Fallback to line 1. Each: 10 + 2(doping) + 0(yvo) = 12. 5 slots → 60
+      expect(
+        calculatePowerPlayStrength(lineup, rosterMap(ld, rd, lw, c, rw), 2)
+      ).toBe(60);
+    });
+  });
+
+  describe("calculatePenaltyKillStrength with doping", () => {
+    it("doping=0 matches no-arg call", () => {
+      const pkLd = player({ id: "pkLd", position: "d", skill: 12, penaltyKillMod: 1 });
+      const pkRd = player({ id: "pkRd", position: "d", skill: 10, penaltyKillMod: 0 });
+      const pkF1 = player({ id: "pkF1", position: "lw", skill: 14, penaltyKillMod: 2 });
+      const pkF2 = player({ id: "pkF2", position: "c", skill: 13, penaltyKillMod: 0 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        penaltyKillTeam: { ld: "pkLd", rd: "pkRd", f1: "pkF1", f2: "pkF2" }
+      };
+      const roster = rosterMap(pkLd, pkRd, pkF1, pkF2);
+      expect(calculatePenaltyKillStrength(lineup, roster, 0)).toBe(
+        calculatePenaltyKillStrength(lineup, roster)
+      );
+    });
+
+    it("doping adds to each PK slot's base (before avo)", () => {
+      const pkLd = player({ id: "pkLd", position: "d", skill: 10, penaltyKillMod: 1 });
+      const pkRd = player({ id: "pkRd", position: "d", skill: 10, penaltyKillMod: 0 });
+      const pkF1 = player({ id: "pkF1", position: "lw", skill: 10, penaltyKillMod: 0 });
+      const pkF2 = player({ id: "pkF2", position: "c", skill: 10, penaltyKillMod: 0 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        penaltyKillTeam: { ld: "pkLd", rd: "pkRd", f1: "pkF1", f2: "pkF2" }
+      };
+      // pkLd: 10+2(doping)+1(avo) = 13, pkRd: 10+2+0 = 12,
+      // pkF1: 10+2+0 = 12, pkF2: 10+2+0 = 12
+      // Total: 13 + 12 + 12 + 12 = 49
+      expect(
+        calculatePenaltyKillStrength(lineup, rosterMap(pkLd, pkRd, pkF1, pkF2), 2)
+      ).toBe(49);
+    });
+
+    it("doping in PK fallback path (incomplete PK, uses line 1)", () => {
+      const ld = player({ id: "ld1", position: "d", skill: 10, penaltyKillMod: 0 });
+      const rd = player({ id: "rd1", position: "d", skill: 10, penaltyKillMod: 0 });
+      const lw = player({ id: "lw1", position: "lw", skill: 10, penaltyKillMod: 0 });
+      const c = player({ id: "c1", position: "c", skill: 10, penaltyKillMod: 0 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        penaltyKillTeam: { ld: "ld1", rd: "rd1", f1: "lw1", f2: null },
+        forwardLines: [
+          { lw: "lw1", c: "c1", rw: null },
+          { lw: null, c: null, rw: null },
+          { lw: null, c: null, rw: null },
+          { lw: null, c: null, rw: null }
+        ],
+        defensivePairings: [
+          { ld: "ld1", rd: "rd1" },
+          { ld: null, rd: null },
+          { ld: null, rd: null }
+        ]
+      };
+      // Fallback. Each: 10 + 1(doping) + 0(avo) = 11. 4 slots → 44
+      expect(
+        calculatePenaltyKillStrength(lineup, rosterMap(ld, rd, lw, c), 1)
+      ).toBe(44);
+    });
+
+    it("doping stacks with position penalty: D in pkf + doping=2", () => {
+      const pkLd = player({ id: "pkLd", position: "d", skill: 10, penaltyKillMod: 0 });
+      const pkRd = player({ id: "pkRd", position: "d", skill: 10, penaltyKillMod: 0 });
+      const pkF1 = player({ id: "pkF1", position: "d", skill: 15, penaltyKillMod: 0 });
+      const pkF2 = player({ id: "pkF2", position: "c", skill: 10, penaltyKillMod: 0 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        penaltyKillTeam: { ld: "pkLd", rd: "pkRd", f1: "pkF1", f2: "pkF2" }
+      };
+      // pkF1: D in pkf, base = 15+2 = 17, FIX(0.7*17) = FIX(11.9) = 11
+      // pkLd: 10+2 = 12, pkRd: 10+2 = 12, pkF2: 10+2 = 12
+      // Total: 12 + 12 + 11 + 12 = 47
+      expect(
+        calculatePenaltyKillStrength(lineup, rosterMap(pkLd, pkRd, pkF1, pkF2), 2)
+      ).toBe(47);
+    });
+  });
+
+  describe("integration: doping across full lineup", () => {
+    it("doping=1 increases all stats uniformly for a simple lineup", () => {
+      const g = player({ id: "g1", position: "g", skill: 10 });
+      const ld = player({ id: "ld1", position: "d", skill: 10 });
+      const rd = player({ id: "rd1", position: "d", skill: 10 });
+      const lw = player({ id: "lw1", position: "lw", skill: 10 });
+      const c = player({ id: "c1", position: "c", skill: 10 });
+      const rw = player({ id: "rw1", position: "rw", skill: 10 });
+      const lineup: Lineup = {
+        ...emptyLineup,
+        g: "g1",
+        defensivePairings: [
+          { ld: "ld1", rd: "rd1" },
+          { ld: null, rd: null },
+          { ld: null, rd: null }
+        ],
+        forwardLines: [
+          { lw: "lw1", c: "c1", rw: "rw1" },
+          { lw: null, c: null, rw: null },
+          { lw: null, c: null, rw: null },
+          { lw: null, c: null, rw: null }
+        ]
+      };
+      const roster = rosterMap(g, ld, rd, lw, c, rw);
+
+      const noDoping = calculateLineupStrength(lineup, roster, 0);
+      const withDoping = calculateLineupStrength(lineup, roster, 1);
+
+      // Goalie: 10 → 11 (+1)
+      expect(withDoping.goalie).toBe(noDoping.goalie + 1);
+      // Defence: 2 players, each +1 → +2
+      expect(withDoping.defence).toBe(noDoping.defence + 2);
+      // Attack: 3 players, each +1 → +3
+      expect(withDoping.attack).toBe(noDoping.attack + 3);
+    });
   });
 });
