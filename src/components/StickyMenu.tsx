@@ -1,6 +1,7 @@
 import Button from "./ui/Button";
 import { GameMachineContext } from "@/context/game-machine-context";
 import { advanceEnabled as advanceEnabledSelector } from "@/machines/selectors";
+import { useHotkeys } from "@mantine/hooks";
 import type { FC } from "react";
 import Box from "@/components/ui/Box";
 import Stack from "@/components/ui/Stack";
@@ -17,6 +18,17 @@ const StickyMenu: FC<Props> = ({ forward = "Eteenpäin!", onAdvance }) => {
 
   const game = GameMachineContext.useActorRef();
 
+  const handleAdvance = () => {
+    if (!advanceEnabled) {return;}
+    if (onAdvance) {
+      onAdvance();
+    } else {
+      game.send({ type: "ADVANCE" });
+    }
+  };
+
+  useHotkeys([["Enter", handleAdvance]]);
+
   return (
     <Box p="md">
       <Stack direction="row">
@@ -25,13 +37,7 @@ const StickyMenu: FC<Props> = ({ forward = "Eteenpäin!", onAdvance }) => {
             <Button
               block
               disabled={!advanceEnabled}
-              onClick={() => {
-                if (onAdvance) {
-                  onAdvance();
-                } else {
-                  game.send({ type: "ADVANCE" });
-                }
-              }}
+              onClick={handleAdvance}
             >
               {forward}
             </Button>

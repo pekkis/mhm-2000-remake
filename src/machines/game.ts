@@ -1646,22 +1646,22 @@ export const gameMachine = setup({
                         competitions: context.competitions,
                         random
                       };
+                    },
+                    onDone: {
+                      actions: assign(({ context, event }) =>
+                        produce(context, (draft) => {
+                          const { deal } =
+                            event.output as SponsorNegotiationOutput;
+                          const managerId = draft.human.active;
+                          if (!managerId) {return;}
+                          const m = draft.managers[managerId];
+                          if (!m || m.kind !== "human") {return;}
+                          m.sponsor = deal;
+                          m.completedActions.push("sponsor");
+                        })
+                      ),
+                      target: "browsing"
                     }
-                  },
-                  onDone: {
-                    actions: assign(({ context, event }) =>
-                      produce(context, (draft) => {
-                        const { deal } =
-                          event.output as SponsorNegotiationOutput;
-                        const managerId = draft.human.active;
-                        if (!managerId) {return;}
-                        const m = draft.managers[managerId];
-                        if (!m || m.kind !== "human") {return;}
-                        m.sponsor = deal;
-                        m.completedActions.push("sponsor");
-                      })
-                    ),
-                    target: "browsing"
                   }
                 },
                 done: { type: "final" }
