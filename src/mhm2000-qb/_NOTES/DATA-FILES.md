@@ -119,21 +119,57 @@ Both `$j` (name) and `$n` (number) collapse to `**…**` — they were
 distinct in the DOS palette but represent the same "draw the eye"
 intent in modern typography.
 
-### Substitution placeholders (`@N`)
+### Substitution placeholders (`@N` and `£N`)
 
-| Token | Best guess      | Source                                                  |
-| ----- | --------------- | ------------------------------------------------------- |
-| `@0`  | reset attribute | Y.MHM labels end with `@0`                              |
-| `@1`  | ❓ TODO         | E.MHM frequent (17 occurrences) — team name?            |
-| `@3`  | ❓ TODO         | E.MHM rare                                              |
-| `@4`  | money amount    | "@4 euroa", "@4 euron"                                  |
-| `@5`  | numeric value   | "@5 voittoa putkeen", "NEUVOTTELUAIKAA: $n@5@0"         |
-| `@6`  | manager name    | "@6$f, SPONSORINEUVOTTELUT" — your name + section title |
+Both fully decoded from `SUB lt` ([ILEX5.BAS:3037](../ILEX5.BAS)) —
+the generic .MHM-record reader walks the loaded text byte-by-byte
+and intercepts three escape sigils: `$X` (color tokens, see above),
+`@N` (rendering placeholders, mostly numeric / context), and `£N`
+(team/manager-name placeholders).
 
-❓ TODO: enumerate `@N` for N=2,7,8,9 if used. Also: is there a
-**second placeholder syntax `£N`**? Found `$j£2$b` in N.MHM. Could be
-manager name _inside an already-colored span_ (so the substitution
-mechanism preserves the surrounding color).
+#### `@N` table (one-digit decimal placeholders)
+
+| Token | Substitution                                                                                                                                            | Source                          |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `@0`  | newline (`PRINT`)                                                                                                                                       | `lt` CASE 0 at `:3079`          |
+| `@1`  | current player full description: `name (age, pos, psk)` — uses `pel(xx, pv)`                                                                            | `lt` CASE 1 at `:3081`          |
+| `@2`  | top scorer name from opposition: `top(tox(xx), 1).nam`                                                                                                  | `lt` CASE 2 at `:3083`          |
+| `@3`  | nationality name: `kansap(xx)`                                                                                                                          | `lt` CASE 3 at `:3085`          |
+| `@4`  | money amount: `LTRIM$(STR$(ABS(rahna)))` — note: ALWAYS positive, so the surrounding text supplies the sign ("MAKSAT @4 EUROA" / "SAAT @4 EUROA")       | `lt` CASE 4 at `:3087`          |
+| `@5`  | generic integer: `LTRIM$(STR$(gnome))` — `gnome` is the throwaway scratch INTEGER used by every event for "the number you should print here"            | `lt` CASE 5 at `:3089`          |
+| `@6`  | current manager name: `mana(man(u(pv))).nam` (in colorchecked color)                                                                                    | `lt` CASE 6 at `:3091`          |
+| `@7`  | secondary player full description: `name (age, pos, psk)` — uses `pel(yy, pv)` (different player slot than `xx`)                                        | `lt` CASE 7 at `:3094`          |
+
+#### `£N` table (one-digit decimal team/manager placeholders)
+
+The QB source uses the cp850 character `£` (byte `0x9C`) as the
+sigil. Every `£N` slot expands to a team-or-manager identity tied
+to one of three context variables: `xx` (most common, the "selected
+team / target"), `yy` (secondary), `potku` (most-recently-fired
+team).
+
+| Token | Substitution                                                            | Source                       |
+| ----- | ----------------------------------------------------------------------- | ---------------------------- |
+| `£0`  | team name of `yy`: `l(yy)`                                              | `lt` CASE 0 at `:3071`       |
+| `£1`  | team + (manager) of `xx`: `"Tappara (Pier Paolo Pasolini)"`             | `lt` CASE 1 at `:3053`       |
+| `£2`  | manager + (team) of `xx`: `"Pier Paolo Pasolini (Tappara)"`             | `lt` CASE 2 at `:3055`       |
+| `£3`  | team name of `xx`: `l(xx)`                                              | `lt` CASE 3 at `:3057`       |
+| `£4`  | manager whose **direct id** is `xx` (1..54): `mana(xx).nam`             | `lt` CASE 4 at `:3059`       |
+| `£5`  | manager of team `xx`: `mana(man(xx)).nam`                               | `lt` CASE 5 at `:3061`       |
+| `£6`  | manager of team `yy` (only if `yy <= 48`): `mana(man(yy)).nam`          | `lt` CASE 6 at `:3063`       |
+| `£7`  | team name of fired team: `l(potku)`                                     | `lt` CASE 7 at `:3065`       |
+| `£8`  | manager of fired team: `mana(man(potku)).nam`                           | `lt` CASE 8 at `:3067`       |
+| `£9`  | manager whose direct id is `yy` (1..54): `mana(yy).nam`                 | `lt` CASE 9 at `:3069`       |
+
+**Porting strategy.** Since substitutions are evaluated at print
+time against whatever the current `xx`/`yy`/`pv`/`gnome`/`rahna`
+values happen to be, the **TS port should snapshot all needed
+context into the event payload at `resolve` time**, then template-
+substitute in `render`. The QB pattern of "set `xx` then call `lux`"
+becomes "set `xx` in payload, then `render` substitutes the
+canonical `{playerName}` / `{managerName}` / `{teamName}`
+templates." This is exactly the existing event-system pattern —
+no new infrastructure needed.
 
 ---
 
