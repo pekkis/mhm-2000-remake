@@ -58,6 +58,10 @@ mhm2k first" → bail to mhm2k.
   resulting CPU-manager rankings (Juri Simonov +45, Marcó Harcimo
   −16). Read before touching crisis / training / poaching / contract
   code.
+- [SPONSORS.md](SPONSORS.md) — full decode of `SUB sponsorit` (preseason
+  3-candidate negotiation, 4 goal categories, 20 payout slots, the
+  "two walked → must accept the third" lockout, every payout trigger
+  site). Read before touching anything that pays sponsor money.
 
 ## How to use this
 

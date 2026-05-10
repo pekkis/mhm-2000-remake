@@ -2,11 +2,15 @@ import ManagerInfo from "./ManagerInfo";
 import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import Button from "./ui/Button";
 import BettingForm from "./championship-betting/BettingForm";
-import { GameMachineContext } from "@/context/game-machine-context";
-import { activeManager } from "@/machines/selectors";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
+import { activeManager, hasCompletedAction } from "@/machines/selectors";
 import Heading from "@/components/ui/Heading";
 import Box from "@/components/ui/Box";
 import Stack from "@/components/ui/Stack";
+import Paragraph from "@/components/ui/Paragraph";
 
 const ChampionshipBetting = () => {
   const manager = GameMachineContext.useSelector((state) =>
@@ -17,6 +21,18 @@ const ChampionshipBetting = () => {
     (state) => state.context.competitions
   );
   const actor = GameMachineContext.useActorRef();
+  const done = useGameContext(
+    hasCompletedAction(manager.id, "championshipBet")
+  );
+
+  if (done) {
+    return (
+      <AdvancedHeaderedPage escTo="/" managerInfo={<ManagerInfo details />}>
+        <Heading level={2}>Mestariveikkaus</Heading>
+        <Paragraph>Mestariveikkaus tehty ✓</Paragraph>
+      </AdvancedHeaderedPage>
+    );
+  }
 
   return (
     <AdvancedHeaderedPage escTo="/" managerInfo={<ManagerInfo details />}>
@@ -50,7 +66,16 @@ const ChampionshipBetting = () => {
           teams={teams}
         />
 
-        <Button secondary block onClick={() => actor.send({ type: "ADVANCE" })}>
+        <Button
+          secondary
+          block
+          onClick={() =>
+            actor.send({
+              type: "SKIP_CHAMPION_BET",
+              payload: { manager: manager.id }
+            })
+          }
+        >
           En halua veikata
         </Button>
       </Stack>

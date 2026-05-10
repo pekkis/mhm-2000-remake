@@ -1,9 +1,14 @@
-import Heading from "@/components/ui/Heading";
-import Stack from "@/components/ui/Stack";
-import { useGameContext } from "@/context/game-machine-context";
-import { sponsorNegotiationMachine } from "@/machines/sponsorNegotiation";
+import { useSelector } from "@xstate/react";
+import type { AnyActorRef } from "xstate";
+import type { SponsorNegotiationContext } from "@/machines/sponsorNegotiation";
 import type { CandidateState } from "@/machines/sponsorNegotiation";
-import { activeManager, managersTeam } from "@/machines/selectors";
+import { GameMachineContext } from "@/context/game-machine-context";
+import PageLayout from "@/components/page/PageLayout";
+import ManagerInfo from "@/components/ManagerInfo";
+import Heading from "@/components/ui/Heading";
+import Button from "@/components/ui/Button";
+import Stack from "@/components/ui/Stack";
+import Cluster from "@/components/ui/Cluster";
 import {
   sponsorPayoutSlots,
   sponsorSlotLabel,
@@ -12,95 +17,48 @@ import {
   negotiationActionLabels
 } from "@/data/mhm2000/sponsors";
 import type { GoalCategoryId, GoalLevel } from "@/data/mhm2000/sponsors";
-import random from "@/services/random";
-import { useMachine } from "@xstate/react";
-import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
-import Button from "@/components/ui/Button";
-import Cluster from "@/components/ui/Cluster";
-import type { HumanTeam } from "@/state/game";
 
-const CandidateCard: React.FC<{
+const CandidateTab: React.FC<{
   candidate: CandidateState;
   index: number;
   isActive: boolean;
   onSelect: () => void;
 }> = ({ candidate, index, isActive, onSelect }) => (
-  <div
-    onClick={onSelect}
-    style={{
-      border: isActive ? "2px solid yellow" : "1px solid #555",
-      padding: "8px",
-      opacity: candidate.walked ? 0.4 : 1,
-      cursor: "pointer"
-    }}
-  >
-    <strong>
-      {index + 1}. {candidate.name}
-    </strong>
+  <Button onClick={onSelect} secondary={!isActive} disabled={candidate.walked}>
+    {index + 1}. {candidate.name}
     {candidate.walked && " (POISTUNUT)"}
-    {!candidate.walked && candidate.haggleCount > 0 && (
-      <span> — {candidate.haggleCount}× neuvoteltu</span>
-    )}
-  </div>
+  </Button>
 );
 
-const POCMenu = () => {
-  const manager = useGameContext(activeManager);
-  const team = useGameContext(managersTeam(manager.id)) as HumanTeam;
-  const competitions = useGameContext((ctx) => ctx.competitions);
+const SponsorNegotiationView = () => {
+  const gameActor = GameMachineContext.useActorRef();
+  const negotiationActor = gameActor.system.get(
+    "sponsorNegotiation"
+  ) as AnyActorRef;
 
-  const [state, send] = useMachine(sponsorNegotiationMachine, {
-    input: {
-      manager,
-      team,
-      competitions,
-      random
-    }
-  });
+  const snap = useSelector(
+    negotiationActor,
+    (s: { value: unknown; context: SponsorNegotiationContext }) => s
+  );
 
-  const { candidates, activeCandidateIndex, categories } = state.context;
+  const { candidates, activeCandidateIndex, categories } = snap.context;
   const active = candidates[activeCandidateIndex];
   const walkedCount = candidates.filter((c) => c.walked).length;
   const canHaggle = !active.walked && walkedCount < 2;
   const canAccept = !active.walked;
   const canSetGoals = active.haggleCount === 0 && !active.walked;
-  const isDone = state.matches("done");
 
-  if (isDone) {
-    const deal = state.output!.deal;
-    return (
-      <AdvancedHeaderedPage escTo="/" stickyMenu={<StickyMenu back />}>
-        <Stack gap="lg">
-          <Heading level={2}>Sponsorisopimus tehty</Heading>
-          {deal.name ? (
-            <Stack gap="sm">
-              <Heading level={3}>{deal.name}</Heading>
-              {sponsorPayoutSlots
-                .filter((s) => deal.payouts[s] !== 0)
-                .map((slot) => (
-                  <div key={slot}>
-                    {sponsorSlotLabel[slot]}:{" "}
-                    {deal.payouts[slot].toLocaleString("fi-FI")} mk
-                  </div>
-                ))}
-            </Stack>
-          ) : (
-            <div>Kaikki sponsorit poistuivat. Ei sopimusta.</div>
-          )}
-        </Stack>
-      </AdvancedHeaderedPage>
-    );
-  }
+  const send = (event: Parameters<typeof negotiationActor.send>[0]) =>
+    negotiationActor.send(event);
 
   return (
-    <AdvancedHeaderedPage escTo="/" stickyMenu={<StickyMenu back />}>
+    <PageLayout managerInfo={<ManagerInfo details />}>
       <Stack gap="lg">
         <Heading level={2}>Sponsorineuvottelut</Heading>
 
         <Cluster>
           {candidates.map((c, i) => (
-            <CandidateCard
+            <CandidateTab
               key={i}
               candidate={c}
               index={i}
@@ -130,6 +88,7 @@ const POCMenu = () => {
                       <Button
                         key={level}
                         disabled={!canSetGoals}
+                        secondary={!isSelected}
                         onClick={() =>
                           send({
                             type: "SET_GOAL",
@@ -137,10 +96,6 @@ const POCMenu = () => {
                             level
                           })
                         }
-                        style={{
-                          fontWeight: isSelected ? "bold" : "normal",
-                          opacity: isSelected ? 1 : 0.6
-                        }}
                       >
                         {label}
                       </Button>
@@ -156,10 +111,7 @@ const POCMenu = () => {
           {sponsorPayoutSlots
             .filter((s) => active.payouts[s] !== 0)
             .map((slot) => (
-              <div
-                key={slot}
-                style={{ color: active.payouts[slot] < 0 ? "red" : "inherit" }}
-              >
+              <div key={slot}>
                 {sponsorSlotLabel[slot]}:{" "}
                 {active.payouts[slot].toLocaleString("fi-FI")} mk
               </div>
@@ -182,13 +134,13 @@ const POCMenu = () => {
         </Cluster>
 
         {walkedCount === 2 && (
-          <div style={{ color: "yellow" }}>
+          <Heading level={4}>
             Kaksi sponsoria on poistunut. Sinun on hyväksyttävä jäljellä oleva.
-          </div>
+          </Heading>
         )}
       </Stack>
-    </AdvancedHeaderedPage>
+    </PageLayout>
   );
 };
 
-export default POCMenu;
+export default SponsorNegotiationView;

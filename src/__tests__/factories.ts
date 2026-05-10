@@ -4,7 +4,7 @@
  * Preferred recurring test subject: **Pier Paolo Pasolini**.
  */
 import type { HiredPlayer } from "@/state/player";
-import type { AIManager, AITeam, HumanManager } from "@/state/game";
+import type { AIManager, AITeam, HumanManager, HumanTeam } from "@/state/game";
 import type { Lineup } from "@/state/lineup";
 import type { Random } from "random-js";
 import { emptyAchievements, emptyTeamServices } from "@/services/empties";
@@ -125,6 +125,36 @@ export const createAITeam = (overrides: Partial<AITeam> = {}): AITeam => ({
   ...overrides
 });
 
+/** Create a `HumanTeam` with Pasolini-flavoured defaults. */
+export const createHumanTeam = (
+  overrides: Partial<HumanTeam> = {}
+): HumanTeam => ({
+  id: 1,
+  uid: "test-human-team",
+  intensity: 1,
+  name: "Pasolini FC",
+  city: "Roma",
+  arena: defaultArena,
+  budget: defaultBudget,
+  domestic: true,
+  morale: 0,
+  strategy: 0,
+  readiness: 1,
+  effects: [],
+  opponentEffects: [],
+  manager: "mgr",
+  tags: [],
+  tier: 30,
+  kind: "human",
+  strengthObj: { goalie: 10, defence: 50, attack: 100 },
+  services: emptyTeamServices(),
+  fixMatch: false,
+  players: {},
+  lineup: emptyLineup,
+  previousRankings: [10, 10, 10],
+  ...overrides
+});
+
 // ---------------------------------------------------------------------------
 // Manager
 // ---------------------------------------------------------------------------
@@ -169,6 +199,8 @@ export const createHumanManager = (
   pranksExecuted: 0,
   flags: {},
   tags: [],
+  sponsor: undefined,
+  completedActions: [],
   stats: { games: {}, achievements: emptyAchievements() },
   ...overrides
 });
@@ -183,7 +215,8 @@ export const fixedRandom = (value: number): Random =>
     integer: () => value,
     real: () => value,
     bool: () => false,
-    pick: <T>(arr: T[]) => arr[0]
+    pick: <T>(arr: T[]) => arr[0],
+    sample: <T>(arr: T[], n: number) => arr.slice(0, n)
   }) as unknown as Random;
 
 /**
@@ -210,6 +243,7 @@ export const scriptedRandom = (script: {
       return realq.shift()!;
     },
     bool: () => false,
-    pick: <T>(arr: T[]) => arr[0]
+    pick: <T>(arr: T[]) => arr[0],
+    sample: <T>(arr: T[], n: number) => arr.slice(0, n)
   } as unknown as Random;
 };

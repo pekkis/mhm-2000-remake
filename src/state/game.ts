@@ -1,6 +1,20 @@
 import type { Competition, CompetitionId } from "@/types/competitions";
 import type { Arena } from "@/data/mhm2000/teams";
+import type { SponsorDeal } from "@/data/mhm2000/sponsors";
 import type { CountryIso } from "@/data/countries";
+
+/**
+ * Season-scoped mandatory actions. Each key maps to a player decision
+ * that becomes *available* at season start and *required* (blocks ADVANCE)
+ * on the calendar round that lists it in `requiredActions`.
+ *
+ * Stored per `HumanManager` in `completedActions`, cleared at season start.
+ */
+export type SeasonAction =
+  | "budget"
+  | "strategy"
+  | "championshipBet"
+  | "sponsor";
 import type { ManagerAttributes } from "@/data/managers";
 import type { TeamStrength } from "@/data/levels";
 import type { BudgetCategoryName, BudgetLevel } from "@/data/mhm2000/budget";
@@ -57,6 +71,8 @@ export type HumanManager = BaseManager & {
   pranksExecuted: number;
   flags: Record<string, boolean>;
   tags: string[];
+  sponsor: SponsorDeal | undefined;
+  completedActions: SeasonAction[];
 };
 
 export type TeamEffect = {

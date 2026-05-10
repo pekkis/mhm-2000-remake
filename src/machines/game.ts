@@ -10,6 +10,8 @@ import {
   canSellPlayer,
   canCrisisMeeting,
   allEventsResolved,
+  allRequiredActionsComplete,
+  hasCompletedAction,
   humanManagers
 } from "@/machines/selectors";
 import calendar from "@/data/calendar";
@@ -34,6 +36,10 @@ import type { NotificationData } from "@/machines/notification";
 import { betMachine } from "@/machines/bet";
 import { championBetMachine } from "@/machines/championBet";
 import { contractNegotiationMachine } from "@/machines/contractNegotiation";
+import {
+  sponsorNegotiationMachine,
+  type SponsorNegotiationOutput
+} from "@/machines/sponsorNegotiation";
 import type { CompetitionId } from "@/types/competitions";
 import { values, entries } from "remeda";
 import { autoLineup, assignPlayerToLineup } from "@/services/lineup";
@@ -150,6 +156,8 @@ export type GameAssign<TParams = undefined> = ReturnType<
 
 export type GameMachineEvents =
   | { type: "ADVANCE" }
+  | { type: "END_TURN"; manager: string }
+  | { type: "START_SPONSOR_NEGOTIATION"; manager: string }
   | {
       type: "SELECT_STRATEGY";
       payload: { manager: string; strategy: StrategyId };
@@ -162,6 +170,10 @@ export type GameMachineEvents =
         amount: number;
         odds: number;
       };
+    }
+  | {
+      type: "SKIP_CHAMPION_BET";
+      payload: { manager: string };
     }
   | {
       type: "PLACE_BET";
@@ -266,7 +278,8 @@ export const gameMachine = setup({
     notifications: notificationsMachine,
     bet: betMachine,
     championBet: championBetMachine,
-    contractNegotiation: contractNegotiationMachine
+    contractNegotiation: contractNegotiationMachine,
+    sponsorNegotiation: sponsorNegotiationMachine
   },
 
   actions: {
@@ -331,6 +344,9 @@ export const gameMachine = setup({
             params.strategy,
             manager.attributes.strategy
           );
+          if (manager.kind === "human") {
+            manager.completedActions.push("strategy");
+          }
         })
     ),
 
@@ -367,7 +383,18 @@ export const gameMachine = setup({
               }
             })
           );
+          m.completedActions.push("championshipBet");
         })
+    ),
+
+    skipChampionshipBet: assign(({ context }, params: { manager: string }) =>
+      produce(context, (draft) => {
+        const m = draft.managers[params.manager];
+        if (!m || m.kind === "ai") {
+          return;
+        }
+        m.completedActions.push("championshipBet");
+      })
     ),
 
     /**
@@ -732,6 +759,7 @@ export const gameMachine = setup({
           }
           const team = draft.teams[m.team];
           team.budget = params.budget;
+          m.completedActions.push("budget");
         })
     ),
 
@@ -1151,6 +1179,7 @@ export const gameMachine = setup({
      * true for tournaments — regular competitions exhaust their schedule
      * in the single round dedicated to them in the calendar.
      */
+    allActionsComplete: ({ context }) => allRequiredActionsComplete(context),
     tournamentHasMoreRounds: ({ context }) => {
       const gamedays = calendar[context.turn.round]?.gamedays ?? [];
       for (const id of gamedays) {
@@ -1453,8 +1482,72 @@ export const gameMachine = setup({
               states: {
                 browsing: {
                   on: {
-                    NEGOTIATE_MARKET_PLAYER: "negotiating",
-                    ADVANCE: "done"
+                    NEGOTIATE_MARKET_PLAYER: {
+                      guard: ({ context, event }) =>
+                        hasCompletedAction(
+                          event.payload.managerId,
+                          "budget"
+                        )(context),
+                      target: "negotiating"
+                    },
+                    START_SPONSOR_NEGOTIATION: {
+                      guard: ({ context, event }) =>
+                        !hasCompletedAction(event.manager, "sponsor")(context),
+                      target: "sponsorNegotiating"
+                    },
+                    CONFIRM_BUDGET: {
+                      actions: {
+                        type: "executeConfirmBudget",
+                        params: ({ event }) => event.payload
+                      }
+                    },
+                    SELECT_STRATEGY: {
+                      actions: {
+                        type: "selectStrategy",
+                        params: ({ event }) => event.payload
+                      }
+                    },
+                    PLACE_CHAMPION_BET: {
+                      actions: [
+                        {
+                          type: "placeChampionBet",
+                          params: ({ event }) => event.payload
+                        },
+                        {
+                          type: "notify",
+                          params: ({ event }) => ({
+                            notification: {
+                              manager: event.payload.manager,
+                              message:
+                                "Kiikutat mestarusveikkauskuponkisi S-kioskille. Olkoon onni myötä!",
+                              type: "info"
+                            }
+                          })
+                        }
+                      ]
+                    },
+                    SKIP_CHAMPION_BET: {
+                      actions: {
+                        type: "skipChampionshipBet",
+                        params: ({ event }) => event.payload
+                      }
+                    },
+                    END_TURN: [
+                      { guard: "allActionsComplete", target: "done" },
+                      {
+                        actions: {
+                          type: "notify",
+                          params: ({ event }) => ({
+                            notification: {
+                              manager: event.manager,
+                              message:
+                                "Et voi edetä ennen kuin kaikki pakolliset toimenpiteet on suoritettu!",
+                              type: "warning"
+                            }
+                          })
+                        }
+                      }
+                    ]
                   }
                 },
                 negotiating: {
@@ -1520,6 +1613,56 @@ export const gameMachine = setup({
                         target: "browsing"
                       }
                     ]
+                  }
+                },
+                sponsorNegotiating: {
+                  invoke: {
+                    src: "sponsorNegotiation",
+                    id: "sponsorNegotiation",
+                    systemId: "sponsorNegotiation",
+                    input: ({ context, event }) => {
+                      if (event.type !== "START_SPONSOR_NEGOTIATION") {
+                        throw new Error(
+                          "sponsorNegotiating entered from wrong event"
+                        );
+                      }
+                      const manager = context.managers[event.manager];
+                      if (!manager || manager.kind !== "human") {
+                        throw new Error("sponsor negotiation: invalid manager");
+                      }
+                      const team =
+                        manager.team !== undefined
+                          ? context.teams[manager.team]
+                          : undefined;
+                      if (!team || team.kind !== "human") {
+                        throw new Error("sponsor negotiation: invalid team");
+                      }
+                      return {
+                        manager,
+                        team,
+                        competitions: context.competitions,
+                        random
+                      };
+                    },
+                    onDone: {
+                      actions: assign(({ context, event }) =>
+                        produce(context, (draft) => {
+                          const { deal } =
+                            event.output as SponsorNegotiationOutput;
+                          const managerId = draft.human.active;
+                          if (!managerId) {
+                            return;
+                          }
+                          const m = draft.managers[managerId];
+                          if (!m || m.kind !== "human") {
+                            return;
+                          }
+                          m.sponsor = deal;
+                          m.completedActions.push("sponsor");
+                        })
+                      ),
+                      target: "browsing"
+                    }
                   }
                 },
                 done: { type: "final" }
@@ -1697,64 +1840,8 @@ export const gameMachine = setup({
               ]
             },
             start_of_season: {
-              initial: "setup",
-              onDone: "seed_check",
-              states: {
-                setup: {
-                  entry: "seasonStartSetup",
-                  always: "confirm_budget"
-                },
-                confirm_budget: {
-                  on: {
-                    CONFIRM_BUDGET: {
-                      actions: {
-                        type: "executeConfirmBudget",
-                        params: ({ event }) => event.payload
-                      },
-                      target: "select_strategy"
-                    }
-                  }
-                },
-                select_strategy: {
-                  on: {
-                    SELECT_STRATEGY: {
-                      actions: [
-                        {
-                          type: "selectStrategy",
-                          params: ({ event }) => event.payload
-                        }
-                      ],
-                      target: "championship_betting"
-                    }
-                  }
-                },
-                championship_betting: {
-                  on: {
-                    PLACE_CHAMPION_BET: {
-                      actions: [
-                        {
-                          type: "placeChampionBet",
-                          params: ({ event }) => event.payload
-                        },
-                        {
-                          type: "notify",
-                          params: ({ event }) => ({
-                            notification: {
-                              manager: event.payload.manager,
-                              message:
-                                "Kiikutat mestarusveikkauskuponkisi S-kioskille. Olkoon onni myötä!",
-                              type: "info"
-                            }
-                          })
-                        }
-                      ],
-                      target: "done"
-                    },
-                    ADVANCE: "done"
-                  }
-                },
-                done: { type: "final" }
-              }
+              entry: "seasonStartSetup",
+              always: "seed_check"
             },
 
             seed_check: {

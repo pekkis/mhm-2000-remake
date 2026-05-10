@@ -118,6 +118,9 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
 
   // Per-manager: salary, insurance extra (skipped season 0), reset extra.
   for (const manager of values(draft.managers)) {
+    if (manager.kind === "human") {
+      manager.completedActions = [];
+    }
     console.log("PER MANAGER SEASON STaRT", manager);
   }
 

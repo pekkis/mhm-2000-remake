@@ -15,7 +15,8 @@ export type {
   Manager,
   HumanManager,
   AIManager,
-  ManagerArena
+  ManagerArena,
+  SeasonAction
 } from "./game";
 export type { HumanState } from "./human";
 export type { StoredEvent, EventState } from "./event";
