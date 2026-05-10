@@ -36,6 +36,10 @@ import type { NotificationData } from "@/machines/notification";
 import { betMachine } from "@/machines/bet";
 import { championBetMachine } from "@/machines/championBet";
 import { contractNegotiationMachine } from "@/machines/contractNegotiation";
+import {
+  sponsorNegotiationMachine,
+  type SponsorNegotiationOutput
+} from "@/machines/sponsorNegotiation";
 import type { CompetitionId } from "@/types/competitions";
 import { values, entries } from "remeda";
 import { autoLineup, assignPlayerToLineup } from "@/services/lineup";
@@ -153,6 +157,7 @@ export type GameAssign<TParams = undefined> = ReturnType<
 export type GameMachineEvents =
   | { type: "ADVANCE" }
   | { type: "END_TURN"; manager: string }
+  | { type: "START_SPONSOR_NEGOTIATION"; manager: string }
   | {
       type: "SELECT_STRATEGY";
       payload: { manager: string; strategy: StrategyId };
@@ -273,7 +278,8 @@ export const gameMachine = setup({
     notifications: notificationsMachine,
     bet: betMachine,
     championBet: championBetMachine,
-    contractNegotiation: contractNegotiationMachine
+    contractNegotiation: contractNegotiationMachine,
+    sponsorNegotiation: sponsorNegotiationMachine
   },
 
   actions: {
@@ -1484,6 +1490,14 @@ export const gameMachine = setup({
                         )(context),
                       target: "negotiating"
                     },
+                    START_SPONSOR_NEGOTIATION: {
+                      guard: ({ context, event }) =>
+                        !hasCompletedAction(
+                          event.manager,
+                          "sponsor"
+                        )(context),
+                      target: "sponsorNegotiating"
+                    },
                     CONFIRM_BUDGET: {
                       actions: {
                         type: "executeConfirmBudget",
@@ -1602,6 +1616,52 @@ export const gameMachine = setup({
                         target: "browsing"
                       }
                     ]
+                  }
+                },
+                sponsorNegotiating: {
+                  invoke: {
+                    src: "sponsorNegotiation",
+                    id: "sponsorNegotiation",
+                    systemId: "sponsorNegotiation",
+                    input: ({ context, event }) => {
+                      if (event.type !== "START_SPONSOR_NEGOTIATION") {
+                        throw new Error(
+                          "sponsorNegotiating entered from wrong event"
+                        );
+                      }
+                      const manager = context.managers[event.manager];
+                      if (!manager || manager.kind !== "human") {
+                        throw new Error("sponsor negotiation: invalid manager");
+                      }
+                      const team =
+                        manager.team !== undefined
+                          ? context.teams[manager.team]
+                          : undefined;
+                      if (!team || team.kind !== "human") {
+                        throw new Error("sponsor negotiation: invalid team");
+                      }
+                      return {
+                        manager,
+                        team,
+                        competitions: context.competitions,
+                        random
+                      };
+                    }
+                  },
+                  onDone: {
+                    actions: assign(({ context, event }) =>
+                      produce(context, (draft) => {
+                        const { deal } =
+                          event.output as SponsorNegotiationOutput;
+                        const managerId = draft.human.active;
+                        if (!managerId) {return;}
+                        const m = draft.managers[managerId];
+                        if (!m || m.kind !== "human") {return;}
+                        m.sponsor = deal;
+                        m.completedActions.push("sponsor");
+                      })
+                    ),
+                    target: "browsing"
                   }
                 },
                 done: { type: "final" }

@@ -21,6 +21,7 @@ import Stats from "./Stats";
 import Invitations from "./Invitations";
 import Gala from "./Gala";
 import ConfirmBudget from "./ConfirmBudget";
+import SponsorNegotiationView from "./SponsorNegotiationView";
 import { NotificationsContext } from "@/context/notifications-context";
 import type { ActorRefFrom } from "xstate";
 import type { notificationsMachine } from "@/machines/notifications";
@@ -39,6 +40,13 @@ type PhaseProps = {
 
 const useUiPhase = (): string | undefined => {
   return GameMachineContext.useSelector((state) => {
+    if (
+      state.matches({
+        in_game: { executing_phases: { action: "sponsorNegotiating" } }
+      })
+    ) {
+      return "sponsorNegotiating";
+    }
     if (state.matches({ in_game: { executing_phases: "action" } })) {
       return "action";
     }
@@ -121,6 +129,9 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
 
     case phase === "results":
       return <GamedayResults />;
+
+    case phase === "sponsorNegotiating":
+      return <SponsorNegotiationView />;
 
     case phase === "action":
       return (

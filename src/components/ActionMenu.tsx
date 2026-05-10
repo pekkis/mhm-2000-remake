@@ -41,6 +41,9 @@ const ActionMenu = () => {
   const betDone = useGameContext(
     hasCompletedAction(manager.id, "championshipBet")
   );
+  const sponsorDone = useGameContext(
+    hasCompletedAction(manager.id, "sponsor")
+  );
   const appActor = AppMachineContext.useActorRef();
   const gameActor = GameMachineContext.useActorRef();
   const team = getEffective(teams[manager.team!]);
@@ -71,6 +74,26 @@ const ActionMenu = () => {
           <Link onClick={close} to="/mestariveikkaus">
             Mestariveikkaus {betDone ? "✓" : "○"}
           </Link>
+
+          {sponsorDone ? (
+            <Link onClick={close} to="/organisaatio">
+              Sponsori ✓
+            </Link>
+          ) : (
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                close();
+                gameActor.send({
+                  type: "START_SPONSOR_NEGOTIATION",
+                  manager: manager.id
+                });
+              }}
+            >
+              Sponsorineuvottelut ○
+            </a>
+          )}
 
           <Link onClick={close} to="/kokoonpano">
             Kokoonpano
