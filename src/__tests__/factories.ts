@@ -169,6 +169,7 @@ export const createHumanManager = (
   pranksExecuted: 0,
   flags: {},
   tags: [],
+  sponsor: undefined,
   stats: { games: {}, achievements: emptyAchievements() },
   ...overrides
 });

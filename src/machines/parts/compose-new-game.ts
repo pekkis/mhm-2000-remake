@@ -48,6 +48,7 @@ const buildHumanManager = (
     attributes: draft.attributes,
     difficulty: legacyDifficulty,
     pranksExecuted: 0,
+    sponsor: undefined,
     balance,
     arena: {
       name: draft.customTeam?.arena ?? "MHM 2000 Areena",

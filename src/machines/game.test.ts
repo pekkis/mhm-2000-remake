@@ -32,7 +32,8 @@ const buildContextWithManager = (): GameContext => {
     pranksExecuted: 0,
     balance: 1_000_000,
     arena: { name: "Stadio Olimpico", level: 0 },
-    flags: {}
+    flags: {},
+    sponsor: undefined
   };
   return {
     ...ctx,

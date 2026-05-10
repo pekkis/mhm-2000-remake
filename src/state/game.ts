@@ -1,5 +1,6 @@
 import type { Competition, CompetitionId } from "@/types/competitions";
 import type { Arena } from "@/data/mhm2000/teams";
+import type { SponsorDeal } from "@/data/mhm2000/sponsors";
 import type { CountryIso } from "@/data/countries";
 import type { ManagerAttributes } from "@/data/managers";
 import type { TeamStrength } from "@/data/levels";
@@ -57,6 +58,7 @@ export type HumanManager = BaseManager & {
   pranksExecuted: number;
   flags: Record<string, boolean>;
   tags: string[];
+  sponsor: SponsorDeal | undefined;
 };
 
 export type TeamEffect = {

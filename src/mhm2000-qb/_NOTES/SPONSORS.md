@@ -15,7 +15,8 @@ References: `SUB sponsorit` ([ILEX5.BAS:6642–6898](../ILEX5.BAS)),
 [ILEZ5.BAS:232–247](../ILEZ5.BAS), the payout dispatcher),
 [DATA/SPONDATA.M2K](../DATA/SPONDATA.M2K) (93 sponsor names),
 [DATA/Y.MHM](../DATA/Y.MHM) records 145..185 (the 20 payout-slot labels
-+ category goal labels + NEUVOTTELE / HYVÄKSY UI strings).
+
+- category goal labels + NEUVOTTELE / HYVÄKSY UI strings).
 
 Persistence: `spona(pv)` and `sponso(1..20, pv)` are written by `SUB
 savetus` to `savetus2.xxx` ([ILEX5.BAS:7277–7280](../ILEX5.BAS)) and
@@ -90,28 +91,28 @@ exception, slot 7, which is per-cup-round and never zeroed).
 Labels from `Y.MHM` records 146..165 (printed via `lay 145+arg` from
 both `sponsorit` and `sporvagen`):
 
-| #   | Label (FI)                            | Trigger ⇒ payout site                                 | Sign | Notes |
-| --- | ------------------------------------- | ----------------------------------------------------- | ---- | --- |
-| 1   | MESTARUUS                             | finished 1st in PHL ⇒ `annarahaa sed(u(pv))` ([ILEZ5.BAS:466](../ILEZ5.BAS)) | + |  |
-| 2   | HOPEA                                 | finished 2nd in PHL ⇒ ditto                            | + |  |
-| 3   | PRONSSI                               | finished 3rd in PHL ⇒ ditto                            | + |  |
-| 4   | NELJÄS SIJA                           | finished 4th in PHL ⇒ `annarahaa 4` ([ILEZ5.BAS:470](../ILEZ5.BAS)) | + |  |
-| 5   | PÄÄSY PLAY-OFFEIHIN                   | qualified to PHL playoffs ⇒ `annarahaa 5` ([ILEX5.BAS:4694](../ILEX5.BAS)) | + |  |
-| 6   | CUPIN VOITTO                          | won the cup ⇒ `annarahaa 6` ([ILEX5.BAS:1206](../ILEX5.BAS)) | + |  |
-| 7   | KIERROS/CUP                           | per-cup-round survival fee ⇒ `annarahaa 7` ([ILEX5.BAS:1244](../ILEX5.BAS)). **Special: NOT zeroed by `annarahaa` (`IF arg% <> 7`), so it pays again every cup round you survive.** Cleared only on cup elimination ([ILEX5.BAS:1205](../ILEX5.BAS)). | + | repeating |
-| 8   | EUROOPAN MESTARUUS                    | won EHL final tournament ⇒ `annarahaa 8` ([ILEX5.BAS:1361](../ILEX5.BAS)) | + |  |
-| 9   | PÄÄSY EHL-LOPPUTURNAUKSEEN            | qualified to EHL final tournament ⇒ `annarahaa 9` ([ILEX5.BAS:1331](../ILEX5.BAS)) | + |  |
-| 10  | SARJANOUSU                            | promoted (final tier < starting tier) ⇒ `annarahaa 10` ([ILEZ5.BAS:474](../ILEZ5.BAS)) | + |  |
-| 11  | MITALITTA JÄÄMINEN                    | finished 4th or worse in PHL ⇒ `annarahaa 11` ([ILEZ5.BAS:471](../ILEZ5.BAS)) (also paid out as a one-shot when knocked out of playoffs at [ILEX5.BAS:4700](../ILEX5.BAS)) | − | penalty |
-| 12  | SEMIFINAALEISTA KARSIUTUMINEN         | knocked out before the PHL semifinals ⇒ `annarahaa 12` ([ILEX5.BAS:4701](../ILEX5.BAS)) | − | penalty |
-| 13  | PLAY-OFFEISTA ULOS JÄÄMINEN           | failed to reach PHL playoffs ⇒ `annarahaa 13` ([ILEX5.BAS:4702](../ILEX5.BAS)) | − | penalty |
-| 14  | KARSINTAAN JOUTUMINEN                 | dropped to relegation playoff (mid-season tier shuffle, `tempsr ≠ sr`) ⇒ `annarahaa 14` ([ILEX5.BAS:4746](../ILEX5.BAS)) | − | penalty |
-| 15  | PUTOAMINEN                            | relegated (final tier > starting tier) ⇒ `annarahaa 15` ([ILEZ5.BAS:478](../ILEZ5.BAS)) | − | penalty |
-| 16  | PUTOAMINEN CUPISTA ENNEN SEMIFINAALEJA | knocked out of cup before the semifinals ⇒ `annarahaa 16` ([ILEX5.BAS:1249](../ILEX5.BAS)) | − | penalty |
-| 17  | PUTOAMINEN CUPISTA 1. KIERROKSELLA    | knocked out of cup in round 1 ⇒ `annarahaa 17` ([ILEX5.BAS:1251](../ILEX5.BAS)) | − | penalty |
-| 18  | EHL:N LOPPUTURNAUKSESTA KARSIUTUMINEN | failed to qualify to EHL final tournament ⇒ `annarahaa 18` ([ILEX5.BAS:1335](../ILEX5.BAS)) | − | penalty |
-| 19  | EI SARJANOUSUA                        | promotion goal missed (final tier ≥ starting tier) ⇒ `annarahaa 19` ([ILEZ5.BAS:477](../ILEZ5.BAS)) | − | penalty |
-| 20  | OTTELUMAKSU                           | **per-match base fee.** Added to the manager's round income inside the budget screen at [ILEX5.BAS:3534, :5340](../ILEX5.BAS). Never goes through `annarahaa`; never zeroed. Read every regular round. | + | repeating |
+| #   | Label (FI)                             | Trigger ⇒ payout site                                                                                                                                                                                                                                                                                                                                                         | Sign | Notes     |
+| --- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | --------- |
+| 1   | MESTARUUS                              | finished 1st in PHL ⇒ `annarahaa sed(u(pv))` ([ILEZ5.BAS:466](../ILEZ5.BAS))                                                                                                                                                                                                                                                                                                  | +    |           |
+| 2   | HOPEA                                  | finished 2nd in PHL ⇒ ditto                                                                                                                                                                                                                                                                                                                                                   | +    |           |
+| 3   | PRONSSI                                | finished 3rd in PHL ⇒ ditto                                                                                                                                                                                                                                                                                                                                                   | +    |           |
+| 4   | NELJÄS SIJA                            | finished 4th in PHL ⇒ `annarahaa 4` ([ILEZ5.BAS:470](../ILEZ5.BAS))                                                                                                                                                                                                                                                                                                           | +    |           |
+| 5   | PÄÄSY PLAY-OFFEIHIN                    | qualified to PHL playoffs ⇒ `annarahaa 5` ([ILEX5.BAS:4694](../ILEX5.BAS))                                                                                                                                                                                                                                                                                                    | +    |           |
+| 6   | CUPIN VOITTO                           | won the cup ⇒ `annarahaa 6` ([ILEX5.BAS:1206](../ILEX5.BAS))                                                                                                                                                                                                                                                                                                                  | +    |           |
+| 7   | KIERROS/CUP                            | per-cup-round survival fee ⇒ `annarahaa 7` ([ILEX5.BAS:1244](../ILEX5.BAS)). **Special: NOT zeroed by `annarahaa` (`IF arg% <> 7`), so it pays again every cup round you survive.** Cleared in two places: on cup elimination ([ILEX5.BAS:1242](../ILEX5.BAS), `sponso(7, pv) = 0`) and on cup conclusion after the winner is crowned ([ILEX5.BAS:1205](../ILEX5.BAS), same). | +    | repeating |
+| 8   | EUROOPAN MESTARUUS                     | won EHL final tournament ⇒ `annarahaa 8` ([ILEX5.BAS:1361](../ILEX5.BAS))                                                                                                                                                                                                                                                                                                     | +    |           |
+| 9   | PÄÄSY EHL-LOPPUTURNAUKSEEN             | qualified to EHL final tournament ⇒ `annarahaa 9` ([ILEX5.BAS:1331](../ILEX5.BAS))                                                                                                                                                                                                                                                                                            | +    |           |
+| 10  | SARJANOUSU                             | promoted (final tier < starting tier) ⇒ `annarahaa 10` ([ILEZ5.BAS:474](../ILEZ5.BAS))                                                                                                                                                                                                                                                                                        | +    |           |
+| 11  | MITALITTA JÄÄMINEN                     | finished 4th or worse in PHL ⇒ `annarahaa 11` ([ILEZ5.BAS:471](../ILEZ5.BAS)) (also paid out as a one-shot when knocked out of playoffs at [ILEX5.BAS:4700](../ILEX5.BAS))                                                                                                                                                                                                    | −    | penalty   |
+| 12  | SEMIFINAALEISTA KARSIUTUMINEN          | knocked out before the PHL semifinals ⇒ `annarahaa 12` ([ILEX5.BAS:4701](../ILEX5.BAS))                                                                                                                                                                                                                                                                                       | −    | penalty   |
+| 13  | PLAY-OFFEISTA ULOS JÄÄMINEN            | failed to reach PHL playoffs ⇒ `annarahaa 13` ([ILEX5.BAS:4702](../ILEX5.BAS))                                                                                                                                                                                                                                                                                                | −    | penalty   |
+| 14  | KARSINTAAN JOUTUMINEN                  | dropped to relegation playoff (mid-season tier shuffle, `tempsr ≠ sr`) ⇒ `annarahaa 14` ([ILEX5.BAS:4746](../ILEX5.BAS))                                                                                                                                                                                                                                                      | −    | penalty   |
+| 15  | PUTOAMINEN                             | relegated (final tier > starting tier) ⇒ `annarahaa 15` ([ILEZ5.BAS:478](../ILEZ5.BAS))                                                                                                                                                                                                                                                                                       | −    | penalty   |
+| 16  | PUTOAMINEN CUPISTA ENNEN SEMIFINAALEJA | knocked out of cup before the semifinals ⇒ `annarahaa 16` ([ILEX5.BAS:1249](../ILEX5.BAS))                                                                                                                                                                                                                                                                                    | −    | penalty   |
+| 17  | PUTOAMINEN CUPISTA 1. KIERROKSELLA     | knocked out of cup in round 1 ⇒ `annarahaa 17` ([ILEX5.BAS:1251](../ILEX5.BAS))                                                                                                                                                                                                                                                                                               | −    | penalty   |
+| 18  | EHL:N LOPPUTURNAUKSESTA KARSIUTUMINEN  | failed to qualify to EHL final tournament ⇒ `annarahaa 18` ([ILEX5.BAS:1335](../ILEX5.BAS))                                                                                                                                                                                                                                                                                   | −    | penalty   |
+| 19  | EI SARJANOUSUA                         | promotion goal missed (final tier ≥ starting tier) ⇒ `annarahaa 19` ([ILEZ5.BAS:477](../ILEZ5.BAS))                                                                                                                                                                                                                                                                           | −    | penalty   |
+| 20  | OTTELUMAKSU                            | **per-match base fee.** Added to the manager's round income inside the budget screen at [ILEX5.BAS:3534, :5340](../ILEX5.BAS). Never goes through `annarahaa`; never zeroed. Read every regular round.                                                                                                                                                                        | +    | repeating |
 
 Slot 20 is the **headline number**. Everything else is shaped relative
 to it. Slots 1..10 are positive bonuses, 11..19 are negative penalties,
@@ -139,12 +140,12 @@ seks(3) = 3                                          ' CUP always
 IF muke(pv) = 1 THEN seks(4) = 3 ELSE seks(4) = 0    ' EHL only if qualified
 ```
 
-| Cat | Header (UI)  | Available levels (label = `lay 169 + ...`) | Levels | Eligibility |
-| --- | ------------ | ------------------------------------------ | ------ | ----------- |
-| 1   | **PHL**      | 1 EI · 2 PLAY-OFFIT · 3 SEMIFINAALI · 4 MITALI | 1..4 | only if team is in PHL (`sr=1`) |
-| 2   | **DIV & MUT**| A EI · B PLAY-OFFIT · C SARJANOUSU         | 1..3 (keys A/B/C, ASCII 65..67) | only if team is in a lower tier (`sr>1`) |
-| 3   | **CUP**      | D EI · E 2. KIERROS · F SEMIFINAALI        | 1..3 (keys D/E/F, ASCII 68..70) | always |
-| 4   | **EHL**      | G EI · H LOPPUTURNAUS · I EUROOPAN MESTARUUS | 1..3 (keys G/H/I, ASCII 71..73) | only if team qualified to EHL (`muke(pv)=1`) |
+| Cat | Header (UI)   | Available levels (label = `lay 169 + ...`)     | Levels                          | Eligibility                                  |
+| --- | ------------- | ---------------------------------------------- | ------------------------------- | -------------------------------------------- |
+| 1   | **PHL**       | 1 EI · 2 PLAY-OFFIT · 3 SEMIFINAALI · 4 MITALI | 1..4                            | only if team is in PHL (`sr=1`)              |
+| 2   | **DIV & MUT** | A EI · B PLAY-OFFIT · C SARJANOUSU             | 1..3 (keys A/B/C, ASCII 65..67) | only if team is in a lower tier (`sr>1`)     |
+| 3   | **CUP**       | D EI · E 2. KIERROS · F SEMIFINAALI            | 1..3 (keys D/E/F, ASCII 68..70) | always                                       |
+| 4   | **EHL**       | G EI · H LOPPUTURNAUS · I EUROOPAN MESTARUUS   | 1..3 (keys G/H/I, ASCII 71..73) | only if team qualified to EHL (`muke(pv)=1`) |
 
 `sexx(curso, 1..4)` defaults to 1 (= "EI", no goal, no payout, no
 penalty). The manager presses the corresponding letter/digit to bump
@@ -190,36 +191,36 @@ fee).
 
 ### Category 1 — PHL ambition (`sexx(curso, 1)`)
 
-| Level | Meaning      | Bonus slots (positive)                             | Penalty slots (negative)                                              |
-| ----- | ------------ | -------------------------------------------------- | --------------------------------------------------------------------- |
-| 1     | EI           | (none)                                             | (none)                                                                |
-| 2     | PLAY-OFFIT   | `5 = 3·base`                                       | `13 = -1.2·5`, `14 = .3·13`, `15 = .4·13`                             |
-| 3     | SEMIFINAALI  | `1 = 5·base, 2 = 4.5·base, 3 = 4·base, 4 = 3.5·base` | `12 = -.8·1`, `13 = .3·12`, `14 = .2·12`, `15 = .1·12`                |
-| 4     | MITALI       | `1 = 8·base, 2 = 7·base, 3 = 6·base`               | `11 = -1·1`, `12 = .2·11`, `13 = .18·11`, `14 = .16·11`, `15 = .14·11` |
+| Level | Meaning     | Bonus slots (positive)                               | Penalty slots (negative)                                               |
+| ----- | ----------- | ---------------------------------------------------- | ---------------------------------------------------------------------- |
+| 1     | EI          | (none)                                               | (none)                                                                 |
+| 2     | PLAY-OFFIT  | `5 = 3·base`                                         | `13 = -1.2·5`, `14 = .3·13`, `15 = .4·13`                              |
+| 3     | SEMIFINAALI | `1 = 5·base, 2 = 4.5·base, 3 = 4·base, 4 = 3.5·base` | `12 = -.8·1`, `13 = .3·12`, `14 = .2·12`, `15 = .1·12`                 |
+| 4     | MITALI      | `1 = 8·base, 2 = 7·base, 3 = 6·base`                 | `11 = -1·1`, `12 = .2·11`, `13 = .18·11`, `14 = .16·11`, `15 = .14·11` |
 
 ### Category 2 — DIV/MUT ambition (`sexx(curso, 2)`)
 
-| Level | Meaning      | Bonus slots                                                                 | Penalty slots                                                          |
-| ----- | ------------ | --------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| 1     | EI           | (none)                                                                      | (none)                                                                 |
-| 2     | PLAY-OFFIT   | `5 = 3·base`, `10 = 1.5·base`                                               | `13 = -1.2·5`; if `sr=2` also `14 = .3·13, 15 = .4·13`                 |
-| 3     | SARJANOUSU   | `10 = 8·base`                                                               | `13 = -.1·10`, `19 = -.75·10`; if `sr=2` also `14 = .25·19, 15 = .5·19` |
+| Level | Meaning    | Bonus slots                   | Penalty slots                                                           |
+| ----- | ---------- | ----------------------------- | ----------------------------------------------------------------------- |
+| 1     | EI         | (none)                        | (none)                                                                  |
+| 2     | PLAY-OFFIT | `5 = 3·base`, `10 = 1.5·base` | `13 = -1.2·5`; if `sr=2` also `14 = .3·13, 15 = .4·13`                  |
+| 3     | SARJANOUSU | `10 = 8·base`                 | `13 = -.1·10`, `19 = -.75·10`; if `sr=2` also `14 = .25·19, 15 = .5·19` |
 
 ### Category 3 — CUP ambition (`sexx(curso, 3)`)
 
-| Level | Meaning      | Bonus slots                                | Penalty slots                                  |
-| ----- | ------------ | ------------------------------------------ | ---------------------------------------------- |
-| 1     | EI           | (none)                                     | (none)                                         |
-| 2     | 2. KIERROS   | `7 = 1.25·base`                            | `17 = -1.5·7`                                  |
-| 3     | SEMIFINAALI  | `6 = 2.5·base`, `7 = 1.5·base`             | `16 = -6·7`, `17 = -2·7`                       |
+| Level | Meaning     | Bonus slots                    | Penalty slots            |
+| ----- | ----------- | ------------------------------ | ------------------------ |
+| 1     | EI          | (none)                         | (none)                   |
+| 2     | 2. KIERROS  | `7 = 1.25·base`                | `17 = -1.5·7`            |
+| 3     | SEMIFINAALI | `6 = 2.5·base`, `7 = 1.5·base` | `16 = -6·7`, `17 = -2·7` |
 
 ### Category 4 — EHL ambition (`sexx(curso, 4)`)
 
-| Level | Meaning              | Bonus slots                | Penalty slots          |
-| ----- | -------------------- | -------------------------- | ---------------------- |
-| 1     | EI                   | (none)                     | (none)                 |
-| 2     | LOPPUTURNAUS         | `9 = 3.5·base`             | `18 = -.9·9`           |
-| 3     | EUROOPAN MESTARUUS   | `8 = 8·base`               | `18 = -.9·8`           |
+| Level | Meaning            | Bonus slots    | Penalty slots |
+| ----- | ------------------ | -------------- | ------------- |
+| 1     | EI                 | (none)         | (none)        |
+| 2     | LOPPUTURNAUS       | `9 = 3.5·base` | `18 = -.9·9`  |
+| 3     | EUROOPAN MESTARUUS | `8 = 8·base`   | `18 = -.9·8`  |
 
 ### Per-slot random jitter
 
@@ -230,9 +231,12 @@ FOR cupex = 1 TO 20: spr(curso, cupex) = spr(curso, cupex) * spp(curso, cupex)
 ```
 
 with `spp(curso, slot) = .9 + .05·RND` (`+ .05` if `paikka(3, u(pv)) = 1`,
-i.e. the team owns the top arena tier). So each slot gets a fresh
-±5 % jitter — same spread for bonuses and penalties, locked at the
-moment the candidate is rolled. (Note this means **two candidates
+i.e. the team owns the top arena tier). The jitter is **always a
+discount**: without the arena bonus, range is **0.90–0.95** (−5 % to
+−10 %); with the arena bonus, **0.95–1.00** (0 % to −5 %). It
+**never exceeds 1.0** — arena ownership lifts offers out of the
+built-in discount, which is a subtle but meaningful reward. Locked at
+the moment the candidate is rolled. (Note this means **two candidates
 proposing the same ambition pattern won't propose identical numbers**;
 the jitter provides enough difference to actually compare them.)
 
@@ -383,11 +387,13 @@ The chosen candidate's offer becomes the manager's deal for the
 season. The entire `sponso(1..20, pv)` ledger is set in one shot.
 
 If all three candidates walk (improbable but possible — every
-NEUVOTTELE failure is independent), there's no fallback. `spona(pv)`
-remains whatever it was previously and `sponso(*, pv)` stays at
-whatever the previous deal left behind (likely zeros after the
-previous season's payouts). **Walking out empty-handed is a real
-outcome, not a soft-coded edge case.**
+NEUVOTTELE failure is independent), the loop has **no exit** — the
+only `EXIT DO` is gated on `sph(curso) = 1`, and all three are 0.
+This is a **QB soft-lock bug**, not an intentional mechanic.
+Practically near-impossible (you'd have to voluntarily haggle all
+three and fail rolls starting at 97 %), but the TS port should
+handle this gracefully — e.g. force-accept an empty deal and
+continue.
 
 ---
 
@@ -429,16 +435,16 @@ documented in [SUBS.md `sporvagen` row](SUBS.md) and
 
 ## 10. Payout-trigger map (mirror of slot table, by trigger site)
 
-| Trigger SUB / site                         | What pays                          | What zeros |
-| ------------------------------------------ | ---------------------------------- | --- |
-| `cupohjelma` ([ILEX5.BAS:1241–1252](../ILEX5.BAS)) — between cup rounds | slot 7 (per-round, kept), slots 16/17 (cup elim penalties) | slots 6/7 cleared on cup elimination ([ILEX5.BAS:1242](../ILEX5.BAS)); slots 16/17 zeroed after pay (slot 17 always after round 2; slot 16 only after round 5) |
-| `mestaruusjuhlat` / cup winner ([ILEX5.BAS:1206](../ILEX5.BAS)) | slot 6 (cup win) | slot 7 cleared at season-cup boundary ([ILEX5.BAS:1205](../ILEX5.BAS)) |
-| `ehllopturmaar` case 1 ([ILEX5.BAS:1329–1338](../ILEX5.BAS)) — EHL group stage end | slot 9 (qualified to lopputurnaus) **or** slot 18 (didn't qualify) | slot 18 (if qualified); slots 8/9 (if eliminated) |
-| `ehllopturmaar` case 2 ([ILEX5.BAS:1361–1363](../ILEX5.BAS)) — EHL champion | slot 8 (Euroopan mestaruus) | slot 8 always cleared |
-| `playoff` resolution ([ILEX5.BAS:4692–4708](../ILEX5.BAS)) — playoff qualification | slot 5 (qualified to PO) **or** slots 11+12+13 (failed) | slots 13/14/15 (if qualified); slots 1..5 (if eliminated) |
-| `playoff` round end ([ILEX5.BAS:4741–4755](../ILEX5.BAS)) — mid-PO tier shuffle | slot 14 (`tempsr ≠ sr`, knocked into karsinta) | slot 12 (held tier); slots 1..4 (eliminated) |
-| `final standings` ([ILEZ5.BAS:464–479](../ILEZ5.BAS)) — end of season | slots 1/2/3 (medals via `sed=1..3`), 4 (4th), 11 (no medal), 10 (promoted), 19 (no promotion), 15 (relegated) | slot 11 if 4th; slot 19 if held tier |
-| `budget` per round ([ILEX5.BAS:3534, :5340](../ILEX5.BAS)) | slot 20 (per-match fee, added straight into `rahna`) | never zeroed |
+| Trigger SUB / site                                                                 | What pays                                                                                                                                                                                                                                                                    | What zeros                                                             |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `cupohjelma` ([ILEX5.BAS:1241–1252](../ILEX5.BAS)) — between cup rounds            | **Surviving teams:** slot 7 paid (kept by `annarahaa`), slots 16/17 preemptively zeroed (penalty threat removed). **Eliminated teams:** slots 6/7 zeroed ([ILEX5.BAS:1242](../ILEX5.BAS)), slot 16 paid as penalty (after round 5), slot 17 paid as penalty (after round 2). | see left                                                               |
+| `mestaruusjuhlat` / cup winner ([ILEX5.BAS:1206](../ILEX5.BAS))                    | slot 6 (cup win)                                                                                                                                                                                                                                                             | slot 7 cleared at season-cup boundary ([ILEX5.BAS:1205](../ILEX5.BAS)) |
+| `ehllopturmaar` case 1 ([ILEX5.BAS:1329–1338](../ILEX5.BAS)) — EHL group stage end | slot 9 (qualified to lopputurnaus) **or** slot 18 (didn't qualify)                                                                                                                                                                                                           | slot 18 (if qualified); slots 8/9 (if eliminated)                      |
+| `ehllopturmaar` case 2 ([ILEX5.BAS:1361–1363](../ILEX5.BAS)) — EHL champion        | slot 8 (Euroopan mestaruus)                                                                                                                                                                                                                                                  | slot 8 always cleared                                                  |
+| `playoff` resolution ([ILEX5.BAS:4692–4708](../ILEX5.BAS)) — playoff qualification | slot 5 (qualified to PO) **or** slots 11+12+13 (failed)                                                                                                                                                                                                                      | slots 13/14/15 (if qualified); slots 1..5 (if eliminated)              |
+| `playoff` round end ([ILEX5.BAS:4741–4755](../ILEX5.BAS)) — mid-PO tier shuffle    | slot 14 (`tempsr ≠ sr`, knocked into karsinta)                                                                                                                                                                                                                               | slot 12 (held tier); slots 1..4 (eliminated)                           |
+| `final standings` ([ILEZ5.BAS:464–479](../ILEZ5.BAS)) — end of season              | slots 1/2/3 (medals via `sed=1..3`), 4 (4th), 11 (no medal), 10 (promoted), 19 (no promotion), 15 (relegated)                                                                                                                                                                | slot 11 if 4th; slot 19 if held tier                                   |
+| `budget` per round ([ILEX5.BAS:3534, :5340](../ILEX5.BAS))                         | slot 20 (per-match fee, added straight into `rahna`)                                                                                                                                                                                                                         | never zeroed                                                           |
 
 `SUB annarahaa` ([ILEX5.BAS:597, ILEZ5.BAS:232](../ILEX5.BAS))
 unconditionally adds `sponso(arg, pv)` (signed) to `raha(pv)`, prints

@@ -76,6 +76,7 @@ function makeManager(negotiation = 0, charisma = 0): HumanManager {
     tags: [],
     flags: {},
     pranksExecuted: 0,
+    sponsor: undefined,
     arena: { name: "Testi-areena", level: 0 },
     attributes: {
       strategy: 0,
