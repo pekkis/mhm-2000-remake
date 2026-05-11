@@ -7,6 +7,36 @@ import {
 import type { Manager, Team } from "@/state";
 
 /**
+ * QB `sr(team)` — league tier 1=PHL, 2=Divisioona, 3=Mutasarja.
+ *
+ * Derives the tier from competition participation at runtime, not from
+ * static ID ranges. Returns `undefined` for light teams (NHL/EHL/amateur)
+ * that aren't part of the Pekkalandia ladder.
+ *
+ * Accepts any object per competition that has a `teams` array — works
+ * with both `Competition` and `Draft<Competition>`.
+ */
+export const leagueTier = (
+  teamId: number,
+  competitions: {
+    phl: { teams: number[] };
+    division: { teams: number[] };
+    mutasarja: { teams: number[] };
+  }
+): 1 | 2 | 3 | undefined => {
+  if (competitions.phl.teams.includes(teamId)) {
+    return 1;
+  }
+  if (competitions.division.teams.includes(teamId)) {
+    return 2;
+  }
+  if (competitions.mutasarja.teams.includes(teamId)) {
+    return 3;
+  }
+  return undefined;
+};
+
+/**
  * Compute the base `{ goalie, defence, attack }` triple for a team.
  *
  * - **AI teams:** read directly from `strengthObj` (TASOT.M2K-derived,
