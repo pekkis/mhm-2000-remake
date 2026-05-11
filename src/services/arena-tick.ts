@@ -5,7 +5,8 @@ import {
   tickConstruction,
   constructionRounds,
   qbCint,
-  builderByRank
+  builderByRank,
+  architectByRank
 } from "@/services/arena";
 
 /**
@@ -63,7 +64,7 @@ export const tickArenaProject = (
   // This can happen if the previous tick decremented to 0 but the
   // completion ran in that same tick. Guard defensively.
   if (project.roundsRemaining <= 0) {
-    return completeProject(team, project);
+    return completeProject(team, project, random);
   }
 
   // ── Branch 2: Construction in progress ──
@@ -107,12 +108,17 @@ function tickPermitPhase(
 
   if (denialRoll < denialThreshold) {
     // Permit denied — restart from scratch.
+    // X.MHM rec 161: architect "joutuu syömään suunnitelman ja raapustamaan uuden"
     project.roundsRemaining = 10;
-    news.push("Rakennuslupa evätään. Arkkitehti palaa piirustuspöydän ääreen.");
+    const arch = architectByRank(project.architect);
+    news.push(
+      `RAKENNUSLUPA EVÄTÄÄN. ${arch.name} joutuu syömään arkkitehtonisesti epäonnistuneen suunnitelman ja raapustamaan uuden.`
+    );
     return { news, completed: false };
   }
 
   // Permit granted! Switch to construction phase.
+  // X.MHM rec 162: architect "on tehnyt hommansa hyvin"
   project.permitGranted = true;
   const rounds = constructionRounds("build", project.builder);
   project.roundsRemaining = rounds;
@@ -120,8 +126,10 @@ function tickPermitPhase(
   // QB: mpv = CLNG(mpv / (uhatapa - 1000))
   project.roundPayment = qbCint(project.roundPayment / rounds);
 
-  const builderName = builderByRank(project.builder).name;
-  news.push(`Rakennuslupa myönnetään! ${builderName} aloittaa työt.`);
+  const arch = architectByRank(project.architect);
+  news.push(
+    `RAKENNUSLUPA MYÖNNETÄÄN. ${arch.name} on tehnyt hommansa hyvin, ja varsinaiset rakennustyöt voivat nyt alkaa.`
+  );
   return { news, completed: false };
 }
 
@@ -138,10 +146,17 @@ function tickConstructionPhase(
 
   // Can the fund cover this round's payment?
   if (team.arenaFund < project.roundPayment) {
-    // Project paused — can't pay. QB just skips the round silently.
-    news.push(
-      "Rakennusprojekti seisoo — areenakassassa ei ole tarpeeksi rahaa."
-    );
+    // Project paused — can't pay.
+    // X.MHM rec 164 (build) / 168 (renovate)
+    if (project.kind === "build") {
+      news.push(
+        `Uuden hallisi rakennustyöt ovat keskeytyneet — rakennuspotista ei löydy tarvittavaa määrää rahaa! (${project.roundPayment} euroa/vuoro)`
+      );
+    } else {
+      news.push(
+        `Halliremonttisi on pysähtynyt rahanpuutteen vuoksi. Potti on tyhjä, eikä sieltä voi nyhtää tarvittavaa ${project.roundPayment} euroa/vuoro.`
+      );
+    }
     return { news, completed: false };
   }
 
@@ -154,8 +169,10 @@ function tickConstructionPhase(
   const tick = tickConstruction(project.builder, roll);
 
   if (tick.slacked) {
+    // X.MHM rec 165 — builder slacking
+    const builder = builderByRank(project.builder);
     news.push(
-      "Lakisääteisten kahvituntien takia rakennusprojekti seisoo tänään."
+      `${builder.name} ilmoittaa lakisääteisten kahvituntien kasautuneen kokonaiseksi palkalliseksi vapaapäiväksi. Suomeksi: pojat vetävät lonkkaa kokonaisen vuoron ajan, sinä maksat, projekti seisoo.`
     );
   }
 
@@ -165,7 +182,7 @@ function tickConstructionPhase(
 
   // Check for completion after decrement.
   if (project.roundsRemaining <= 0) {
-    return completeProject(team, project);
+    return completeProject(team, project, random);
   }
 
   return { news, completed: false };
@@ -175,9 +192,27 @@ function tickConstructionPhase(
 // Branch 3 — completion
 // ────────────────────────────────────────────────────────────────
 
+/**
+ * X.MHM records 170..175 — six random congratulation blurbs sent by
+ * a rival manager when a new arena is completed. QB picks one via
+ * `lax 170 + INT(6 * RND)`. The `£2` token in the originals expands
+ * to "{managerName} ({teamName})" — the caller substitutes the actual
+ * rival manager at render time; we use `{rivalManager}` as a
+ * placeholder here.
+ */
+const celebrationBlurbs = [
+  `{rivalManager} faksaa sinulle seuraavanlaiset terveiset: "Onneksi olkoon uuden hallinne johdosta. Olkoon Rouva Fortuna kanssanne nyt ja tulevaisuudessa!"`,
+  `{rivalManager} lähettää sinulle faksin: "Upea halli, täytyy tunnustaa vaikka vähän kadettaakin. Olkoon peliesityksenne tästedes uuden uljaan areenanne veroiset."`,
+  `{rivalManager} faksaa uuden hallisi johdosta onnittelunsa. "Johdattakoon areena joukkueenne ennennäkemättömiin korkeuksiin!"`,
+  `{rivalManager} lähettää sinulle tekstiviestin. "Juhlista halliasi kun vielä voit. Tulostaulu voi pudota koska tahansa..."`,
+  `{rivalManager} faksaa sinulle kirkkovenesymbolein koristellun lappusen: "Kirottu olkoon sinä ja uusi rupinen hallisi - haa haa!"`,
+  `{rivalManager} soittaa "onnittelunsa" puhelinvastaajaasi: "Huoh huoh lääh lääh. Mää räjäytän sun hallisi." Manageri yrittää parhaansa mukaan muuntaa ääntänsä, mutta olet melkomoisen varma soittajan henkilöllisyydestä.`
+];
+
 function completeProject(
   team: Draft<Team>,
-  project: Draft<NonNullable<Team["arenaProject"]>>
+  project: Draft<NonNullable<Team["arenaProject"]>>,
+  random: Random
 ): ArenaTickResult {
   const news: string[] = [];
 
@@ -185,11 +220,20 @@ function completeProject(
   team.arena = { ...project.target };
 
   if (project.kind === "build") {
-    // Name the arena from the project.
+    // X.MHM rec 166 — new build complete
     team.arena.name = project.name;
-    news.push(`Uusi areena "${project.name}" on valmis!`);
+    const builder = builderByRank(project.builder);
+    news.push(
+      `${builder.name} on saanut uuden areenasi rakennustyöt päätökseen, ja halli on käytettävissäsi tästä hetkestä alkaen.`
+    );
+    // X.MHM rec 170 + INT(6 * RND) — random rival congratulation
+    news.push(celebrationBlurbs[random.integer(0, 5)]!);
   } else {
-    news.push("Areenan remontti on valmis!");
+    // X.MHM rec 169 — renovation complete
+    const builder = builderByRank(project.builder);
+    news.push(
+      `${builder.name} on saanut halliremontin onnellisesti päätökseen! Uudistettu areenasi on käytössä jo tänä iltana tarvittaessa!`
+    );
   }
 
   // Clear the project.

@@ -131,7 +131,7 @@ describe("tickArenaProject", () => {
       });
 
       const { team: next, result } = tick(team, fixedRandom(50));
-      expect(result.news[0]).toContain("areenakassassa");
+      expect(result.news[0]).toContain("rahanpuutteen");
       // No payment deducted, no progress
       expect(next.arenaFund).toBe(100);
       expect(next.arenaProject!.roundsRemaining).toBe(5);
@@ -146,7 +146,7 @@ describe("tickArenaProject", () => {
       // Roll 50 → progresses, roundsRemaining goes 1→0 → completion
       const { team: next, result } = tick(team, fixedRandom(50));
       expect(result.completed).toBe(true);
-      expect(result.news[0]).toContain("remontti");
+      expect(result.news[0]).toContain("remontin");
       expect(next.arenaProject).toBeUndefined();
       expect(next.arena.level).toBe(targetArena.level);
       expect(next.arena.valuePoints).toBe(targetArena.valuePoints);
@@ -193,7 +193,7 @@ describe("tickArenaProject", () => {
       // denial roll: 0 (0 < 60-1*20=40, so denied)
       const rng = scriptedRandom({ integer: [0, 0] });
       const { team: next, result } = tick(team, rng);
-      expect(result.news[0]).toContain("evätään");
+      expect(result.news[0]).toContain("EVÄTÄÄN");
       expect(next.arenaProject!.roundsRemaining).toBe(10);
     });
 
@@ -212,7 +212,7 @@ describe("tickArenaProject", () => {
       // denial roll: 50 (50 >= 60-3*20=0, so granted — architect 3 never denied)
       const rng = scriptedRandom({ integer: [0, 50] });
       const { team: next, result } = tick(team, rng);
-      expect(result.news[0]).toContain("myönnetään");
+      expect(result.news[0]).toContain("MYÖNNETÄÄN");
 
       const proj = next.arenaProject!;
       expect(proj.kind).toBe("build");
@@ -253,9 +253,13 @@ describe("tickArenaProject", () => {
         })
       });
 
-      const { team: next, result } = tick(team, fixedRandom(50));
+      // Roll 50 for construction (progresses), roll 3 for celebration blurb index
+      const rng = scriptedRandom({ integer: [50, 3] });
+      const { team: next, result } = tick(team, rng);
       expect(result.completed).toBe(true);
-      expect(result.news[0]).toContain("Pasolini Areena");
+      expect(result.news[0]).toContain("rakennustyöt päätökseen");
+      // Second news line is the random celebration blurb
+      expect(result.news[1]).toContain("{rivalManager}");
       expect(next.arenaProject).toBeUndefined();
       expect(next.arena.name).toBe("Pasolini Areena");
       expect(next.arena.level).toBe(targetArena.level);
