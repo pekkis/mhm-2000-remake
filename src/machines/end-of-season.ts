@@ -10,6 +10,7 @@
  */
 
 import { cinteger } from "@/services/random";
+import { leagueTier } from "@/services/team";
 import type { GameContext } from "@/state";
 import type { WorldChampionshipEntry } from "@/state/game";
 import type {
@@ -293,22 +294,14 @@ export const runFinalizeStats = (draft: Draft<GameContext>): void => {
  * by membership in the post-promotion/relegation competition arrays.
  * Returns `undefined` for light teams or teams that aren't part of the
  * Pekkalandia ladder.
+ *
+ * Thin wrapper around `leagueTier` from `services/team` — accepts a
+ * draft for convenience inside immer produce blocks.
  */
 export const tierOf = (
   draft: Draft<GameContext>,
   teamId: number
-): 1 | 2 | 3 | undefined => {
-  if (draft.competitions.phl.teams.includes(teamId)) {
-    return 1;
-  }
-  if (draft.competitions.division.teams.includes(teamId)) {
-    return 2;
-  }
-  if (draft.competitions.mutasarja.teams.includes(teamId)) {
-    return 3;
-  }
-  return undefined;
-};
+): 1 | 2 | 3 | undefined => leagueTier(teamId, draft.competitions);
 
 /**
  * Same-tier strength bracket lookup. Verbatim port of the QB

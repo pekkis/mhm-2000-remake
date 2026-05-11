@@ -23,6 +23,7 @@
 
 import r from "@/services/random";
 import { victors } from "@/services/playoffs";
+import { leagueTier } from "@/services/team";
 import { entries, keys, pick, pickBy, values } from "remeda";
 import calendar from "@/data/calendar";
 import { CRISIS_COST, CRISIS_MORALE_MAX } from "@/data/constants";
@@ -462,9 +463,10 @@ export const canCrisisMeeting =
     if (team.morale > CRISIS_MORALE_MAX) {
       return false;
     }
-    const cost = ctx.competitions.division.teams.includes(team.id)
-      ? CRISIS_COST / 2
-      : CRISIS_COST;
+    const cost =
+      leagueTier(team.id, ctx.competitions) === 2
+        ? CRISIS_COST / 2
+        : CRISIS_COST;
     return m.balance >= cost;
   };
 

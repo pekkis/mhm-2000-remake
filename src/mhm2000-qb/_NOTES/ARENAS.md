@@ -420,7 +420,7 @@ if home_tier > away_tier: ylx(8,1) = base / (Δ + 1)    ' uneven matchup empties
 if equal:                 ylx(8,1) = base
 ```
 
-### 7.4 Playoffs (`kiero = 4`)
+### 7.4 Practice games (`kiero = 4`)
 
 ```
 ylx(1,c) = 5 - sr(team_c)          ' PHL=4, Div=3, Mut=2; 5 for top-66; 1 for 49..65
@@ -484,10 +484,12 @@ Notes:
 
 ## 8. `SUB kausikorttimaar` — season-ticket drive (`ILEX5.BAS:2507-2556`)
 
-Called twice per round (`:1787, :1789`) — once for `kiero=99`
-(probably the preseason kick-off marker) and once at the top of the
-playoff round (`kiero=4`). So season tickets get sold **before** every
-season and once again right before the playoffs.
+Called from the main round dispatch (`:1787, :1789`) — fires on every
+`kiero=99` (6 preseason idle rounds) and every `kiero=4` (4 preseason
+practice-game rounds), so **10 times during the preseason**. All
+10 pulses happen before the regular season begins. Each invocation
+sells a fresh batch and pays the manager immediately. See
+[SEASON-TICKETS.md](SEASON-TICKETS.md) for the full deep-dive.
 
 For each of 48 league teams:
 
@@ -664,8 +666,9 @@ Help screen: `qelp 4` (areena) and `qelp 22` (remppa) from
 - **`ylmaar` randomness** uses a single `RND` per match for the ±5 %
   noise band; capture in `resolve`, snapshot the rolled count to the
   match payload. Don't recompute in `process`.
-- **`kausikorttimaar` runs twice per season** (preseason + pre-playoff).
-  Easy to forget; both pulses respect the seat cap and add to `raha`.
+- **`kausikorttimaar` runs 10 times during the preseason** (6 idle rounds +
+  4 practice-game rounds). All before the regular season. The `× 22`
+  payment for 22 home games is perfectly timed. See [SEASON-TICKETS.md](SEASON-TICKETS.md).
 - **Coach `mtaito(5, …)` and `avg(3, …)`** are referenced here without
   decoding what attribute slot 5 is — see [ATTRIBUTES.md](ATTRIBUTES.md).
   Provisional guess: slot 5 = marketing/PR (boosts season-ticket sales).

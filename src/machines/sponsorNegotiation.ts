@@ -38,28 +38,7 @@ import {
   type DifficultyLevelId
 } from "@/data/mhm2000/difficulty-levels";
 import { createAttributeRollService } from "@/services/attribute-roll";
-
-// ─── Derivation helpers ───────────────────────────────────────────────────────
-
-/**
- * Derive the team's league tier from competition participation.
- * PHL → 1, Division → 2, Mutasarja → 3.
- */
-const deriveLeagueTier = (
-  teamId: number,
-  competitions: Record<CompetitionId, Competition>
-): number => {
-  if (competitions.phl.teams.includes(teamId)) {
-    return 1;
-  }
-  if (competitions.division.teams.includes(teamId)) {
-    return 2;
-  }
-  if (competitions.mutasarja.teams.includes(teamId)) {
-    return 3;
-  }
-  return 1; // fallback — shouldn't happen for managed teams
-};
+import { leagueTier } from "@/services/team";
 
 /**
  * Derive EHL qualification from competition participation.
@@ -234,9 +213,9 @@ export const sponsorNegotiationMachine = setup({
     const { manager, team, competitions, random } = input;
     const teamId = team.id;
 
-    const leagueTier = deriveLeagueTier(teamId, competitions);
+    const tier = leagueTier(teamId, competitions) ?? 1;
     const ehlQualified = deriveEhlQualified(teamId, competitions);
-    const categories = goalCategories(leagueTier, ehlQualified);
+    const categories = goalCategories(tier, ehlQualified);
 
     const previousRankings: [number, number, number] =
       team.previousRankings ?? [25, 25, 25];
@@ -248,16 +227,16 @@ export const sponsorNegotiationMachine = setup({
 
     const names = rollSponsorNames(random);
     const candidates: [CandidateState, CandidateState, CandidateState] = [
-      buildCandidate(names[0], random, base, leagueTier, hasBoxes),
-      buildCandidate(names[1], random, base, leagueTier, hasBoxes),
-      buildCandidate(names[2], random, base, leagueTier, hasBoxes)
+      buildCandidate(names[0], random, base, tier, hasBoxes),
+      buildCandidate(names[1], random, base, tier, hasBoxes),
+      buildCandidate(names[2], random, base, tier, hasBoxes)
     ];
 
     return {
       manager,
       team,
       random,
-      leagueTier,
+      leagueTier: tier,
       base,
       categories,
       candidates,

@@ -119,7 +119,9 @@ const ProjectStatus = () => {
   const team = getEffective(teams[manager.team!]);
 
   const project = team.arenaProject;
-  if (!project) {return null;}
+  if (!project) {
+    return null;
+  }
 
   return (
     <Stack gap="sm">

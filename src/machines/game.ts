@@ -777,9 +777,13 @@ export const gameMachine = setup({
       ) =>
         produce(context, (draft) => {
           const m = draft.managers[params.manager];
-          if (!m || m.team === undefined || m.kind === "ai") {return;}
+          if (!m || m.team === undefined || m.kind === "ai") {
+            return;
+          }
           const team = draft.teams[m.team];
-          if (team.arenaProject) {return;} // already have a project
+          if (team.arenaProject) {
+            return;
+          } // already have a project
 
           if (params.kind === "renovate") {
             const rounds = constructionRounds("renovate", params.builder);
@@ -1339,7 +1343,9 @@ export const gameMachine = setup({
       actions: assign(({ context, event }) =>
         produce(context, (draft) => {
           const m = draft.managers[event.payload.manager];
-          if (m && m.kind === "human") {m.balance += 10_000_000;}
+          if (m && m.kind === "human") {
+            m.balance += 10_000_000;
+          }
         })
       )
     },
