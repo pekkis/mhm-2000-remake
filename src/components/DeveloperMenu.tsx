@@ -5,7 +5,9 @@ import {
   GameMachineContext,
   useGameContext
 } from "@/context/game-machine-context";
+import { activeManager } from "@/machines/selectors";
 import { values } from "remeda";
+import Button from "@/components/ui/Button";
 import { Table, Td, Th } from "./ui/Table";
 import Stack from "@/components/ui/Stack";
 import Heading from "@/components/ui/Heading";
@@ -26,6 +28,8 @@ const DeveloperMenu = () => {
   const teams = useGameContext((ctx) => ctx.teams);
   const managers = useGameContext((ctx) => ctx.managers);
   const competitions = useGameContext((ctx) => ctx.competitions);
+  const manager = useGameContext(activeManager);
+  const gameActor = GameMachineContext.useActorRef();
 
   const ctx = GameMachineContext.useSelector((snap) => snap.context);
 
@@ -141,6 +145,20 @@ const DeveloperMenu = () => {
                 })}
             </tbody>
           </Table>
+        </Stack>
+
+        <Stack gap="sm">
+          <Heading level={3}>Debug</Heading>
+          <Button
+            onClick={() =>
+              gameActor.send({
+                type: "DEBUG_GIMME_MONEY",
+                payload: { manager: manager.id }
+              })
+            }
+          >
+            GIMME MONEY MONEY MONEY
+          </Button>
         </Stack>
 
         <Box>

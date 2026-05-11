@@ -280,7 +280,8 @@ export type GameMachineEvents =
         name: string;
         totalCost: number;
       };
-    };
+    }
+  | { type: "DEBUG_GIMME_MONEY"; payload: { manager: string } };
 
 export const gameMachine = setup({
   types: {
@@ -1331,6 +1332,14 @@ export const gameMachine = setup({
         type: "executeStartArenaProject",
         params: ({ event }) => event.payload
       }
+    },
+    DEBUG_GIMME_MONEY: {
+      actions: assign(({ context, event }) =>
+        produce(context, (draft) => {
+          const m = draft.managers[event.payload.manager];
+          if (m && m.kind === "human") m.balance += 10_000_000;
+        })
+      )
     },
     PLACE_BET: {
       actions: [

@@ -48,23 +48,15 @@ const ArenaInfo = () => {
   return (
     <Stack gap="sm">
       <Heading level={3}>{arena.name ?? "Nimetön areena"}</Heading>
-      <Paragraph size="sm">
-        Viihtyisyystaso: {arena.level} / 6
-      </Paragraph>
-      <Paragraph size="sm">
-        Tilapisteet: {arena.valuePoints}
-      </Paragraph>
+      <Paragraph size="sm">Viihtyisyystaso: {arena.level} / 6</Paragraph>
+      <Paragraph size="sm">Tilapisteet: {arena.valuePoints}</Paragraph>
       <Paragraph size="sm">
         Seisomapaikat: {arena.standingCount} &middot; Istumapaikat:{" "}
         {arena.seatedCount}
         {arena.hasBoxes ? " · Aitiot: kyllä" : ""}
       </Paragraph>
-      <Paragraph size="sm">
-        Rakennuspotti: {currency(arenaFund)}
-      </Paragraph>
-      <Paragraph size="sm">
-        Saldo: {currency(manager.balance)}
-      </Paragraph>
+      <Paragraph size="sm">Rakennuspotti: {currency(arenaFund)}</Paragraph>
+      <Paragraph size="sm">Saldo: {currency(manager.balance)}</Paragraph>
     </Stack>
   );
 };
@@ -133,9 +125,7 @@ const ProjectStatus = () => {
       <Heading level={4}>RAKENNUSPROSESSIN TILANNEKATSAUS</Heading>
       {project.kind === "renovate" ? (
         <>
-          <Paragraph size="sm">
-            Tyyppi: Peruskorjaus
-          </Paragraph>
+          <Paragraph size="sm">Tyyppi: Peruskorjaus</Paragraph>
           <Paragraph size="sm">
             Kierroksia jäljellä: {project.roundsRemaining}
           </Paragraph>
@@ -143,8 +133,8 @@ const ProjectStatus = () => {
             Maksuerä / kierros: {currency(project.roundPayment)}
           </Paragraph>
           <Paragraph size="sm">
-            Tavoite: {project.target.valuePoints} tilapistettä
-            (taso {project.target.level})
+            Tavoite: {project.target.valuePoints} tilapistettä (taso{" "}
+            {project.target.level})
           </Paragraph>
         </>
       ) : (
@@ -154,9 +144,7 @@ const ProjectStatus = () => {
           </Paragraph>
           {project.permitGranted ? (
             <>
-              <Paragraph size="sm">
-                Rakennuslupa: MYÖNNETTY
-              </Paragraph>
+              <Paragraph size="sm">Rakennuslupa: MYÖNNETTY</Paragraph>
               <Paragraph size="sm">
                 Kierroksia jäljellä: {project.roundsRemaining}
               </Paragraph>
@@ -166,13 +154,13 @@ const ProjectStatus = () => {
             </>
           ) : (
             <Paragraph size="sm">
-              Rakennuslupa: Käsittelyssä (edistyminen:{" "}
-              {project.roundsRemaining} / 100)
+              Rakennuslupa: Käsittelyssä (edistyminen: {project.roundsRemaining}{" "}
+              / 100)
             </Paragraph>
           )}
           <Paragraph size="sm">
-            Tavoite: {project.target.valuePoints} tilapistettä
-            (taso {project.target.level})
+            Tavoite: {project.target.valuePoints} tilapistettä (taso{" "}
+            {project.target.level})
           </Paragraph>
         </>
       )}
@@ -202,6 +190,7 @@ const CostSummary = ({ ctx }: { ctx: ArenaDesignContext }) => {
   const free = planFreePoints(ctx);
   const dp = downPayment(cost);
   const rounds = constructionRounds(ctx.kind, ctx.builder);
+  const canStart = ctx.arenaFund >= dp;
 
   return (
     <Stack gap="xs">
@@ -209,15 +198,15 @@ const CostSummary = ({ ctx }: { ctx: ArenaDesignContext }) => {
         Kokonaishinta: {currency(cost)}
       </Paragraph>
       <Paragraph size="sm">
-        Käsiraha (20 %): {currency(dp)} — Potti: {currency(ctx.arenaFund)}
+        Pottivähimmäismäärä (20 %): {currency(dp)} — Potti:{" "}
+        {currency(ctx.arenaFund)}
+        {canStart ? "" : " ⚠ EI RIITÄ"}
       </Paragraph>
       <Paragraph size="sm">
         Vapaita tilapisteitä: {free}
         {free < 0 ? " ⚠ YLITYS" : ""}
       </Paragraph>
-      <Paragraph size="sm">
-        Rakennusaika: {rounds} kierrosta
-      </Paragraph>
+      <Paragraph size="sm">Rakennusaika: {rounds} kierrosta</Paragraph>
     </Stack>
   );
 };
@@ -290,9 +279,7 @@ const DesignWizard = ({
           <Input
             type="text"
             value={ctx.name}
-            onChange={(e) =>
-              send({ type: "SET_NAME", value: e.target.value })
-            }
+            onChange={(e) => send({ type: "SET_NAME", value: e.target.value })}
             style={{ maxWidth: "20rem" }}
           />
         </Stack>
@@ -300,16 +287,12 @@ const DesignWizard = ({
 
       {/* Tilapisteet */}
       <Stack gap="xs">
-        <Heading level={5}>
-          Tilapisteet: {ctx.valuePoints}
-        </Heading>
+        <Heading level={5}>Tilapisteet: {ctx.valuePoints}</Heading>
         <Slider
           min={minPts}
           max={Math.min(maxPts, minPts + 500)}
           value={ctx.valuePoints}
-          onValueChange={(v) =>
-            send({ type: "SET_VALUE_POINTS", value: v })
-          }
+          onValueChange={(v) => send({ type: "SET_VALUE_POINTS", value: v })}
         />
       </Stack>
 
@@ -327,31 +310,23 @@ const DesignWizard = ({
 
       {/* Seisomapaikat */}
       <Stack gap="xs">
-        <Heading level={5}>
-          Seisomapaikat: {ctx.standingCount}
-        </Heading>
+        <Heading level={5}>Seisomapaikat: {ctx.standingCount}</Heading>
         <Slider
           min={0}
           max={300}
           value={ctx.standingCount}
-          onValueChange={(v) =>
-            send({ type: "SET_STANDING", value: v })
-          }
+          onValueChange={(v) => send({ type: "SET_STANDING", value: v })}
         />
       </Stack>
 
       {/* Istumapaikat */}
       <Stack gap="xs">
-        <Heading level={5}>
-          Istumapaikat: {ctx.seatedCount}
-        </Heading>
+        <Heading level={5}>Istumapaikat: {ctx.seatedCount}</Heading>
         <Slider
           min={0}
           max={300}
           value={ctx.seatedCount}
-          onValueChange={(v) =>
-            send({ type: "SET_SEATED", value: v })
-          }
+          onValueChange={(v) => send({ type: "SET_SEATED", value: v })}
         />
       </Stack>
 
@@ -451,10 +426,7 @@ const Arenas = () => {
 
         {/* Wizard or launch buttons */}
         {wizardKind !== null ? (
-          <DesignWizard
-            kind={wizardKind}
-            onDone={() => setWizardKind(null)}
-          />
+          <DesignWizard kind={wizardKind} onDone={() => setWizardKind(null)} />
         ) : (
           !hasProject && (
             <Stack direction="row" gap="sm">
