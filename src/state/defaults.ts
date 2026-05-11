@@ -165,6 +165,7 @@ const seedTeams = (): Team[] => {
       intensity: 1,
       fixMatch: false,
       arenaFund: 0,
+      seasonTickets: 0,
       arenaProject: undefined
     } satisfies Team;
   });
