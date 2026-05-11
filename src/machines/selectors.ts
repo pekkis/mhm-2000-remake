@@ -24,7 +24,6 @@
 import r from "@/services/random";
 import { victors } from "@/services/playoffs";
 import { entries, keys, pick, pickBy, values } from "remeda";
-import arenas from "@/data/arenas";
 import calendar from "@/data/calendar";
 import { CRISIS_COST, CRISIS_MORALE_MAX } from "@/data/constants";
 import type { SnapshotFrom } from "xstate";
@@ -361,30 +360,6 @@ export const managerById =
     ctx.managers[manager];
 
 /**
- * True iff `manager` can afford the next arena upgrade and isn't already at
- * the top tier. Single source of truth shared by the `Arena.tsx` button's
- * `disabled` prop and the gameMachine's `IMPROVE_ARENA` guard.
- */
-export const canImproveArena =
-  (manager: string): ContextSelector<boolean> =>
-  (ctx) => {
-    const m = ctx.managers[manager];
-    if (!m) {
-      return false;
-    }
-
-    if (m.kind === "ai") {
-      return false;
-    }
-
-    const next = arenas[m.arena.level + 1];
-    if (!next) {
-      return false;
-    }
-    return m.balance >= next.price;
-  };
-
-/**
  * True iff `manager` can still order a prank this round: their difficulty's
  * per-season cap isn't reached, the current calendar round actually allows
  * pranks, and — when a `price` is supplied — they can afford it.
@@ -550,11 +525,6 @@ export const managersDifficulty =
   (manager: string): ContextSelector<number> =>
   (ctx) =>
     humanManagerById(manager)(ctx).difficulty;
-
-export const managersArena =
-  (manager: string): ContextSelector<HumanManager["arena"] | undefined> =>
-  (ctx) =>
-    humanManagerById(manager)(ctx).arena;
 
 export const managerHasEnoughMoney =
   (manager: string, neededAmount: number): ContextSelector<boolean> =>

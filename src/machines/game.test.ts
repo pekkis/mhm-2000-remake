@@ -32,7 +32,6 @@ const buildContextWithManager = (): GameContext => {
     difficulty: 1,
     pranksExecuted: 0,
     balance: 1_000_000,
-    arena: { name: "Stadio Olimpico", level: 0 },
     flags: {},
     sponsor: undefined,
     completedActions: []

@@ -29,7 +29,6 @@ import bestManagerEver from "./best-manager-ever";
 import book from "./book";
 import boxing from "./boxing";
 import cleandrug from "./cleandrug";
-import concert from "./concert";
 import ehlAward from "./ehl-award";
 import enemyProtest from "./enemy-protest";
 import fanMerchandise from "./fan-merchandise";
@@ -45,7 +44,6 @@ import metterer from "./metterer";
 import moreTaxes from "./more-taxes";
 import ogilny from "./ogilny";
 import onecky from "./onecky";
-import otsohalli from "./otsohalli";
 import pakibetteri from "./pakibetteri";
 import pauligkahvi from "./pauligkahvi";
 import pempers from "./pempers";
@@ -58,14 +56,12 @@ import psychoMail from "./psycho-mail";
 import psychoRelease from "./psycho-release";
 import ralliala from "./ralliala";
 import saunailta from "./saunailta";
-import scoreboard from "./scoreboard";
 import sopupeli from "./sopupeli";
 import stalking from "./stalking";
 import suddenDeath from "./sudden-death";
 import topGame from "./top-game";
 import undqvist from "./undqvist";
 import urheiluruuttu from "./urheiluruuttu";
-import valiveto from "./valiveto";
 import voodoo from "./voodoo";
 import workPermits from "./work-permits";
 import worstManagerEver from "./worst-manager-ever";
@@ -80,7 +76,6 @@ const newEvents = {
   book,
   boxing,
   cleandrug,
-  concert,
   ehlAward,
   enemyProtest,
   fanMerchandise,
@@ -96,7 +91,6 @@ const newEvents = {
   moreTaxes,
   ogilny,
   onecky,
-  otsohalli,
   pakibetteri,
   pauligkahvi,
   pempers,
@@ -109,14 +103,12 @@ const newEvents = {
   psychoRelease,
   ralliala,
   saunailta,
-  scoreboard,
   sopupeli,
   stalking,
   suddenDeath,
   topGame,
   undqvist,
   urheiluruuttu,
-  valiveto,
   voodoo,
   workPermits,
   worstManagerEver,

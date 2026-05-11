@@ -122,7 +122,6 @@ const buildContext = (
             difficulty: 1,
             stats: { games: {}, achievements: emptyAchievements() },
             balance: 0,
-            arena: { name: "Stadio Olimpico", level: 0 },
             pranksExecuted: 0,
             flags: {},
             sponsor: undefined,

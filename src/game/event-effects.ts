@@ -86,10 +86,6 @@ export type EventEffect =
   | { type: "incrementBalance"; manager: string; amount: number }
   | { type: "decrementBalance"; manager: string; amount: number }
   | { type: "setBalance"; manager: string; amount: number }
-
-  // ── Manager arena / extras / services ──
-  | { type: "setArenaLevel"; manager: string; level: number }
-  | { type: "renameArena"; manager: string; name: string }
   | { type: "hireManager"; manager: string; team: number }
 
   // ── Team strength / morale / readiness / strategy ──
@@ -211,21 +207,6 @@ export function applyEffect(
       return;
     }
 
-    // ── Manager arena / extras / services ──
-    case "setArenaLevel": {
-      const m = humanManagerById(effect.manager)(draft);
-      if (m) {
-        m.arena.level = effect.level;
-      }
-      return;
-    }
-    case "renameArena": {
-      const m = humanManagerById(effect.manager)(draft);
-      if (m) {
-        m.arena.name = effect.name;
-      }
-      return;
-    }
     case "hireManager": {
       const m = humanManagerById(effect.manager)(draft);
       if (!m) {

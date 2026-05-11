@@ -67,7 +67,6 @@ export type HumanManager = BaseManager & {
   difficulty: number;
   attributes: ManagerAttributes;
   balance: number;
-  arena: ManagerArena;
   pranksExecuted: number;
   flags: Record<string, boolean>;
   tags: string[];

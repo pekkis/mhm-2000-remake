@@ -4,10 +4,7 @@ import { produce, type Draft } from "immer";
 import type { GameContext } from "@/state";
 import {
   managerCompetesIn,
-  canImproveArena,
   canOrderPrank,
-  canBuyPlayer,
-  canSellPlayer,
   canCrisisMeeting,
   allEventsResolved,
   allRequiredActionsComplete,
@@ -25,13 +22,8 @@ import strategies, {
   type StrategyId
 } from "@/data/mhm2000/strategies";
 import prankTypes from "@/game/pranks";
-import arenas from "@/data/arenas";
-import playerTypes from "@/data/transfer-market";
 import random, { cinteger } from "@/services/random";
-import {
-  notificationsMachine,
-  pushNotification
-} from "@/machines/notifications";
+import { notificationsMachine } from "@/machines/notifications";
 import type { NotificationData } from "@/machines/notification";
 import { betMachine } from "@/machines/bet";
 import { championBetMachine } from "@/machines/championBet";
@@ -546,115 +538,6 @@ export const gameMachine = setup({
             victim: params.victim
           });
         })
-    ),
-
-    /**
-     * improve arena — debits the manager and bumps their arena level by
-     * one (clamped 0..9). 1-1 port of the legacy `improveArena()` saga.
-     * Notification delivered separately via the `notify` action; UI gating
-     * (price affordable, level < 9) stays in `Arena.tsx`.
-     */
-    executeImproveArena: assign(({ context }, params: { manager: string }) =>
-      produce(context, (draft) => {
-        const m = draft.managers[params.manager];
-        if (!m) {
-          return;
-        }
-
-        if (m.kind === "ai") {
-          return;
-        }
-
-        const nextLevel = m.arena.level + 1;
-        const nextArena = arenas[nextLevel];
-        if (!nextArena) {
-          return;
-        }
-        m.balance -= nextArena.price;
-        m.arena.level = Math.max(0, Math.min(9, nextLevel));
-      })
-    ),
-
-    /**
-     * Buy a player from the transfer market: debit the manager and bump
-     * their team's strength by a randomized skill amount. 1-1 port of the
-     * legacy `buyPlayer()` saga.
-     *
-     * Lives outside the on-handler's `actions` array because the random
-     * roll has to happen once — the assign and the notify both reference
-     * the same `skillGain`. `enqueueActions` lets us do both with built-in
-     * primitives (no dev-mode warning).
-     */
-    executeBuyPlayer: enqueueActions(
-      (
-        { context, enqueue },
-        params: { manager: string; playerType: number }
-      ) => {
-        const playerType = playerTypes[params.playerType];
-        const skillGain = playerType.skill();
-        enqueue.assign(
-          produce(context, (draft) => {
-            const m = draft.managers[params.manager];
-            if (!m || m.team === undefined) {
-              return;
-            }
-
-            if (m.kind === "ai") {
-              return;
-            }
-
-            m.balance -= playerType.buy;
-            // draft.teams[m.team].strength += skillGain;
-          })
-        );
-        enqueue.sendTo(
-          "notifications",
-          pushNotification({
-            manager: params.manager,
-            message: `Ostamasi pelaaja tuo ${skillGain} lisää voimaa joukkueeseen!`,
-            type: "info"
-          })
-        );
-      }
-    ),
-
-    /**
-     * Sell a player to the transfer market: credit the manager and drop
-     * their team's strength by a randomized skill amount. 1-1 port of the
-     * legacy `sellPlayer()` saga. The strength-floor check lives in the
-     * `canSellPlayer` guard upstream; the failure-path notification is
-     * emitted from the on-handler's else branch.
-     */
-    executeSellPlayer: enqueueActions(
-      (
-        { context, enqueue },
-        params: { manager: string; playerType: number }
-      ) => {
-        const playerType = playerTypes[params.playerType];
-        const skillLoss = playerType.skill();
-        enqueue.assign(
-          produce(context, (draft) => {
-            const m = draft.managers[params.manager];
-            if (!m || m.team === undefined) {
-              return;
-            }
-
-            if (m.kind === "ai") {
-              return;
-            }
-
-            m.balance += playerType.sell;
-          })
-        );
-        enqueue.sendTo(
-          "notifications",
-          pushNotification({
-            manager: params.manager,
-            message: `Myymäsi pelaaja vie ${skillLoss} voimaa mukanaan!`,
-            type: "info"
-          })
-        );
-      }
     ),
 
     /**
@@ -1259,69 +1142,6 @@ export const gameMachine = setup({
         }
       ]
     },
-    IMPROVE_ARENA: {
-      // Single source of truth for affordability + level cap — the same
-      // selector backs the `disabled` prop on the Arena.tsx upgrade button.
-      // Sends from anywhere else (dev menu, future bots, future tests) get
-      // the same enforcement for free.
-      guard: ({ context, event }) =>
-        canImproveArena(event.payload.manager)(context),
-      actions: [
-        {
-          type: "executeImproveArena",
-          params: ({ event }) => event.payload
-        },
-        {
-          type: "notify",
-          params: ({ event }) => ({
-            notification: {
-              manager: event.payload.manager,
-              message:
-                "Työmiehet käyttävät vallankumoukselllisia kvanttityövälineitä, ja rakennusurakka valmistuu alta aikayksikön!",
-              type: "info"
-            }
-          })
-        }
-      ]
-    },
-    BUY_PLAYER: {
-      // UI button (TransferMarket.tsx) is already disabled when the
-      // manager can't pay; this guard catches stray sends from elsewhere.
-      guard: ({ context, event }) => {
-        const playerType = playerTypes[event.payload.playerType];
-        return canBuyPlayer(event.payload.manager, playerType.buy)(context);
-      },
-      actions: {
-        type: "executeBuyPlayer",
-        params: ({ event }) => event.payload
-      }
-    },
-    SELL_PLAYER: [
-      // Happy path: team can spare the strength.
-      {
-        guard: ({ context, event }) =>
-          canSellPlayer(event.payload.manager)(context),
-        actions: {
-          type: "executeSellPlayer",
-          params: ({ event }) => event.payload
-        }
-      },
-      // Failure path: preserve the legacy "myyntilupa evätty" feedback
-      // instead of silently swallowing the click.
-      {
-        actions: {
-          type: "notify",
-          params: ({ event }) => ({
-            notification: {
-              manager: event.payload.manager,
-              message:
-                "Johtokunnan mielestä pelaajien myynti ei ole ratkaisu tämänhetkisiin ongelmiimme. Myyntilupa evätty.",
-              type: "error"
-            }
-          })
-        }
-      }
-    ],
     TEAM_INCUR_PENALTY: {
       actions: {
         type: "executeIncurPenalty",
