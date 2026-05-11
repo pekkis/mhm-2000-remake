@@ -93,6 +93,7 @@ const buildContext = (
         fixMatch: false,
         intensity: 1,
         arenaFund: 0,
+        seasonTickets: 0,
         arenaProject: undefined
       };
       // The `kind: "human"` branch isn't covered by AITeam shape; the

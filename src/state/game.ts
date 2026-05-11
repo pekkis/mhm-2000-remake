@@ -112,6 +112,9 @@ type BaseTeam = {
    */
   arenaFund: number;
 
+  /** Season tickets sold so far this preseason. Reset each season. */
+  seasonTickets: number;
+
   /**
    * In-flight arena construction project, if any. `undefined` = no
    * active project. Set by the remppa design wizard, ticked per round

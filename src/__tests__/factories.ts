@@ -123,6 +123,7 @@ export const createAITeam = (overrides: Partial<AITeam> = {}): AITeam => ({
   services: emptyTeamServices(),
   fixMatch: false,
   arenaFund: 0,
+  seasonTickets: 0,
   arenaProject: undefined,
   ...overrides
 });
@@ -152,6 +153,7 @@ export const createHumanTeam = (
   services: emptyTeamServices(),
   fixMatch: false,
   arenaFund: 0,
+  seasonTickets: 0,
   arenaProject: undefined,
   players: {},
   lineup: emptyLineup,
