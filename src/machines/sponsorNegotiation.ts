@@ -159,7 +159,15 @@ const buildCandidate = (
     ehl: 1
   };
   const payouts = buildOfferPayouts(base, goals, leagueTier, jitter);
-  return { name, jitter, goals, payouts, haggleCount: 0, walked: false, lastHaggleResult: null };
+  return {
+    name,
+    jitter,
+    goals,
+    payouts,
+    haggleCount: 0,
+    walked: false,
+    lastHaggleResult: null
+  };
 };
 
 /** Rebuild payouts from current goals. Used when goals change. */

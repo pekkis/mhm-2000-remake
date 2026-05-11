@@ -29,7 +29,9 @@ const CandidateTab: React.FC<{
     onClick={onSelect}
     secondary={!isActive}
     disabled={candidate.walked}
-    className={candidate.lastHaggleResult === "failure" ? haggleShake : undefined}
+    className={
+      candidate.lastHaggleResult === "failure" ? haggleShake : undefined
+    }
   >
     {index + 1}. {candidate.name}
     {candidate.walked && " (POISTUNUT)"}
@@ -110,8 +112,16 @@ const SponsorNegotiationView = () => {
             ))}
         </Stack>
 
-        <Stack gap="sm" key={`${activeCandidateIndex}-${active.haggleCount}-${active.walked}`}>
-          <Heading level={3} className={active.lastHaggleResult === "failure" ? haggleShake : undefined}>
+        <Stack
+          gap="sm"
+          key={`${activeCandidateIndex}-${active.haggleCount}-${active.walked}`}
+        >
+          <Heading
+            level={3}
+            className={
+              active.lastHaggleResult === "failure" ? haggleShake : undefined
+            }
+          >
             Tarjous: {active.name}
             {active.walked && " — neuvottelu päättyi"}
           </Heading>
@@ -120,7 +130,11 @@ const SponsorNegotiationView = () => {
             .map((slot) => (
               <div
                 key={slot}
-                className={active.lastHaggleResult === "success" ? payoutPulse : undefined}
+                className={
+                  active.lastHaggleResult === "success"
+                    ? payoutPulse
+                    : undefined
+                }
               >
                 {sponsorSlotLabel[slot]}:{" "}
                 {active.payouts[slot].toLocaleString("fi-FI")} mk
