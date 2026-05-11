@@ -337,12 +337,13 @@ export const newArenaCost = (
 };
 
 /**
- * Required cash down payment for any project (20 % of the bill).
- *
- * QB compares `rahna * .2 > potti(pv)` directly in floating point
- * (`ILES5.BAS:520`); the down payment is never displayed as its own number.
- * We expose the rounded euro value for UI; affordability checks should use
- * `canAffordProject` to stay bit-exact with the original comparison.
+ * Minimum fund balance (pantti) required to start a project (20 % of the
+ * total cost). This is a **threshold check only** — no money is deducted
+ * when the project starts. Actual spending happens per-round via `mpv`
+ * instalments. QB checks `rahna * .2 > potti(pv)` in floating point
+ * (`ILES5.BAS:520`); we expose the rounded euro value for UI display.
+ * Affordability checks should use `canAffordProject` to stay bit-exact
+ * with the original comparison.
  */
 export const downPayment = (totalCost: number): number =>
   qbCint(DOWN_PAYMENT_FRACTION * totalCost);
@@ -352,3 +353,15 @@ export const canAffordProject = (
   totalCost: number,
   cashOnHand: number
 ): boolean => cashOnHand >= DOWN_PAYMENT_FRACTION * totalCost;
+
+/**
+ * Convert QB-internal seat count (in hundreds) to actual seat count for
+ * display. QB stores `paikka(1..2)` as e.g. 28 meaning 2 800 seats, and
+ * displays via `CLNG(paikka(qwe) * 100)`. This helper centralizes that
+ * conversion so we don't scatter `* 100` across the UI.
+ *
+ * The stored value stays in QB units until the port is complete — doing
+ * the conversion only at the display boundary avoids calculation mistakes
+ * in further porting work.
+ */
+export const displaySeatCount = (raw: number): number => raw * 100;

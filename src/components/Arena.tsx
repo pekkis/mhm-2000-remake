@@ -31,6 +31,7 @@ import {
   architects,
   downPayment,
   constructionRounds,
+  displaySeatCount,
   type BuildRank,
   type ProjectKind
 } from "@/services/arena";
@@ -51,8 +52,8 @@ const ArenaInfo = () => {
       <Paragraph size="sm">Viihtyisyystaso: {arena.level} / 6</Paragraph>
       <Paragraph size="sm">Tilapisteet: {arena.valuePoints}</Paragraph>
       <Paragraph size="sm">
-        Seisomapaikat: {arena.standingCount} &middot; Istumapaikat:{" "}
-        {arena.seatedCount}
+        Seisomapaikat: {displaySeatCount(arena.standingCount)} &middot;{" "}
+        Istumapaikat: {displaySeatCount(arena.seatedCount)}
         {arena.hasBoxes ? " · Aitiot: kyllä" : ""}
       </Paragraph>
       <Paragraph size="sm">Rakennuspotti: {currency(arenaFund)}</Paragraph>
@@ -118,7 +119,7 @@ const ProjectStatus = () => {
   const team = getEffective(teams[manager.team!]);
 
   const project = team.arenaProject;
-  if (!project) return null;
+  if (!project) {return null;}
 
   return (
     <Stack gap="sm">
@@ -198,8 +199,7 @@ const CostSummary = ({ ctx }: { ctx: ArenaDesignContext }) => {
         Kokonaishinta: {currency(cost)}
       </Paragraph>
       <Paragraph size="sm">
-        Pottivähimmäismäärä (20 %): {currency(dp)} — Potti:{" "}
-        {currency(ctx.arenaFund)}
+        Pantti (20 %): {currency(dp)} — Potti: {currency(ctx.arenaFund)}
         {canStart ? "" : " ⚠ EI RIITÄ"}
       </Paragraph>
       <Paragraph size="sm">
@@ -311,9 +311,11 @@ const DesignWizard = ({
 
       {/* Seisomapaikat */}
       <Stack gap="xs">
-        <Heading level={5}>Seisomapaikat: {ctx.standingCount}</Heading>
+        <Heading level={5}>
+          Seisomapaikat: {displaySeatCount(ctx.standingCount)}
+        </Heading>
         <Slider
-          min={0}
+          min={1}
           max={300}
           value={ctx.standingCount}
           onValueChange={(v) => send({ type: "SET_STANDING", value: v })}
@@ -322,9 +324,11 @@ const DesignWizard = ({
 
       {/* Istumapaikat */}
       <Stack gap="xs">
-        <Heading level={5}>Istumapaikat: {ctx.seatedCount}</Heading>
+        <Heading level={5}>
+          Istumapaikat: {displaySeatCount(ctx.seatedCount)}
+        </Heading>
         <Slider
-          min={0}
+          min={1}
           max={300}
           value={ctx.seatedCount}
           onValueChange={(v) => send({ type: "SET_SEATED", value: v })}
