@@ -62,6 +62,12 @@ describe("MHM 2000 calendar", () => {
         expect(entry.gamedays).toEqual(["practice"]);
       }
     });
+
+    it("all 10 preseason rounds (1..10) carry the season_tickets tag", () => {
+      for (let i = 1; i <= 10; i++) {
+        expect(calendar[i].tags).toContain("season_tickets");
+      }
+    });
   });
 
   describe("regular season", () => {

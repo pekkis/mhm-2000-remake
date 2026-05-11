@@ -83,6 +83,13 @@ export type Strategy = {
 export const READINESS_TICK_TAG = "readiness-tick";
 
 /**
+ * Calendar-entry tag for preseason rounds where season-ticket batches
+ * are sold. Matches QB `kausikorttimaar` being called 10 times during
+ * the preseason loop (ILEX5.BAS:2507-2556).
+ */
+export const SEASON_TICKETS_TAG = "season_tickets";
+
+/**
  * Manager-tag prefix used to hard-code a season-strategy choice. When a
  * manager carries `strategy:<slug>`, AI strategy selection MUST honour
  * that pick (skipping the random `mahd()` distribution).

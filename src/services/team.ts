@@ -5,6 +5,7 @@ import {
   calculatePowerPlayStrength
 } from "@/services/lineup";
 import type { Manager, Team } from "@/state";
+import { values } from "remeda";
 
 /**
  * QB `sr(team)` — league tier 1=PHL, 2=Divisioona, 3=Mutasarja.
@@ -34,6 +35,26 @@ export const leagueTier = (
     return 3;
   }
   return undefined;
+};
+
+/**
+ * Mean charisma (`kar`) of a team's roster. QB `avg(3, ohj)`.
+ *
+ * - **Human teams:** arithmetic mean of all rostered players' `charisma`.
+ * - **AI teams:** neutral 10 (QB default; AI rosters are synthetic).
+ *
+ * Returns 10 if the human team has an empty roster (shouldn't happen
+ * in practice, but safe default).
+ */
+export const getAverageCharisma = (team: Team): number => {
+  if (team.kind === "ai") {
+    return 10;
+  }
+  const players = values(team.players);
+  if (players.length === 0) {
+    return 10;
+  }
+  return players.reduce((sum, p) => sum + p.charisma, 0) / players.length;
 };
 
 /**

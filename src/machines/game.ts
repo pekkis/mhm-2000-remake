@@ -18,12 +18,15 @@ import { isInvitedToTournament } from "@/machines/tournament-eligibility";
 import { computeStats } from "@/services/competition-type";
 import strategies, {
   READINESS_TICK_TAG,
+  SEASON_TICKETS_TAG,
   initialReadinessFor,
   type StrategyId
 } from "@/data/mhm2000/strategies";
 import prankTypes from "@/game/pranks";
 import random, { cinteger } from "@/services/random";
 import { tickArenaProject } from "@/services/arena-tick";
+import { leagueTier, getAverageCharisma } from "@/services/team";
+import { sellSeasonTickets } from "@/services/season-tickets";
 import type { Arena } from "@/data/mhm2000/teams";
 import {
   constructionRounds,
@@ -968,6 +971,48 @@ export const gameMachine = setup({
           }
           for (const e of team.opponentEffects) {
             e.duration -= 1;
+          }
+        }
+
+        // Season-ticket drive — QB `kausikorttimaar`. Runs on every
+        // preseason round tagged `season_tickets` (10 batches total).
+        // Iterates all 48 league teams (PHL + Div + Mut), sells one
+        // batch per team, accumulates `seasonTickets`, and credits
+        // revenue to the team's human manager (if any).
+        if (roundTags.includes(SEASON_TICKETS_TAG)) {
+          for (const team of draft.teams) {
+            const tier = leagueTier(team.id, draft.competitions);
+            if (tier === undefined) {
+              continue; // light team — not in the league ladder
+            }
+
+            const rankings = team.previousRankings ?? [8, 8, 8];
+            const formAverage =
+              (rankings[0] * 2 + rankings[1] + rankings[2]) / 4;
+
+            const result = sellSeasonTickets({
+              seatedCount: team.arena.seatedCount,
+              seasonTickets: team.seasonTickets,
+              tier,
+              formAverage,
+              arenaLevel: team.arena.level,
+              managerCharisma:
+                team.manager != null
+                  ? (draft.managers[team.manager]?.attributes.charisma ?? 0)
+                  : 0,
+              rosterCharismaAvg: getAverageCharisma(team),
+              random
+            });
+
+            team.seasonTickets += result.ticketsSold;
+
+            // Credit revenue to the human manager (QB: raha(ohj) += d * lhinta * 22)
+            if (team.manager != null) {
+              const mgr = draft.managers[team.manager];
+              if (mgr?.kind === "human") {
+                mgr.balance += result.revenue;
+              }
+            }
           }
         }
 
