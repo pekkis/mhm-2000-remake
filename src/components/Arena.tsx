@@ -290,7 +290,8 @@ const DesignWizard = ({
         <Heading level={5}>Tilapisteet: {ctx.valuePoints}</Heading>
         <Slider
           min={minPts}
-          max={Math.min(maxPts, minPts + 500)}
+          max={maxPts}
+          step={kind === "build" ? 10 : 1}
           value={ctx.valuePoints}
           onValueChange={(v) => send({ type: "SET_VALUE_POINTS", value: v })}
         />
