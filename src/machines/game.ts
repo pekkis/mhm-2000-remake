@@ -861,8 +861,8 @@ export const gameMachine = setup({
      *
      * No UI — runs on `entry` and the state auto-advances.
      */
-    executeCalculations: assign(({ context }) =>
-      produce(context, (draft) => {
+    executeCalculations: enqueueActions(({ context, enqueue }) => {
+      runInterpreter(context, enqueue, (draft) => {
         // Per-team: strategy-driven readiness drift — ONLY on regular-
         // season runkosarja gamedays. QB: ILEX5.BAS:1574 sits inside
         // `CASE 1` of `SELECT CASE kiero(kr)`, so EHL/cup/playoff/
@@ -890,8 +890,8 @@ export const gameMachine = setup({
             e.duration -= 1;
           }
         }
-      })
-    ),
+      });
+    }),
 
     /**
      * Event creation phase — for each manager, roll one event from
