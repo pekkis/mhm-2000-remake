@@ -51,10 +51,6 @@ const buildHumanManager = (
     sponsor: undefined,
     completedActions: [],
     balance,
-    arena: {
-      name: draft.customTeam?.arena ?? "MHM 2000 Areena",
-      level: 1
-    },
     flags: {},
     team: draft.team
   };

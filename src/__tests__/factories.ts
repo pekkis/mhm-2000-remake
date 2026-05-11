@@ -195,7 +195,6 @@ export const createHumanManager = (
   attributes: defaultAttributes,
   balance: 100000,
   team: 1,
-  arena: { name: "Stadio Olimpico", level: 0 },
   pranksExecuted: 0,
   flags: {},
   tags: [],

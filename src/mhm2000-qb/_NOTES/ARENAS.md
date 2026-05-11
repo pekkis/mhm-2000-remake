@@ -24,17 +24,17 @@ designed or in progress).
 Declared in `MHM2K.BAS:182-191`. Persisted in `savetus2.xxx` together
 with the rest of the team record (`ILEX5.BAS:7311-7314`).
 
-| Var             | Type            | Units / range                              | Meaning                                                                                                             |
-| --------------- | --------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| `haln(t)`       | STRING (1..48)  | freeform (`annanhal` caps at 26 chars)     | Arena display name. Default `"<city> Areena"` or `"MHM 2000 Areena"` if the wizard input was empty.                 |
-| `taso(t)`       | INTEGER (1..86) | 1..6                                       | **Viihtyisyystaso** — comfort/amenity tier.                                                                         |
-| `ppiste(t)`     | INTEGER (1..86) | ~0..1000s                                  | **Tilapisteet** — abstract "space points" budget pool that the standing/seated/box slots are bought from.           |
-| `paikka(1, t)`  | INTEGER         | "hundreds of seats", i.e. `* 100`          | Standing-place capacity (`seisomapaikat`).                                                                          |
-| `paikka(2, t)`  | INTEGER         | "hundreds of seats", i.e. `* 100`          | Seated-place capacity (`istumapaikat`). UI everywhere multiplies by 100 before display.                             |
-| `paikka(3, t)`  | INTEGER         | 0 / 1                                      | Aitiot (luxury boxes / skyboxes) — boolean. Drives the sponsor multiplier (§6.1).                                   |
-| `kotiot(t)`     | INTEGER         | home-game counter                          | Home games played this season (used by cup/playoff attendance baseline).                                            |
-| `kausik(t)`     | INTEGER         | season-ticket count                        | Season-ticket subscribers carried this season. Reset to 0 in `uusikausi` (`ILEX5.BAS:7721`), refilled preseason.    |
-| `ylek(t)`       | LONG            | total spectators this season               | Cumulative regular-season attendance. Used as the cup/playoff/tournament baseline. Reset in `uusikausi` (`:7711`).  |
+| Var            | Type            | Units / range                          | Meaning                                                                                                            |
+| -------------- | --------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `haln(t)`      | STRING (1..48)  | freeform (`annanhal` caps at 26 chars) | Arena display name. Default `"<city> Areena"` or `"MHM 2000 Areena"` if the wizard input was empty.                |
+| `taso(t)`      | INTEGER (1..86) | 1..6                                   | **Viihtyisyystaso** — comfort/amenity tier.                                                                        |
+| `ppiste(t)`    | INTEGER (1..86) | ~0..1000s                              | **Tilapisteet** — abstract "space points" budget pool that the standing/seated/box slots are bought from.          |
+| `paikka(1, t)` | INTEGER         | "hundreds of seats", i.e. `* 100`      | Standing-place capacity (`seisomapaikat`).                                                                         |
+| `paikka(2, t)` | INTEGER         | "hundreds of seats", i.e. `* 100`      | Seated-place capacity (`istumapaikat`). UI everywhere multiplies by 100 before display.                            |
+| `paikka(3, t)` | INTEGER         | 0 / 1                                  | Aitiot (luxury boxes / skyboxes) — boolean. Drives the sponsor multiplier (§6.1).                                  |
+| `kotiot(t)`    | INTEGER         | home-game counter                      | Home games played this season (used by cup/playoff attendance baseline).                                           |
+| `kausik(t)`    | INTEGER         | season-ticket count                    | Season-ticket subscribers carried this season. Reset to 0 in `uusikausi` (`ILEX5.BAS:7721`), refilled preseason.   |
+| `ylek(t)`      | LONG            | total spectators this season           | Cumulative regular-season attendance. Used as the cup/playoff/tournament baseline. Reset in `uusikausi` (`:7711`). |
 
 Initial values for the 86 teams come from `TEAMS.*` files: ppiste,
 taso, paikka(1..3) are part of the per-team record (`MHM2K.BAS:899`,
@@ -50,16 +50,16 @@ EHL imports) get hard-coded miniature arenas, e.g.
 Declared in `MHM2K.BAS:432-438` and `:510`. Persisted in `savetus2.xxx`
 (`ILEX5.BAS:7266-7267`). Reset to 0 on team-swap (`ILEZ5.BAS:704`).
 
-| Var               | Type    | Range                | Meaning                                                                                                                |
-| ----------------- | ------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `potti(pv)`       | LONG    | money                | **Arena building fund** — the down-payment kitty. Funded by `SUB areena` transfers from `raha(pv)` and `sattuma` case 59. See [VARIABLES.md `potti()`](VARIABLES.md). |
-| `uppiste(pv)`     | INTEGER | 0..~1.1×ppiste       | **Planned** new tilapisteet for the in-design upgrade.                                                                 |
-| `utaso(pv)`       | INTEGER | 1..6                 | Planned comfort tier.                                                                                                  |
-| `upaikka(c, pv)`  | INTEGER | c=1..3               | Planned standing / seated / box slots (same units as `paikka`).                                                        |
-| `arkkitehti(pv)`  | INTEGER | 1..3                 | Architect quality choice (cheap / mid / expensive). Affects new-build cost, permit-grant speed, permit-denial chance.  |
-| `rakennuttaja(pv)`| INTEGER | 1..3                 | Builder quality choice (cheap / mid / expensive). Affects cost, construction speed (instalment count), accident risk.  |
-| `uhatapa(pv)`     | INTEGER | state encoding       | **Construction state machine** — see §4. `0` = idle, `10..100` = permit phase (new-build only), `1001..1999` = build in progress, `2001..2999` = renovation in progress. The exact lo/hi value encodes both the chosen builder tier and the months-remaining countdown. |
-| `mpv(pv)`         | LONG    | money / month        | **Monthly instalment** (`maksuerä per vuoro`) drawn from `potti(pv)` every round during construction.                  |
+| Var                | Type    | Range          | Meaning                                                                                                                                                                                                                                                                 |
+| ------------------ | ------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `potti(pv)`        | LONG    | money          | **Arena building fund** — the down-payment kitty. Funded by `SUB areena` transfers from `raha(pv)` and `sattuma` case 59. See [VARIABLES.md `potti()`](VARIABLES.md).                                                                                                   |
+| `uppiste(pv)`      | INTEGER | 0..~1.1×ppiste | **Planned** new tilapisteet for the in-design upgrade.                                                                                                                                                                                                                  |
+| `utaso(pv)`        | INTEGER | 1..6           | Planned comfort tier.                                                                                                                                                                                                                                                   |
+| `upaikka(c, pv)`   | INTEGER | c=1..3         | Planned standing / seated / box slots (same units as `paikka`).                                                                                                                                                                                                         |
+| `arkkitehti(pv)`   | INTEGER | 1..3           | Architect quality choice (cheap / mid / expensive). Affects new-build cost, permit-grant speed, permit-denial chance.                                                                                                                                                   |
+| `rakennuttaja(pv)` | INTEGER | 1..3           | Builder quality choice (cheap / mid / expensive). Affects cost, construction speed (instalment count), accident risk.                                                                                                                                                   |
+| `uhatapa(pv)`      | INTEGER | state encoding | **Construction state machine** — see §4. `0` = idle, `10..100` = permit phase (new-build only), `1001..1999` = build in progress, `2001..2999` = renovation in progress. The exact lo/hi value encodes both the chosen builder tier and the months-remaining countdown. |
+| `mpv(pv)`          | LONG    | money / month  | **Monthly instalment** (`maksuerä per vuoro`) drawn from `potti(pv)` every round during construction.                                                                                                                                                                   |
 
 ---
 
@@ -132,11 +132,11 @@ If `uhatapa(pv) <> 0`, the lower half (line 18+) renders
 "RAKENNUSPROSESSIN TILANNEKATSAUS" (status snapshot), branching on
 the state-machine band:
 
-| `uhatapa` band | Status text(s)                                                                                                              |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 10..100        | Architect-typed progress text (`X.MHM` rec 139/140/141 = `lay 138 + arkkitehti`) + `lax 159` (permit phase).                |
-| 1000..1999     | Builder-typed text + `lax 163` if `potti >= mpv` (on track) else `lax 164` (project paused — funds short).                  |
-| 2000..2999     | Same shape but `lax 167` / `lax 168` (renovation variants).                                                                 |
+| `uhatapa` band | Status text(s)                                                                                               |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| 10..100        | Architect-typed progress text (`X.MHM` rec 139/140/141 = `lay 138 + arkkitehti`) + `lax 159` (permit phase). |
+| 1000..1999     | Builder-typed text + `lax 163` if `potti >= mpv` (on track) else `lax 164` (project paused — funds short).   |
+| 2000..2999     | Same shape but `lax 167` / `lax 168` (renovation variants).                                                  |
 
 Action 1 — "MÄÄRITÄ POTTIIN SIIRRETTÄVÄ SUMMA" (`:104-107`) — calls
 `tarjousmaar 16, 1, 0, raha(pv)` which clamps `tarjous` to `[0, raha]`,
@@ -157,10 +157,10 @@ Single SUB handles both renovation (`rampa=1`) and new-build
    new build there's no upper cap and the lower bound is `> 20`.
 2. **VIIHTYISYYSTASO** — comfort tier (1..6). Renovation lower-bounds
    at current tier (no comfort downgrades); new build starts at 1.
-3–4. **SEISOMAPAIKAT / ISTUMAPAIKAT** — sliders that step `upaikka(1|2)`.
+   3–4. **SEISOMAPAIKAT / ISTUMAPAIKAT** — sliders that step `upaikka(1|2)`.
    Renovation lower-bounds at current count, new build at 0; both upper-bound
    at 300 (so max 30 000 standing, 30 000 seated).
-5. **AITIOT** — 0/1 toggle. For renovation must stay `>= current`.
+3. **AITIOT** — 0/1 toggle. For renovation must stay `>= current`.
 
 Architect/builder picks are typed letters (a/b/c → `arkkitehti`,
 digits 1/2/3 → `rakennuttaja`). For renovation the architect picker
@@ -239,7 +239,7 @@ if c < uhatapa - 10:            ' probability rises from 0 % at 11 to ~60 % at 1
 ```
 
 Net effect: a cheap architect makes you wait longer for a permit
-*and* gives a 40 % denial chance per submission attempt. The
+_and_ gives a 40 % denial chance per submission attempt. The
 expensive architect cannot be denied. Architect cost difference is
 ±5 % of `rahna`. The `lax 159/160/161/162` lines render
 architect-specific commentary from `X.MHM` rec 139..141 (one per tier).
@@ -334,9 +334,9 @@ Owning **aitiot** (boxes) bumps every sponsor payout multiplier by
 
 ### 6.3 Special-event hooks (`sattuma`)
 
-| Case | Effect                                                                                                                                |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| 59   | `potti(pv) += rand(300_000..400_000)` — "concert promoter" windfall earmarked for the construction kitty. See [RANDOM-EVENTS.md](RANDOM-EVENTS.md). |
+| Case    | Effect                                                                                                                                                                 |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 59      | `potti(pv) += rand(300_000..400_000)` — "concert promoter" windfall earmarked for the construction kitty. See [RANDOM-EVENTS.md](RANDOM-EVENTS.md).                    |
 | 107/108 | `rahna = 30 * paikka(2, u(pv)) * 100` then `rah` (deposit) — paid event hire of the seated bowl: 30 mk per seat. Roughly a 60–90k payout for a typical 2–3k seat hall. |
 
 ### 6.4 Maine / morale & boycott modifiers
@@ -620,24 +620,24 @@ Distributed at season end via `POTTI.M2K` percentages to the top 11
 (All loaded via `lay`/`lax`/`leq` with the `(N-1)*500` byte offset
 convention — see [DATA-FILES.md](DATA-FILES.md).)
 
-| Rec   | Source label / use                                  |
-| ----- | --------------------------------------------------- |
-| 131   | Areena menu row 1 — "siirrä rahaa pottiin"          |
-| 132   | Areena menu row 2 — "hallin remontti"               |
-| 133   | Areena menu row 3 — "uuden hallin suunnittelu"      |
-| 136..138 | Builder descriptions (rakennuttaja 1..3)         |
-| 139..141 | Architect descriptions (arkkitehti 1..3)         |
-| 159   | Planning phase progress text                         |
-| 160   | Permit submitted                                     |
-| 161   | Permit denied                                        |
-| 162   | Permit granted                                       |
-| 163   | Construction in progress                             |
-| 164   | Construction paused (potti empty, new build)         |
-| 165   | Construction accident                                |
-| 166   | New arena complete (precedes `annanhal`)             |
-| 167   | Renovation in progress                               |
-| 168   | Renovation paused (potti empty)                      |
-| 169   | Renovation complete                                  |
+| Rec      | Source label / use                                |
+| -------- | ------------------------------------------------- |
+| 131      | Areena menu row 1 — "siirrä rahaa pottiin"        |
+| 132      | Areena menu row 2 — "hallin remontti"             |
+| 133      | Areena menu row 3 — "uuden hallin suunnittelu"    |
+| 136..138 | Builder descriptions (rakennuttaja 1..3)          |
+| 139..141 | Architect descriptions (arkkitehti 1..3)          |
+| 159      | Planning phase progress text                      |
+| 160      | Permit submitted                                  |
+| 161      | Permit denied                                     |
+| 162      | Permit granted                                    |
+| 163      | Construction in progress                          |
+| 164      | Construction paused (potti empty, new build)      |
+| 165      | Construction accident                             |
+| 166      | New arena complete (precedes `annanhal`)          |
+| 167      | Renovation in progress                            |
+| 168      | Renovation paused (potti empty)                   |
+| 169      | Renovation complete                               |
 | 170..175 | 6× random celebration blurb on new-build complete |
 
 Help screen: `qelp 4` (areena) and `qelp 22` (remppa) from
