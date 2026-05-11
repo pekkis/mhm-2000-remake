@@ -49,6 +49,8 @@ export type ManagerArenaProject =
     }
   | {
       kind: "build";
+      /** Arena name chosen by the manager during the design wizard. Defaults to the current arena's name. */
+      name: string;
       architect: BuildRank;
       builder: BuildRank;
       /** False during the building-permit stage; true once approved. */

@@ -55,7 +55,15 @@ const entries: RawCalendarEntry[] = [
   // round 0 (KIERO.M2K row 1, type 99) — preseason: transfer market opens, mass börsi generation + cup draw
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news", "seed"],
+    phases: [
+      "action",
+      "prank",
+      "event_creation",
+      "event",
+      "news",
+      "seed",
+      "calculations"
+    ],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -68,7 +76,14 @@ const entries: RawCalendarEntry[] = [
   // round 1 (KIERO.M2K row 2, type 99) — preseason: sponsorit (sponsor draw)
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: [
+      "action",
+      "prank",
+      "event_creation",
+      "event",
+      "news",
+      "calculations"
+    ],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -80,7 +95,14 @@ const entries: RawCalendarEntry[] = [
   // round 2 (KIERO.M2K row 3, type 99) — preseason filler
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: [
+      "action",
+      "prank",
+      "event_creation",
+      "event",
+      "news",
+      "calculations"
+    ],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -92,7 +114,14 @@ const entries: RawCalendarEntry[] = [
   // round 3 (KIERO.M2K row 4, type 99) — preseason filler
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: [
+      "action",
+      "prank",
+      "event_creation",
+      "event",
+      "news",
+      "calculations"
+    ],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -104,7 +133,14 @@ const entries: RawCalendarEntry[] = [
   // round 4 (KIERO.M2K row 5, type 99) — preseason filler
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: [
+      "action",
+      "prank",
+      "event_creation",
+      "event",
+      "news",
+      "calculations"
+    ],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -116,7 +152,14 @@ const entries: RawCalendarEntry[] = [
   // round 5 (KIERO.M2K row 6, type 99) — preseason filler
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: [
+      "action",
+      "prank",
+      "event_creation",
+      "event",
+      "news",
+      "calculations"
+    ],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -314,7 +357,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 15 (KIERO.M2K row 16, type 2) — EHL gameday
   {
-    phases: ["action", "gameday", "event", "news"],
+    phases: ["action", "gameday", "event", "news", "calculations"],
     gamedays: ["ehl"],
     seed: [],
     transferMarket: true,
@@ -326,7 +369,14 @@ const entries: RawCalendarEntry[] = [
   // round 16 (KIERO.M2K row 17, type 96) — vapaa viikonloppu (free weekend)
   {
     title: "Vapaa viikonloppu",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: [
+      "action",
+      "prank",
+      "event_creation",
+      "event",
+      "news",
+      "calculations"
+    ],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -377,7 +427,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 19 (KIERO.M2K row 20, type 2) — EHL gameday
   {
-    phases: ["action", "gameday", "event", "news"],
+    phases: ["action", "gameday", "event", "news", "calculations"],
     gamedays: ["ehl"],
     seed: [],
     transferMarket: true,
@@ -448,7 +498,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 23 (KIERO.M2K row 24, type 2) — EHL gameday + tarkistanhlc (NHL champion check)
   {
-    phases: ["action", "gameday", "event", "news"],
+    phases: ["action", "gameday", "event", "news", "calculations"],
     gamedays: ["ehl"],
     seed: [],
     transferMarket: true,
@@ -480,7 +530,14 @@ const entries: RawCalendarEntry[] = [
   // round 25 (KIERO.M2K row 26, type 97) — maajoukkuetauko (national team break)
   {
     title: "Maajoukkuetauko",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: [
+      "action",
+      "prank",
+      "event_creation",
+      "event",
+      "news",
+      "calculations"
+    ],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -571,7 +628,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 30 (KIERO.M2K row 31, type 2) — EHL gameday
   {
-    phases: ["action", "gameday", "event", "news"],
+    phases: ["action", "gameday", "event", "news", "calculations"],
     gamedays: ["ehl"],
     seed: [],
     transferMarket: true,
@@ -642,7 +699,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 34 (KIERO.M2K row 35, type 2) — EHL gameday
   {
-    phases: ["action", "gameday", "event", "news"],
+    phases: ["action", "gameday", "event", "news", "calculations"],
     gamedays: ["ehl"],
     seed: [],
     transferMarket: true,
@@ -674,7 +731,14 @@ const entries: RawCalendarEntry[] = [
   // round 36 (KIERO.M2K row 37, type 96) — vapaa viikonloppu
   {
     title: "Vapaa viikonloppu",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: [
+      "action",
+      "prank",
+      "event_creation",
+      "event",
+      "news",
+      "calculations"
+    ],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -725,7 +789,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 39 (KIERO.M2K row 40, type 2) — EHL gameday
   {
-    phases: ["action", "gameday", "event", "news", "seed"],
+    phases: ["action", "gameday", "event", "news", "seed", "calculations"],
     gamedays: ["ehl"],
     seed: [{ competition: "ehl", phase: 1 }],
     transferMarket: true,
@@ -878,7 +942,14 @@ const entries: RawCalendarEntry[] = [
   // round 47 (KIERO.M2K row 48, type 97) — maajoukkuetauko
   {
     title: "Maajoukkuetauko",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: [
+      "action",
+      "prank",
+      "event_creation",
+      "event",
+      "news",
+      "calculations"
+    ],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -1034,7 +1105,7 @@ const entries: RawCalendarEntry[] = [
   // round 55 (KIERO.M2K row 56, type 22) — EHL final tournament + mmkisaloppu (WCh ends)
   {
     title: "EHL:n lopputurnaus",
-    phases: ["action", "gameday", "event", "news"],
+    phases: ["action", "gameday", "event", "news", "calculations"],
     gamedays: ["ehl"],
     seed: [{ competition: "ehl", phase: 1 }],
     transferMarket: true,
@@ -1186,7 +1257,14 @@ const entries: RawCalendarEntry[] = [
   // round 63 (KIERO.M2K row 64, type 97) — maajoukkuetauko
   {
     title: "Maajoukkuetauko",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: [
+      "action",
+      "prank",
+      "event_creation",
+      "event",
+      "news",
+      "calculations"
+    ],
     gamedays: [],
     seed: [],
     transferMarket: false,
