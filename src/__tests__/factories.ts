@@ -122,6 +122,8 @@ export const createAITeam = (overrides: Partial<AITeam> = {}): AITeam => ({
   strengthObj: { goalie: 10, defence: 50, attack: 100 },
   services: emptyTeamServices(),
   fixMatch: false,
+  arenaFund: 0,
+  arenaProject: undefined,
   ...overrides
 });
 
@@ -149,6 +151,8 @@ export const createHumanTeam = (
   strengthObj: { goalie: 10, defence: 50, attack: 100 },
   services: emptyTeamServices(),
   fixMatch: false,
+  arenaFund: 0,
+  arenaProject: undefined,
   players: {},
   lineup: emptyLineup,
   previousRankings: [10, 10, 10],

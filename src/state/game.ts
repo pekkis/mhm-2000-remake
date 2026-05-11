@@ -2,6 +2,7 @@ import type { Competition, CompetitionId } from "@/types/competitions";
 import type { Arena } from "@/data/mhm2000/teams";
 import type { SponsorDeal } from "@/data/mhm2000/sponsors";
 import type { CountryIso } from "@/data/countries";
+import type { ManagerArenaProject } from "@/state/arena-project";
 
 /**
  * Season-scoped mandatory actions. Each key maps to a player decision
@@ -24,11 +25,6 @@ import type { Lineup } from "@/state/lineup";
 import type { TeamServiceIdentifier } from "@/data/mhm2000/team-services";
 
 export type { Player };
-
-export type ManagerArena = {
-  name: string;
-  level: number;
-};
 
 export type Manager = HumanManager | AIManager;
 
@@ -105,6 +101,24 @@ type BaseTeam = {
   previousRankings?: [number, number, number];
   intensity: 0 | 1 | 2;
   fixMatch: boolean;
+
+  /**
+   * QB `potti(pv)` — protected arena construction fund. Money flows in
+   * from manager's balance but never back out — only deducted by the
+   * per-round construction instalment (`mpv`). Shielded from the game's
+   * cruelty systems (embezzlement, bankruptcy); the cruelty lives inside
+   * the construction itself (permit denial, slacking builders, stalled
+   * projects). See ARENAS.md §3.
+   */
+  arenaFund: number;
+
+  /**
+   * In-flight arena construction project, if any. `undefined` = no
+   * active project. Set by the remppa design wizard, ticked per round
+   * by `tickArenaConstruction`, cleared on completion or team swap.
+   * See `ManagerArenaProject` in `src/state/arena-project.ts`.
+   */
+  arenaProject: ManagerArenaProject | undefined;
 };
 
 export type AITeam = BaseTeam & {
