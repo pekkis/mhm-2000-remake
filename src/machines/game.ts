@@ -24,6 +24,13 @@ import strategies, {
 import prankTypes from "@/game/pranks";
 import random, { cinteger } from "@/services/random";
 import { tickArenaProject } from "@/services/arena-tick";
+import type { Arena } from "@/data/mhm2000/teams";
+import {
+  constructionRounds,
+  qbCint,
+  type BuildRank,
+  type ProjectKind
+} from "@/services/arena";
 import { notificationsMachine } from "@/machines/notifications";
 import type { NotificationData } from "@/machines/notification";
 import { betMachine } from "@/machines/bet";
@@ -260,6 +267,18 @@ export type GameMachineEvents =
       payload: {
         manager: string;
         amount: number;
+      };
+    }
+  | {
+      type: "START_ARENA_PROJECT";
+      payload: {
+        manager: string;
+        kind: ProjectKind;
+        target: Arena;
+        builder: BuildRank;
+        architect: BuildRank;
+        name: string;
+        totalCost: number;
       };
     };
 
@@ -731,6 +750,59 @@ export const gameMachine = setup({
           }
           m.balance -= clamped;
           draft.teams[m.team].arenaFund += clamped;
+        })
+    ),
+
+    /**
+     * Start an arena construction project. Called when the design wizard
+     * confirms. Creates the `ManagerArenaProject` on the team, deducts the
+     * 20% down payment from the arena fund, and sets up the initial state
+     * (permit phase for builds, construction for renovations).
+     */
+    executeStartArenaProject: assign(
+      (
+        { context },
+        params: {
+          manager: string;
+          kind: ProjectKind;
+          target: Arena;
+          builder: BuildRank;
+          architect: BuildRank;
+          name: string;
+          totalCost: number;
+        }
+      ) =>
+        produce(context, (draft) => {
+          const m = draft.managers[params.manager];
+          if (!m || m.team === undefined || m.kind === "ai") return;
+          const team = draft.teams[m.team];
+          if (team.arenaProject) return; // already have a project
+
+          if (params.kind === "renovate") {
+            const rounds = constructionRounds("renovate", params.builder);
+            team.arenaProject = {
+              kind: "renovate",
+              builder: params.builder,
+              roundsRemaining: rounds,
+              roundPayment: qbCint(params.totalCost / rounds),
+              target: params.target
+            };
+          } else {
+            // Build: start in permit phase (roundsRemaining = 10,
+            // permitGranted = false). roundPayment holds total cost
+            // until the permit is granted, then gets split into
+            // per-round chunks by tickArenaProject.
+            team.arenaProject = {
+              kind: "build",
+              name: params.name,
+              architect: params.architect,
+              builder: params.builder,
+              permitGranted: false,
+              roundsRemaining: 10,
+              roundPayment: params.totalCost,
+              target: params.target
+            };
+          }
         })
     ),
 
@@ -1251,6 +1323,12 @@ export const gameMachine = setup({
     TRANSFER_TO_ARENA_FUND: {
       actions: {
         type: "executeTransferToArenaFund",
+        params: ({ event }) => event.payload
+      }
+    },
+    START_ARENA_PROJECT: {
+      actions: {
+        type: "executeStartArenaProject",
         params: ({ event }) => event.payload
       }
     },
