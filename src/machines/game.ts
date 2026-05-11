@@ -23,6 +23,7 @@ import strategies, {
 } from "@/data/mhm2000/strategies";
 import prankTypes from "@/game/pranks";
 import random, { cinteger } from "@/services/random";
+import { tickArenaProject } from "@/services/arena-tick";
 import { notificationsMachine } from "@/machines/notifications";
 import type { NotificationData } from "@/machines/notification";
 import { betMachine } from "@/machines/bet";
@@ -862,7 +863,7 @@ export const gameMachine = setup({
      * No UI — runs on `entry` and the state auto-advances.
      */
     executeCalculations: enqueueActions(({ context, enqueue }) => {
-      runInterpreter(context, enqueue, (draft) => {
+      runInterpreter(context, enqueue, (draft, notify) => {
         // Per-team: strategy-driven readiness drift — ONLY on regular-
         // season runkosarja gamedays. QB: ILEX5.BAS:1574 sits inside
         // `CASE 1` of `SELECT CASE kiero(kr)`, so EHL/cup/playoff/
@@ -888,6 +889,32 @@ export const gameMachine = setup({
           }
           for (const e of team.opponentEffects) {
             e.duration -= 1;
+          }
+        }
+
+        // Arena construction ticks — QB `SUB rstages` runs for every
+        // team every round. Only teams with an active arenaProject
+        // are affected (tickArenaProject no-ops otherwise).
+        // Build a teamIndex→managerId lookup for human managers so
+        // arena news can be routed as notifications.
+        const teamToManager = new Map<number, string>();
+        for (const mgr of values(humanManagers(draft))) {
+          if (mgr.team != null) {
+            teamToManager.set(mgr.team, mgr.id);
+          }
+        }
+
+        for (const [i, team] of draft.teams.entries()) {
+          const result = tickArenaProject(team, random);
+          const managerId = teamToManager.get(i);
+          if (managerId && result.news.length > 0) {
+            for (const message of result.news) {
+              notify({
+                manager: managerId,
+                message,
+                type: "arena"
+              });
+            }
           }
         }
       });
