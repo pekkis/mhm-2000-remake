@@ -439,6 +439,14 @@ tests:
   goal categories (PHL / DIV-MUT / CUP / EHL), 20 payout slots, base
   offer formula, NEUVOTTELE roll mechanics, the "two-walked
   lockout", every payout trigger site, CPU-team open question.
+- [ARENAS.md](ARENAS.md) — `SUB areena` / `SUB remppa` / `SUB rstages` /
+  `SUB ylmaar` / `SUB kausikorttimaar` end-to-end: per-team static state
+  (`taso/ppiste/paikka/haln`), per-manager build/renovate project state
+  (`uhatapa/mpv/potti/upaikka/uppiste/utaso/arkkitehti/rakennuttaja`),
+  `ARENAS.M2K` cost matrix, project quote formula, four-band `uhatapa`
+  state machine, per-`kiero` attendance formulae, gate revenue +
+  ancillary income, season-ticket twice-a-year drive, sponsor box bonus,
+  `tazo` capacity floor, team-swap free-completion exploit.
 
 ## What we already know (verified)
 

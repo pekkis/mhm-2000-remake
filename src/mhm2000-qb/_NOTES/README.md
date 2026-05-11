@@ -62,6 +62,14 @@ mhm2k first" → bail to mhm2k.
   3-candidate negotiation, 4 goal categories, 20 payout slots, the
   "two walked → must accept the third" lockout, every payout trigger
   site). Read before touching anything that pays sponsor money.
+- [ARENAS.md](ARENAS.md) — full arena system: per-team static state,
+  per-manager build/renovate state machine (`uhatapa`), `SUB areena`
+  + `SUB remppa` design wizard, `SUB rstages` construction loop,
+  `SUB ylmaar` per-match attendance formulae by `kiero`, `SUB
+  kausikorttimaar` season-ticket drive, gate revenue and ancillary
+  income, sponsor box bonus, team-strength capacity floor. Read
+  before touching anything that touches `taso/ppiste/paikka`,
+  attendance, season tickets, or gate revenue.
 
 ## How to use this
 
