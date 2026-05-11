@@ -67,6 +67,7 @@ const DeveloperMenu = () => {
                       <Th>Strategia</Th>
                       <Th>E-moraali</Th>
                       <Th>P-valmius</Th>
+                      <Th>Kausikortteja</Th>
                       <Th>previous</Th>
                     </tr>
                   </thead>
@@ -93,6 +94,7 @@ const DeveloperMenu = () => {
                             <Td>{strategyName(team.strategy)}</Td>
                             <Td>{team.morale}</Td>
                             <Td>{fmt(team.readiness)}</Td>
+                            <Td>{team.seasonTickets}</Td>
                             <Td>{JSON.stringify(e.previousRankings)}</Td>
                           </tr>
                         );
