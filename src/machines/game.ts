@@ -756,9 +756,11 @@ export const gameMachine = setup({
 
     /**
      * Start an arena construction project. Called when the design wizard
-     * confirms. Creates the `ManagerArenaProject` on the team, deducts the
-     * 20% down payment from the arena fund, and sets up the initial state
-     * (permit phase for builds, construction for renovations).
+     * confirms. Creates the `ManagerArenaProject` on the team and sets
+     * up the initial state (permit phase for builds, construction for
+     * renovations). No money is deducted at this point — the 20 % pantti
+     * is a threshold check only (`potti >= 0.2 * cost`); actual spending
+     * happens per-round via `mpv` instalments in `tickArenaProject`.
      */
     executeStartArenaProject: assign(
       (
@@ -775,9 +777,9 @@ export const gameMachine = setup({
       ) =>
         produce(context, (draft) => {
           const m = draft.managers[params.manager];
-          if (!m || m.team === undefined || m.kind === "ai") return;
+          if (!m || m.team === undefined || m.kind === "ai") {return;}
           const team = draft.teams[m.team];
-          if (team.arenaProject) return; // already have a project
+          if (team.arenaProject) {return;} // already have a project
 
           if (params.kind === "renovate") {
             const rounds = constructionRounds("renovate", params.builder);
@@ -1337,7 +1339,7 @@ export const gameMachine = setup({
       actions: assign(({ context, event }) =>
         produce(context, (draft) => {
           const m = draft.managers[event.payload.manager];
-          if (m && m.kind === "human") m.balance += 10_000_000;
+          if (m && m.kind === "human") {m.balance += 10_000_000;}
         })
       )
     },

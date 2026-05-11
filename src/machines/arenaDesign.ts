@@ -79,21 +79,21 @@ export const planFreePoints = (ctx: ArenaDesignContext): number =>
 /** Whether the plan can be confirmed (all greenlight conditions met). */
 export const canConfirm = (ctx: ArenaDesignContext): boolean => {
   // Points must fit
-  if (planFreePoints(ctx) < 0) return false;
+  if (planFreePoints(ctx) < 0) {return false;}
 
   // Must be strictly greater than current (renovation) or floor (build)
   if (ctx.kind === "renovate") {
-    if (ctx.valuePoints <= ctx.currentArena.valuePoints) return false;
+    if (ctx.valuePoints <= ctx.currentArena.valuePoints) {return false;}
   } else {
-    if (ctx.valuePoints <= NEW_ARENA_MIN_VALUE_POINTS) return false;
+    if (ctx.valuePoints <= NEW_ARENA_MIN_VALUE_POINTS) {return false;}
   }
 
   // Down payment must be affordable from the arena fund
   const cost = planCost(ctx);
-  if (!canAffordProject(cost, ctx.arenaFund)) return false;
+  if (!canAffordProject(cost, ctx.arenaFund)) {return false;}
 
   // Build needs a name
-  if (ctx.kind === "build" && ctx.name.trim().length === 0) return false;
+  if (ctx.kind === "build" && ctx.name.trim().length === 0) {return false;}
 
   return true;
 };
