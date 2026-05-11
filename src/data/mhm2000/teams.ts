@@ -9,7 +9,7 @@ export type Arena = {
    * (TEAMS.PLN) carry an arena name; light teams (TEAMS.NHL/FOR/ALA) load
    * just `paikka(1..3)` + `taso` and have no named arena in QB.
    */
-  name?: string;
+  name: string;
   /** taso(team) in QB — class tier 1..6. Unlocks box seating at level 4. */
   level: ArenaLevel;
   /**

@@ -176,10 +176,6 @@ export type GameMachineEvents =
       payload: { manager: string; type: string; victim: number };
     }
   | {
-      type: "IMPROVE_ARENA";
-      payload: { manager: string };
-    }
-  | {
       type: "BUY_PLAYER";
       payload: { manager: string; playerType: number };
     }
@@ -256,6 +252,13 @@ export type GameMachineEvents =
       payload: {
         manager: string;
         fixMatch: boolean;
+      };
+    }
+  | {
+      type: "TRANSFER_TO_ARENA_FUND";
+      payload: {
+        manager: string;
+        amount: number;
       };
     };
 
@@ -698,6 +701,35 @@ export const gameMachine = setup({
           }
           const team = draft.teams[m.team];
           team.fixMatch = params.fixMatch;
+        })
+    ),
+
+    /**
+     * Move money from the manager's general balance into the team's
+     * protected arena construction fund (`potti` in QB). One-way
+     * transfer — there is no return path from potti back to raha;
+     * once committed, the money stays until spent on construction
+     * or wiped by a team swap. See ARENAS.md §3.
+     */
+    executeTransferToArenaFund: assign(
+      (
+        { context },
+        params: {
+          manager: string;
+          amount: number;
+        }
+      ) =>
+        produce(context, (draft) => {
+          const m = draft.managers[params.manager];
+          if (!m || m.team === undefined || m.kind === "ai") {
+            return;
+          }
+          const clamped = Math.max(0, Math.min(params.amount, m.balance));
+          if (clamped <= 0) {
+            return;
+          }
+          m.balance -= clamped;
+          draft.teams[m.team].arenaFund += clamped;
         })
     ),
 
@@ -1186,6 +1218,12 @@ export const gameMachine = setup({
     SET_FIX_MATCH: {
       actions: {
         type: "executeSetFixMatch",
+        params: ({ event }) => event.payload
+      }
+    },
+    TRANSFER_TO_ARENA_FUND: {
+      actions: {
+        type: "executeTransferToArenaFund",
         params: ({ event }) => event.payload
       }
     },
