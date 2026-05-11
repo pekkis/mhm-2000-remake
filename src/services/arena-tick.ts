@@ -76,9 +76,7 @@ export const tickArenaProject = (
 
 function tickPermitPhase(
   _team: Draft<Team>,
-  project: Draft<
-    Extract<NonNullable<Team["arenaProject"]>, { kind: "build" }>
-  >,
+  project: Draft<Extract<NonNullable<Team["arenaProject"]>, { kind: "build" }>>,
   random: Random
 ): ArenaTickResult {
   const news: string[] = [];
@@ -123,9 +121,7 @@ function tickPermitPhase(
   project.roundPayment = qbCint(project.roundPayment / rounds);
 
   const builderName = builderByRank(project.builder).name;
-  news.push(
-    `Rakennuslupa myönnetään! ${builderName} aloittaa työt.`
-  );
+  news.push(`Rakennuslupa myönnetään! ${builderName} aloittaa työt.`);
   return { news, completed: false };
 }
 

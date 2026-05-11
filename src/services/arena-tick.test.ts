@@ -84,7 +84,10 @@ describe("tickArenaProject", () => {
     it("deducts payment and progresses on normal roll", () => {
       const team = createHumanTeam({
         arenaFund: 100_000,
-        arenaProject: makeRenovation({ roundsRemaining: 10, roundPayment: 5000 })
+        arenaProject: makeRenovation({
+          roundsRemaining: 10,
+          roundPayment: 5000
+        })
       });
 
       // Roll 50 — builder 1 threshold is 2, so 50 >= 2 → progresses, 50 > 2 → no slack
@@ -229,7 +232,10 @@ describe("tickArenaProject", () => {
     it("deducts payment and progresses", () => {
       const team = createHumanTeam({
         arenaFund: 50_000,
-        arenaProject: makeBuildInProgress({ roundsRemaining: 10, roundPayment: 5000 })
+        arenaProject: makeBuildInProgress({
+          roundsRemaining: 10,
+          roundPayment: 5000
+        })
       });
 
       const { team: next, result } = tick(team, fixedRandom(50));
