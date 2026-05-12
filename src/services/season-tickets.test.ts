@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  sellSeasonTickets,
-  TICKET_PRICE
-} from "@/services/season-tickets";
+import { sellSeasonTickets, TICKET_PRICE } from "@/services/season-tickets";
 import { fixedRandom, scriptedRandom } from "@/__tests__/factories";
 
 /**
@@ -25,9 +22,7 @@ describe("sellSeasonTickets", () => {
     it("sells tickets and returns revenue", () => {
       const result = sellSeasonTickets(baseline());
       expect(result.ticketsSold).toBeGreaterThan(0);
-      expect(result.revenue).toBe(
-        result.ticketsSold * TICKET_PRICE[1] * 22
-      );
+      expect(result.revenue).toBe(result.ticketsSold * TICKET_PRICE[1] * 22);
     });
 
     it("returns zero when arena is already full", () => {
@@ -73,7 +68,9 @@ describe("sellSeasonTickets", () => {
           tier,
           random: fixedRandom(0.5)
         });
-        expect(result.revenue).toBe(result.ticketsSold * TICKET_PRICE[tier] * 22);
+        expect(result.revenue).toBe(
+          result.ticketsSold * TICKET_PRICE[tier] * 22
+        );
       }
     });
   });
@@ -165,7 +162,11 @@ describe("sellSeasonTickets", () => {
   describe("roster charisma average", () => {
     it("neutral roster charisma (10) has no effect", () => {
       const random = fixedRandom(0.5);
-      const result = sellSeasonTickets({ ...baseline(), rosterCharismaAvg: 10, random });
+      const result = sellSeasonTickets({
+        ...baseline(),
+        rosterCharismaAvg: 10,
+        random
+      });
       const base = sellSeasonTickets(baseline());
       expect(result.ticketsSold).toBe(base.ticketsSold);
     });

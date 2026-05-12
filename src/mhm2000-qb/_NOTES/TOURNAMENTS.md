@@ -24,40 +24,40 @@ that completely — keep none of the names, prizes, or eligibility rules.
 
 ## 1. Source map
 
-| Concern                       | QB site                                                                   |
-| ----------------------------- | ------------------------------------------------------------------------- |
-| Tournament names (10)         | `DATAX.M2K` rows 4–13, loaded into `turnimi(1..10)` at `MHM2K.BAS:787-789` |
-| Invitation tier table         | `TKUTSU.M2K` (48 lines), loaded into `tkutsux(1..48)` at `MHM2K.BAS:768-771` |
-| Per-tournament prize tables   | `JT1.PLX..JT10.PLX`, `ELT.PLX` (6 lines each = palki(1..6))               |
-| Prize loader                  | `SUB maarpalk (jepulis$)` at `ILEX5.BAS:3151-3157`                         |
-| Invitation UI                 | `SUB kutsuturnaus` at `ILEX5.BAS:2974-2993`                                |
-| Hotkey to open invitation UI  | `ILEX5.BAS:406` (`l` key, gated `kiero3(kr)=3 AND mukt(pv)=0`)              |
-| "POSTIA!" mail reminder       | `ILEX5.BAS:4157` (`postia 1` = "TURNAUSKUTSU")                              |
-| NHL CHALLENGE auto-pick       | `SUB tarkistanhlc` at `ILEX5.BAS:7417-7431`                                |
-| Christmas tournaments runner  | `SUB joulutauko` at `ILEX5.BAS:2268-2324`                                  |
-| EHL group → final assembly    | `SUB ehllopturmaar (1)` at `ILEX5.BAS:1283-1340`                           |
-| EHL final tournament runner   | `SUB ehllopturmaar (2)` at `ILEX5.BAS:1342-1366`                           |
-| Tournament play engine        | `SUB turnaus` at `ILEX5.BAS:7603-7654`                                     |
-| Standings + prize disbursement | `SUB staulturmaar` at `ILEX5.BAS:7083-7115`                                |
-| 6-team round-robin fixtures   | `FIXTURE.M2K` last block (5 rows × 6 ints), loaded into `tfxt(1..5,1..6)` at `MHM2K.BAS:880-884` |
-| Calendar slots                | `KIERO.M2K` row 47 (`98,1,0` = joulutauko), row 56 (`22,1,11` = EHL final); rows 21-23 (`1,1,3` = invitation window); row 24 (`2,1,7` = NHL CHALLENGE auto-pick) |
+| Concern                        | QB site                                                                                                                                                          |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tournament names (10)          | `DATAX.M2K` rows 4–13, loaded into `turnimi(1..10)` at `MHM2K.BAS:787-789`                                                                                       |
+| Invitation tier table          | `TKUTSU.M2K` (48 lines), loaded into `tkutsux(1..48)` at `MHM2K.BAS:768-771`                                                                                     |
+| Per-tournament prize tables    | `JT1.PLX..JT10.PLX`, `ELT.PLX` (6 lines each = palki(1..6))                                                                                                      |
+| Prize loader                   | `SUB maarpalk (jepulis$)` at `ILEX5.BAS:3151-3157`                                                                                                               |
+| Invitation UI                  | `SUB kutsuturnaus` at `ILEX5.BAS:2974-2993`                                                                                                                      |
+| Hotkey to open invitation UI   | `ILEX5.BAS:406` (`l` key, gated `kiero3(kr)=3 AND mukt(pv)=0`)                                                                                                   |
+| "POSTIA!" mail reminder        | `ILEX5.BAS:4157` (`postia 1` = "TURNAUSKUTSU")                                                                                                                   |
+| NHL CHALLENGE auto-pick        | `SUB tarkistanhlc` at `ILEX5.BAS:7417-7431`                                                                                                                      |
+| Christmas tournaments runner   | `SUB joulutauko` at `ILEX5.BAS:2268-2324`                                                                                                                        |
+| EHL group → final assembly     | `SUB ehllopturmaar (1)` at `ILEX5.BAS:1283-1340`                                                                                                                 |
+| EHL final tournament runner    | `SUB ehllopturmaar (2)` at `ILEX5.BAS:1342-1366`                                                                                                                 |
+| Tournament play engine         | `SUB turnaus` at `ILEX5.BAS:7603-7654`                                                                                                                           |
+| Standings + prize disbursement | `SUB staulturmaar` at `ILEX5.BAS:7083-7115`                                                                                                                      |
+| 6-team round-robin fixtures    | `FIXTURE.M2K` last block (5 rows × 6 ints), loaded into `tfxt(1..5,1..6)` at `MHM2K.BAS:880-884`                                                                 |
+| Calendar slots                 | `KIERO.M2K` row 47 (`98,1,0` = joulutauko), row 56 (`22,1,11` = EHL final); rows 21-23 (`1,1,3` = invitation window); row 24 (`2,1,7` = NHL CHALLENGE auto-pick) |
 
 ---
 
 ## 2. The ten Christmas tournaments
 
-| # | `turnimi(N)`               | Tier-1 prize (`JTn.PLX` line 1) | Prize fall-off (1st..6th, mk)          |
-| - | -------------------------- | ------------------------------: | -------------------------------------- |
-| 1 | NHL CHALLENGE              |                       4 000 000 | 4 000 000 / 600 / 550 / 500 / 450 / 400 k |
-| 2 | NOGIA TOURNAMENT           |                         900 000 | 900 / 700 / 650 / 600 / 550 / 500 k       |
-| 3 | MARBORLO TOURNAMENT        |                         800 000 | 800 / 600 / 650 / 600 / 550 / 500 k       |
-| 4 | GOGO-COLA CUP              |                         700 000 | 700 / 500 / 450 / 400 / 350 / 300 k       |
-| 5 | SÖNERÖ-TURNAUS             |                         400 000 | 400 / 275 / 250 / 200 / 250 / 200 / 150 k (file has 7 lines — bug; only 6 are read into `palki(1..6)`, the trailing `150000` is ignored) |
-| 6 | SUSIRAJA-TURNAUS           |                         250 000 | 250 / 200 / 150 / 125 / 100 / 75 k        |
-| 7 | HIRVIKOSKI-PÄIVÄT          |                         170 000 | 170 / 125 / 100 / 75 / 60 / 45 k          |
-| 8 | NÄRPIÖN HOKI-VESTIVAL      |                         150 000 | 150 / 100 / 80 / 60 / 40 / 30 k           |
-| 9 | AAVASAKSA OPEN ICE         |                         100 000 | 100 / 50 / 30 / 25 / 20 / 15 k            |
-|10 | KIVESJÄRVI CUP             |                          80 000 | 80 / 60 / 40 / 30 / 20 / 10 k             |
+| #   | `turnimi(N)`          | Tier-1 prize (`JTn.PLX` line 1) | Prize fall-off (1st..6th, mk)                                                                                                            |
+| --- | --------------------- | ------------------------------: | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | NHL CHALLENGE         |                       4 000 000 | 4 000 000 / 600 / 550 / 500 / 450 / 400 k                                                                                                |
+| 2   | NOGIA TOURNAMENT      |                         900 000 | 900 / 700 / 650 / 600 / 550 / 500 k                                                                                                      |
+| 3   | MARBORLO TOURNAMENT   |                         800 000 | 800 / 600 / 650 / 600 / 550 / 500 k                                                                                                      |
+| 4   | GOGO-COLA CUP         |                         700 000 | 700 / 500 / 450 / 400 / 350 / 300 k                                                                                                      |
+| 5   | SÖNERÖ-TURNAUS        |                         400 000 | 400 / 275 / 250 / 200 / 250 / 200 / 150 k (file has 7 lines — bug; only 6 are read into `palki(1..6)`, the trailing `150000` is ignored) |
+| 6   | SUSIRAJA-TURNAUS      |                         250 000 | 250 / 200 / 150 / 125 / 100 / 75 k                                                                                                       |
+| 7   | HIRVIKOSKI-PÄIVÄT     |                         170 000 | 170 / 125 / 100 / 75 / 60 / 45 k                                                                                                         |
+| 8   | NÄRPIÖN HOKI-VESTIVAL |                         150 000 | 150 / 100 / 80 / 60 / 40 / 30 k                                                                                                          |
+| 9   | AAVASAKSA OPEN ICE    |                         100 000 | 100 / 50 / 30 / 25 / 20 / 15 k                                                                                                           |
+| 10  | KIVESJÄRVI CUP        |                          80 000 | 80 / 60 / 40 / 30 / 20 / 10 k                                                                                                            |
 
 Note the non-monotonic prize ladder in JT3 (slot 3 > slot 4 reversed:
 600/650) and JT5 (200/150 inversion + 7th line). Almost certainly
@@ -76,9 +76,9 @@ in cp850 → UTF-8:
 
 ### EHL final
 
-| Name                | Prize ladder (1st..6th, mk)              |
-| ------------------- | ---------------------------------------- |
-| EHL:N LOPPUTURNAUS  | 800 / 500 / 475 / 450 / 425 / 400 k       |
+| Name               | Prize ladder (1st..6th, mk)         |
+| ------------------ | ----------------------------------- |
+| EHL:N LOPPUTURNAUS | 800 / 500 / 475 / 450 / 425 / 400 k |
 
 `tnimi(1)` for the EHL final is hard-coded to `"EHL:N LOPPUTURNAUS"`
 at `ILEX5.BAS:1344` (no DATAX entry). The first-place 800 k is on top
@@ -224,18 +224,18 @@ EHL champions (`muutmestarit` at `MHM2K.BAS:1558-1611` fills these
 from `TEAMS.FOR`). Slots 66..70 = NHL teams (`TEAMS.NHL`). Slots
 71..86 = mutasarja teams (`TEAMS.ALA`).
 
-| Tier | Tournament              | Random roll                           | Pool                                                                |
-| ---- | ----------------------- | ------------------------------------- | ------------------------------------------------------------------- |
-| 1    | NHL CHALLENGE           | _none_ — `b = 64 + cupex`             | 65..70 (last foreign EHL champ + 5 NHL teams), deterministic sweep   |
-| 2    | NOGIA TOURNAMENT        | 40% top-5 PHL, 60% foreign            | `x(1..5)` or `49..65`                                                |
-| 3    | MARBORLO TOURNAMENT     | 50% top-12 PHL, 50% foreign           | `x(1..12)` or `49..65`                                               |
-| 4    | GOGO-COLA CUP           | 70% top-12 PHL, 30% slot 5..16        | `x(1..12)` or `x(5..16)`                                             |
-| 5    | SÖNERÖ-TURNAUS          | 20% top-12 PHL, 80% slot 13..24       | `x(1..12)` or `x(13..24)`                                            |
-| 6    | SUSIRAJA-TURNAUS        | 50% slot 12..23, 50% slot 25..48      | `x(12..23)` (mid-PHL / top-divari) or `x(25..48)` (divari + mutasarja) |
-| 7    | HIRVIKOSKI-PÄIVÄT       | 25% slot 12..23, 75% slot 25..48      | same pools as tier 6, weighting flipped                              |
-| 8    | NÄRPIÖN HOKI-VESTIVAL   | 70% slot 25..48, 30% mutasarja (71..86) | `x(25..48)` or `INT(16*RND)+71`                                    |
-| 9    | AAVASAKSA OPEN ICE      | 25% slot 25..48, 75% mutasarja        | same pools as tier 8, weighting flipped                              |
-| 10   | KIVESJÄRVI CUP          | _none_ — pure mutasarja               | `INT(16*RND)+71` only                                                |
+| Tier | Tournament            | Random roll                             | Pool                                                                   |
+| ---- | --------------------- | --------------------------------------- | ---------------------------------------------------------------------- |
+| 1    | NHL CHALLENGE         | _none_ — `b = 64 + cupex`               | 65..70 (last foreign EHL champ + 5 NHL teams), deterministic sweep     |
+| 2    | NOGIA TOURNAMENT      | 40% top-5 PHL, 60% foreign              | `x(1..5)` or `49..65`                                                  |
+| 3    | MARBORLO TOURNAMENT   | 50% top-12 PHL, 50% foreign             | `x(1..12)` or `49..65`                                                 |
+| 4    | GOGO-COLA CUP         | 70% top-12 PHL, 30% slot 5..16          | `x(1..12)` or `x(5..16)`                                               |
+| 5    | SÖNERÖ-TURNAUS        | 20% top-12 PHL, 80% slot 13..24         | `x(1..12)` or `x(13..24)`                                              |
+| 6    | SUSIRAJA-TURNAUS      | 50% slot 12..23, 50% slot 25..48        | `x(12..23)` (mid-PHL / top-divari) or `x(25..48)` (divari + mutasarja) |
+| 7    | HIRVIKOSKI-PÄIVÄT     | 25% slot 12..23, 75% slot 25..48        | same pools as tier 6, weighting flipped                                |
+| 8    | NÄRPIÖN HOKI-VESTIVAL | 70% slot 25..48, 30% mutasarja (71..86) | `x(25..48)` or `INT(16*RND)+71`                                        |
+| 9    | AAVASAKSA OPEN ICE    | 25% slot 25..48, 75% mutasarja          | same pools as tier 8, weighting flipped                                |
+| 10   | KIVESJÄRVI CUP        | _none_ — pure mutasarja                 | `INT(16*RND)+71` only                                                  |
 
 Pattern: tier 1 is the only one that pulls NHL teams; tier 10 is the
 only one with mutasarja-only. Tiers 2–9 form a smooth ladder from
@@ -343,23 +343,23 @@ When `SUB turnaus` enters, it sets `turnauz = 1`. The match engine
 checks this flag in several places to suppress the regular-season
 machinery. Restored to 0 on exit (`ILEX5.BAS:7653`).
 
-| Site                          | Effect when `turnauz = 1`                                                       |
-| ----------------------------- | -------------------------------------------------------------------------------- |
-| `ILEX5.BAS:3778-3780`         | **No intensity bonus.** `inte(zz)=0/2` → `etu` delta is skipped. Already documented in [INTENSITY.md §3](INTENSITY.md). |
-| `ILEX5.BAS:3799-3817`         | **Per-player housekeeping skipped.** No wage payouts (`spe=10` → `raha += 10000`), no `pok`/`pot` increments (point-streak / appearance counters), no injury countdown decrement, no `svu` decrement, no special-token (`spe=4`) effects. |
-| `ILEX5.BAS:3929-3936`         | **No morale delta from result.** Win/loss/draw doesn't push `mo()` up or down. |
-| `ILEX5.BAS:4038-4042`         | **No attendance displayed.** Audience line skipped in match printout (consistent with neutral-venue model — there's no home team to fill an arena). |
-| `ILEX5.BAS:4044-4057`         | **No coupon betting** — only fires on `kiero=1`, so tournaments never participate. |
+| Site                  | Effect when `turnauz = 1`                                                                                                                                                                                                                 |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ILEX5.BAS:3778-3780` | **No intensity bonus.** `inte(zz)=0/2` → `etu` delta is skipped. Already documented in [INTENSITY.md §3](INTENSITY.md).                                                                                                                   |
+| `ILEX5.BAS:3799-3817` | **Per-player housekeeping skipped.** No wage payouts (`spe=10` → `raha += 10000`), no `pok`/`pot` increments (point-streak / appearance counters), no injury countdown decrement, no `svu` decrement, no special-token (`spe=4`) effects. |
+| `ILEX5.BAS:3929-3936` | **No morale delta from result.** Win/loss/draw doesn't push `mo()` up or down.                                                                                                                                                            |
+| `ILEX5.BAS:4038-4042` | **No attendance displayed.** Audience line skipped in match printout (consistent with neutral-venue model — there's no home team to fill an arena).                                                                                       |
+| `ILEX5.BAS:4044-4057` | **No coupon betting** — only fires on `kiero=1`, so tournaments never participate.                                                                                                                                                        |
 
 Additional guards _not_ gated on `turnauz` but tied to tournament
 rounds:
 
-| Site                                    | Effect                                                                    |
-| --------------------------------------- | -------------------------------------------------------------------------- |
-| `ILEX5.BAS:2141`                        | `IF kiero(kr) = 98 OR kiero(kr) = 22 THEN inte(pv) = 1` — **intensity reset to NORMAALI** on tournament rounds, regardless of manager choice. See [INTENSITY.md §"Reset"](INTENSITY.md). |
-| `ILEX5.BAS:467`                         | `mukax(pv) = 0` if `mukt(pv) = 0` on `kiero=98` — declined-invitation team gets a **rest day** (mukax=0 → no match, players recover via the global `kiero<>99 AND kiero<>4` fitness rule at line 1811). |
-| `ILEX5.BAS:465`                         | `mukax(pv) = 2` only if `muke(pv) = 1` on `kiero=22` — EHL final, only qualifiers play. Non-qualifiers get a rest day. |
-| `ILEX5.BAS:3916-3925` (`SELECT kiero`)  | **No overtime / no shootout.** OT is wired to `kiero(kr) IN (1, 2)` (regular season, EHL group), `3` (cup, with leg-aggregate check), `40..50` (playoffs). `kiero=22` (EHL final) and `kiero=98` (joulutauko) are not in the list → **ties stand** and contribute 1 point each via `tp += 1` in `otmuut 4`. |
+| Site                                   | Effect                                                                                                                                                                                                                                                                                                      |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ILEX5.BAS:2141`                       | `IF kiero(kr) = 98 OR kiero(kr) = 22 THEN inte(pv) = 1` — **intensity reset to NORMAALI** on tournament rounds, regardless of manager choice. See [INTENSITY.md §"Reset"](INTENSITY.md).                                                                                                                    |
+| `ILEX5.BAS:467`                        | `mukax(pv) = 0` if `mukt(pv) = 0` on `kiero=98` — declined-invitation team gets a **rest day** (mukax=0 → no match, players recover via the global `kiero<>99 AND kiero<>4` fitness rule at line 1811).                                                                                                     |
+| `ILEX5.BAS:465`                        | `mukax(pv) = 2` only if `muke(pv) = 1` on `kiero=22` — EHL final, only qualifiers play. Non-qualifiers get a rest day.                                                                                                                                                                                      |
+| `ILEX5.BAS:3916-3925` (`SELECT kiero`) | **No overtime / no shootout.** OT is wired to `kiero(kr) IN (1, 2)` (regular season, EHL group), `3` (cup, with leg-aggregate check), `40..50` (playoffs). `kiero=22` (EHL final) and `kiero=98` (joulutauko) are not in the list → **ties stand** and contribute 1 point each via `tp += 1` in `otmuut 4`. |
 
 ### Not yet modeled / TODO check in port
 
@@ -389,28 +389,28 @@ rounds:
 
 ## 9. Variable cheat sheet
 
-| Var                              | Type         | Role                                                                              |
-| -------------------------------- | ------------ | --------------------------------------------------------------------------------- |
-| `turnimi(1..10)`                 | STRING       | tournament display names (from `DATAX.M2K`)                                       |
-| `turnauz`                        | INTEGER 0/1  | engine-wide flag: 1 inside `SUB turnaus`, suppresses regular-season machinery     |
-| `turnax(1..86)`                  | INTEGER bit  | per-Christmas-break "team already seeded somewhere" bitmap                        |
-| `tkutsux(1..48)`                 | INTEGER      | `sed → minimum visible tier` lookup (from `TKUTSU.M2K`)                            |
-| `naaturnaus`                     | INTEGER 0/1  | "at least one human seat in this tournament" flag → controls UI prompting        |
-| `tnimi(1)`                       | STRING       | single-slot scratch for current tournament name (joulutauko sets it per `qwe`, EHL final hard-codes) |
-| `tx(1..6)`                       | INTEGER      | seat → team-index mapping for the current tournament                              |
-| `ts(1..6)`                       | INTEGER      | seat → final-standings rank (1 = winner) after `staulturmaar`                     |
-| `tp(1..6)`                       | INTEGER      | seat → points in current tournament                                               |
-| `tero(1..6)`                     | INTEGER      | seat → goal differential                                                          |
-| `tfxt(round, slot)`              | INTEGER      | 5×6 fixture table for 6-team round-robin (from `FIXTURE.M2K`)                      |
-| `tkr`                            | INTEGER      | current tournament round (1..5, then 6 = "show finals + payouts")                 |
-| `palki(1..6)`                    | LONG         | prize money for placements 1..6 (loaded per-tournament by `maarpalk`)             |
-| `mukt(pv)`                       | INTEGER 0..10 | human's chosen tournament tier (0 = declined / not yet chosen)                    |
-| `muke(pv)`                       | INTEGER 0/1  | human qualified to EHL final tournament (set in `ehllopturmaar 1`)                |
-| `mukax(pv)`                      | INTEGER 0/2  | this round: 0 = rest day, 2 = play. Computed at `ILEX5.BAS:459-472` per `kiero`.   |
-| `tietos`                         | INTEGER      | NHL CHALLENGE forced seat (top PHL AI team, set by `tarkistanhlc`, consumed in `joulutauko`, cleared after) |
-| `elt(1..6)`                      | INTEGER      | EHL final qualifiers in order (5 group winners + 1 best runner-up)                |
-| `emestari`                       | INTEGER      | season-long European-champion team index (set by `ehllopturmaar 2`)                |
-| `karki(1..5)`                    | INTEGER      | PHL top-5 (used by `tarkistanhlc` for the NHL CHALLENGE forced invitation)         |
+| Var                 | Type          | Role                                                                                                        |
+| ------------------- | ------------- | ----------------------------------------------------------------------------------------------------------- |
+| `turnimi(1..10)`    | STRING        | tournament display names (from `DATAX.M2K`)                                                                 |
+| `turnauz`           | INTEGER 0/1   | engine-wide flag: 1 inside `SUB turnaus`, suppresses regular-season machinery                               |
+| `turnax(1..86)`     | INTEGER bit   | per-Christmas-break "team already seeded somewhere" bitmap                                                  |
+| `tkutsux(1..48)`    | INTEGER       | `sed → minimum visible tier` lookup (from `TKUTSU.M2K`)                                                     |
+| `naaturnaus`        | INTEGER 0/1   | "at least one human seat in this tournament" flag → controls UI prompting                                   |
+| `tnimi(1)`          | STRING        | single-slot scratch for current tournament name (joulutauko sets it per `qwe`, EHL final hard-codes)        |
+| `tx(1..6)`          | INTEGER       | seat → team-index mapping for the current tournament                                                        |
+| `ts(1..6)`          | INTEGER       | seat → final-standings rank (1 = winner) after `staulturmaar`                                               |
+| `tp(1..6)`          | INTEGER       | seat → points in current tournament                                                                         |
+| `tero(1..6)`        | INTEGER       | seat → goal differential                                                                                    |
+| `tfxt(round, slot)` | INTEGER       | 5×6 fixture table for 6-team round-robin (from `FIXTURE.M2K`)                                               |
+| `tkr`               | INTEGER       | current tournament round (1..5, then 6 = "show finals + payouts")                                           |
+| `palki(1..6)`       | LONG          | prize money for placements 1..6 (loaded per-tournament by `maarpalk`)                                       |
+| `mukt(pv)`          | INTEGER 0..10 | human's chosen tournament tier (0 = declined / not yet chosen)                                              |
+| `muke(pv)`          | INTEGER 0/1   | human qualified to EHL final tournament (set in `ehllopturmaar 1`)                                          |
+| `mukax(pv)`         | INTEGER 0/2   | this round: 0 = rest day, 2 = play. Computed at `ILEX5.BAS:459-472` per `kiero`.                            |
+| `tietos`            | INTEGER       | NHL CHALLENGE forced seat (top PHL AI team, set by `tarkistanhlc`, consumed in `joulutauko`, cleared after) |
+| `elt(1..6)`         | INTEGER       | EHL final qualifiers in order (5 group winners + 1 best runner-up)                                          |
+| `emestari`          | INTEGER       | season-long European-champion team index (set by `ehllopturmaar 2`)                                         |
+| `karki(1..5)`       | INTEGER       | PHL top-5 (used by `tarkistanhlc` for the NHL CHALLENGE forced invitation)                                  |
 
 ### Persistence
 
