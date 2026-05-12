@@ -552,8 +552,9 @@ param`). MHM 2000 expanded MHM 97's 75-round calendar.
 5. **`KIERO.M2K` phase_id values** — the 99-row calendar. What does
    `99,1,4` vs `4,1,1` vs `47,0,2` mean? Need to find the `kierokset`
    reader and decode each phase id.
-6. **`.PLX` files** (`ELT.PLX`, `JT1..JT10.PLX`) — likely 10 invitation
-   tournaments + an "elite" definition. Need to peek.
+6. ~~**`.PLX` files** (`ELT.PLX`, `JT1..JT10.PLX`)~~ — **decoded.**
+   Per-tournament prize tables for the 10 Christmas invitation
+   tournaments + EHL final. See [TOURNAMENTS.md](TOURNAMENTS.md).
 7. **`.MHZ` files** (3: `LAKKO.MHZ`, `MONTY.MHZ`, `P.MHZ`) — strike +
    `montx` records?
 8. **Remaining `.M2K` files** still ❓: `STVARI`, `PEPDEP`,

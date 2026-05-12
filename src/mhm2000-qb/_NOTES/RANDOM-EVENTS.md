@@ -447,8 +447,11 @@ Per `kiero(kr)` round-type, `gameday` triggers different sub-flows:
   but several of them (`mmkisaalku`, `jaauniorit`) include
   randomized choices and new player synthesis.
 - **`joulutauko`** (Christmas break, `kiero=98`) — runs the 10
-  invitation tournaments (JT1..JT10.PLX). Per tournament, randomized
-  16-team draw + 6-round mini-tournament + cash prizes.
+  invitation tournaments (JT1..JT10.PLX). Per tournament: human
+  opt-in seeds first, then NHL CHALLENGE forced seat (`tietos` from
+  `tarkistanhlc`), then per-tier-weighted AI fillers, then a
+  **6-team round-robin over 5 rounds** (`tfxt`), then cash prizes
+  per `JT<n>.PLX`. Full decode in [TOURNAMENTS.md](TOURNAMENTS.md).
 - **`mmkisaloppu`** (`kiero3 = 11`) — wraps up the WC tournament for
   B-series countries: clears `inj=9002`, awards medals, applies the
   "international glory" `plus`/`kest` boost or penalty per `mjo` flag.

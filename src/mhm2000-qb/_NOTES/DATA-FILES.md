@@ -329,11 +329,13 @@ Just file names — reading them is trivial when needed.
 
 ## .PLX files
 
-`ELT.PLX`, `JT1..JT10.PLX`. The JT1-10 series strongly suggests
-**10 invitation tournaments** (JT = `juhlaturnaus`?). `ELT.PLX` =
-`elite`? Per-tournament data file.
-
-❓ TODO: confirm.
+`ELT.PLX`, `JT1..JT10.PLX`. **Confirmed: per-tournament prize
+tables** for the 10 Christmas invitation tournaments (`JT` =
+_joulu-turnaus_) and the EHL final tournament (`ELT` = _EHL-lopputurnaus_).
+Each file is 6 ASCII integers, placement payout for ranks 1..6.
+Loaded via `SUB maarpalk` at `ILEX5.BAS:3151-3157` into `palki(1..6)`.
+JT5 has a 7th trailing value that is ignored (data anomaly).
+Full table in [TOURNAMENTS.md §2](TOURNAMENTS.md).
 
 ---
 
