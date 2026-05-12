@@ -70,7 +70,12 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: false,
     pranks: false,
-    tags: ["preseason", "season_tickets", "preRound:bors-init", "todo:wire-bors-mass-gen"],
+    tags: [
+      "preseason",
+      "season_tickets",
+      "preRound:bors-init",
+      "todo:wire-bors-mass-gen"
+    ],
     requiredActions: ["budget"]
   },
   // round 1 (KIERO.M2K row 2, type 99) — preseason: sponsorit (sponsor draw)
@@ -90,7 +95,12 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: false,
     pranks: false,
-    tags: ["preseason", "season_tickets", "preRound:sponsorit", "todo:wire-sponsorit"]
+    tags: [
+      "preseason",
+      "season_tickets",
+      "preRound:sponsorit",
+      "todo:wire-sponsorit"
+    ]
   },
   // round 2 (KIERO.M2K row 3, type 99) — preseason filler
   {
@@ -187,7 +197,12 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["preseason", "season_tickets", "training", "todo:wire-practice-competition"]
+    tags: [
+      "preseason",
+      "season_tickets",
+      "training",
+      "todo:wire-practice-competition"
+    ]
   },
   // round 7 (KIERO.M2K row 8, type 4) — training match: valitsestrat (strategy selection)
   {
@@ -207,7 +222,12 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["preseason", "season_tickets", "training", "preRound:strategy-selection"]
+    tags: [
+      "preseason",
+      "season_tickets",
+      "training",
+      "preRound:strategy-selection"
+    ]
   },
   // round 8 (KIERO.M2K row 9, type 4) — training match: tremaar (tactics refresh)
   {
