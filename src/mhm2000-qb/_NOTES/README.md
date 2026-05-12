@@ -62,6 +62,15 @@ mhm2k first" → bail to mhm2k.
   3-candidate negotiation, 4 goal categories, 20 payout slots, the
   "two walked → must accept the third" lockout, every payout trigger
   site). Read before touching anything that pays sponsor money.
+- [TOURNAMENTS.md](TOURNAMENTS.md) — full decode of the 10 Christmas
+  invitation tournaments (`JT1..JT10`) and the EHL final tournament
+  (`ELT`): names, prize ladders, `sed`-based invitation eligibility,
+  invitation window (rounds 21–23), NHL CHALLENGE auto-pick
+  (`tarkistanhlc`), per-tier AI fill pools, the shared 6-team
+  round-robin play engine (`SUB turnaus` + `tfxt`), and all the
+  `turnauz = 1` match-engine guards (no morale, no intensity bonus,
+  no wages, no attendance, no OT). Read before touching any
+  tournament code.
 - [ARENAS.md](ARENAS.md) — full arena system: per-team static state,
   per-manager build/renovate state machine (`uhatapa`), `SUB areena`
   - `SUB remppa` design wizard, `SUB rstages` construction loop,
