@@ -122,7 +122,6 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
     if (manager.kind === "human") {
       manager.completedActions = [];
     }
-    console.log("PER MANAGER SEASON STaRT", manager);
   }
 
   // Initialize currentSeason for stats accumulation. Saga side did

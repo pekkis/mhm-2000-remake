@@ -166,7 +166,8 @@ const seedTeams = (): Team[] => {
       fixMatch: false,
       arenaFund: 0,
       seasonTickets: 0,
-      arenaProject: undefined
+      arenaProject: undefined,
+      mailbox: []
     } satisfies Team;
   });
 };
@@ -215,6 +216,8 @@ export const createDefaultGameContext = (): GameContext => {
     worldChampionshipResults: undefined,
 
     transferMarket: { players: {} },
+
+    mail: { mailbox: [] },
 
     human: { active: undefined, order: [] },
 

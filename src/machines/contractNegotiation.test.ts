@@ -6,7 +6,7 @@ import { createRandom } from "@/services/random";
 import type { TeamBudget } from "@/data/mhm2000/budget";
 import { computeSalary } from "@/services/mhm-2000/compute-salary";
 import type { MarketPlayer } from "@/state/player";
-import type { HumanManager } from "@/state/game";
+import { createHumanManager } from "@/__tests__/factories";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -63,20 +63,11 @@ const REFUSED_PLAYER: MarketPlayer = {
   skill: 8
 };
 
-function makeManager(negotiation = 0, charisma = 0): HumanManager {
-  return {
+const makeManager = (negotiation = 0, charisma = 0) =>
+  createHumanManager({
     id: "test-manager",
     name: "Testi Manageri",
-    kind: "human",
-    nationality: "FI",
-    difficulty: 2,
-    balance: 100000,
     team: 0,
-    tags: [],
-    flags: {},
-    pranksExecuted: 0,
-    sponsor: undefined,
-    completedActions: [],
     attributes: {
       strategy: 0,
       specialTeams: 0,
@@ -84,21 +75,8 @@ function makeManager(negotiation = 0, charisma = 0): HumanManager {
       resourcefulness: 0,
       charisma,
       luck: 0
-    },
-    stats: {
-      games: {},
-      achievements: {
-        ehl: 0,
-        gold: 0,
-        silver: 0,
-        bronze: 0,
-        cup: 0,
-        promoted: 0,
-        relegated: 0
-      }
     }
-  };
-}
+  });
 
 function makeInput(
   overrides: Partial<ContractNegotiationInput> = {}

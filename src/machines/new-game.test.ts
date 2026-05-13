@@ -48,7 +48,8 @@ const buildTeam = (
     hasBoxes: false,
     valuePoints: 0
   },
-  tags: []
+  tags: [],
+  nationality: "FI"
 });
 
 // ---------------------------------------------------------------------------

@@ -3,16 +3,15 @@ import { createActor } from "xstate";
 import { gameMachine } from "@/machines/game";
 import { createDefaultGameContext } from "@/state";
 import type { GameContext } from "@/state";
-import type { HumanManager } from "@/state/game";
+import { createHumanManager } from "@/__tests__/factories";
 import { humanManagerById } from "@/machines/selectors";
-import { emptyAchievements } from "@/services/empties";
 import calendar from "@/data/calendar";
 
 const buildContextWithManager = (): GameContext => {
   const ctx = createDefaultGameContext();
-  const manager: HumanManager = {
+  const manager = createHumanManager({
     id: "pasolini",
-    kind: "human",
+    name: "Pier Paolo Pasolini",
     tags: ["poet", "director", "genious"],
     nationality: "IT",
     attributes: {
@@ -23,19 +22,10 @@ const buildContextWithManager = (): GameContext => {
       specialTeams: 3,
       strategy: 3
     },
-    stats: {
-      games: {},
-      achievements: emptyAchievements()
-    },
-    name: "Pier Paolo Pasolini",
     team: 12,
     difficulty: 1,
-    pranksExecuted: 0,
-    balance: 1_000_000,
-    flags: {},
-    sponsor: undefined,
-    completedActions: []
-  };
+    balance: 1_000_000
+  });
   return {
     ...ctx,
     managers: {

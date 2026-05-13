@@ -131,7 +131,6 @@ export const teams: ManagedTeamDefinition[] = [
       valuePoints: 1032
     },
     tags: [],
-    nationality: "FI",
     nationality: "FI"
   },
   {
