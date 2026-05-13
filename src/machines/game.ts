@@ -9,12 +9,12 @@ import {
   allEventsResolved,
   allRequiredActionsComplete,
   hasCompletedAction,
-  humanManagers
+  currentCalendarEntry,
+  humanManagers,
+  domesticTeamsByPreviousSeasonsRanking
 } from "@/machines/selectors";
 import calendar from "@/data/calendar";
 import competitionData from "@/data/competitions";
-import tournamentList from "@/data/tournaments";
-import { isInvitedToTournament } from "@/machines/tournament-eligibility";
 import { computeStats } from "@/services/competition-type";
 import strategies, {
   READINESS_TICK_TAG,
@@ -417,7 +417,7 @@ export const gameMachine = setup({
     ),
 
     /**
-     * invitations_create phase — walk every manager × tournament pair and
+     * mailbox phase — walk every manager × tournament pair and
      * push an invitation for each one the manager is eligible for.
      * Replaces the previous season's invitation list wholesale (no
      * separate season-start clear needed). 1-1 port of the legacy
@@ -426,8 +426,16 @@ export const gameMachine = setup({
      * No UI — runs on `entry` and the state auto-advances. Acceptance
      * happens later via the `/kutsut` route firing `ACCEPT_INVITATION`.
      */
-    executeInvitationsCreate: assign(({ context }) =>
+    executeMailbox: assign(({ context }) =>
       produce(context, (draft) => {
+        const c = currentCalendarEntry(draft);
+
+        if (c.tags.includes("mailbox:send-nhl-challenge")) {
+          const teams = domesticTeamsByPreviousSeasonsRanking(1, 6)(draft);
+          console.log("TEAMS", teams);
+        }
+
+        /*
         const fresh: typeof draft.invitation.invitations = [];
         for (const managerId of draft.human.order) {
           for (let t = 0; t < tournamentList.length; t++) {
@@ -450,6 +458,21 @@ export const gameMachine = setup({
           }
         }
         draft.invitation.invitations = fresh;
+        */
+      })
+    ),
+
+    /**
+     * AI action phase — AI managers process their mailboxes and
+     * auto-answer any pending RSVP mails. Runs after the human
+     * action phase so humans always act first within the same turn.
+     *
+     * No UI — runs on `entry` and the state auto-advances.
+     */
+    executeAiAction: assign(({ context }) =>
+      produce(context, (draft) => {
+        // TODO: walk AI manager mailboxes, auto-answer RSVPs
+        void draft;
       })
     ),
 
@@ -1503,7 +1526,7 @@ export const gameMachine = setup({
             },
             action: {
               initial: "browsing",
-              onDone: "prank_check",
+              onDone: "ai_action_check",
               states: {
                 browsing: {
                   on: {
@@ -1694,6 +1717,27 @@ export const gameMachine = setup({
               }
             },
 
+            ai_action_check: {
+              always: [
+                {
+                  guard: {
+                    type: "has_phase",
+                    params: { phase: "action" }
+                  },
+                  target: "ai_action"
+                },
+                { target: "prank_check" }
+              ]
+            },
+            // AI action phase — AI managers process their mailboxes,
+            // auto-answer RSVPs, and handle any other per-turn decisions.
+            // Runs after the human action phase so humans always act first.
+            // Auto-advances; no UI.
+            ai_action: {
+              entry: "executeAiAction",
+              always: "prank_check"
+            },
+
             prank_check: {
               always: [
                 {
@@ -1828,27 +1872,27 @@ export const gameMachine = setup({
                   guard: { type: "has_phase", params: { phase: "news" } },
                   target: "news"
                 },
-                { target: "invitations_create_check" }
+                { target: "mailbox_check" }
               ]
             },
             news: {
-              on: { ADVANCE: "invitations_create_check" }
+              on: { ADVANCE: "mailbox_check" }
             },
 
-            invitations_create_check: {
+            mailbox_check: {
               always: [
                 {
                   guard: {
                     type: "has_phase",
-                    params: { phase: "invitations_create" }
+                    params: { phase: "action" }
                   },
-                  target: "invitations_create"
+                  target: "mailbox"
                 },
                 { target: "start_of_season_check" }
               ]
             },
-            invitations_create: {
-              entry: "executeInvitationsCreate",
+            mailbox: {
+              entry: "executeMailbox",
               always: "start_of_season_check"
             },
 

@@ -74,7 +74,8 @@ const entries: RawCalendarEntry[] = [
       "preseason",
       "season_tickets",
       "preRound:bors-init",
-      "todo:wire-bors-mass-gen"
+      "todo:wire-bors-mass-gen",
+      "mailbox:send-nhl-challenge"
     ],
     requiredActions: ["budget"]
   },
@@ -457,7 +458,7 @@ const entries: RawCalendarEntry[] = [
     pranks: true,
     tags: []
   },
-  // round 20 (KIERO.M2K row 21, type 1) — regular gameday 6 + UNKNOWN kiero3=3
+  // round 20 (KIERO.M2K row 21, type 1) — regular gameday 6
   {
     phases: [
       "action",
@@ -475,9 +476,9 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["readiness-tick", "unknown:preRound=3"]
+    tags: ["readiness-tick", "tournament-invitations"]
   },
-  // round 21 (KIERO.M2K row 22, type 1) — regular gameday 7 + UNKNOWN kiero3=3
+  // round 21 (KIERO.M2K row 22, type 1) — regular gameday 7 + tournament invitation window
   {
     phases: [
       "action",
@@ -495,9 +496,9 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["readiness-tick", "unknown:preRound=3"]
+    tags: ["readiness-tick", "tournament-invitations"]
   },
-  // round 22 (KIERO.M2K row 23, type 1) — regular gameday 8 + UNKNOWN kiero3=3
+  // round 22 (KIERO.M2K row 23, type 1) — regular gameday 8 + tournament invitation window closes
   {
     phases: [
       "action",
@@ -515,7 +516,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["readiness-tick", "unknown:preRound=3"]
+    tags: ["readiness-tick", "tournament-invitations"]
   },
   // round 23 (KIERO.M2K row 24, type 2) — EHL gameday + tarkistanhlc (NHL champion check)
   {

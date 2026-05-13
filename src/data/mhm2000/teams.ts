@@ -1,6 +1,8 @@
 // AUTO-GENERATED from src/mhm2000-qb/DATA/TEAMS.PLN. Do not hand-edit.
 // Regenerate via /tmp/build_teams.py.
 
+import type { CountryIso } from "@/data/countries";
+
 export type ArenaLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 export type Arena = {
@@ -67,6 +69,7 @@ export type ManagedTeamDefinition = {
   arena: Arena;
 
   tags: string[];
+  nationality: CountryIso;
 };
 
 /**
@@ -100,6 +103,7 @@ export type LightTeamDefinition = {
   arena: Arena;
 
   tags: string[];
+  nationality: CountryIso;
 };
 
 export type TeamDefinition = ManagedTeamDefinition | LightTeamDefinition;
@@ -126,7 +130,9 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1032
     },
-    tags: []
+    tags: [],
+    nationality: "FI",
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -144,7 +150,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 672
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -162,7 +169,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 210
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -180,7 +188,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 231
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -198,7 +207,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 1480
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -216,7 +226,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 524
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -234,7 +245,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: true,
       valuePoints: 710
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -252,7 +264,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 210
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -270,7 +283,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 524
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -288,7 +302,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 315
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -306,7 +321,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 333
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -324,7 +340,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 243
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -342,7 +359,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 166
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -360,7 +378,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 396
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -378,7 +397,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 110
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -396,7 +416,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 273
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -414,7 +435,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 90
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -432,7 +454,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 210
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -450,7 +473,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 110
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -468,7 +492,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 80
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -486,7 +511,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 160
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -504,7 +530,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 50
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -522,7 +549,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 65
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -540,7 +568,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 74
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -558,7 +587,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 34
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -576,7 +606,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 18
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -594,7 +625,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 22
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -612,7 +644,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 35
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -630,7 +663,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 23
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -648,7 +682,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 24
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -666,7 +701,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 22
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -684,7 +720,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 16
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -702,7 +739,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 16
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -720,7 +758,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 15
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -738,7 +777,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 30
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -756,7 +796,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 18
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -774,7 +815,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 15
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -792,7 +834,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 15
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -810,7 +853,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 26
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -828,7 +872,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 19
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -846,7 +891,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 18
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -864,7 +910,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 14
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -882,7 +929,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 18
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -900,7 +948,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 18
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -918,7 +967,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 28
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -936,7 +986,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 294
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -954,7 +1005,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 55
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   },
   {
     kind: "managed",
@@ -972,7 +1024,8 @@ export const teams: ManagedTeamDefinition[] = [
       hasBoxes: false,
       valuePoints: 16
     },
-    tags: []
+    tags: [],
+    nationality: "FI"
   }
 ];
 

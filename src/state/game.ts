@@ -19,10 +19,11 @@ export type SeasonAction =
 import type { ManagerAttributes } from "@/data/managers";
 import type { TeamStrength } from "@/data/levels";
 import type { BudgetCategoryName, BudgetLevel } from "@/data/mhm2000/budget";
-import type { GameRecord } from "@/machines/types";
+import type { GameRecord } from "@/state/stats";
 import type { HiredPlayer, MarketPlayer, Player } from "@/state/player";
 import type { Lineup } from "@/state/lineup";
 import type { TeamServiceIdentifier } from "@/data/mhm2000/team-services";
+import type { Mail } from "@/state/mail";
 
 export type { Player };
 
@@ -51,6 +52,7 @@ type BaseManager = {
   tags: string[];
   difficulty: number;
   stats: { games: GamesPlayedStats; achievements: AchievementsStat };
+  mailbox: Mail[];
 };
 
 export type AIManager = BaseManager & {
@@ -101,6 +103,7 @@ type BaseTeam = {
   previousRankings?: [number, number, number];
   intensity: 0 | 1 | 2;
   fixMatch: boolean;
+  mailbox: Mail[];
 
   /**
    * QB `potti(pv)` — protected arena construction fund. Money flows in
@@ -166,5 +169,9 @@ export type GameState = {
 
   transferMarket: {
     players: Record<string, MarketPlayer>;
+  };
+
+  mail: {
+    mailbox: Mail[];
   };
 };
