@@ -25,11 +25,10 @@ import r from "@/services/random";
 import { victors } from "@/services/playoffs";
 import { leagueTier } from "@/services/team";
 import { entries, keys, pick, pickBy, values } from "remeda";
-import calendar from "@/data/calendar";
+import calendar, { type CalendarEntry } from "@/data/calendar";
 import { CRISIS_COST, CRISIS_MORALE_MAX } from "@/data/constants";
 import type { SnapshotFrom } from "xstate";
 import type { gameMachine } from "./game";
-import type { GameContext, Manager, Team, GameFlags } from "./types";
 import type {
   CompetitionId,
   Competition,
@@ -38,6 +37,7 @@ import type {
 } from "@/types/competitions";
 import type { HumanManager, SeasonAction } from "@/state/game";
 import type { MarketPlayer } from "@/state/player";
+import type { GameContext, Manager, Team } from "@/state";
 
 // ---------------------------------------------------------------------------
 // Helper types
@@ -658,6 +658,7 @@ export const allRequiredActionsComplete: ContextSelector<boolean> = (ctx) => {
   if (!entry?.requiredActions?.length) {
     return true;
   }
+
   return ctx.human.order.every((managerId) => {
     const manager = ctx.managers[managerId];
     if (!manager || manager.kind !== "human") {
@@ -668,3 +669,38 @@ export const allRequiredActionsComplete: ContextSelector<boolean> = (ctx) => {
     );
   });
 };
+
+export const currentCalendarEntry: ContextSelector<CalendarEntry> = (ctx) => {
+  const round = calendar.at(ctx.turn.round);
+
+  if (!round) {
+    throw new Error(`Calendar entry #${ctx.turn.round} not found`);
+  }
+
+  return round;
+};
+
+// --- Helpers for building candidate pools ---
+
+/**
+ * Domestic teams sorted by previous-season ranking (best first),
+ * sliced to ranks `from..to` (1-based inclusive). Teams without
+ * `previousRankings` sort last.
+ */
+export const domesticTeamsByPreviousSeasonsRanking =
+  (from: number, to: number): ContextSelector<Team[]> =>
+  (ctx) => {
+    return values(ctx.teams)
+      .filter((t) => t.domestic)
+      .toSorted(
+        (a, b) =>
+          (a.previousRankings?.[0] ?? 99) - (b.previousRankings?.[0] ?? 99)
+      )
+      .slice(from - 1, to);
+  };
+
+export const teamsWithTag =
+  (tag: string): ContextSelector<Team[]> =>
+  (ctx) => {
+    return values(ctx.teams).filter((t) => t.tags.includes(tag));
+  };

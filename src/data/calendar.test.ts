@@ -190,12 +190,6 @@ describe("MHM 2000 calendar", () => {
   });
 
   describe("tags", () => {
-    it("flag the three unidentified preRound=3 rounds (KIERO 20..22 → calendar 21..23)", () => {
-      for (const i of [21, 22, 23]) {
-        expect(calendar[i].tags).toContain("unknown:preRound=3");
-      }
-    });
-
     it("mark the playoffs", () => {
       for (let i = 78; i <= 95; i++) {
         expect(calendar[i].tags).toContain("playoffs");

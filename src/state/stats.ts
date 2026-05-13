@@ -1,4 +1,4 @@
-import type { CompetitionId } from "@/machines/types";
+import type { CompetitionId } from "@/types/competitions";
 import type { TeamStat } from "@/types/competitions";
 
 export type SeasonStory = {

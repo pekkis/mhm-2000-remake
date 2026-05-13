@@ -94,7 +94,7 @@ const raw: RawEntry[] = [
   phlDiv(),
 
   // Round 13: invitations
-  phlDiv([...defaultPhases, "invitations_create"]),
+  phlDiv(),
 
   // Round 14
   phlDiv(),

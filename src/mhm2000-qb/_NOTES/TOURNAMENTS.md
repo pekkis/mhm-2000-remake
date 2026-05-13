@@ -494,3 +494,64 @@ When the time comes to port (Phase 3, post-shakedown):
    `simulate-match.ts` / post-match handlers.
 7. **Intensity reset on tournament rounds** (§8) needs a hook on
    round transitions, not in the match itself.
+
+---
+
+## 12. Review notes (cross-checked against QB source 2025-05-12)
+
+All major claims verified against the QB source and data files.
+Source map line numbers, prize tables, fixture data, SUB logic —
+everything checks out. A few corrections and observations:
+
+### Correction: `tarkistanhlc` skips the PHL #1 human
+
+§4 pseudocode says "walk top-5 humans in standings order, asking
+yes/no." But the actual code at `ILEX5.BAS:7423` has
+`IF xx > 1 THEN` guarding the prompt — **the PHL leader (xx=1) is
+never asked**. For xx=1: if AI → `tietos = karki(1)`, exit. If human
+with `mukt=1` → exit. If human **without** `mukt=1` → the `IF xx > 1`
+guard prevents asking, loop continues to xx=2. So only ranks 2–5 get
+the forced NHL CHALLENGE prompt. The PHL leader either already chose
+NHL CHALLENGE during the invitation window (rounds 21–23), or doesn't
+get a second chance. This is either intentional design (the leader
+"should have known") or a bug — either way, the port must replicate it.
+
+### Observation: JT5 prize table header
+
+§2 table says "Prize fall-off (1st..6th)" for JT5 but lists 7 values.
+The note correctly explains that `maarpalk` reads only 6 (`FOR z = 1
+TO 6`), so the 7th line (150000) is dead data. The table header should
+say "1st..6th (+1 dead)" or similar to avoid confusion.
+
+### Observation: JT5 non-monotonic prize
+
+JT5 slot 5 (250k) > slot 4 (200k). This is a second non-monotonic
+anomaly beyond JT3. The §2 note mentions JT3's 600/650 inversion but
+doesn't explicitly call out JT5's 200/250 inversion as a separate
+anomaly (it's visible in the data but easy to miss in the prose).
+
+### Observation: tx(1) overwrite (§10.4) can't actually fire
+
+The analysis is correct that `tarkistanhlc` prevents the overwrite,
+but the reasoning can be tightened: `tarkistanhlc` runs on round 24,
+invitations close on round 23, so no human can pick `mukt=1` after
+`tarkistanhlc` runs. If `tarkistanhlc` bails because a human already
+has `mukt=1`, then `tietos` stays 0, and the `IF qwe = 1 AND
+tietos > 0` guard in `joulutauko` never fires. So the overwrite is
+**dead code** — it can't manifest under any reachable state. The
+"port should guard explicitly" advice in the doc is still good
+defensive programming.
+
+### Verified
+
+- All 10 `.PLX` prize files match the §2 table exactly
+- `FIXTURE.M2K` last block matches the round-robin fixture in §5
+- `TKUTSU.M2K` 48 rows match the eligibility threshold table in §3
+- `SUB turnaus` loop structure (tkr=1..5, then final at tkr<6 exit)
+- `SUB staulturmaar` sort: points primary, goal-diff tiebreaker
+- `SUB joulutauko` iteration order (10→1) and seeding logic
+- `SUB ehllopturmaar 1` qualification: 5 group winners + best runner-up
+- `SUB ehllopturmaar 2` execution: same `turnaus` engine, `emestari` set
+- OT exclusion for kiero 22/98 (not in the SELECT CASE at line 3916)
+- Morale-delta suppression (`turnauz=0` guard at line 3929)
+- `maarpalk` reads exactly 6 lines (FOR z = 1 TO 6)
