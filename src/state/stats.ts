@@ -27,6 +27,7 @@ export type GameRecord = {
 };
 
 export type SeasonStats = {
+  cupWinner: number;
   ehlChampion: number | undefined;
   presidentsTrophy: number | undefined;
   medalists: number[] | undefined;

@@ -2,9 +2,11 @@ import type { MailHandler } from "@/game/mail-handlers";
 import {
   currentCalendarEntry,
   domesticTeamsByPreviousSeasonsRanking,
+  managersTeamId,
   teamsManager
 } from "@/machines/selectors";
 import { createSendMail } from "@/services/mail";
+import random from "@/services/random";
 import type { MailTemplate } from "@/state/mail";
 import { omitBy, values } from "remeda";
 
@@ -73,16 +75,62 @@ export const nhlChallengeMailHandler: MailHandler = (ctx) => {
         m.to.kind === "external" && m.to.recipientId === NHL_CHALLENGE_SENDER_ID
     );
 
-    // TODO: select accepted teams (for now, reject everyone).
-    for (const reply of replies) {
+    // Filter accepting managers.
+    const acceptors = replies.filter((reply) => {
       if (reply.from.kind !== "manager") {
-        continue;
+        return false;
       }
-
       const { answerKey } = (reply.data ?? {}) as { answerKey?: string };
+      return answerKey === "k";
+    });
 
-      if (answerKey === "k") {
-        // Manager wanted in — send rejection.
+    // Lottery: rank gives (7 - rank) * 10 balls, charisma gives charisma * 3.
+    const rankedTeamIds = domesticTeamsByPreviousSeasonsRanking(
+      1,
+      6
+    )(ctx).map((t) => t.id);
+
+    const ballots = acceptors.map((reply) => {
+      const managerId =
+        reply.from.kind === "manager" ? reply.from.recipient : "";
+      const teamId = managersTeamId(managerId)(ctx);
+      const rank = rankedTeamIds.indexOf(teamId) + 1; // 1-6
+      const charisma = ctx.managers[managerId].attributes.charisma;
+      const rankBalls = Math.round(60 * 0.6 ** (rank - 1));
+      const balls = Math.max(1, rankBalls + charisma * 3);
+      return { managerId, reply, balls };
+    });
+
+    const totalBalls = ballots.reduce((sum, b) => sum + b.balls, 0);
+
+    // Pick the winner (if anyone accepted).
+    let winnerId: string | undefined;
+    if (totalBalls > 0) {
+      let roll = random.integer(1, totalBalls);
+      for (const ballot of ballots) {
+        roll -= ballot.balls;
+        if (roll <= 0) {
+          winnerId = ballot.managerId;
+          break;
+        }
+      }
+    }
+
+    // Notify everyone.
+    for (const { managerId } of ballots) {
+      if (managerId === winnerId) {
+        sendMail(
+          {
+            kind: "regular",
+            from,
+            subject: "NHL Challenge — tervetuloa turnaukseen!",
+            body: [
+              "Onnittelut! Joukkueenne on valittu mukaan tämän kauden NHL Challenge -turnaukseen. Nähdään jäällä!"
+            ]
+          },
+          { kind: "manager", recipient: managerId }
+        );
+      } else {
         sendMail(
           {
             kind: "regular",
@@ -92,7 +140,7 @@ export const nhlChallengeMailHandler: MailHandler = (ctx) => {
               "Valitettavasti joukkueenne ei mahtunut mukaan tämän kauden NHL Challenge -turnaukseen. Toivomme parempaa onnea ensi kaudella!"
             ]
           },
-          reply.from
+          { kind: "manager", recipient: managerId }
         );
       }
     }
