@@ -6,7 +6,7 @@ import type { Draft } from "immer";
 /**
  * Answer an RSVP mail: create a reply mail from the manager back
  * to the original sender carrying the chosen answer key, then
- * remove the original RSVP from the manager's mailbox.
+ * mark the original RSVP as replied.
  *
  * The reply is just a regular mail — no immediate side effects.
  * The mail handler that sent the original RSVP picks up the reply
@@ -25,13 +25,8 @@ export const replyToMail = (
     return false;
   }
 
-  const mailIdx = manager.mailbox.findIndex((m) => m.id === mailId);
-  if (mailIdx === -1) {
-    return false;
-  }
-
-  const mail = manager.mailbox[mailIdx];
-  if (mail.kind !== "rsvp") {
+  const mail = manager.mailbox[mailId];
+  if (!mail || mail.kind !== "rsvp") {
     return false;
   }
 
@@ -52,7 +47,7 @@ export const replyToMail = (
   );
 
   // Mark the original RSVP as replied (keep it in the mailbox).
-  manager.mailbox[mailIdx].replied = true;
+  mail.replied = true;
 
   return true;
 };

@@ -16,6 +16,6 @@ export const managerFromDefinition = (def: ManagerDefinition): Manager => {
       games: {},
       achievements: emptyAchievements()
     },
-    mailbox: []
+    mailbox: {}
   };
 };

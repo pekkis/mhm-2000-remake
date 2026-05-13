@@ -75,15 +75,15 @@ export const createSendMail = (ctx: Draft<GameContext>) => {
     } as Mail;
 
     if (to.kind === "external") {
-      ctx.mail.mailbox.push(mail);
+      ctx.mail.mailbox[mail.id] = mail;
     }
 
     if (to.kind === "manager") {
-      ctx.managers[to.recipient].mailbox.push(mail);
+      ctx.managers[to.recipient].mailbox[mail.id] = mail;
     }
 
     if (to.kind === "team") {
-      ctx.teams[to.recipient].mailbox.push(mail);
+      ctx.teams[to.recipient].mailbox[mail.id] = mail;
     }
   };
 

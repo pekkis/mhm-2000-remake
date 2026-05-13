@@ -1,5 +1,6 @@
 import { useState, useMemo, type FC } from "react";
 import { useGameContext } from "@/context/game-machine-context";
+import { GameMachineContext } from "@/context/game-machine-context";
 import { activeManager } from "@/machines/selectors";
 import { createReceiveMail } from "@/services/mail";
 import { Table, Th, Td } from "@/components/ui/Table";
@@ -8,8 +9,9 @@ import Heading from "@/components/ui/Heading";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import Markdown from "@/components/Markdown";
-import type { Mail } from "@/state/mail";
 import clsx from "clsx";
+import { values } from "remeda";
+import type { Mail } from "@/state/mail";
 import * as styles from "./Mailbox.css";
 
 const formatDate = (mail: Mail): string =>
@@ -18,7 +20,8 @@ const formatDate = (mail: Mail): string =>
 const Mailbox: FC = () => {
   const manager = useGameContext(activeManager);
   const ctx = useGameContext((c) => c);
-  const mails = manager.mailbox;
+  const actorRef = GameMachineContext.useActorRef();
+  const mails = values(manager.mailbox);
 
   const { renderSubject, renderBody, renderSender } = useMemo(
     () => createReceiveMail(ctx),
@@ -26,7 +29,7 @@ const Mailbox: FC = () => {
   );
 
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
-  const selectedMail = mails.find((m) => m.id === selectedId);
+  const selectedMail = selectedId ? manager.mailbox[selectedId] : undefined;
 
   return (
     <Stack gap="md">
@@ -84,10 +87,24 @@ const Mailbox: FC = () => {
               <Markdown key={i}>{line}</Markdown>
             ))}
 
-            {selectedMail.kind === "rsvp" && (
+            {selectedMail.kind === "rsvp" && !selectedMail.replied && (
               <div className={styles.answerBar}>
                 {selectedMail.answerOptions.map((opt) => (
-                  <Button key={opt.key}>{opt.label}</Button>
+                  <Button
+                    key={opt.key}
+                    onClick={() =>
+                      actorRef.send({
+                        type: "REPLY_TO_MAIL",
+                        payload: {
+                          manager: manager.id,
+                          mailId: selectedMail.id,
+                          answerKey: opt.key
+                        }
+                      })
+                    }
+                  >
+                    {opt.label}
+                  </Button>
                 ))}
               </div>
             )}
