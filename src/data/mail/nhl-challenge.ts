@@ -6,7 +6,7 @@ import {
 } from "@/machines/selectors";
 import { createSendMail } from "@/services/mail";
 import type { MailTemplate } from "@/state/mail";
-import { entries, values } from "remeda";
+import { omitBy, values } from "remeda";
 
 export const NHL_CHALLENGE_SENDER_ID = "tournament:nhl_challenge";
 
@@ -98,13 +98,10 @@ export const nhlChallengeMailHandler: MailHandler = (ctx) => {
     }
 
     // Remove processed replies from the global mailbox.
-    for (const [id, m] of entries(ctx.mail.mailbox)) {
-      if (
-        m.to.kind === "external" &&
-        m.to.recipientId === NHL_CHALLENGE_SENDER_ID
-      ) {
-        delete ctx.mail.mailbox[id];
-      }
-    }
+    ctx.mail.mailbox = omitBy(
+      ctx.mail.mailbox,
+      (m) =>
+        m.to.kind === "external" && m.to.recipientId === NHL_CHALLENGE_SENDER_ID
+    );
   }
 };
