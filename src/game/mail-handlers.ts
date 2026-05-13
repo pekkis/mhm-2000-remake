@@ -2,7 +2,7 @@ import { nhlChallengeMailHandler } from "@/data/mail/nhl-challenge";
 import type { GameContext } from "@/state";
 import type { Mail } from "@/state/mail";
 import type { Draft } from "immer";
-import { entries, values } from "remeda";
+import { omitBy, values } from "remeda";
 
 export type MailHandler = (ctx: Draft<GameContext>) => void;
 
@@ -23,24 +23,18 @@ const purgeExpired = (
   mailbox: Record<string, Mail>,
   season: number,
   round: number
-) => {
-  for (const [id, mail] of entries(mailbox)) {
-    if (isExpired(mail, season, round)) {
-      delete mailbox[id];
-    }
-  }
-};
+) => omitBy(mailbox, (mail) => isExpired(mail, season, round));
 
 export const expireMails = (ctx: Draft<GameContext>) => {
   const { season, round } = ctx.turn;
 
-  purgeExpired(ctx.mail.mailbox, season, round);
+  ctx.mail.mailbox = purgeExpired(ctx.mail.mailbox, season, round);
 
   for (const manager of values(ctx.managers)) {
-    purgeExpired(manager.mailbox, season, round);
+    manager.mailbox = purgeExpired(manager.mailbox, season, round);
   }
 
   for (const team of ctx.teams) {
-    purgeExpired(team.mailbox, season, round);
+    team.mailbox = purgeExpired(team.mailbox, season, round);
   }
 };
