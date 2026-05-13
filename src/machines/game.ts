@@ -9,9 +9,7 @@ import {
   allEventsResolved,
   allRequiredActionsComplete,
   hasCompletedAction,
-  currentCalendarEntry,
   humanManagers,
-  domesticTeamsByPreviousSeasonsRanking
 } from "@/machines/selectors";
 import calendar from "@/data/calendar";
 import competitionData from "@/data/competitions";
@@ -70,6 +68,8 @@ import { runGala } from "@/machines/parts/gala";
 import { runGameday } from "@/machines/parts/gameday";
 import { runSeasonStart } from "@/machines/parts/season-start";
 import { createUniqueId } from "@/services/id";
+import { expireMails, mailHandlers } from "@/game/mail-handlers";
+import { runAiAction } from "@/game/ai-action";
 
 // Parlay payout multipliers moved to src/machines/bet.ts (where the
 // payout is now computed). The bet actor reaches `resolved` and emits
@@ -428,37 +428,11 @@ export const gameMachine = setup({
      */
     executeMailbox: assign(({ context }) =>
       produce(context, (draft) => {
-        const c = currentCalendarEntry(draft);
+        mailHandlers.forEach((mailHandler) => {
+          mailHandler(draft);
+        });
 
-        if (c.tags.includes("mailbox:send-nhl-challenge")) {
-          const teams = domesticTeamsByPreviousSeasonsRanking(1, 6)(draft);
-          console.log("TEAMS", teams);
-        }
-
-        /*
-        const fresh: typeof draft.invitation.invitations = [];
-        for (const managerId of draft.human.order) {
-          for (let t = 0; t < tournamentList.length; t++) {
-            const { competitionId, maxRanking } = tournamentList[t].eligibility;
-            if (
-              isInvitedToTournament(
-                context,
-                competitionId,
-                maxRanking,
-                managerId
-              )
-            ) {
-              fresh.push({
-                id: createUniqueId(),
-                manager: managerId,
-                tournament: t,
-                accepted: false
-              });
-            }
-          }
-        }
-        draft.invitation.invitations = fresh;
-        */
+        expireMails(draft);
       })
     ),
 
@@ -471,8 +445,7 @@ export const gameMachine = setup({
      */
     executeAiAction: assign(({ context }) =>
       produce(context, (draft) => {
-        // TODO: walk AI manager mailboxes, auto-answer RSVPs
-        void draft;
+        runAiAction(draft);
       })
     ),
 

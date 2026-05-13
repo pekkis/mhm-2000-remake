@@ -1,14 +1,11 @@
+export type MailDate = {
+  season: number;
+  round: number;
+};
+
 export type MailMeta = {
-  created: {
-    season: number;
-    turn: number;
-    phase: string;
-  };
-  expires?: {
-    season: number;
-    turn: number;
-    phase: string;
-  };
+  created: MailDate;
+  expires?: MailDate;
 };
 
 export type ManagerMailRecipient = {
@@ -23,7 +20,8 @@ export type TeamMailRecipient = {
 
 export type ExternalRecipient = {
   kind: "external";
-  recipient: string;
+  recipientId: string;
+  recipientName: string;
 };
 
 export type MailAnswerOption = {
@@ -43,7 +41,9 @@ type BaseMail = {
   to: MailRecipient;
   subject: string;
   body: string[];
-  data: unknown;
+  read: boolean;
+  replied: boolean;
+  data?: unknown;
 };
 
 export type RegularMail = BaseMail & {
@@ -56,3 +56,8 @@ export type RsvpMail = BaseMail & {
 };
 
 export type Mail = RegularMail | RsvpMail;
+
+type RsvpMailTemplate = Omit<RsvpMail, "to" | "id" | "meta" | "read" | "replied">;
+type RegularMailTemplate = Omit<RegularMail, "to" | "id" | "meta" | "read" | "replied">;
+
+export type MailTemplate = RsvpMailTemplate | RegularMailTemplate;

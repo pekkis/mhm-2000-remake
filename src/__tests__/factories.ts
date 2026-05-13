@@ -125,6 +125,7 @@ export const createAITeam = (overrides: Partial<AITeam> = {}): AITeam => ({
   arenaFund: 0,
   seasonTickets: 0,
   arenaProject: undefined,
+  mailbox: [],
   ...overrides
 });
 
@@ -158,6 +159,7 @@ export const createHumanTeam = (
   players: {},
   lineup: emptyLineup,
   previousRankings: [10, 10, 10],
+  mailbox: [],
   ...overrides
 });
 
@@ -186,6 +188,7 @@ export const createAIManager = (
   tags: [],
   kind: "ai",
   difficulty: 2,
+  mailbox: [],
   ...overrides
 });
 
@@ -207,6 +210,7 @@ export const createHumanManager = (
   sponsor: undefined,
   completedActions: [],
   stats: { games: {}, achievements: emptyAchievements() },
+  mailbox: [],
   ...overrides
 });
 

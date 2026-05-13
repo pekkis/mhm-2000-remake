@@ -2,6 +2,7 @@ import type { FC, ReactNode } from "react";
 import Centerer from "@/components/Centerer";
 import * as styles from "./PageLayout.css";
 import Box from "@/components/ui/Box";
+import Mailbox from "@/components/Mailbox";
 
 type Props = {
   stickyMenu?: ReactNode;
@@ -28,6 +29,8 @@ const PageLayout: FC<Props> = ({
         {stickyMenu}
         <Box>{managerInfo}</Box>
         {sidebar}
+
+        <Mailbox />
       </Box>
     </Box>
   );

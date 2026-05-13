@@ -52,7 +52,8 @@ const buildHumanManager = (
     completedActions: [],
     balance,
     flags: {},
-    team: draft.team
+    team: draft.team,
+    mailbox: []
   };
 };
 

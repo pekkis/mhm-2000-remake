@@ -35,7 +35,7 @@ import type {
   PlayoffGroup,
   TeamStat
 } from "@/types/competitions";
-import type { HumanManager, SeasonAction } from "@/state/game";
+import type { GameFlags, HumanManager, SeasonAction } from "@/state/game";
 import type { MarketPlayer } from "@/state/player";
 import type { GameContext, Manager, Team } from "@/state";
 
@@ -123,10 +123,15 @@ export const teamsManagerId =
     ctx.teams[team]?.manager;
 
 export const teamsManager =
-  (team: number): ContextSelector<Manager | undefined> =>
+  (team: number): ContextSelector<Manager> =>
   (ctx) => {
-    const managerId = ctx.teams[team]?.manager;
-    return managerId ? ctx.managers[managerId] : undefined;
+    const managerId = ctx.teams[team].manager;
+
+    if (!managerId) {
+      throw new Error("Team has no manager");
+    }
+
+    return ctx.managers[managerId];
   };
 
 export const teamsMainCompetition =
@@ -356,9 +361,15 @@ export const managerObject =
   };
 
 export const managerById =
-  (manager: string): ContextSelector<Manager | undefined> =>
-  (ctx) =>
-    ctx.managers[manager];
+  (id: string): ContextSelector<Manager> =>
+  (ctx) => {
+    const manager = ctx.managers[id];
+    if (!manager) {
+      throw new Error(`Manager #${id} not found`);
+    }
+
+    return manager;
+  };
 
 /**
  * True iff `manager` can still order a prank this round: their difficulty's
