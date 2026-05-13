@@ -52,7 +52,7 @@ type BaseManager = {
   tags: string[];
   difficulty: number;
   stats: { games: GamesPlayedStats; achievements: AchievementsStat };
-  mailbox: Mail[];
+  mailbox: Record<string, Mail>;
 };
 
 export type AIManager = BaseManager & {
@@ -103,7 +103,7 @@ type BaseTeam = {
   previousRankings?: [number, number, number];
   intensity: 0 | 1 | 2;
   fixMatch: boolean;
-  mailbox: Mail[];
+  mailbox: Record<string, Mail>;
 
   /**
    * QB `potti(pv)` — protected arena construction fund. Money flows in
@@ -172,6 +172,6 @@ export type GameState = {
   };
 
   mail: {
-    mailbox: Mail[];
+    mailbox: Record<string, Mail>;
   };
 };

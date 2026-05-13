@@ -39,11 +39,11 @@ const answerRsvpMails = (draft: Draft<GameContext>, managerId: string) => {
   }
 
   // Snapshot the ids — replyToMail mutates the mailbox.
-  const rsvpMailIds = manager.mailbox
+  const rsvpMails = values(manager.mailbox)
     .filter((m): m is Draft<RsvpMail> => m.kind === "rsvp" && !m.replied)
     .map((m) => ({ id: m.id, answerKey: m.answerOptions[0]?.key }));
 
-  for (const { id, answerKey } of rsvpMailIds) {
+  for (const { id, answerKey } of rsvpMails) {
     if (!answerKey) {
       continue;
     }

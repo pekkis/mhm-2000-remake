@@ -9,7 +9,7 @@ import {
   allEventsResolved,
   allRequiredActionsComplete,
   hasCompletedAction,
-  humanManagers,
+  humanManagers
 } from "@/machines/selectors";
 import calendar from "@/data/calendar";
 import competitionData from "@/data/competitions";
@@ -70,6 +70,7 @@ import { runSeasonStart } from "@/machines/parts/season-start";
 import { createUniqueId } from "@/services/id";
 import { expireMails, mailHandlers } from "@/game/mail-handlers";
 import { runAiAction } from "@/game/ai-action";
+import { replyToMail } from "@/game/mail-reply";
 
 // Parlay payout multipliers moved to src/machines/bet.ts (where the
 // payout is now computed). The bet actor reaches `resolved` and emits
@@ -284,7 +285,11 @@ export type GameMachineEvents =
         totalCost: number;
       };
     }
-  | { type: "DEBUG_GIMME_MONEY"; payload: { manager: string } };
+  | { type: "DEBUG_GIMME_MONEY"; payload: { manager: string } }
+  | {
+      type: "REPLY_TO_MAIL";
+      payload: { manager: string; mailId: string; answerKey: string };
+    };
 
 export const gameMachine = setup({
   types: {
@@ -1387,6 +1392,18 @@ export const gameMachine = setup({
           if (m && m.kind === "human") {
             m.balance += 10_000_000;
           }
+        })
+      )
+    },
+    REPLY_TO_MAIL: {
+      actions: assign(({ context, event }) =>
+        produce(context, (draft) => {
+          replyToMail(
+            draft,
+            event.payload.manager,
+            event.payload.mailId,
+            event.payload.answerKey
+          );
         })
       )
     },

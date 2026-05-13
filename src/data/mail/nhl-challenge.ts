@@ -6,6 +6,7 @@ import {
 } from "@/machines/selectors";
 import { createSendMail } from "@/services/mail";
 import type { MailTemplate } from "@/state/mail";
+import { entries, values } from "remeda";
 
 export const NHL_CHALLENGE_SENDER_ID = "tournament:nhl_challenge";
 
@@ -13,15 +14,13 @@ export const nhlChallengeMailHandler: MailHandler = (ctx) => {
   const c = currentCalendarEntry(ctx);
 
   // --- Send invitations on the tagged round ---
-  if (c.tags.includes("mailbox:send-nhl-challenge")) {
-    console.log("HANDLING NHL");
-
+  if (c.tags.includes("mailbox:nhl-challenge:send")) {
     const { sendMail, expiresInRounds } = createSendMail(ctx);
 
     const tpl: MailTemplate = {
       from: {
         kind: "external",
-        recipientId: "tournament:nhl_challenge",
+        recipientId: NHL_CHALLENGE_SENDER_ID,
         recipientName: "NHL Challenge"
       },
       subject: "Kutsu NHL Challenge-turnaukseen",
@@ -58,29 +57,54 @@ export const nhlChallengeMailHandler: MailHandler = (ctx) => {
     });
   }
 
-  // --- Process replies from the global mailbox ---
-  const replies = ctx.mail.mailbox.filter(
-    (m) =>
-      m.to.kind === "external" &&
-      m.to.recipientId === NHL_CHALLENGE_SENDER_ID
-  );
+  // --- Process replies: decide who gets in, notify everyone ---
+  if (c.tags.includes("mailbox:nhl-challenge:process")) {
+    const { sendMail } = createSendMail(ctx);
 
-  for (const reply of replies) {
-    const { answerKey } = (reply.data ?? {}) as { answerKey?: string };
-    if (answerKey === "k" && reply.from.kind === "manager") {
-      const manager = ctx.managers[reply.from.recipient];
-      if (manager?.team !== undefined) {
-        ctx.competitions.tournaments.teams.push(manager.team);
+    const from = {
+      kind: "external" as const,
+      recipientId: NHL_CHALLENGE_SENDER_ID,
+      recipientName: "NHL Challenge"
+    };
+
+    // Collect all replies addressed to us.
+    const replies = values(ctx.mail.mailbox).filter(
+      (m) =>
+        m.to.kind === "external" && m.to.recipientId === NHL_CHALLENGE_SENDER_ID
+    );
+
+    // TODO: select accepted teams (for now, reject everyone).
+    for (const reply of replies) {
+      if (reply.from.kind !== "manager") {
+        continue;
+      }
+
+      const { answerKey } = (reply.data ?? {}) as { answerKey?: string };
+
+      if (answerKey === "k") {
+        // Manager wanted in — send rejection.
+        sendMail(
+          {
+            kind: "regular",
+            from,
+            subject: "NHL Challenge — ilmoittautuminen hylätty",
+            body: [
+              "Valitettavasti joukkueenne ei mahtunut mukaan tämän kauden NHL Challenge -turnaukseen. Toivomme parempaa onnea ensi kaudella!"
+            ]
+          },
+          reply.from
+        );
+      }
+    }
+
+    // Remove processed replies from the global mailbox.
+    for (const [id, m] of entries(ctx.mail.mailbox)) {
+      if (
+        m.to.kind === "external" &&
+        m.to.recipientId === NHL_CHALLENGE_SENDER_ID
+      ) {
+        delete ctx.mail.mailbox[id];
       }
     }
   }
-
-  // Remove processed replies.
-  ctx.mail.mailbox = ctx.mail.mailbox.filter(
-    (m) =>
-      !(
-        m.to.kind === "external" &&
-        m.to.recipientId === NHL_CHALLENGE_SENDER_ID
-      )
-  );
 };

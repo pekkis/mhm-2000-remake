@@ -95,7 +95,7 @@ const buildContext = (
         arenaFund: 0,
         seasonTickets: 0,
         arenaProject: undefined,
-        mailbox: []
+        mailbox: {}
       };
       // The `kind: "human"` branch isn't covered by AITeam shape; the
       // function only checks `team.kind !== "ai"`, so we cast for the
@@ -130,7 +130,7 @@ const buildContext = (
             flags: {},
             sponsor: undefined,
             completedActions: [],
-            mailbox: []
+            mailbox: {}
           };
           return [m.id, human];
         }
@@ -143,7 +143,7 @@ const buildContext = (
           tags: [],
           difficulty: 2,
           stats: { games: {}, achievements: emptyAchievements() },
-          mailbox: []
+          mailbox: {}
         };
         return [m.id, ai];
       })

@@ -75,7 +75,7 @@ const entries: RawCalendarEntry[] = [
       "season_tickets",
       "preRound:bors-init",
       "todo:wire-bors-mass-gen",
-      "mailbox:send-nhl-challenge"
+      "mailbox:nhl-challenge:send"
     ],
     requiredActions: ["budget"]
   },
@@ -177,7 +177,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: false,
     pranks: false,
-    tags: ["preseason", "season_tickets"],
+    tags: ["preseason", "season_tickets", "mailbox:nhl-challenge:process"],
     requiredActions: ["strategy"]
   },
   // round 6 (KIERO.M2K row 7, type 4) — training match

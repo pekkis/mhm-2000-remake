@@ -57,7 +57,13 @@ export type RsvpMail = BaseMail & {
 
 export type Mail = RegularMail | RsvpMail;
 
-type RsvpMailTemplate = Omit<RsvpMail, "to" | "id" | "meta" | "read" | "replied">;
-type RegularMailTemplate = Omit<RegularMail, "to" | "id" | "meta" | "read" | "replied">;
+type RsvpMailTemplate = Omit<
+  RsvpMail,
+  "to" | "id" | "meta" | "read" | "replied"
+>;
+type RegularMailTemplate = Omit<
+  RegularMail,
+  "to" | "id" | "meta" | "read" | "replied"
+>;
 
 export type MailTemplate = RsvpMailTemplate | RegularMailTemplate;
