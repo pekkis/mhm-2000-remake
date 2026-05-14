@@ -1,17 +1,17 @@
 import type { Team } from "@/state/game";
 import type {
   Competition,
-  CompetitionDefinition,
-  TeamStat,
-  TournamentGroup
+  CompetitionDefinition
+  // TeamStat,
+  // TournamentGroup
 } from "@/types/competitions";
-import tournamentScheduler from "@/services/tournament";
-import { currency } from "@/services/format";
+// import tournamentScheduler from "@/services/tournament";
+// import { currency } from "@/services/format";
 import type { Manager } from "@/state/game";
 import type { Invitation } from "@/state/invitation";
 import { foreignTeams } from "@/machines/selectors";
-import tournamentList from "@/data/tournaments";
-import random from "@/services/random";
+// import tournamentList from "@/data/tournaments";
+// import random from "@/services/random";
 
 export type TournamentSeedContext = {
   teams: Team[];
@@ -47,11 +47,20 @@ const tournaments: CompetitionDefinition = {
   seed: [
     (
       _competitions: Record<string, Competition>,
-      context: TournamentSeedContext
+      _context: TournamentSeedContext
     ) => {
-      const { teams, invitations, managers } = context;
+      // const { teams, invitations, managers } = context;
+
+      return {
+        name: "jouluturnaukset",
+        type: "tournament" as const,
+        teams: [],
+        groups: []
+      };
 
       // Build invited teams grouped by tournament index
+
+      /*
       const invited: Map<number, number[]> = new Map();
       for (const inv of invitations) {
         const tournamentIdx = inv.tournament as number;
@@ -100,6 +109,7 @@ const tournaments: CompetitionDefinition = {
         teams: allParticipantIds,
         groups
       };
+      */
     }
   ],
 
@@ -111,10 +121,13 @@ const tournaments: CompetitionDefinition = {
     })
   ],
 
-  groupEnd: (draft, { groupIdx, group }) => {
+  groupEnd: (_draft, { groupIdx, group }) => {
     if (group.type !== "tournament") {
+      console.log(groupIdx);
       return;
     }
+
+    /*
     const stats = group.stats as TeamStat[];
     const award = tournamentList[groupIdx].award;
     for (const stat of stats) {
@@ -144,6 +157,7 @@ const tournaments: CompetitionDefinition = {
         `Tilillenne on siirretty __${currency(award)}__ rahaa. Viiteviesti: joulutauon turnaus, osallistumismaksu, _${group.name}_.`
       );
     }
+      */
   }
 };
 

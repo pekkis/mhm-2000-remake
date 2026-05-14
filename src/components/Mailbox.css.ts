@@ -1,22 +1,19 @@
-import { style } from "@vanilla-extract/css";
+import { globalStyle, style } from "@vanilla-extract/css";
 import { vars } from "@/styles/theme.css";
 
 export const mailRow = style({
-  cursor: "pointer",
-  selectors: {
-    "&:hover td": {
-      backgroundColor: vars.color.surfaceMuted
-    }
-  }
+  cursor: "pointer"
 });
 
-export const selectedRow = style({
-  selectors: {
-    "&& td": {
-      backgroundColor: vars.color.surfaceMuted,
-      fontWeight: vars.fontWeight.semibold
-    }
-  }
+globalStyle(`${mailRow}:where(:hover) td`, {
+  backgroundColor: vars.color.surfaceMuted
+});
+
+export const selectedRow = style({});
+
+globalStyle(`${selectedRow} td`, {
+  backgroundColor: vars.color.surfaceMuted,
+  fontWeight: vars.fontWeight.semibold
 });
 
 export const messagePane = style({

@@ -38,6 +38,7 @@ import {
 } from "@/data/mhm2000/budget";
 
 import random from "@/services/random";
+import { emptySeasonStat } from "@/services/empties";
 
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
@@ -244,7 +245,7 @@ export const createDefaultGameContext = (): GameContext => {
     // stats
     stats: {
       managers: {},
-      currentSeason: undefined,
+      currentSeason: emptySeasonStat(),
       seasons: [],
       streaks: { team: {}, manager: {} }
     },

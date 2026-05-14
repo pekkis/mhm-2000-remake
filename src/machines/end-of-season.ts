@@ -32,6 +32,8 @@ import { sortStats } from "@/services/league";
 import { eliminated, victors } from "@/services/playoffs";
 import { difference, takeLast, values } from "remeda";
 import type { Random } from "random-js";
+import { emptySeasonStat } from "@/services/empties";
+import type { CompletedSeasonStats } from "@/state/stats";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -39,21 +41,7 @@ import type { Random } from "random-js";
 
 const ensureCurrentSeason = (draft: Draft<GameContext>): void => {
   if (!draft.stats.currentSeason) {
-    draft.stats.currentSeason = {
-      ehlChampion: undefined,
-      presidentsTrophy: undefined,
-      medalists: undefined,
-      worldChampionships: undefined,
-      promoted: {
-        division: [],
-        mutasarja: []
-      },
-      relegated: {
-        phl: [],
-        division: []
-      },
-      stories: {}
-    };
+    draft.stats.currentSeason = emptySeasonStat();
   }
 };
 
@@ -555,9 +543,10 @@ export const runSeasonEnd = (
   random: Random
 ): void => {
   const cs = draft.stats.currentSeason!;
-  if (cs) {
-    draft.stats.seasons.push(cs);
-  }
+
+  // todo: create assertion that the season stat is valid (maybe zod validation)
+
+  draft.stats.seasons.push(cs as CompletedSeasonStats);
 
   // Run promotions and relegations from precalculated season stats
   cs.promoted.division.forEach((promoted) => {

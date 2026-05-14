@@ -24,7 +24,7 @@ export type { MetaManager, MetaState } from "./meta";
 export type { NewsState } from "./news";
 export type { Notification, NotificationState } from "./notification";
 export type { PrankState } from "./prank";
-export type { Streak, GameRecord, SeasonStats, StatsState } from "./stats";
+export type { Streak, GameRecord, StatsState } from "./stats";
 export type { UiState } from "./ui";
 export type { Country, CountryState } from "./country";
 export type { BettingState } from "./betting";
