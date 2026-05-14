@@ -543,9 +543,7 @@ export const runSeasonEnd = (
   random: Random
 ): void => {
   const cs = draft.stats.currentSeason!;
-
   // todo: create assertion that the season stat is valid (maybe zod validation)
-
   draft.stats.seasons.push(cs as CompletedSeasonStats);
 
   // Run promotions and relegations from precalculated season stats
