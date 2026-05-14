@@ -94,7 +94,7 @@ const buildSlotMetadata = (ctx: GameContext): SlotMetadata => {
   });
   return {
     managerCount: managers.length,
-    year: 1998 + (ctx.turn.season ?? 0),
+    year: ctx.turn.season ?? 2000,
     managers,
     savedAt: Date.now()
   };

@@ -1,16 +1,16 @@
 import type { FC } from "react";
 
 type SeasonProps = {
-  index: number;
+  season: number;
   long?: boolean;
 };
 
-const Season: FC<SeasonProps> = ({ index, long = false }) => {
+const Season: FC<SeasonProps> = ({ season, long = false }) => {
   if (!long) {
-    return <>{index + 1998}</>;
+    return <>{season}</>;
   }
 
-  return <>{`${index + 1997}-${index + 1998}`}</>;
+  return <>{`${season - 1}-${season}`}</>;
 };
 
 export default Season;

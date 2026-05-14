@@ -39,6 +39,7 @@ import {
 
 import random from "@/services/random";
 import { emptySeasonStat } from "@/services/empties";
+import type { CompletedSeasonStats } from "@/state/stats";
 
 // Phase-2 wiring: MHM 2000's TEAMS.PLN holds 48 managed teams across the
 // three Pekkalandian tiers, but they're NOT cleanly id-grouped in source
@@ -83,7 +84,8 @@ const seedTeams = (): Team[] => {
       tier: t.tier,
       previousRankings: t.previousRankings,
       services: initialServicesForRankings(t.previousRankings),
-      budget: initialBudgetForRankings(t.previousRankings)
+      budget: initialBudgetForRankings(t.previousRankings),
+      nationality: t.nationality
     })),
     ...divisioonaSource.map((t) => ({
       uid: createUniqueId(),
@@ -100,7 +102,8 @@ const seedTeams = (): Team[] => {
       tier: t.tier,
       previousRankings: t.previousRankings,
       services: initialServicesForRankings(t.previousRankings),
-      budget: initialBudgetForRankings(t.previousRankings)
+      budget: initialBudgetForRankings(t.previousRankings),
+      nationality: t.nationality
     })),
     ...mutasarjaSource.map((t) => ({
       uid: createUniqueId(),
@@ -117,7 +120,8 @@ const seedTeams = (): Team[] => {
       tier: t.tier,
       previousRankings: t.previousRankings,
       services: initialServicesForRankings(t.previousRankings),
-      budget: initialBudgetForRankings(t.previousRankings)
+      budget: initialBudgetForRankings(t.previousRankings),
+      nationality: t.nationality
     })),
     ...ehlForeign.map((t) => ({
       uid: createUniqueId(),
@@ -134,7 +138,8 @@ const seedTeams = (): Team[] => {
       tier: t.tier,
       previousRankings: undefined,
       services: initialServicesForEliteForeignTeams(),
-      budget: initialBudgetForEliteForeignTeams()
+      budget: initialBudgetForEliteForeignTeams(),
+      nationality: t.nationality
     })),
     // Finnish amateur clubs (TEAMS.ALA) at ids 118..133. They participate
     // only in the PA Cup first round (16 first-round bye-fodder teams).
@@ -153,7 +158,8 @@ const seedTeams = (): Team[] => {
       tier: t.tier,
       previousRankings: undefined,
       services: initialServicesForAmateurTeams(),
-      budget: initialBudgetForAmateurTeams()
+      budget: initialBudgetForAmateurTeams(),
+      nationality: t.nationality
     }))
   ];
 
@@ -174,9 +180,62 @@ const seedTeams = (): Team[] => {
 };
 
 export const createDefaultGameContext = (): GameContext => {
+  const teams = seedTeams();
+
+  const teamByName = (name: string, city?: string): number => {
+    const team = teams.find(
+      (t) => t.name === name && (!city || t.city === city)
+    );
+    if (!team) {
+      throw new Error(`Unknown team: ${name}`);
+    }
+    return team.id;
+  };
+
+  // Synthetic history from QB `historia` SUB (MHM2K.BAS:1167-1201).
+  // Three pre-seeded seasons visible in tilastokeskus at game start.
+  // presidentsTrophy = real SM-liiga regular season winner (Harry Lindblad
+  // memorial trophy), sourced from Wikipedia season standings.
+  const seasons: CompletedSeasonStats[] = [
+    {
+      season: 1997,
+      medalists: [teamByName("Jokerit"), teamByName("TPS"), teamByName("HPK")],
+      ehlChampion: teamByName("Jokerit"),
+      presidentsTrophy: teamByName("Jokerit"),
+      promoted: { mutasarja: [], division: [] },
+      relegated: { phl: [], division: [] },
+      worldChampionships: [],
+      stories: {}
+    },
+    {
+      season: 1998,
+      medalists: [
+        teamByName("HIFK"),
+        teamByName("Ilves"),
+        teamByName("Jokerit")
+      ],
+      ehlChampion: teamByName("Feldkirch"),
+      presidentsTrophy: teamByName("TPS"),
+      promoted: { mutasarja: [], division: [] },
+      relegated: { phl: [], division: [] },
+      worldChampionships: [],
+      stories: {}
+    },
+    {
+      season: 1999,
+      medalists: [teamByName("TPS"), teamByName("HIFK"), teamByName("HPK")],
+      ehlChampion: teamByName("Dynamo", "Moskova"),
+      presidentsTrophy: teamByName("TPS"),
+      promoted: { mutasarja: [], division: [teamByName("Pelicans")] },
+      relegated: { phl: [teamByName("KalPa")], division: [] },
+      worldChampionships: [],
+      stories: {}
+    }
+  ];
+
   const ctx = {
     // game
-    turn: { season: 0, round: 0, phase: undefined },
+    turn: { season: 2000, round: 0, phase: undefined },
     flags: {
       jarko: false,
       usa: false,
@@ -212,7 +271,7 @@ export const createDefaultGameContext = (): GameContext => {
       ])
     ) as Record<CompetitionId, Competition>,
 
-    teams: seedTeams(),
+    teams,
 
     worldChampionshipResults: undefined,
 
@@ -246,7 +305,7 @@ export const createDefaultGameContext = (): GameContext => {
     stats: {
       managers: {},
       currentSeason: emptySeasonStat(),
-      seasons: [],
+      seasons,
       streaks: { team: {}, manager: {} }
     },
 
