@@ -105,18 +105,11 @@ describe("gameMachine", () => {
         payload: { manager: activeId, strategy: 2 }
       });
 
-      // Skip championship bet
-      actor.send({
-        type: "SKIP_CHAMPION_BET",
-        payload: { manager: activeId }
-      });
-
       const snap = actor.getSnapshot();
       const m = snap.context.managers[activeId];
       expect(m.kind === "human" && m.completedActions).toEqual([
         "budget",
-        "strategy",
-        "championshipBet"
+        "strategy"
       ]);
       // Still in action phase — user hasn't ADVANCEd
       expect(snap.matches({ in_game: { executing_phases: "action" } })).toBe(

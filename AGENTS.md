@@ -105,7 +105,7 @@ treat existing logic as canonical** — the canonical answer is in
   - [src/machines/game.ts](src/machines/game.ts) — main gameplay machine: phases, events, gameday, end-of-season compound state
   - [src/machines/end-of-season.ts](src/machines/end-of-season.ts) — pure draft mutators for the EOS flow
   - [src/machines/notifications.ts](src/machines/notifications.ts) + [src/machines/notification.ts](src/machines/notification.ts) — toast subtree
-  - [src/machines/bet.ts](src/machines/bet.ts) + [src/machines/championBet.ts](src/machines/championBet.ts) — spawned bet actors
+  - [src/machines/bet.ts](src/machines/bet.ts) — spawned bet actor
   - [src/machines/prankSelection.ts](src/machines/prankSelection.ts) — UI wizard for prank ordering
   - [src/machines/selectors.ts](src/machines/selectors.ts) — `ContextSelector<T>` and `SnapshotSelector<T>` predicates
   - [src/machines/types.ts](src/machines/types.ts) + [src/machines/commands.ts](src/machines/commands.ts) — shared event types

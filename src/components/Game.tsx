@@ -13,7 +13,6 @@ import Arena from "./Arena";
 import Pranks from "./Pranks";
 import Notifications from "./notifications/Notifications";
 import ModalMenu from "./ModalMenu";
-import ChampionshipBetting from "./ChampionshipBetting";
 import Betting from "./Betting";
 import EndOfSeason from "./EndOfSeason";
 import WorldChampionships from "./WorldChampionships";
@@ -149,7 +148,6 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
           <Route path="/organisaatio" element={<Organisaatio />} />
           <Route path="/budjetti" element={<ConfirmBudget />} />
           <Route path="/strategia" element={<SelectStrategy />} />
-          <Route path="/mestariveikkaus" element={<ChampionshipBetting />} />
           <Route path="/debug" element={<DeveloperMenu />} />
           <Route path="/poc" element={<POCMenu />} />
         </Routes>

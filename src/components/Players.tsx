@@ -13,8 +13,11 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import Tabs, { type TabItem } from "@/components/ui/Tabs";
 import { Table, Td, Th } from "@/components/ui/Table";
-import { useGameContext } from "@/context/game-machine-context";
-import { activeManager, managersTeam } from "@/machines/selectors";
+import {
+  GameMachineContext,
+  useGameContext
+} from "@/context/game-machine-context";
+import { activeManager, humanManagersTeam } from "@/machines/selectors";
 import { performanceModifier } from "@/services/lineup";
 import {
   playerSpecialtyDisplayNames,
@@ -23,6 +26,7 @@ import {
 import { countries } from "@/data/countries";
 import type { HiredPlayer, Contract } from "@/state/player";
 import type { HumanTeam } from "@/state/game";
+import type { Lineup } from "@/state/lineup";
 
 /**
  * WIP port of QB `SUB katsopel` (`ILEX5.BAS:2391`), reached via the
@@ -172,20 +176,34 @@ const countryName = (iso: HiredPlayer["nationality"]): string =>
  * Almost everything is TODO-disabled — the underlying SUBs (`xavier`,
  * `sopimusext`) and the captain field on HumanTeam haven't ported.
  */
-const PlayerActions: FC<{ player: HiredPlayer }> = ({ player }) => {
+const PlayerActions: FC<{ player: HiredPlayer; lineup: Lineup }> = ({
+  player,
+  lineup
+}) => {
   // TODO: enable once `kapu(pv)` field exists on HumanTeam and the
   // ASSIGN_CAPTAIN event is wired into gameMachine.
-  const isCaptain = false;
+  const isCaptain = lineup.captain === player.id;
   const isEnforcer = player.specialty === "enforcer";
   const muilutusPrimed = player.tags.includes("muilutus:primed");
+
+  const game = GameMachineContext.useActorRef();
+  const manager = useGameContext(activeManager);
 
   return (
     <Cluster gap="xs">
       <Button
         terse
         secondary
-        disabled
         title="TODO: kapteenin nimitys (kapu(pv) puuttuu HumanTeamilta)"
+        onClick={() => {
+          game.send({
+            type: "SET_CAPTAIN",
+            payload: {
+              manager: manager.id,
+              playerId: isCaptain ? undefined : player.id
+            }
+          });
+        }}
       >
         {isCaptain ? "Kapteeni ✓" : "Kapteeniksi (c)"}
       </Button>
@@ -373,8 +391,9 @@ const runkosarjaColumns: readonly ColumnSpec[] = [
 
 const PlayersTable: FC<{
   players: readonly HiredPlayer[];
+  lineup: Lineup;
   pageColumns: readonly ColumnSpec[];
-}> = ({ players, pageColumns }) => {
+}> = ({ players, pageColumns, lineup }) => {
   const columns = [...commonColumns, ...pageColumns];
 
   return (
@@ -398,7 +417,7 @@ const PlayersTable: FC<{
               </Td>
             ))}
             <Td>
-              <PlayerActions player={player} />
+              <PlayerActions player={player} lineup={lineup} />
             </Td>
           </tr>
         ))}
@@ -443,7 +462,7 @@ const PlayersHeader: FC<{
 
 const Players: FC = () => {
   const manager = useGameContext(activeManager);
-  const team = useGameContext(managersTeam(manager.id));
+  const team = useGameContext(humanManagersTeam(manager.id));
   const [tab, setTab] = useState(0);
   const navigate = useNavigate();
 
@@ -459,25 +478,41 @@ const Players: FC = () => {
     {
       title: "Tilastot",
       content: () => (
-        <PlayersTable players={sortedPlayers} pageColumns={statsColumns} />
+        <PlayersTable
+          players={sortedPlayers}
+          lineup={team.lineup}
+          pageColumns={statsColumns}
+        />
       )
     },
     {
       title: "Sopimus",
       content: () => (
-        <PlayersTable players={sortedPlayers} pageColumns={contractColumns} />
+        <PlayersTable
+          players={sortedPlayers}
+          lineup={team.lineup}
+          pageColumns={contractColumns}
+        />
       )
     },
     {
       title: "Erikoisuus",
       content: () => (
-        <PlayersTable players={sortedPlayers} pageColumns={specialtyColumns} />
+        <PlayersTable
+          players={sortedPlayers}
+          lineup={team.lineup}
+          pageColumns={specialtyColumns}
+        />
       )
     },
     {
       title: "Runkosarja",
       content: () => (
-        <PlayersTable players={sortedPlayers} pageColumns={runkosarjaColumns} />
+        <PlayersTable
+          players={sortedPlayers}
+          lineup={team.lineup}
+          pageColumns={runkosarjaColumns}
+        />
       )
     }
   ];

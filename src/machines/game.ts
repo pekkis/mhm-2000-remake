@@ -34,7 +34,6 @@ import {
 import { notificationsMachine } from "@/machines/notifications";
 import type { NotificationData } from "@/machines/notification";
 import { betMachine } from "@/machines/bet";
-import { championBetMachine } from "@/machines/championBet";
 import { contractNegotiationMachine } from "@/machines/contractNegotiation";
 import {
   sponsorNegotiationMachine,
@@ -308,7 +307,6 @@ export const gameMachine = setup({
   actors: {
     notifications: notificationsMachine,
     bet: betMachine,
-    championBet: championBetMachine,
     contractNegotiation: contractNegotiationMachine,
     sponsorNegotiation: sponsorNegotiationMachine
   },
@@ -379,53 +377,6 @@ export const gameMachine = setup({
             manager.completedActions.push("strategy");
           }
         })
-    ),
-
-    /**
-     * championship_betting — spawn a champion bet actor for the chosen
-     * team and debit the stake. The bet sits in `placed` until
-     * end-of-season sends it `RESOLVE { champion }`; on resolution it
-     * emits `BET_RESOLVED { effects }` which the root handler
-     * interprets.
-     */
-    placeChampionBet: assign(
-      (
-        { context, spawn },
-        params: { manager: string; team: number; amount: number; odds: number }
-      ) =>
-        produce(context, (draft) => {
-          const m = draft.managers[params.manager];
-
-          if (m.kind === "ai") {
-            return;
-          }
-
-          if (m) {
-            m.balance -= params.amount;
-          }
-          draft.betting.championBets.push(
-            spawn("championBet", {
-              id: `champion-bet-${createUniqueId()}`,
-              input: {
-                manager: params.manager,
-                team: params.team,
-                amount: params.amount,
-                odds: params.odds
-              }
-            })
-          );
-          m.completedActions.push("championshipBet");
-        })
-    ),
-
-    skipChampionshipBet: assign(({ context }, params: { manager: string }) =>
-      produce(context, (draft) => {
-        const m = draft.managers[params.manager];
-        if (!m || m.kind === "ai") {
-          return;
-        }
-        m.completedActions.push("championshipBet");
-      })
     ),
 
     /**
@@ -1491,9 +1442,6 @@ export const gameMachine = setup({
               draft.parlayBets = draft.parlayBets.filter(
                 (ref) => ref.id !== event.betId
               );
-              draft.championBets = draft.championBets.filter(
-                (ref) => ref.id !== event.betId
-              );
             })
         });
         enqueue(stopChild(event.betId));
@@ -1577,31 +1525,6 @@ export const gameMachine = setup({
                     SELECT_STRATEGY: {
                       actions: {
                         type: "selectStrategy",
-                        params: ({ event }) => event.payload
-                      }
-                    },
-                    PLACE_CHAMPION_BET: {
-                      actions: [
-                        {
-                          type: "placeChampionBet",
-                          params: ({ event }) => event.payload
-                        },
-                        {
-                          type: "notify",
-                          params: ({ event }) => ({
-                            notification: {
-                              manager: event.payload.manager,
-                              message:
-                                "Kiikutat mestarusveikkauskuponkisi S-kioskille. Olkoon onni myötä!",
-                              type: "info"
-                            }
-                          })
-                        }
-                      ]
-                    },
-                    SKIP_CHAMPION_BET: {
-                      actions: {
-                        type: "skipChampionshipBet",
                         params: ({ event }) => event.payload
                       }
                     },

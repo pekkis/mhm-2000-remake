@@ -268,7 +268,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    requiredActions: ["championshipBet", "sponsor"],
+    requiredActions: ["sponsor"],
     tags: [
       "preseason",
       "season_tickets",
