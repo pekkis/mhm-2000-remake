@@ -38,9 +38,6 @@ const ActionMenu = () => {
   const strategyDone = useGameContext(
     hasCompletedAction(manager.id, "strategy")
   );
-  const betDone = useGameContext(
-    hasCompletedAction(manager.id, "championshipBet")
-  );
   const sponsorDone = useGameContext(hasCompletedAction(manager.id, "sponsor"));
   const appActor = AppMachineContext.useActorRef();
   const gameActor = GameMachineContext.useActorRef();
@@ -75,10 +72,6 @@ const ActionMenu = () => {
 
           <Link onClick={close} to="/strategia">
             Strategia {strategyDone ? "✓" : "○"}
-          </Link>
-
-          <Link onClick={close} to="/mestariveikkaus">
-            Mestariveikkaus {betDone ? "✓" : "○"}
           </Link>
 
           {sponsorDone ? (

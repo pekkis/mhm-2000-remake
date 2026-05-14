@@ -11,11 +11,8 @@ import type { ManagerArenaProject } from "@/state/arena-project";
  *
  * Stored per `HumanManager` in `completedActions`, cleared at season start.
  */
-export type SeasonAction =
-  | "budget"
-  | "strategy"
-  | "championshipBet"
-  | "sponsor";
+export type SeasonAction = "budget" | "strategy" | "sponsor";
+
 import type { ManagerAttributes } from "@/data/managers";
 import type { TeamStrength } from "@/data/levels";
 import type { BudgetCategoryName, BudgetLevel } from "@/data/mhm2000/budget";

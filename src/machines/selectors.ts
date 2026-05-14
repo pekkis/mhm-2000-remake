@@ -38,6 +38,7 @@ import type {
 import type {
   GameFlags,
   HumanManager,
+  HumanTeam,
   Manager,
   SeasonAction,
   Team
@@ -522,6 +523,18 @@ export const managersTeam =
   (manager: string): ContextSelector<Team> =>
   (ctx) =>
     ctx.teams[ctx.managers[manager]?.team!];
+
+export const humanManagersTeam =
+  (manager: string): ContextSelector<HumanTeam> =>
+  (ctx) => {
+    const team = ctx.teams[ctx.managers[manager]?.team!];
+
+    if (!team || team.kind !== "human") {
+      throw new Error("Invalid human managers team");
+    }
+
+    return team;
+  };
 
 export const managersBalance =
   (manager: string): ContextSelector<number> =>

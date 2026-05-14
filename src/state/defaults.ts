@@ -281,11 +281,10 @@ export const createDefaultGameContext = (): GameContext => {
 
     human: { active: undefined, order: [] },
 
-    // betting — parlay + championship bet actors plus the transient
+    // betting — parlay bet actor plus the transient
     // last-round coupon used to bridge `executeGameday` and `resolveParlayBets`.
     betting: {
       parlayBets: [],
-      championBets: [],
       lastLeagueCoupon: undefined
     },
 
