@@ -164,7 +164,7 @@ const buildContext = (
   ctx.stats.currentSeason = {
     ehlChampion: undefined,
     presidentsTrophy: undefined,
-    medalists: undefined,
+    medalists: [],
     worldChampionships: undefined,
     promoted: {
       mutasarja: season.promotedMutasarja ?? [],

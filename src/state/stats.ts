@@ -26,12 +26,32 @@ export type GameRecord = {
   loss: number;
 };
 
-export type SeasonStats = {
-  cupWinner: number;
-  ehlChampion: number | undefined;
-  presidentsTrophy: number | undefined;
-  medalists: number[] | undefined;
-  worldChampionships: any[] | undefined;
+export type OngoingSeasonStats = {
+  cupWinner?: number;
+  ehlChampion?: number;
+  presidentsTrophy?: number;
+  medalists: number[];
+  worldChampionships?: any[];
+  promoted: {
+    mutasarja: number[];
+    division: number[];
+  };
+  relegated: {
+    phl: number[];
+    division: number[];
+  };
+
+  stories: Record<string, SeasonStory>;
+};
+
+export type CompletedSeasonStats = {
+  season: number;
+
+  cupWinner?: number;
+  ehlChampion: number;
+  presidentsTrophy: number;
+  medalists: [number, number, number];
+  worldChampionships: any[];
   promoted: {
     mutasarja: number[];
     division: number[];
@@ -44,8 +64,8 @@ export type SeasonStats = {
 };
 
 export type StatsState = {
-  currentSeason: SeasonStats | undefined;
-  seasons: SeasonStats[];
+  currentSeason: OngoingSeasonStats;
+  seasons: CompletedSeasonStats[];
   streaks: {
     team: Record<number, Partial<Record<CompetitionId, Streak>>>;
     manager: Record<string, Partial<Record<CompetitionId, Streak>>>;

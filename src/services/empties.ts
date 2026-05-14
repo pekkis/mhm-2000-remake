@@ -1,6 +1,6 @@
-import type { SeasonStats } from "@/state";
 import type { AchievementsStat, TeamBudget, TeamServices } from "@/state/game";
 import type { Lineup } from "@/state/lineup";
+import type { OngoingSeasonStats } from "@/state/stats";
 
 export const emptyAchievements = (): AchievementsStat => {
   return {
@@ -33,11 +33,11 @@ export const emptyTeamBudget = (): TeamBudget => {
   };
 };
 
-export const emptySeasonStat = (): SeasonStats => {
+export const emptySeasonStat = (): OngoingSeasonStats => {
   return {
     ehlChampion: undefined,
-    medalists: [],
     presidentsTrophy: undefined,
+    medalists: [],
     promoted: {
       division: [],
       mutasarja: []
@@ -48,7 +48,7 @@ export const emptySeasonStat = (): SeasonStats => {
     },
     worldChampionships: undefined,
     stories: {}
-  } satisfies SeasonStats;
+  } satisfies OngoingSeasonStats;
 };
 
 export const emptyLineup = (): Lineup => {
