@@ -1,5 +1,5 @@
 import type { Draft } from "immer";
-import { values } from "remeda";
+import { shuffle, take, unique, values } from "remeda";
 
 import type { GameContext } from "@/state/game-context";
 import {
@@ -29,8 +29,6 @@ import { rollTeamStrength } from "@/services/levels";
  * pass.
  */
 export function runSeasonStart(draft: Draft<GameContext>): void {
-  const season = draft.turn.season;
-
   // Reset per-team season state.
   //
   // Strategy + readiness defaults: TASAINEN PUURTO (`valm = 3`) is the
@@ -109,13 +107,56 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
   // Tournaments: start with no teams; the seed phase fills them in.
   draft.competitions.tournaments.teams = [];
 
-  // EHL: previous season's medalists (or the seeded default first season)
-  // plus 17 foreign teams, shuffled.
-  const ehlSeeds = draft.stats.seasons[season - 1]?.medalists ?? [2, 3, 5];
-  const foreignIds = draft.teams.slice(48, 48 + 17).map((t) => t.id);
-  draft.competitions.ehl.teams = [...ehlSeeds, ...foreignIds].toSorted(
-    () => random.real(1, 10000) - 5000
+  // ehl participants
+  const previousSeason = draft.stats.seasons.at(-1);
+  if (!previousSeason) {
+    throw new Error("Previous season not found");
+  }
+
+  const potentials = unique(
+    [
+      previousSeason.medalists[0],
+      previousSeason.medalists[1],
+      previousSeason.cupWinner,
+      previousSeason.medalists[2]
+    ].filter((t) => t !== undefined)
   );
+
+  const ehlSeeds = take(potentials, 3);
+
+  const europeanTeams = draft.teams.filter((t) => t.tags.includes("ehl"));
+
+  // QB `SUB muutmestarit` draws from country pools with guaranteed
+  // national quotas: SE 3, CZ 3, DE 2, RU 2, CH 2, SK 1, rest 4.
+  const guaranteedBands: [string, number][] = [
+    ["SE", 3],
+    ["CZ", 3],
+    ["DE", 2],
+    ["RU", 2],
+    ["CH", 2],
+    ["SK", 1]
+  ];
+
+  const guaranteedIsos = new Set(guaranteedBands.map(([iso]) => iso));
+
+  const foreignIds = [
+    ...guaranteedBands.flatMap(([iso, count]) =>
+      random
+        .sample(
+          europeanTeams.filter((t) => t.nationality === iso),
+          count
+        )
+        .map((t) => t.id)
+    ),
+    ...random
+      .sample(
+        europeanTeams.filter((t) => !guaranteedIsos.has(t.nationality)),
+        4
+      )
+      .map((t) => t.id)
+  ];
+
+  draft.competitions.ehl.teams = shuffle([...ehlSeeds, ...foreignIds]);
 
   // Per-manager: salary, insurance extra (skipped season 0), reset extra.
   for (const manager of values(draft.managers)) {

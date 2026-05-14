@@ -3,10 +3,12 @@ import type { FC } from "react";
 import Tabs from "@/components/ui/Tabs";
 import { Table, Td, Th } from "@/components/ui/Table";
 import Season from "@/components/data/Season";
+import type { StatsState } from "@/state/stats";
+import type { Team } from "@/state/game";
 
 type TeamStatsProps = {
-  stats: any;
-  teams: any;
+  stats: StatsState;
+  teams: Record<string, Team>;
   countries: Record<string, { name: string }>;
 };
 
@@ -32,12 +34,12 @@ const TeamStats: FC<TeamStatsProps> = ({ stats, teams, countries }) => {
               </thead>
               <tbody>
                 {stats.seasons
-                  .map((season: any, seasonIndex: number) => (
-                    <tr key={seasonIndex}>
+                  .map((season) => (
+                    <tr key={season.season}>
                       <Td sticky="inline-start">
-                        <Season index={seasonIndex} />
+                        <Season season={season.season} />
                       </Td>
-                      {season.medalists?.map((m: string, k: number) => (
+                      {season.medalists?.map((m, k) => (
                         <Td key={k}>{teams[m]?.name}</Td>
                       ))}
                     </tr>
@@ -59,10 +61,10 @@ const TeamStats: FC<TeamStatsProps> = ({ stats, teams, countries }) => {
               </thead>
               <tbody>
                 {stats.seasons
-                  .map((season: any, seasonIndex: number) => (
-                    <tr key={seasonIndex}>
+                  .map((season) => (
+                    <tr key={season.season}>
                       <Td>
-                        <Season index={seasonIndex} />
+                        <Season season={season.season} />
                       </Td>
                       <Td>{teams[season.presidentsTrophy]?.name}</Td>
                     </tr>
@@ -79,19 +81,57 @@ const TeamStats: FC<TeamStatsProps> = ({ stats, teams, countries }) => {
               <thead>
                 <tr>
                   <Th>Vuosi</Th>
-                  <Th>Nousija</Th>
-                  <Th>Putoaja</Th>
+                  <Th>Div -- PHL</Th>
+                  <Th>PHL -- div</Th>
+                  <Th>Mut -- Div</Th>
+                  <Th>Div -- Mut</Th>
                 </tr>
               </thead>
               <tbody>
                 {stats.seasons
-                  .map((season: any, seasonIndex: number) => (
-                    <tr key={seasonIndex}>
+                  .map((season) => (
+                    <tr key={season.season}>
                       <Td>
-                        <Season index={seasonIndex} />
+                        <Season season={season.season} />
                       </Td>
-                      <Td>{teams[season.promoted]?.name ?? "-"}</Td>
-                      <Td>{teams[season.relegated]?.name ?? "-"}</Td>
+                      <Td>
+                        {" "}
+                        {season.promoted.division.length > 0
+                          ? season.promoted.division
+                              .map((tid) => {
+                                return teams[tid].name;
+                              })
+                              .join(", ")
+                          : "-"}
+                      </Td>
+                      <Td>
+                        {season.relegated.phl.length > 0
+                          ? season.relegated.phl
+                              .map((tid) => {
+                                return teams[tid].name;
+                              })
+                              .join(", ")
+                          : "-"}
+                      </Td>
+
+                      <Td>
+                        {season.promoted.mutasarja.length > 0
+                          ? season.promoted.mutasarja
+                              .map((tid) => {
+                                return teams[tid].name;
+                              })
+                              .join(", ")
+                          : "-"}
+                      </Td>
+                      <Td>
+                        {season.relegated.division.length > 0
+                          ? season.relegated.division
+                              .map((tid) => {
+                                return teams[tid].name;
+                              })
+                              .join(", ")
+                          : "-"}
+                      </Td>
                     </tr>
                   ))
                   .toReversed()}
@@ -111,10 +151,10 @@ const TeamStats: FC<TeamStatsProps> = ({ stats, teams, countries }) => {
               </thead>
               <tbody>
                 {stats.seasons
-                  .map((season: any, seasonIndex: number) => (
-                    <tr key={seasonIndex}>
+                  .map((season) => (
+                    <tr key={season.season}>
                       <Td>
-                        <Season index={seasonIndex} />
+                        <Season season={season.season} />
                       </Td>
                       <Td>{teams[season.ehlChampion]?.name}</Td>
                     </tr>
@@ -138,10 +178,10 @@ const TeamStats: FC<TeamStatsProps> = ({ stats, teams, countries }) => {
               </thead>
               <tbody>
                 {stats.seasons
-                  .map((season: any, seasonIndex: number) => (
-                    <tr key={seasonIndex}>
+                  .map((season) => (
+                    <tr key={season.season}>
                       <Td sticky="inline-start">
-                        <Season index={seasonIndex} />
+                        <Season season={season.season} />
                       </Td>
                       {season.worldChampionships
                         ?.slice(0, 3)

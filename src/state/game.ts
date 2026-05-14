@@ -104,6 +104,7 @@ type BaseTeam = {
   intensity: 0 | 1 | 2;
   fixMatch: boolean;
   mailbox: Record<string, Mail>;
+  nationality: CountryIso;
 
   /**
    * QB `potti(pv)` — protected arena construction fund. Money flows in
