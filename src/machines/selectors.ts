@@ -597,21 +597,6 @@ export const flag =
     ctx.flags[f];
 
 // ---------------------------------------------------------------------------
-// Invitations
-// ---------------------------------------------------------------------------
-
-export const allInvitations: ContextSelector<
-  GameContext["invitation"]["invitations"]
-> = (ctx) => ctx.invitation.invitations;
-
-export const activeManagersInvitations: ContextSelector<
-  GameContext["invitation"]["invitations"]
-> = (ctx) => {
-  const mgr = activeManager(ctx);
-  return ctx.invitation.invitations.filter((i) => i.manager === mgr.id);
-};
-
-// ---------------------------------------------------------------------------
 // Stats
 // ---------------------------------------------------------------------------
 

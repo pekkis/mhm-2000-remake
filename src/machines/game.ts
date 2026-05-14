@@ -202,10 +202,6 @@ export type GameMachineEvents =
       payload: { id: string; value: string };
     }
   | {
-      type: "ACCEPT_INVITATION";
-      payload: { manager: string; id: string };
-    }
-  | {
       type: "BET_RESOLVED";
       betId: string;
       effects: EventEffect[];
@@ -373,8 +369,6 @@ export const gameMachine = setup({
      * separate season-start clear needed). 1-1 port of the legacy
      * `createInvitations()` saga.
      *
-     * No UI — runs on `entry` and the state auto-advances. Acceptance
-     * happens later via the `/kutsut` route firing `ACCEPT_INVITATION`.
      */
     executeMailbox: assign(({ context }) =>
       produce(context, (draft) => {
@@ -453,9 +447,7 @@ export const gameMachine = setup({
         const seeds = calendar[draft.turn.round]?.seed ?? [];
         for (const { competition, phase } of seeds) {
           const def = competitionData[competition];
-          const ctxFn = def.seedContext?.[phase];
-          const seederContext = ctxFn ? ctxFn(context) : undefined;
-          const newPhase = def.seed[phase](draft.competitions, seederContext);
+          const newPhase = def.seed[phase](draft.competitions, draft);
           draft.competitions[competition].phases.push(newPhase);
           draft.competitions[competition].phase = phase;
           if (competition === "tournaments") {
@@ -1432,39 +1424,6 @@ export const gameMachine = setup({
             })
         });
         enqueue(stopChild(event.betId));
-      })
-    },
-    ACCEPT_INVITATION: {
-      // The user accepted a tournament invitation from the /kutsut UI.
-      // Flip the invitation's `accepted`, drop every other un-accepted
-      // invitation for the same manager (accepting one cancels the
-      // rest — "sihteerisi vastasi muihin kieltävästi"), add the
-      // manager's team to the tournaments competition, and notify.
-      // 1-1 port of the legacy `acceptInvitation()` saga.
-      actions: enqueueActions(({ context, enqueue, event }) => {
-        const { manager, id } = event.payload;
-        const teamId = context.managers[manager]?.team;
-        runInterpreter(context, enqueue, (draft, notify) => {
-          const idx = draft.invitation.invitations.findIndex(
-            (i) => i.manager === manager && i.id === id
-          );
-          if (idx === -1) {
-            return;
-          }
-          draft.invitation.invitations[idx].accepted = true;
-          draft.invitation.invitations = draft.invitation.invitations.filter(
-            (i) => i.manager !== manager || i.accepted
-          );
-          if (teamId !== undefined) {
-            draft.competitions.tournaments.teams.push(teamId);
-          }
-          notify({
-            manager,
-            message:
-              "Hyväksyit turnauskutsun. Sihteerisi vastasi kaikkiin muihin potentiaalisiin turnauskutsuihin kieltävästi.",
-            type: "info"
-          });
-        });
       })
     }
   },

@@ -50,13 +50,13 @@ export type TournamentDefinition = {
   /**
    * Maximum previous-season ranking (sed) that qualifies for this
    * tournament. Lower sed = better team. A team with
-   * `previousRankings[0] <= maxSed` sees this tournament in the
+   * `previousRankings[0] <= maxPreviousRanking` sees this tournament in the
    * invitation menu.
    *
    * Derived from TKUTSU.M2K: sed → minimum visible tier. Inverted
    * here so each tournament carries its own cutoff.
    */
-  maxSed: number;
+  maxPreviousRanking: number;
   /**
    * AI seeding priority. Tournaments are seeded in ascending order
    * of this value — lower weight seeds first. QB iterates tier 10→1,
@@ -87,7 +87,7 @@ const tournamentList: TournamentDefinition[] = [
   {
     id: "nhl-challenge",
     name: "NHL CHALLENGE",
-    maxSed: 1,
+    maxPreviousRanking: 1,
     seedOrder: 10_000,
     prizes: [4_000_000, 600_000, 550_000, 500_000, 450_000, 400_000],
     // Deterministic: NHL teams fill the remaining seats.
@@ -97,7 +97,7 @@ const tournamentList: TournamentDefinition[] = [
   {
     id: "nogia",
     name: "NOGIA TOURNAMENT",
-    maxSed: 5,
+    maxPreviousRanking: 5,
     seedOrder: 9_000,
     prizes: [900_000, 700_000, 650_000, 600_000, 550_000, 500_000],
     // 40% top-5 PHL, 60% foreign EHL champions
@@ -109,7 +109,7 @@ const tournamentList: TournamentDefinition[] = [
   {
     id: "marborlo",
     name: "MARBORLO TOURNAMENT",
-    maxSed: 10,
+    maxPreviousRanking: 10,
     seedOrder: 8_000,
     // QB data anomaly: slot 3 (650k) > slot 2 (600k)
     prizes: [800_000, 600_000, 650_000, 600_000, 550_000, 500_000],
@@ -122,7 +122,7 @@ const tournamentList: TournamentDefinition[] = [
   {
     id: "gogo-cola",
     name: "GOGO-COLA CUP",
-    maxSed: 17,
+    maxPreviousRanking: 17,
     seedOrder: 7_000,
     prizes: [700_000, 500_000, 450_000, 400_000, 350_000, 300_000],
     // 70% top-12 PHL, 30% ranks 5–16
@@ -134,7 +134,7 @@ const tournamentList: TournamentDefinition[] = [
   {
     id: "sonero",
     name: "SÖNERÄ-TURNAUS",
-    maxSed: 23,
+    maxPreviousRanking: 23,
     seedOrder: 6_000,
     // QB data anomaly: slot 5 (250k) > slot 4 (200k)
     prizes: [400_000, 275_000, 250_000, 200_000, 250_000, 200_000],
@@ -147,7 +147,7 @@ const tournamentList: TournamentDefinition[] = [
   {
     id: "susiraja",
     name: "SUSIRAJA-TURNAUS",
-    maxSed: 29,
+    maxPreviousRanking: 29,
     seedOrder: 5_000,
     prizes: [250_000, 200_000, 150_000, 125_000, 100_000, 75_000],
     // 50% ranks 12–23, 50% ranks 25–48
@@ -159,7 +159,7 @@ const tournamentList: TournamentDefinition[] = [
   {
     id: "hirvikoski",
     name: "HIRVIKOSKI-PÄIVÄT",
-    maxSed: 34,
+    maxPreviousRanking: 34,
     seedOrder: 4_000,
     prizes: [170_000, 125_000, 100_000, 75_000, 60_000, 45_000],
     // 25% ranks 12–23, 75% ranks 25–48
@@ -171,7 +171,7 @@ const tournamentList: TournamentDefinition[] = [
   {
     id: "narpio",
     name: "NÄRPIÖN HOKI-VESTIVAL",
-    maxSed: 40,
+    maxPreviousRanking: 40,
     seedOrder: 3_000,
     prizes: [150_000, 100_000, 80_000, 60_000, 40_000, 30_000],
     // 70% ranks 25–48, 30% amateur (mutasarja extras)
@@ -183,7 +183,7 @@ const tournamentList: TournamentDefinition[] = [
   {
     id: "aavasaksa",
     name: "AAVASAKSA OPEN ICE",
-    maxSed: 46,
+    maxPreviousRanking: 46,
     seedOrder: 2_000,
     prizes: [100_000, 50_000, 30_000, 25_000, 20_000, 15_000],
     // 25% ranks 25–48, 75% amateur
@@ -195,7 +195,7 @@ const tournamentList: TournamentDefinition[] = [
   {
     id: "kivesjarvi",
     name: "KIVESJÄRVI CUP",
-    maxSed: 48,
+    maxPreviousRanking: 48,
     seedOrder: 1_000,
     prizes: [80_000, 60_000, 40_000, 30_000, 20_000, 10_000],
     // 100% amateur (mutasarja extras only)

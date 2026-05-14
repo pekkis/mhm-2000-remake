@@ -476,7 +476,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["readiness-tick", "tournament-invitations"]
+    tags: ["readiness-tick"]
   },
   // round 21 (KIERO.M2K row 22, type 1) — regular gameday 7 + tournament invitation window
   {
@@ -496,7 +496,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["readiness-tick", "tournament-invitations"]
+    tags: ["readiness-tick"]
   },
   // round 22 (KIERO.M2K row 23, type 1) — regular gameday 8 + tournament invitation window closes
   {
@@ -516,7 +516,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: ["readiness-tick", "tournament-invitations"]
+    tags: ["readiness-tick"]
   },
   // round 23 (KIERO.M2K row 24, type 2) — EHL gameday + tarkistanhlc (NHL champion check)
   {

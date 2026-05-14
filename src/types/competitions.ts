@@ -201,15 +201,12 @@ export type CompetitionDefinition = {
 
   moraleBoost: (phase: number, facts: GameFacts, manager: Manager) => number;
   seed: Array<
-    (competitions: Record<CompetitionId, Competition>, context?: any) => Phase
+    (
+      competitions: Record<CompetitionId, Competition>,
+      context: GameContext
+    ) => Phase
   >;
-  /**
-   * Optional pure context-builders for `seed[phase]`. Indexed by phase.
-   * Each function reads `GameContext` and returns whatever shape the
-   * matching seeder expects as its `context` argument. Phases that don't
-   * need extra context can be left undefined / sparse.
-   */
-  seedContext?: Array<((ctx: GameContext) => unknown) | undefined>;
+
   /**
    * Optional per-competition hook called from `executeGameday` when a
    * group's schedule is exhausted (i.e. the round just played was the

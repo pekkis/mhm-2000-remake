@@ -9,7 +9,6 @@
 import type { GameState } from "./game";
 import type { HumanState } from "./human";
 import type { EventState } from "./event";
-import type { InvitationState } from "./invitation";
 import type { NewsState } from "./news";
 import type { NotificationState } from "./notification";
 import type { StatsState } from "./stats";
@@ -24,7 +23,7 @@ export type GameContext = GameState & {
   notification: NotificationState;
   prank: PrankState;
   stats: StatsState;
-  invitation: InvitationState;
+
   country: CountryState;
   betting: BettingState;
 };

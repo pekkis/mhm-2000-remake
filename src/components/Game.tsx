@@ -17,7 +17,6 @@ import Betting from "./Betting";
 import EndOfSeason from "./EndOfSeason";
 import WorldChampionships from "./WorldChampionships";
 import Stats from "./Stats";
-import Invitations from "./Invitations";
 import Gala from "./Gala";
 import ConfirmBudget from "./ConfirmBudget";
 import SponsorNegotiationView from "./SponsorNegotiationView";
@@ -141,7 +140,6 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
           <Route path="/jaynat" element={<Pranks />} />
           <Route path="/playoffit" element={<PlayoffBracket />} />
           <Route path="/tilastot" element={<Stats />} />
-          <Route path="/kutsut" element={<Invitations />} />
           <Route path="/veikkaus" element={<Betting />} />
           <Route path="/pelaajat" element={<Players />} />
           <Route path="/kokoonpano" element={<Lineup />} />

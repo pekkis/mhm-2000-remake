@@ -1,4 +1,4 @@
-import type { Team } from "@/state/game";
+// import type { Team } from "@/state/game";
 import type {
   Competition,
   CompetitionDefinition
@@ -7,17 +7,11 @@ import type {
 } from "@/types/competitions";
 // import tournamentScheduler from "@/services/tournament";
 // import { currency } from "@/services/format";
-import type { Manager } from "@/state/game";
-import type { Invitation } from "@/state/invitation";
-import { foreignTeams } from "@/machines/selectors";
+// import type { Manager } from "@/state/game";
+// import { foreignTeams } from "@/machines/selectors";
+import type { GameContext } from "@/state/game-context";
 // import tournamentList from "@/data/tournaments";
 // import random from "@/services/random";
-
-export type TournamentSeedContext = {
-  teams: Team[];
-  managers: Record<string, Manager>;
-  invitations: Invitation[];
-};
 
 const tournaments: CompetitionDefinition = {
   data: {
@@ -45,10 +39,7 @@ const tournaments: CompetitionDefinition = {
   },
 
   seed: [
-    (
-      _competitions: Record<string, Competition>,
-      _context: TournamentSeedContext
-    ) => {
+    (_competitions: Record<string, Competition>, _context: GameContext) => {
       // const { teams, invitations, managers } = context;
 
       return {
@@ -111,14 +102,6 @@ const tournaments: CompetitionDefinition = {
       };
       */
     }
-  ],
-
-  seedContext: [
-    (ctx) => ({
-      teams: foreignTeams(ctx),
-      managers: ctx.human.order,
-      invitations: ctx.invitation.invitations.filter((i) => i.accepted)
-    })
   ],
 
   groupEnd: (_draft, { groupIdx, group }) => {
