@@ -1,4 +1,5 @@
 export type Lineup = {
+  captain?: string;
   g: string | null;
   forwardLines: [ForwardLine, ForwardLine, ForwardLine, ForwardLine];
   defensivePairings: [DefensivePairing, DefensivePairing, DefensivePairing];

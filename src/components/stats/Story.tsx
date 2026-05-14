@@ -19,7 +19,7 @@ const Story: FC<StoryProps> = ({ season, story, teams, competitions }) => {
   return (
     <Box my="md">
       <h3>
-        <Season long index={season} />{" "}
+        <Season long season={season} />{" "}
       </h3>
 
       <Table>

@@ -19,7 +19,7 @@ const EndOfSeason = () => {
     <PageLayout stickyMenu={<StickyMenu forward="Seuraava kausi" />}>
       <Stack gap="lg">
         <Heading level={2}>
-          Kausi <Season long index={turn.season} />
+          Kausi <Season long season={turn.season} />
         </Heading>
 
         <Stack>

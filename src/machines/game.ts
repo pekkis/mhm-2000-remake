@@ -241,6 +241,13 @@ export type GameMachineEvents =
       };
     }
   | {
+      type: "SET_CAPTAIN";
+      payload: {
+        manager: string;
+        playerId: string | undefined;
+      };
+    }
+  | {
       type: "CONFIRM_BUDGET";
       payload: { manager: string; budget: TeamBudget };
     }
@@ -818,6 +825,28 @@ export const gameMachine = setup({
     ),
 
     /**
+     * Set the team captain. Stored on the lineup since it's a
+     * human-team-only concern tied to the lineup configuration.
+     */
+    executeSetCaptain: assign(
+      (
+        { context },
+        params: { manager: string; playerId: string | undefined }
+      ) =>
+        produce(context, (draft) => {
+          const m = draft.managers[params.manager];
+          if (!m || m.team === undefined || m.kind === "ai") {
+            return;
+          }
+          const team = draft.teams[m.team];
+          if (team.kind !== "human") {
+            return;
+          }
+          team.lineup.captain = params.playerId;
+        })
+    ),
+
+    /**
      * Assign a single player to a specific lineup slot.
      * Enforces the QB `ketlaita` guard: max 2 regular-line appearances.
      */
@@ -1352,6 +1381,12 @@ export const gameMachine = setup({
     ASSIGN_PLAYER_TO_LINEUP: {
       actions: {
         type: "executeAssignPlayerToLineup",
+        params: ({ event }) => event.payload
+      }
+    },
+    SET_CAPTAIN: {
+      actions: {
+        type: "executeSetCaptain",
         params: ({ event }) => event.payload
       }
     },

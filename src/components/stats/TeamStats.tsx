@@ -8,7 +8,7 @@ import type { Team } from "@/state/game";
 
 type TeamStatsProps = {
   stats: StatsState;
-  teams: Record<string, Team>;
+  teams: Team[];
   countries: Record<string, { name: string }>;
 };
 

@@ -126,6 +126,7 @@ export const createAITeam = (overrides: Partial<AITeam> = {}): AITeam => ({
   seasonTickets: 0,
   arenaProject: undefined,
   mailbox: {},
+  nationality: "FI",
   ...overrides
 });
 
@@ -160,6 +161,7 @@ export const createHumanTeam = (
   lineup: emptyLineup,
   previousRankings: [10, 10, 10],
   mailbox: {},
+  nationality: "FI",
   ...overrides
 });
 
