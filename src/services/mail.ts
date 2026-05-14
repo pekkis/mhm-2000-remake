@@ -1,5 +1,5 @@
 import { createUniqueId } from "@/services/id";
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 import type { Mail, MailDate, MailRecipient, MailTemplate } from "@/state/mail";
 import type { Draft } from "immer";
 

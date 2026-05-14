@@ -11,7 +11,6 @@
 
 import { cinteger } from "@/services/random";
 import { leagueTier } from "@/services/team";
-import type { GameContext } from "@/state";
 import type { WorldChampionshipEntry } from "@/state/game";
 import type {
   CompetitionId,
@@ -34,6 +33,7 @@ import { difference, takeLast, values } from "remeda";
 import type { Random } from "random-js";
 import { emptySeasonStat } from "@/services/empties";
 import type { CompletedSeasonStats } from "@/state/stats";
+import type { GameContext } from "@/state/game-context";
 
 // ---------------------------------------------------------------------------
 // Helpers

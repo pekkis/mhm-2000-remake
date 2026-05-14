@@ -4,7 +4,7 @@ import {
   calculatePenaltyKillStrength,
   calculatePowerPlayStrength
 } from "@/services/lineup";
-import type { Manager, Team } from "@/state";
+import type { Manager, Team } from "@/state/game";
 import { values } from "remeda";
 
 /**

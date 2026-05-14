@@ -34,9 +34,9 @@
 import type { TeamStrength } from "@/data/levels";
 import type { StrategyId } from "@/data/mhm2000/strategies";
 import { calculateStrength } from "@/services/team";
-import type { Manager, Team } from "@/state";
 import { forcedStrategyForManager } from "@/data/mhm2000/strategies";
 import type { Random } from "random-js";
+import type { Manager, Team } from "@/state/game";
 
 /**
  * Lottery weights for the three strategies in QB `valm` order:

@@ -2,7 +2,7 @@ import newEvents from "@/game/new-events";
 import type { DeclarativeEvent } from "@/types/event";
 import type { BaseEventFields, BaseEventCreationFields } from "@/types/base";
 import type { NotifyFn, SpawnEventFn } from "@/game/event-effects";
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 import { produce, type Draft } from "immer";
 import type { NotificationData } from "@/machines/notification";
 import { createUniqueId } from "@/services/id";

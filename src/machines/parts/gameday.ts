@@ -1,6 +1,6 @@
 import type { Draft } from "immer";
 
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 import type { CompetitionId, GameResult } from "@/types/competitions";
 import calendar from "@/data/calendar";
 import competitionData from "@/data/competitions";

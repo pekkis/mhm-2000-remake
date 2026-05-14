@@ -9,7 +9,6 @@
 
 import { produce, current } from "immer";
 
-import { createDefaultGameContext, type GameContext } from "@/state";
 import type { AITeam, HumanManager } from "@/state/game";
 import {
   statsFromExperience,
@@ -23,6 +22,8 @@ import random from "@/services/random";
 import { generateMarketPlayers } from "@/services/mhm-2000/generate-market-players";
 import { generateTeamRoster } from "@/services/mhm-2000/generate-team-roster";
 import { emptyLineup } from "@/services/empties";
+import { createDefaultGameContext } from "@/state/defaults";
+import type { GameContext } from "@/state/game-context";
 
 const buildHumanManager = (
   draft: ManagerDraft,

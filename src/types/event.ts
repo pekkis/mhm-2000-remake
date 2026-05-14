@@ -1,4 +1,4 @@
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 import type { BaseEventCreationFields, BaseEventFields } from "@/types/base";
 import type { EventEffect } from "@/game/event-effects";
 

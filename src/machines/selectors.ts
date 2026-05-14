@@ -35,9 +35,15 @@ import type {
   PlayoffGroup,
   TeamStat
 } from "@/types/competitions";
-import type { GameFlags, HumanManager, SeasonAction } from "@/state/game";
+import type {
+  GameFlags,
+  HumanManager,
+  Manager,
+  SeasonAction,
+  Team
+} from "@/state/game";
 import type { MarketPlayer } from "@/state/player";
-import type { GameContext, Manager, Team } from "@/state";
+import type { GameContext } from "@/state/game-context";
 
 // ---------------------------------------------------------------------------
 // Helper types

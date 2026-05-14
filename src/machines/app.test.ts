@@ -6,13 +6,13 @@ import { createActor, waitFor } from "xstate";
 import { appMachine } from "@/machines/app";
 import { newGameMachine } from "@/machines/new-game";
 import { gameMachine } from "@/machines/game";
-import { createDefaultGameContext } from "@/state";
 import {
   saveSlot,
   setLastSlot,
   _resetDbForTests
 } from "@/services/persistence";
 import type { ManagerAttributes } from "@/data/managers";
+import { createDefaultGameContext } from "@/state/defaults";
 
 const ZERO_ATTRS: ManagerAttributes = {
   strategy: 0,

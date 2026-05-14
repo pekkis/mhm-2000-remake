@@ -1,5 +1,5 @@
 import { nhlChallengeMailHandler } from "@/data/mail/nhl-challenge";
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 import type { Mail } from "@/state/mail";
 import type { Draft } from "immer";
 import { omitBy, values } from "remeda";
