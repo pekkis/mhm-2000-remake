@@ -166,19 +166,6 @@ export type GameMachineEvents =
       payload: { manager: string; strategy: StrategyId };
     }
   | {
-      type: "PLACE_CHAMPION_BET";
-      payload: {
-        manager: string;
-        team: number;
-        amount: number;
-        odds: number;
-      };
-    }
-  | {
-      type: "SKIP_CHAMPION_BET";
-      payload: { manager: string };
-    }
-  | {
       type: "PLACE_BET";
       payload: { manager: string; coupon: string[]; amount: number };
     }
