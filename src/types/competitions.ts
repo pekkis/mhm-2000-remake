@@ -1,5 +1,5 @@
 import type { Team } from "@/state/game";
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 import type { Draft } from "immer";
 import type { Manager } from "@/state/game";
 

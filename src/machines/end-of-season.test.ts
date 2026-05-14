@@ -14,8 +14,6 @@ import {
   sameTierStrength,
   tierOf
 } from "@/machines/end-of-season";
-import type { GameContext } from "@/state";
-import { createDefaultGameContext } from "@/state";
 import {
   emptyAchievements,
   emptyTeamBudget,
@@ -24,6 +22,8 @@ import {
 import type { AITeam, AIManager, HumanManager } from "@/state/game";
 import type { Random } from "random-js";
 import { fixedRandom, scriptedRandom } from "@/__tests__/factories";
+import { createDefaultGameContext } from "@/state/defaults";
+import type { GameContext } from "@/state/game-context";
 
 // ---------------------------------------------------------------------------
 // Context builders — keep the surface tiny: a runTasomuut-only ctx.

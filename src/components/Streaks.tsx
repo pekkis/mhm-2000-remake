@@ -2,8 +2,8 @@ import { entries } from "remeda";
 import Box from "./ui/Box";
 import { useGameContext } from "@/context/game-machine-context";
 import PhaseStatusPhase from "@/components/context-sensitive/PhaseStatusPhase";
-import type { Streak } from "@/state";
 import type { CompetitionId } from "@/types/competitions";
+import type { Streak } from "@/state/stats";
 
 const humanReadables: Record<string, string> = {
   loss: "tappiota",

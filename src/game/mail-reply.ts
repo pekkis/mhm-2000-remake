@@ -1,5 +1,5 @@
 import { createSendMail } from "@/services/mail";
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 import type { MailRecipient } from "@/state/mail";
 import type { Draft } from "immer";
 

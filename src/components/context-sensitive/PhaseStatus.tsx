@@ -3,7 +3,7 @@ import Games from "@/components/gameday/Games";
 import LeagueTable from "@/components/league-table/LeagueTable";
 import Matchups from "@/components/playoffs/Matchups";
 import Stack from "@/components/ui/Stack";
-import type { Manager, Team } from "@/state";
+import type { Manager, Team } from "@/state/game";
 import type { Phase, PlayoffGroup } from "@/types/competitions";
 import { Fragment, type FC } from "react";
 

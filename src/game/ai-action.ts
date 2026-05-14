@@ -1,5 +1,5 @@
 import { replyToMail } from "@/game/mail-reply";
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 import type { RsvpMail } from "@/state/mail";
 import type { Draft } from "immer";
 import { values } from "remeda";

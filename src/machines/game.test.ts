@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { createActor } from "xstate";
 import { gameMachine } from "@/machines/game";
-import { createDefaultGameContext } from "@/state";
-import type { GameContext } from "@/state";
 import { createHumanManager } from "@/__tests__/factories";
 import { humanManagerById } from "@/machines/selectors";
 import calendar from "@/data/calendar";
+import { createDefaultGameContext } from "@/state/defaults";
+import type { GameContext } from "@/state/game-context";
 
 const buildContextWithManager = (): GameContext => {
   const ctx = createDefaultGameContext();

@@ -1,7 +1,6 @@
 import { setup, assign, sendTo, enqueueActions, stopChild } from "xstate";
 import { produce, type Draft } from "immer";
 
-import type { GameContext } from "@/state";
 import {
   managerCompetesIn,
   canOrderPrank,
@@ -71,6 +70,7 @@ import { createUniqueId } from "@/services/id";
 import { expireMails, mailHandlers } from "@/game/mail-handlers";
 import { runAiAction } from "@/game/ai-action";
 import { replyToMail } from "@/game/mail-reply";
+import type { GameContext } from "@/state/game-context";
 
 // Parlay payout multipliers moved to src/machines/bet.ts (where the
 // payout is now computed). The bet actor reaches `resolved` and emits

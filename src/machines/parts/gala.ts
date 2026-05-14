@@ -1,4 +1,4 @@
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 import type { Draft } from "immer";
 
 export const runGala = (draft: Draft<GameContext>) => {

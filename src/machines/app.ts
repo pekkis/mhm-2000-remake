@@ -38,7 +38,7 @@ import {
   type SlotMetadata
 } from "@/services/persistence";
 import { composeNewGameContext } from "@/machines/parts/compose-new-game";
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 
 export type AppContext = {
   /** All 8 slot cards, populated on entry to `menu`. */

@@ -1,7 +1,7 @@
 import type { Draft } from "immer";
 import { values } from "remeda";
 
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 import {
   forcedStrategyForManager,
   initialReadinessFor

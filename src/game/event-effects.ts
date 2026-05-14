@@ -1,7 +1,7 @@
 import type { Draft } from "immer";
 
 import difficultyLevels from "@/data/difficulty-levels";
-import type { GameContext } from "@/state";
+import type { GameContext } from "@/state/game-context";
 import type { GameFlags, Team, TeamEffect } from "@/state/game";
 import type { CompetitionId } from "@/types/competitions";
 import type { BaseEventCreationFields } from "@/types/base";
