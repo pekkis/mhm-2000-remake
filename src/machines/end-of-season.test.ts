@@ -95,7 +95,8 @@ const buildContext = (
         arenaFund: 0,
         seasonTickets: 0,
         arenaProject: undefined,
-        mailbox: {}
+        mailbox: {},
+        nationality: "FI"
       };
       // The `kind: "human"` branch isn't covered by AITeam shape; the
       // function only checks `team.kind !== "ai"`, so we cast for the
