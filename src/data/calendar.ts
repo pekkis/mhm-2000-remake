@@ -456,7 +456,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: true,
     pranks: true,
-    tags: []
+    tags: ["mailbox:tournaments:send"]
   },
   // round 20 (KIERO.M2K row 21, type 1) — regular gameday 6
   {
@@ -566,7 +566,7 @@ const entries: RawCalendarEntry[] = [
     crisisMeeting: true,
     createRandomEvent: false,
     pranks: false,
-    tags: ["national-team-break"]
+    tags: ["national-team-break", "mailbox:tournaments:process"]
   },
   // round 26 (KIERO.M2K row 27, type 1) — regular gameday 10
   {

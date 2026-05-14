@@ -1,4 +1,5 @@
-import { nhlChallengeMailHandler } from "@/data/mail/nhl-challenge";
+import { nhlChallengeMailHandler } from "@/game/mail/nhl-challenge";
+import { tournamentsMailHandler } from "@/game/mail/tournaments";
 import type { GameContext } from "@/state/game-context";
 import type { Mail } from "@/state/mail";
 import type { Draft } from "immer";
@@ -6,7 +7,10 @@ import { omitBy, values } from "remeda";
 
 export type MailHandler = (ctx: Draft<GameContext>) => void;
 
-export const mailHandlers: MailHandler[] = [nhlChallengeMailHandler];
+export const mailHandlers: MailHandler[] = [
+  nhlChallengeMailHandler,
+  tournamentsMailHandler
+];
 
 const isExpired = (mail: Mail, season: number, round: number): boolean => {
   const exp = mail.meta.expires;
