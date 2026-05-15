@@ -26,8 +26,12 @@ const renderText = (
 };
 
 const moraleDeltaLabel = (delta: number): string => {
-  if (delta > 0) {return `Moraali +${delta}`;}
-  if (delta < 0) {return `Moraali ${delta}`;}
+  if (delta > 0) {
+    return `Moraali +${delta}`;
+  }
+  if (delta < 0) {
+    return `Moraali ${delta}`;
+  }
   return "Ei vaikutusta moraaliin";
 };
 

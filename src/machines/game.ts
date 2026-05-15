@@ -1587,18 +1587,23 @@ export const gameMachine = setup({
                         actions: assign(({ context, event }) =>
                           produce(context, (draft) => {
                             const output = event.output as CrisisMeetingOutput;
-                            if (output.outcome !== "completed") {return;}
+                            if (output.outcome !== "completed") {
+                              return;
+                            }
                             const { result } = output;
 
                             const managerId = draft.human.active;
-                            if (!managerId) {return;}
+                            if (!managerId) {
+                              return;
+                            }
                             const m = draft.managers[managerId];
                             if (
                               !m ||
                               m.kind !== "human" ||
                               m.team === undefined
-                            )
-                              {return;}
+                            ) {
+                              return;
+                            }
 
                             const team = draft.teams[m.team];
                             team.morale += result.totalMoraleDelta;
