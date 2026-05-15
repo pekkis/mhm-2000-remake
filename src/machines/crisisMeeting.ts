@@ -12,6 +12,8 @@ import {
 
 export type CrisisMeetingInput = {
   team: HumanTeam;
+  managerId: string;
+  teamIndex: number;
   managerAttributes: ManagerAttributes;
   random: Random;
 };
@@ -22,6 +24,8 @@ export type CrisisMeetingOutput =
 
 type CrisisMeetingContext = {
   team: HumanTeam;
+  managerId: string;
+  teamIndex: number;
   managerAttributes: ManagerAttributes;
   random: Random;
   result: CrisisMeetingResult | undefined;
@@ -46,6 +50,8 @@ export const crisisMeetingMachine = setup({
 
   context: ({ input }): CrisisMeetingContext => ({
     team: input.team,
+    managerId: input.managerId,
+    teamIndex: input.teamIndex,
     managerAttributes: input.managerAttributes,
     random: input.random,
     result: undefined
@@ -67,6 +73,8 @@ export const crisisMeetingMachine = setup({
             const result = resolveCrisisMeeting(
               context.team,
               { attributes: context.managerAttributes },
+              context.managerId,
+              context.teamIndex,
               event.option,
               context.random
             );

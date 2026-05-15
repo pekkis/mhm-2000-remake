@@ -3,6 +3,7 @@ import type { HiredPlayer, BasePlayer } from "@/state/player";
 import type { HumanTeam } from "@/state/game";
 import type { ManagerAttributes } from "@/data/managers";
 import type { CrisisOption } from "@/data/crisis";
+import type { EventEffect } from "@/game/event-effects";
 import { values } from "remeda";
 
 /**
@@ -25,6 +26,8 @@ export type CrisisMeetingResult = {
   hasCaptain: boolean;
   scenes: CrisisMeetingScene[];
   totalMoraleDelta: number;
+  /** Ready-to-interpret effects for the game machine. */
+  effects: EventEffect[];
 };
 
 // ── Helpers ──────────────────────────────────────────────────────
@@ -269,6 +272,8 @@ const resolveOption3 = (
 export const resolveCrisisMeeting = (
   team: HumanTeam,
   manager: { attributes: ManagerAttributes },
+  managerId: string,
+  teamIndex: number,
   option: CrisisOption,
   random: Random
 ): CrisisMeetingResult => {
@@ -298,7 +303,8 @@ export const resolveCrisisMeeting = (
           moraleDelta: -option // -1, -2, or -3
         }
       ],
-      totalMoraleDelta: -option
+      totalMoraleDelta: -option,
+      effects: [{ type: "incrementMorale", team: teamIndex, amount: -option }]
     };
   }
 
@@ -336,5 +342,25 @@ export const resolveCrisisMeeting = (
 
   const totalMoraleDelta = scenes.reduce((sum, s) => sum + s.moraleDelta, 0);
 
-  return { option, hasCaptain: true, scenes, totalMoraleDelta };
+  // Build interpreter-ready effects from scenes
+  const effects: EventEffect[] = [];
+  if (totalMoraleDelta !== 0) {
+    effects.push({
+      type: "incrementMorale",
+      team: teamIndex,
+      amount: totalMoraleDelta
+    });
+  }
+  for (const scene of scenes) {
+    if (scene.injury) {
+      effects.push({
+        type: "playerInjury",
+        managerId,
+        playerId: scene.injury.playerId,
+        rounds: scene.injury.rounds
+      });
+    }
+  }
+
+  return { option, hasCaptain: true, scenes, totalMoraleDelta, effects };
 };
