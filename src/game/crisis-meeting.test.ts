@@ -2,8 +2,12 @@ import { describe, it, expect, beforeAll } from "vitest";
 import {
   captainScore,
   findEgoPlayer,
-  resolveCrisisMeeting
+  resolveCrisisMeeting as resolveCrisisMeetingFull
 } from "./crisis-meeting";
+import type { CrisisOption } from "@/data/crisis";
+import type { HumanTeam } from "@/state/game";
+import type { ManagerAttributes } from "@/data/managers";
+import type { Random } from "random-js";
 import {
   createPlayer,
   rosterMap,
@@ -13,6 +17,14 @@ import {
   scriptedRandom,
   emptyLineup
 } from "@/__tests__/factories";
+
+/** Thin wrapper — injects default managerId + teamIndex for tests. */
+const resolveCrisisMeeting = (
+  team: HumanTeam,
+  manager: { attributes: ManagerAttributes },
+  option: CrisisOption,
+  random: Random
+) => resolveCrisisMeetingFull(team, manager, "mgr-1", 0, option, random);
 
 // ---------------------------------------------------------------------------
 // captainScore — QB: sin1 = (age + ldr^1.3) / 50

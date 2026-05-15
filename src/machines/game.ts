@@ -8,7 +8,8 @@ import {
   allEventsResolved,
   allRequiredActionsComplete,
   hasCompletedAction,
-  humanManagers
+  humanManagers,
+  activeManager
 } from "@/machines/selectors";
 import calendar from "@/data/calendar";
 import competitionData from "@/data/competitions";
@@ -1559,19 +1560,23 @@ export const gameMachine = setup({
                           "crisisMeeting entered from wrong event"
                         );
                       }
-                      const manager = context.managers[event.payload.manager];
+                      const managerId = event.payload.manager;
+                      const manager = context.managers[managerId];
                       if (!manager || manager.kind !== "human") {
                         throw new Error("crisis meeting: invalid manager");
                       }
+                      const teamIndex = manager.team;
                       const team =
-                        manager.team !== undefined
-                          ? context.teams[manager.team]
+                        teamIndex !== undefined
+                          ? context.teams[teamIndex]
                           : undefined;
                       if (!team || team.kind !== "human") {
                         throw new Error("crisis meeting: invalid team");
                       }
                       return {
                         team,
+                        managerId,
+                        teamIndex: teamIndex!,
                         managerAttributes: manager.attributes,
                         random
                       };
@@ -1596,50 +1601,14 @@ export const gameMachine = setup({
                               context,
                               enqueue,
                               (draft, notify) => {
-                                const managerId = draft.human.active;
-                                if (!managerId) {
-                                  return;
-                                }
-                                const m = draft.managers[managerId];
-                                if (
-                                  !m ||
-                                  m.kind !== "human" ||
-                                  m.team === undefined
-                                ) {
-                                  return;
-                                }
-
-                                const effects: EventEffect[] = [];
-
-                                // Morale delta via the interpreter (applies clamp)
-                                if (result.totalMoraleDelta !== 0) {
-                                  effects.push({
-                                    type: "incrementMorale",
-                                    team: m.team,
-                                    amount: result.totalMoraleDelta
-                                  });
-                                }
-
-                                // Injuries from option 3 brawl
-                                for (const scene of result.scenes) {
-                                  if (scene.injury) {
-                                    effects.push({
-                                      type: "playerInjury",
-                                      managerId,
-                                      playerId: scene.injury.playerId,
-                                      rounds: scene.injury.rounds
-                                    });
-                                  }
-                                }
-
                                 applyEffects(
                                   draft,
-                                  effects,
+                                  result.effects,
                                   spawnEvent,
                                   notify
                                 );
 
-                                // Once-per-round lock
+                                const m = activeManager(draft);
                                 m.crisisMeetingHeld = true;
                               }
                             );
