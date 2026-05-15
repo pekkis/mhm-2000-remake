@@ -6,10 +6,15 @@
 > and every captain (`kapu()`) call site across `ILEX5.BAS` / `ILEZ5.BAS`
 > / `ILES5.BAS` / `MHM2K.BAS` / `MHM2K.BI`.
 >
-> Anchors a future port. Nothing here is in TypeScript yet — the MHM 97
-> "crisis meeting" already in the codebase is a one-button morale-buy
-> that has nothing to do with this. **MHM 2000 replaces it with a
-> three-tier escalation gated on having a captain.**
+> **PORTED (2026-05-15).** Full implementation:
+>
+> - Pure resolve: [src/game/crisis-meeting.ts](../../game/crisis-meeting.ts) (all 3 option paths + no-captain)
+> - XState actor: [src/machines/crisisMeeting.ts](../../machines/crisisMeeting.ts) (choosing → narrating → done)
+> - UI: [src/components/CrisisActions.tsx](../../components/CrisisActions.tsx)
+> - Data: [src/data/crisis.ts](../../data/crisis.ts) (three options, free), [src/data/mhm2000/crisis-meeting-texts.ts](../../data/mhm2000/crisis-meeting-texts.ts) (35 KR.MHM records)
+> - Tests: [src/game/crisis-meeting.test.ts](../../game/crisis-meeting.test.ts) (36 tests covering all QB paths)
+> - Effects: resolve returns `EventEffect[]` (incrementMorale + playerInjury), interpreted via `applyEffects` in game.ts onDone
+> - Guard: `canCrisisMeeting` selector (morale ≤ -6, once-per-round, not bankrupt)
 
 ---
 

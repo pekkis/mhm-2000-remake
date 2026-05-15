@@ -78,6 +78,43 @@ Full two-layer team debuff system documented in [TAUTI.md](TAUTI.md):
 - Countdown per round, season reset in `topmaar`.
 - TS TODO: wire `tautip` placeholder in `simulate-match.ts` + add `tauti` stat debuffs.
 
+### Crisis meeting ported (DONE 2026-05-15)
+
+`SUB kriisipalaveri` (ILEX5.BAS:2747-2872) fully ported as a three-tier
+XState invoked actor. Full decode in [CRISIS-MEETING.md](CRISIS-MEETING.md).
+
+- **Pure resolve:** [src/game/crisis-meeting.ts](../../game/crisis-meeting.ts) —
+  `resolveCrisisMeeting(team, manager, managerId, teamIndex, option, random)`.
+  All three option paths + no-captain bail-out. Returns `CrisisMeetingResult`
+  with narrative scenes (for UI) and a flat `effects: EventEffect[]` ready
+  for the interpreter.
+- **XState actor:** [src/machines/crisisMeeting.ts](../../machines/crisisMeeting.ts) —
+  states: `choosing → narrating → done(final)`. Output: completed (with
+  result) or cancelled. Registered with `systemId: "crisisMeeting"`.
+- **Game machine wiring:** sub-state between `sponsorNegotiating` and
+  `done` in the action compound state. `START_CRISIS_MEETING` event
+  guarded by `canCrisisMeeting` selector. onDone passes `result.effects`
+  to `applyEffects` via `runInterpreter` + sets `crisisMeetingHeld = true`.
+- **Guard:** `canCrisisMeeting(managerId)` in selectors.ts — morale ≤ -6,
+  `crisisMeetingHeld === false` (once per round), not bankrupt.
+- **Data:** [src/data/crisis.ts](../../data/crisis.ts) (three options, FREE — MHM 2000
+  removed the cost that MHM 97 had), [src/data/mhm2000/crisis-meeting-texts.ts](../../data/mhm2000/crisis-meeting-texts.ts)
+  (all 35 KR.MHM records, cp850 → UTF-8, token-rewritten to Markdown).
+- **UI:** [src/components/CrisisActions.tsx](../../components/CrisisActions.tsx) —
+  reads actor via `system.get("crisisMeeting")`, shows option picker in
+  choosing state, narrative scenes + morale summary in narrating state.
+- **Tests:** 36 tests in [src/game/crisis-meeting.test.ts](../../game/crisis-meeting.test.ts)
+  covering all QB paths: captainScore, findEgoPlayer (gnome=3/5),
+  no-captain (all 3 options), option 1 success/failure, option 2 all
+  three rolls + ego player, option 3 all four rolls + brawl injury.
+- **Key findings during port:**
+  - MHM 2000 crisis meeting is FREE (no `raha -= cost` anywhere in the QB
+    source). MHM 97's paid version is completely different code.
+  - EV analysis: option 3 is NOT always optimal. `sin1` (captain quality)
+    is the dominant variable — a weak captain makes option 3 catastrophic.
+  - The `findEgoPlayer` helper (`SUB al` with fat=6/7) reuses the global
+    `xx`/`lukka` convention; we extracted it as a pure function.
+
 **Still on the Phase-2 punch list:** `tautip` / `tauti` epidemic port,
 `spx(3/4)` consumables, `pel(*).spe`
 roster effects (extremelyFat, daddyPays), `jaynax(2/6)` prank wiring,
@@ -587,8 +624,12 @@ param`). MHM 2000 expanded MHM 97's 75-round calendar.
 3. Port `orgamaar` — human team strength recalculation from actual
    player roster (`mw = max(pel(*).psk)` for goalies, `pw/hw` from
    sums). `HumanTeam.strengthObj` is now wired and ready.
-4. Port the simplest event (`KONKKA.MHM` bankruptcy escalation) as
-   the event-pipeline shakedown.
+4. ~~Port the simplest event (`KONKKA.MHM` bankruptcy escalation) as
+   the event-pipeline shakedown.~~ **Pipeline proven** via
+   `kriisipalaveri` port — text decode → pure resolve → `EventEffect[]`
+   → `applyEffects` via interpreter → UI render. KONKKA is still the
+   simplest _declarative event_ to port, but the pipeline pattern is
+   established.
 5. From there: declarative event registry, prank registry,
    per-competition extension methods, calendar driver.
 
