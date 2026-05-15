@@ -58,7 +58,9 @@ export const findEgoPlayer = (
   random: Random,
   gnome: 3 | 5
 ): HiredPlayer | undefined => {
-  if (players.length === 0) {return undefined;}
+  if (players.length === 0) {
+    return undefined;
+  }
 
   for (let attempt = 0; attempt < 60; attempt++) {
     const idx = random.integer(0, players.length - 1);
@@ -77,7 +79,9 @@ export const findEgoPlayer = (
  * QB `avg(1, pv)` — mean of `pel(*, pv).psk` for all rostered players.
  */
 const teamAverageSkill = (players: readonly HiredPlayer[]): number => {
-  if (players.length === 0) {return 1;}
+  if (players.length === 0) {
+    return 1;
+  }
   const sum = players.reduce((acc, p) => acc + p.skill, 0);
   return sum / players.length;
 };
