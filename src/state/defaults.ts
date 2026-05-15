@@ -15,7 +15,8 @@ import { entries, fromEntries, values } from "remeda";
 import { teams as managedTeamDefs } from "@/data/mhm2000/teams";
 import {
   foreignTeams as foreignLightTeams,
-  amateurTeams as amateurLightTeams
+  amateurTeams as amateurLightTeams,
+  nhlTeams
 } from "@/data/mhm2000/light-teams";
 import managerDefs, { PIER_PAOLO_PROXY_PASOLINI_INDEX } from "@/data/managers";
 import competitionList from "@/data/competitions";
@@ -66,6 +67,7 @@ const divisioonaSource = managedTeamDefs.filter(
 const mutasarjaSource = managedTeamDefs.filter((t) => t.league === "mutasarja");
 const ehlForeign = foreignLightTeams;
 const amateurs = amateurLightTeams;
+const nhlers = nhlTeams;
 
 const seedTeams = (): Team[] => {
   const seedables = [
@@ -159,6 +161,25 @@ const seedTeams = (): Team[] => {
       previousRankings: undefined,
       services: initialServicesForAmateurTeams(),
       budget: initialBudgetForAmateurTeams(),
+      nationality: t.nationality
+    })),
+    // NHL clubs
+    ...nhlers.map((t) => ({
+      uid: createUniqueId(),
+      name: t.name,
+      city: t.city,
+      arena: t.arena,
+      domestic: true,
+      morale: 0,
+      strategy: 2,
+      readiness: 0,
+      effects: [],
+      opponentEffects: [],
+      tags: t.tags,
+      tier: t.tier,
+      previousRankings: undefined,
+      services: initialServicesForEliteForeignTeams(),
+      budget: initialBudgetForEliteForeignTeams(),
       nationality: t.nationality
     }))
   ];

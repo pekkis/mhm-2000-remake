@@ -57,12 +57,13 @@ const tournaments: CompetitionDefinition = {
       // Iterate by seedOrder ascending (worst first) to match QB's
       // tier 10→1 iteration in SUB joulutauko.
       const groups: TournamentGroup[] = tournamentList
-        .filter((t) => t.id !== "nhl-challenge")
         .toSorted((a, b) => a.seedOrder - b.seedOrder)
         .flatMap((tournament) => {
           const teams = meta.acceptedTeams
             .filter((a) => a.tournamentId === tournament.id)
             .map((a) => a.teamId);
+
+          console.log("TEAMS", { tournament, teams });
 
           if (teams.length === 0) {
             return [];

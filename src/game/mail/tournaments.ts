@@ -199,7 +199,7 @@ export const tournamentsMailHandler: MailHandler = (ctx) => {
       );
     }
 
-    // --- Fill remaining seats with AI teams ---
+    // --- Fill remaining seats with AI teams (all tournaments incl. NHL Challenge) ---
     // QB: turnax(1..86) bitmap prevents cross-tournament duplicates.
     // We track the same with a Set<number> of already-seated team ids.
     const seatedTeams = new Set<number>(
@@ -209,7 +209,13 @@ export const tournamentsMailHandler: MailHandler = (ctx) => {
     const SEATS_PER_TOURNAMENT = 6;
     const MAX_FILL_ATTEMPTS = 200;
 
-    for (const tournament of sortedTournaments) {
+    // All tournaments sorted by seedOrder ascending — NHL Challenge (10000)
+    // processes last, after lower tiers have claimed from the pool.
+    const allTournamentsSorted = tournamentList.toSorted(
+      (a, b) => a.seedOrder - b.seedOrder
+    );
+
+    for (const tournament of allTournamentsSorted) {
       const humanSeats = meta.acceptedTeams.filter(
         (a) => a.tournamentId === tournament.id
       ).length;
@@ -228,9 +234,12 @@ export const tournamentsMailHandler: MailHandler = (ctx) => {
         attempts++;
 
         // Pick a pool by weighted random roll.
+
+        console.log("POOLS", pools);
         const pool = pickPoolByWeight(pools, totalWeight);
+
         if (pool.teams.length === 0) {
-          continue;
+          throw new Error("Something went terribly wrong");
         }
 
         // Pick a random team from the pool.
