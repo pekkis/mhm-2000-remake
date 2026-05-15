@@ -7,7 +7,7 @@ import type { CompetitionId } from "@/types/competitions";
 import type { BaseEventCreationFields } from "@/types/base";
 import type { NotificationData } from "@/machines/notification";
 import { computeStats } from "@/services/competition-type";
-import { humanManagerById } from "@/machines/selectors";
+import { humanManagerById, managersTeam } from "@/machines/selectors";
 import type { CountryIso } from "@/data/countries";
 import type { MarketPlayer } from "@/state/player";
 import type { RegularContract } from "@/state/player";
@@ -164,6 +164,14 @@ export type EventEffect =
       type: "irritateMarketPlayer";
       managerId: string;
       playerId: string;
+    }
+
+  // injury
+  | {
+      type: "playerInjury";
+      managerId: string;
+      playerId: string;
+      rounds: number;
     };
 
 /**
@@ -372,6 +380,24 @@ export function applyEffect(
         player.tags.push(`irritated:${effect.managerId}`);
       }
       return;
+    }
+
+    case "playerInjury": {
+      const team = managersTeam(effect.managerId)(draft);
+      if (team.kind === "ai") {
+        return;
+      }
+
+      const player = team.players[effect.playerId];
+      if (player) {
+        const alreadyInjured = player.effects.some((e) => e.type === "injury");
+        if (!alreadyInjured) {
+          player.effects.push({
+            type: "injury",
+            duration: effect.rounds
+          });
+        }
+      }
     }
   }
 }
