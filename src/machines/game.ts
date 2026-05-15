@@ -505,18 +505,9 @@ export const gameMachine = setup({
         })
     ),
 
-    /**
-     * Hold a crisis meeting: debit the manager (full price in PHL,
-     * half in division), bump team morale by 4 + the manager's
-     * difficulty `moraleBoost`, and notify with the actual gain.
-     * Notification includes the rolled value so the message and the
-     * state stay consistent — `enqueueActions` lets us share `gain`
-     * between the assign and the sendTo.
-     *
-     * 1-1 port of `crisisMeeting()` in `src/sagas/manager.ts`. The
-     * morale clamp uses the manager's per-difficulty min/max from
-     * `difficultyLevels`.
-     */
+    /*
+      // todo: MHM 2000 crisis meeting machine
+    */
     executeCrisisMeeting: enqueueActions(
       ({ context, enqueue }, params: { manager: string }) => {
         console.log(context, enqueue, params);

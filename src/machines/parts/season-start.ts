@@ -13,6 +13,7 @@ import {
 import random from "@/services/random";
 import { emptySeasonStat } from "@/services/empties";
 import { rollTeamStrength } from "@/services/levels";
+import competitions from "@/data/competitions";
 
 /**
  * Per-team and per-manager bookkeeping plus competition reset run on
@@ -102,6 +103,8 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
   for (const comp of values(draft.competitions)) {
     comp.phase = -1;
     comp.phases = [];
+
+    competitions[comp.id].seasonStart(draft);
   }
 
   // Tournaments: start with no teams; the seed phase fills them in.

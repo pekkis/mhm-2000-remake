@@ -1,7 +1,10 @@
+import type { TournamentsCompetitionMeta } from "@/data/competitions/tournaments";
 import type { MailHandler } from "@/game/mail-handlers";
 import {
   currentCalendarEntry,
   domesticTeamsByPreviousSeasonsRanking,
+  managerById,
+  managersTeam,
   managersTeamId,
   teamsManager
 } from "@/machines/selectors";
@@ -130,6 +133,16 @@ export const nhlChallengeMailHandler: MailHandler = (ctx) => {
           },
           { kind: "manager", recipient: managerId }
         );
+
+        const meta = ctx.competitions.tournaments
+          .meta as TournamentsCompetitionMeta;
+
+        const team = managersTeam(managerId)(ctx);
+
+        meta.acceptedTeams.push({
+          teamId: team.id,
+          tournamentId: "nhl-challenge"
+        });
       } else {
         sendMail(
           {
@@ -144,8 +157,6 @@ export const nhlChallengeMailHandler: MailHandler = (ctx) => {
         );
       }
     }
-
-    ctx.competitions.tournaments.meta.foo = "bar";
 
     // Remove processed replies from the global mailbox.
     ctx.mail.mailbox = omitBy(

@@ -1,6 +1,5 @@
 import { scheduler as roundRobinScheduler } from "@/services/round-robin";
 import playoffScheduler, { victors, eliminated } from "@/services/playoffs";
-import { defaultMoraleBoost } from "@/services/morale";
 import r from "@/services/random";
 import type {
   Competition,
@@ -27,10 +26,6 @@ const phl: CompetitionDefinition = {
       home: 1.0,
       away: 0.85
     };
-  },
-
-  moraleBoost: (_phase, facts, _manager) => {
-    return defaultMoraleBoost(facts);
   },
 
   relegateTo: "division",

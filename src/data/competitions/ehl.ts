@@ -1,5 +1,4 @@
 import table, { sortStats } from "@/services/league";
-import { defaultMoraleBoost } from "@/services/morale";
 import { scheduler as roundRobinScheduler } from "@/services/round-robin";
 import tournamentScheduler from "@/services/tournament";
 import { currency } from "@/services/format";
@@ -85,14 +84,6 @@ const ehl: CompetitionDefinition = {
 
   relegateTo: false,
   promoteTo: false,
-
-  moraleBoost: (phase, facts, _manager) => {
-    if (phase > 0) {
-      return 0;
-    }
-
-    return defaultMoraleBoost(facts);
-  },
 
   seed: [
     (competitions: Record<string, Competition>) => {

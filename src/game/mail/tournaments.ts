@@ -1,9 +1,15 @@
+import type { TournamentsCompetitionMeta } from "@/data/competitions/tournaments";
 import type { MailHandler } from "@/game/mail-handlers";
-import { currentCalendarEntry, humanManagers } from "@/machines/selectors";
+import {
+  currentCalendarEntry,
+  humanManagers,
+  managersTeam
+} from "@/machines/selectors";
 import { createSendMail } from "@/services/mail";
 import type { MailTemplate } from "@/state/mail";
 import tournamentList from "@/data/tournaments";
-import { values } from "remeda";
+import { omitBy, values } from "remeda";
+import { NHL_CHALLENGE_SENDER_ID } from "./nhl-challenge";
 
 export const TOURNAMENT_SENDER_PREFIX = "tournament:";
 
@@ -63,8 +69,89 @@ export const tournamentsMailHandler: MailHandler = (ctx) => {
     }
   }
 
-  // --- Process replies: record acceptances, clean up ---
+  // --- Process replies: assign each human to the worst accepted tournament ---
   if (c.tags.includes("mailbox:tournaments:process")) {
-    // todo: the new invitations process here
+    const meta = ctx.competitions.tournaments
+      .meta as TournamentsCompetitionMeta;
+
+    // Sort non-NHL tournaments by seedOrder ascending (worst first).
+    const sortedTournaments = tournamentList
+      .filter((t) => t.id !== "nhl-challenge")
+      .toSorted((a, b) => a.seedOrder - b.seedOrder);
+
+    // Collect all tournament replies from the global mailbox.
+    const allReplies = values(ctx.mail.mailbox).filter(
+      (m) =>
+        m.to.kind === "external" &&
+        m.to.recipientId.startsWith(TOURNAMENT_SENDER_PREFIX) &&
+        m.to.recipientId !== NHL_CHALLENGE_SENDER_ID
+    );
+
+    // Build a map: managerId → set of tournament ids they accepted.
+    const acceptedByManager = new Map<string, Set<string>>();
+    for (const reply of allReplies) {
+      if (reply.from.kind !== "manager") {
+        continue;
+      }
+      const { answerKey } = (reply.data ?? {}) as { answerKey?: string };
+      if (answerKey !== "k") {
+        continue;
+      }
+      const tournamentId =
+        reply.to.kind === "external"
+          ? reply.to.recipientId.slice(TOURNAMENT_SENDER_PREFIX.length)
+          : undefined;
+      if (!tournamentId) {
+        continue;
+      }
+      const set = acceptedByManager.get(reply.from.recipient) ?? new Set();
+      set.add(tournamentId);
+      acceptedByManager.set(reply.from.recipient, set);
+    }
+
+    // Worst-first assignment: iterate sorted tournaments, claim unclaimed managers.
+    const claimedManagers = new Set<string>();
+
+    for (const tournament of sortedTournaments) {
+      for (const [managerId, acceptedTournaments] of acceptedByManager) {
+        if (claimedManagers.has(managerId)) {
+          continue;
+        }
+        if (!acceptedTournaments.has(tournament.id)) {
+          continue;
+        }
+
+        const team = managersTeam(managerId)(ctx);
+        meta.acceptedTeams.push({
+          tournamentId: tournament.id,
+          teamId: team.id
+        });
+        claimedManagers.add(managerId);
+      }
+    }
+
+    // Clean up: remove tournament reply mails from the global mailbox.
+    ctx.mail.mailbox = omitBy(
+      ctx.mail.mailbox,
+      (m) =>
+        m.to.kind === "external" &&
+        m.to.recipientId.startsWith(TOURNAMENT_SENDER_PREFIX) &&
+        m.to.recipientId !== NHL_CHALLENGE_SENDER_ID
+    );
+
+    // Clean up: remove the original RSVP invitations from manager mailboxes.
+    for (const mgr of values(humanManagers(ctx))) {
+      ctx.managers[mgr.id].mailbox = omitBy(
+        ctx.managers[mgr.id].mailbox,
+        (m) =>
+          m.from.kind === "external" &&
+          m.from.recipientId.startsWith(TOURNAMENT_SENDER_PREFIX) &&
+          m.from.recipientId !== NHL_CHALLENGE_SENDER_ID
+      );
+    }
+
+    const teams = ctx.teams.filter((t) => t.kind === "ai");
+
+    // computer team randomization here
   }
 };

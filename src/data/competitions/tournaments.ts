@@ -15,7 +15,10 @@ import type { GameContext } from "@/state/game-context";
 
 // e.g. in the tournaments competition file or wherever the meta shape lives
 export type TournamentsCompetitionMeta = {
-  acceptedTeams: number[];
+  acceptedTeams: {
+    tournamentId: string;
+    teamId: number;
+  }[];
 };
 
 const tournaments: CompetitionDefinition = {
@@ -29,7 +32,12 @@ const tournaments: CompetitionDefinition = {
     teams: []
   },
 
-  seasonStart: (_context) => {},
+  seasonStart: (context) => {
+    console.log("SETTING META");
+    context.competitions.tournaments.meta = {
+      acceptedTeams: []
+    } satisfies TournamentsCompetitionMeta;
+  },
 
   relegateTo: false,
   promoteTo: false,
@@ -39,10 +47,6 @@ const tournaments: CompetitionDefinition = {
       home: 1.0,
       away: 1.0
     };
-  },
-
-  moraleBoost: (_phase, _facts, _manager) => {
-    return 0;
   },
 
   seed: [

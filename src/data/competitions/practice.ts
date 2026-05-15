@@ -48,8 +48,6 @@ const practice: CompetitionDefinition = {
   relegateTo: false,
   promoteTo: false,
 
-  moraleBoost: (_phase, _facts, _manager) => 0,
-
   seed: [
     (_competitions: Record<string, Competition>) => {
       // TODO: populate `teams` + `schedule` with actual training-match

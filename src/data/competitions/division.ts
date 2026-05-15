@@ -1,6 +1,5 @@
 import { scheduler as roundRobinScheduler } from "@/services/round-robin";
 import playoffScheduler, { victors } from "@/services/playoffs";
-import { defaultMoraleBoost } from "@/services/morale";
 import r from "@/services/random";
 import type {
   Competition,
@@ -31,10 +30,6 @@ const division: CompetitionDefinition = {
 
   relegateTo: "mutasarja",
   promoteTo: "phl",
-
-  moraleBoost: (_phase, facts, _manager) => {
-    return defaultMoraleBoost(facts);
-  },
 
   seed: [
     (competitions: Record<string, Competition>) => {

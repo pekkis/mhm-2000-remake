@@ -1,7 +1,6 @@
 import type { Team } from "@/state/game";
 import type { GameContext } from "@/state/game-context";
 import type { Draft } from "immer";
-import type { Manager } from "@/state/game";
 
 // --- Game result ---
 
@@ -202,7 +201,6 @@ export type CompetitionDefinition = {
 
   homeAndAwayTeamAdvantages: (phase: number) => HomeAndAwayTeamAdvantages;
 
-  moraleBoost: (phase: number, facts: GameFacts, manager: Manager) => number;
   seed: Array<
     (
       competitions: Record<CompetitionId, Competition>,

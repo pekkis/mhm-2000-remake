@@ -89,8 +89,6 @@ const cup: CompetitionDefinition = {
     };
   },
 
-  moraleBoost: (_phase, _facts, _manager) => 0,
-
   seed: [
     // Phase 0: round of 64. Pool = PHL + Divisioona + Mutasarja + 16
     // amateur clubs (state.teams ids 118..133, see state/defaults.ts).

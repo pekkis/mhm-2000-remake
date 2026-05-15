@@ -1,6 +1,5 @@
 import { scheduler as roundRobinScheduler } from "@/services/round-robin";
 import playoffScheduler, { victors } from "@/services/playoffs";
-import { defaultMoraleBoost } from "@/services/morale";
 import { sortStats } from "@/services/league";
 import r from "@/services/random";
 import type {
@@ -59,10 +58,6 @@ const mutasarja: CompetitionDefinition = {
 
   relegateTo: false,
   promoteTo: "division",
-
-  moraleBoost: (_phase, facts, _manager) => {
-    return defaultMoraleBoost(facts);
-  },
 
   seed: [
     // Phase 0: runkosarja, two RR groups of 12. Random partition.
