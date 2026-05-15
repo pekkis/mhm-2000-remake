@@ -581,7 +581,12 @@ const entries: RawCalendarEntry[] = [
       "seed"
     ],
     gamedays: ["phl", "division", "mutasarja"],
-    seed: [],
+    seed: [
+      {
+        competition: "tournaments",
+        phase: 0
+      }
+    ],
     transferMarket: true,
     crisisMeeting: true,
     createRandomEvent: true,

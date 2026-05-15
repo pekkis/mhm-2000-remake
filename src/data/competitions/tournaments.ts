@@ -1,16 +1,15 @@
 // import type { Team } from "@/state/game";
 import type {
   Competition,
-  CompetitionDefinition
-  // TeamStat,
-  // TournamentGroup
+  CompetitionDefinition,
+  TournamentGroup
 } from "@/types/competitions";
-// import tournamentScheduler from "@/services/tournament";
+import tournamentScheduler from "@/services/tournament";
 // import { currency } from "@/services/format";
 // import type { Manager } from "@/state/game";
 // import { foreignTeams } from "@/machines/selectors";
 import type { GameContext } from "@/state/game-context";
-// import tournamentList from "@/data/tournaments";
+import tournamentList from "@/data/tournaments";
 // import random from "@/services/random";
 
 // e.g. in the tournaments competition file or wherever the meta shape lives
@@ -50,68 +49,47 @@ const tournaments: CompetitionDefinition = {
   },
 
   seed: [
-    (_competitions: Record<string, Competition>, _context: GameContext) => {
-      // const { teams, invitations, managers } = context;
+    (_competitions: Record<string, Competition>, context: GameContext) => {
+      const meta = context.competitions.tournaments
+        .meta as TournamentsCompetitionMeta;
 
-      return {
-        name: "jouluturnaukset",
-        type: "tournament" as const,
-        teams: [],
-        groups: []
-      };
+      // Build one TournamentGroup per tournament that has participants.
+      // Iterate by seedOrder ascending (worst first) to match QB's
+      // tier 10→1 iteration in SUB joulutauko.
+      const groups: TournamentGroup[] = tournamentList
+        .filter((t) => t.id !== "nhl-challenge")
+        .toSorted((a, b) => a.seedOrder - b.seedOrder)
+        .flatMap((tournament) => {
+          const teams = meta.acceptedTeams
+            .filter((a) => a.tournamentId === tournament.id)
+            .map((a) => a.teamId);
 
-      // Build invited teams grouped by tournament index
+          if (teams.length === 0) {
+            return [];
+          }
 
-      /*
-      const invited: Map<number, number[]> = new Map();
-      for (const inv of invitations) {
-        const tournamentIdx = inv.tournament as number;
-        const teamId = managers[inv.manager]?.team as number;
-        if (!invited.has(tournamentIdx)) {
-          invited.set(tournamentIdx, []);
-        }
-        invited.get(tournamentIdx)!.push(teamId);
-      }
-
-      let remainingTeams = [...teams];
-      const groups: TournamentGroup[] = [];
-      const allParticipantIds: number[] = [];
-
-      for (const [tournamentIndex, tournament] of tournamentList.entries()) {
-        const invitedTeamIds = invited.get(tournamentIndex) ?? [];
-
-        const eligible = remainingTeams
-          .filter(tournament.filter)
-          .sort(() => random.real(1, 1000) - 500)
-          .slice(0, 6 - invitedTeamIds.length)
-          .map((t) => t.id);
-
-        const participants = [...invitedTeamIds, ...eligible];
-
-        groups.push({
-          type: "tournament",
-          penalties: [],
-          colors: ["d", "l", "l", "l", "l", "l"],
-          teams: participants,
-          round: 0,
-          name: tournament.name,
-          schedule: tournamentScheduler(participants),
-          stats: []
+          return [
+            {
+              type: "tournament" as const,
+              round: 0,
+              name: tournament.name,
+              teams,
+              schedule: tournamentScheduler(teams),
+              stats: [],
+              penalties: [],
+              colors: []
+            }
+          ];
         });
 
-        allParticipantIds.push(...participants);
-        remainingTeams = remainingTeams.filter(
-          (t) => !participants.includes(t.id)
-        );
-      }
+      const allTeams = groups.flatMap((g) => g.teams);
 
       return {
         name: "jouluturnaukset",
         type: "tournament" as const,
-        teams: allParticipantIds,
+        teams: allTeams,
         groups
       };
-      */
     }
   ],
 

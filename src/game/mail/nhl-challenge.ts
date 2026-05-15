@@ -3,7 +3,6 @@ import type { MailHandler } from "@/game/mail-handlers";
 import {
   currentCalendarEntry,
   domesticTeamsByPreviousSeasonsRanking,
-  managerById,
   managersTeam,
   managersTeamId,
   teamsManager
