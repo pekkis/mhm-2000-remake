@@ -1584,52 +1584,66 @@ export const gameMachine = setup({
                         target: "browsing"
                       },
                       {
-                        actions: assign(({ context, event }) =>
-                          produce(context, (draft) => {
+                        actions: enqueueActions(
+                          ({ enqueue, event, context }) => {
                             const output = event.output as CrisisMeetingOutput;
                             if (output.outcome !== "completed") {
                               return;
                             }
                             const { result } = output;
 
-                            const managerId = draft.human.active;
-                            if (!managerId) {
-                              return;
-                            }
-                            const m = draft.managers[managerId];
-                            if (
-                              !m ||
-                              m.kind !== "human" ||
-                              m.team === undefined
-                            ) {
-                              return;
-                            }
+                            runInterpreter(
+                              context,
+                              enqueue,
+                              (draft, notify) => {
+                                const managerId = draft.human.active;
+                                if (!managerId) {
+                                  return;
+                                }
+                                const m = draft.managers[managerId];
+                                if (
+                                  !m ||
+                                  m.kind !== "human" ||
+                                  m.team === undefined
+                                ) {
+                                  return;
+                                }
 
-                            const team = draft.teams[m.team];
-                            team.morale += result.totalMoraleDelta;
+                                const effects: EventEffect[] = [];
 
-                            // Apply injury from option 3 brawl
-                            for (const scene of result.scenes) {
-                              if (scene.injury && team.kind === "human") {
-                                const player =
-                                  team.players[scene.injury.playerId];
-                                if (player) {
-                                  const alreadyInjured = player.effects.some(
-                                    (e) => e.type === "injury"
-                                  );
-                                  if (!alreadyInjured) {
-                                    player.effects.push({
-                                      type: "injury",
-                                      duration: scene.injury.rounds
+                                // Morale delta via the interpreter (applies clamp)
+                                if (result.totalMoraleDelta !== 0) {
+                                  effects.push({
+                                    type: "incrementMorale",
+                                    team: m.team,
+                                    amount: result.totalMoraleDelta
+                                  });
+                                }
+
+                                // Injuries from option 3 brawl
+                                for (const scene of result.scenes) {
+                                  if (scene.injury) {
+                                    effects.push({
+                                      type: "playerInjury",
+                                      managerId,
+                                      playerId: scene.injury.playerId,
+                                      rounds: scene.injury.rounds
                                     });
                                   }
                                 }
-                              }
-                            }
 
-                            // Once-per-round lock
-                            m.crisisMeetingHeld = true;
-                          })
+                                applyEffects(
+                                  draft,
+                                  effects,
+                                  spawnEvent,
+                                  notify
+                                );
+
+                                // Once-per-round lock
+                                m.crisisMeetingHeld = true;
+                              }
+                            );
+                          }
                         ),
                         target: "browsing"
                       }
