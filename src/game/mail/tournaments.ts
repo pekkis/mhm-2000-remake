@@ -239,7 +239,9 @@ export const tournamentsMailHandler: MailHandler = (ctx) => {
         const pool = pickPoolByWeight(pools, totalWeight);
 
         if (pool.teams.length === 0) {
-          throw new Error("Something went terribly wrong");
+          throw new Error(
+            "Something went terribly wrong in tournament seeding..."
+          );
         }
 
         // Pick a random team from the pool.

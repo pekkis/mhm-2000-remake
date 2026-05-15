@@ -160,7 +160,7 @@ const ehl: CompetitionDefinition = {
       if (!team.domestic) {
         continue;
       }
-      team.readiness -= 2;
+
       if (team.manager === undefined) {
         continue;
       }
