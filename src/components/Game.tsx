@@ -40,6 +40,13 @@ const useUiPhase = (): string | undefined => {
   return GameMachineContext.useSelector((state) => {
     if (
       state.matches({
+        in_game: { executing_phases: { action: "crisisMeeting" } }
+      })
+    ) {
+      return "crisisMeeting";
+    }
+    if (
+      state.matches({
         in_game: { executing_phases: { action: "sponsorNegotiating" } }
       })
     ) {
@@ -126,6 +133,9 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
     case phase === "results":
       return <GamedayResults />;
 
+    case phase === "crisisMeeting":
+      return <CrisisActions />;
+
     case phase === "sponsorNegotiating":
       return <SponsorNegotiationView />;
 
@@ -135,7 +145,6 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
           <Route path="/" element={<MainMenu />} />
           <Route path="/sarjataulukot" element={<LeagueTables />} />
           <Route path="/pelaajamarkkinat" element={<TransferMarketPage />} />
-          <Route path="/kriisipalaveri" element={<CrisisActions />} />
           <Route path="/areena" element={<Arena />} />
           <Route path="/jaynat" element={<Pranks />} />
           <Route path="/playoffit" element={<PlayoffBracket />} />

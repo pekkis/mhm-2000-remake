@@ -207,6 +207,7 @@ export const createHumanManager = (
   balance: 100000,
   team: 1,
   pranksExecuted: 0,
+  crisisMeetingHeld: false,
   flags: {},
   tags: [],
   sponsor: undefined,

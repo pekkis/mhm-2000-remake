@@ -39,6 +39,10 @@ import {
   sponsorNegotiationMachine,
   type SponsorNegotiationOutput
 } from "@/machines/sponsorNegotiation";
+import {
+  crisisMeetingMachine,
+  type CrisisMeetingOutput
+} from "@/machines/crisisMeeting";
 import type { CompetitionId } from "@/types/competitions";
 import { values, entries } from "remeda";
 import { autoLineup, assignPlayerToLineup } from "@/services/lineup";
@@ -182,7 +186,7 @@ export type GameMachineEvents =
       payload: { manager: string; playerType: number };
     }
   | {
-      type: "CRISIS_MEETING";
+      type: "START_CRISIS_MEETING";
       payload: { manager: string };
     }
   | {
@@ -291,7 +295,8 @@ export const gameMachine = setup({
     notifications: notificationsMachine,
     bet: betMachine,
     contractNegotiation: contractNegotiationMachine,
-    sponsorNegotiation: sponsorNegotiationMachine
+    sponsorNegotiation: sponsorNegotiationMachine,
+    crisisMeeting: crisisMeetingMachine
   },
 
   actions: {
@@ -315,6 +320,14 @@ export const gameMachine = setup({
           draft.news.news = [];
           draft.news.announcements = {};
           draft.turn.round += 1;
+
+          // QB ILEX5.BAS:241 — kriisi = 0 at round start
+          for (const m of values(draft.managers)) {
+            if (m.kind === "human") {
+              m.crisisMeetingHeld = false;
+            }
+          }
+
           for (const player of values(draft.transferMarket.players)) {
             player.tags = player.tags.filter(
               (t) => !t.startsWith("irritated:")
@@ -503,63 +516,6 @@ export const gameMachine = setup({
             victim: params.victim
           });
         })
-    ),
-
-    /*
-      // todo: MHM 2000 crisis meeting machine
-    */
-    executeCrisisMeeting: enqueueActions(
-      ({ context, enqueue }, params: { manager: string }) => {
-        console.log(context, enqueue, params);
-        return;
-
-        /*
-        const m = context.managers[params.manager];
-        if (!m || m.team === undefined) {
-          return;
-        }
-
-        if (m.kind === "ai") {
-          return;
-        }
-
-        const team = context.teams[m.team!];
-        const cost = context.competitions.division.teams.includes(team.id)
-          ? CRISIS_COST / 2
-          : CRISIS_COST;
-        const diff = difficultyLevels[m.difficulty];
-        const moraleGain = 4;
-
-        enqueue.assign(
-          produce(context, (draft) => {
-            const dm = draft.managers[params.manager];
-            if (!dm || dm.team === undefined) {
-              return;
-            }
-
-            if (dm.kind === "ai") {
-              return;
-            }
-
-            dm.balance -= cost;
-            const dt = draft.teams[dm.team];
-            dt.morale = Math.min(
-              diff.moraleMax,
-              Math.max(diff.moraleMin, dt.morale + moraleGain)
-            );
-          })
-        );
-
-        enqueue.sendTo(
-          "notifications",
-          pushNotification({
-            manager: params.manager,
-            message: `Psykologi valaa yhdessä managerin kanssa uskoa pelaajien mieliin. Moraali paranee (+${moraleGain}), ja joukkue keskittyy tuleviin haasteisiin uudella innolla!`,
-            type: "info"
-          })
-        );
-        */
-      }
     ),
 
     /**
@@ -1282,17 +1238,6 @@ export const gameMachine = setup({
         params: ({ event }) => event.payload
       }
     },
-    CRISIS_MEETING: {
-      // UI button (CrisisActions.tsx) is already disabled when the
-      // window is closed, morale too high, or balance too low — guard
-      // catches stray sends from elsewhere.
-      guard: ({ context, event }) =>
-        canCrisisMeeting(event.payload.manager)(context),
-      actions: {
-        type: "executeCrisisMeeting",
-        params: ({ event }) => event.payload
-      }
-    },
     AUTO_LINEUP: {
       actions: {
         type: "executeAutoLineup",
@@ -1453,6 +1398,11 @@ export const gameMachine = setup({
                         !hasCompletedAction(event.manager, "sponsor")(context),
                       target: "sponsorNegotiating"
                     },
+                    START_CRISIS_MEETING: {
+                      guard: ({ context, event }) =>
+                        canCrisisMeeting(event.payload.manager)(context),
+                      target: "crisisMeeting"
+                    },
                     CONFIRM_BUDGET: {
                       actions: {
                         type: "executeConfirmBudget",
@@ -1596,6 +1546,89 @@ export const gameMachine = setup({
                       ),
                       target: "browsing"
                     }
+                  }
+                },
+                crisisMeeting: {
+                  invoke: {
+                    src: "crisisMeeting",
+                    id: "crisisMeeting",
+                    systemId: "crisisMeeting",
+                    input: ({ context, event }) => {
+                      if (event.type !== "START_CRISIS_MEETING") {
+                        throw new Error(
+                          "crisisMeeting entered from wrong event"
+                        );
+                      }
+                      const manager = context.managers[event.payload.manager];
+                      if (!manager || manager.kind !== "human") {
+                        throw new Error("crisis meeting: invalid manager");
+                      }
+                      const team =
+                        manager.team !== undefined
+                          ? context.teams[manager.team]
+                          : undefined;
+                      if (!team || team.kind !== "human") {
+                        throw new Error("crisis meeting: invalid team");
+                      }
+                      return {
+                        team,
+                        managerAttributes: manager.attributes,
+                        random
+                      };
+                    },
+                    onDone: [
+                      {
+                        guard: ({ event }) =>
+                          (event.output as CrisisMeetingOutput).outcome ===
+                          "cancelled",
+                        target: "browsing"
+                      },
+                      {
+                        actions: assign(({ context, event }) =>
+                          produce(context, (draft) => {
+                            const output = event.output as CrisisMeetingOutput;
+                            if (output.outcome !== "completed") {return;}
+                            const { result } = output;
+
+                            const managerId = draft.human.active;
+                            if (!managerId) {return;}
+                            const m = draft.managers[managerId];
+                            if (
+                              !m ||
+                              m.kind !== "human" ||
+                              m.team === undefined
+                            )
+                              {return;}
+
+                            const team = draft.teams[m.team];
+                            team.morale += result.totalMoraleDelta;
+
+                            // Apply injury from option 3 brawl
+                            for (const scene of result.scenes) {
+                              if (scene.injury && team.kind === "human") {
+                                const player =
+                                  team.players[scene.injury.playerId];
+                                if (player) {
+                                  const alreadyInjured = player.effects.some(
+                                    (e) => e.type === "injury"
+                                  );
+                                  if (!alreadyInjured) {
+                                    player.effects.push({
+                                      type: "injury",
+                                      duration: scene.injury.rounds
+                                    });
+                                  }
+                                }
+                              }
+                            }
+
+                            // Once-per-round lock
+                            m.crisisMeetingHeld = true;
+                          })
+                        ),
+                        target: "browsing"
+                      }
+                    ]
                   }
                 },
                 done: { type: "final" }

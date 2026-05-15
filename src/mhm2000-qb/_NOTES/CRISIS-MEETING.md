@@ -19,7 +19,7 @@ When team morale collapses, the manager can call **one** of three
 escalating intervention rituals per round. Each one consumes the
 single-shot `kriisi = 0` flag, picks a baseline success probability
 derived from the **captain's** age + leadership, perturbs it with the
-manager's `mtaito(4, …)` (NEUVOKKUUS / *resourcefulness*), and applies
+manager's `mtaito(4, …)` (NEUVOKKUUS / _resourcefulness_), and applies
 swingier morale deltas as the option gets harsher.
 
 **No captain → no upside.** Calling the meeting with `kapu(pv) = 0`
@@ -28,11 +28,11 @@ no roll, then exits.
 
 The three options:
 
-| `kurso` | Title (X.MHM 156–158)        | Format            | Best case (Δmo) | Worst case (Δmo) |
-| ------- | ---------------------------- | ----------------- | --------------: | ---------------: |
-| 1       | `KRIISIPALAVERI`             | locker-room talk  | +1 / +2 (RND)   | 0 (only "talk failed" line) |
-| 2       | `ALKOHOLITON SAUNAILTA`      | dry sauna evening | +2, +2, +2 = **+6** | −1, −1, −1 = **−3** |
-| 3       | `KALJAHUURUINEN SAUNAILTA`   | wet sauna evening | +3, +3, +3 = **+9** | −2 −2 −2 (−1) +injury |
+| `kurso` | Title (X.MHM 156–158)      | Format            |     Best case (Δmo) |            Worst case (Δmo) |
+| ------- | -------------------------- | ----------------- | ------------------: | --------------------------: |
+| 1       | `KRIISIPALAVERI`           | locker-room talk  |       +1 / +2 (RND) | 0 (only "talk failed" line) |
+| 2       | `ALKOHOLITON SAUNAILTA`    | dry sauna evening | +2, +2, +2 = **+6** |         −1, −1, −1 = **−3** |
+| 3       | `KALJAHUURUINEN SAUNAILTA` | wet sauna evening | +3, +3, +3 = **+9** |       −2 −2 −2 (−1) +injury |
 
 Higher options ⇒ more rolls ⇒ bigger swings, both directions.
 
@@ -171,11 +171,11 @@ END IF
 
 Success-probability examples (capped at 100 in the `100*RND` compare):
 
-| `mtaito(4)` | `sin1` = 0.5 | 1.0 | 1.5 | 2.0 |
-| ----------- | -----------: | --: | --: | --: |
-| −3 (worst)  |   5%         | 20% | 45% | 80% |
-|  0 (neutral)|  13%         | 50% |100% |100% |
-| +3 (best)   |  20%         | 80% |100% |100% |
+| `mtaito(4)` | `sin1` = 0.5 | 1.0 |  1.5 |  2.0 |
+| ----------- | -----------: | --: | ---: | ---: |
+| −3 (worst)  |           5% | 20% |  45% |  80% |
+| 0 (neutral) |          13% | 50% | 100% | 100% |
+| +3 (best)   |          20% | 80% | 100% | 100% |
 
 Failure has **no morale penalty**. Option 1 is the safe baby-step:
 worst case is "we wasted an evening".
@@ -212,7 +212,6 @@ records read are:
   joukkuetovereitaan". Let me re-read… `INT(3 * RND) + 9` = 9, 10, 11.
   So the failure pool is recs **9, 10, 11**? Re-checking against the
   decoded text:
-
   - rec 8: "$j@1$b lukittautuu lasten osastolle" — locks self in
   - rec 9: "$j@1$b vajoaa yllättäen sikiöasentoon" — fetal position
   - rec 10: "$j@1$b istuu koko illan pukuhuoneen puolella yksinään" —
@@ -250,9 +249,9 @@ END SELECT
 
 | `mtaito(4)` | Bad < | Good ≥ | Neutral band |
 | ----------- | ----: | -----: | -----------: |
-| −3          | 35%   | 95%    | 35–95 (60%)  |
-|  0          | 20%   | 80%    | 20–80 (60%)  |
-| +3          |  5%   | 65%    |  5–65 (60%)  |
+| −3          |   35% |    95% |  35–95 (60%) |
+| 0           |   20% |    80% |  20–80 (60%) |
+| +3          |    5% |    65% |   5–65 (60%) |
 
 Higher-skilled manager: less likely to bomb, more likely to wow.
 Neutral band always 60% wide.
@@ -283,12 +282,12 @@ If no high-ego player exists (or the chance check fails), no penalty.
 
 #### Net Δmo for option 2
 
-| Outcome                | Captain | Manager | Ego no-show | Δmo |
-| ---------------------- | :-----: | :-----: | :---------: | --: |
-| Best                   | shines  | wow     | none        |  +6 |
-| Typical                | shines  | meh     | none        |  +2 |
-| Mixed                  | bad     | meh     | none        |  −1 |
-| Worst (penalties)      | bad     | bomb    | absence     |  −3 |
+| Outcome           | Captain | Manager | Ego no-show | Δmo |
+| ----------------- | :-----: | :-----: | :---------: | --: |
+| Best              | shines  |   wow   |    none     |  +6 |
+| Typical           | shines  |   meh   |    none     |  +2 |
+| Mixed             |   bad   |   meh   |    none     |  −1 |
+| Worst (penalties) |   bad   |  bomb   |   absence   |  −3 |
 
 ### 7. Option 3 — `KALJAHUURUINEN SAUNAILTA` (lines 2826-2867)
 
@@ -378,9 +377,9 @@ END SELECT
 
 | `mtaito(4)` | Bad ≤ | Good ≥ | Neutral band |
 | ----------- | ----: | -----: | -----------: |
-| −3          | 60%   | 100%   | 60–100 (40%) |
-|  0          | 30%   |  70%   | 30–70 (40%)  |
-| +3          |  0    |  40%   |  0–40 (40%)  |
+| −3          |   60% |   100% | 60–100 (40%) |
+| 0           |   30% |    70% |  30–70 (40%) |
+| +3          |     0 |    40% |   0–40 (40%) |
 
 `mtaito(4)` swings each threshold by ±30 percentage points (vs ±15 in
 option 2). The neutral band stays 40% wide regardless.
@@ -415,14 +414,14 @@ Records 33/34/35 (decoded):
 
 #### Net Δmo for option 3
 
-| Outcome                       | A | B  | C  | D       | Total |
-| ----------------------------- | -:| -: | -: | ------: | ----: |
-| Dream run                     | 0 | +3 | +3 | none    |    +9 |
-| Quietly successful            | 0 | +3 |  0 | none    |    +3 |
-| Mixed bag                     | 0 | -2 |  0 | none    |    −2 |
-| Bad sauna                     | 0 | -2 | -2 | -2      |    −6 |
-| Worst case (cheap coach +     | -1| -2 | -2 | -2 (-1) |    −8 |
-| brawl + 3-7 round injury)     |   |    |    |         |       |
+| Outcome                   |   A |   B |   C |       D | Total |
+| ------------------------- | --: | --: | --: | ------: | ----: |
+| Dream run                 |   0 |  +3 |  +3 |    none |    +9 |
+| Quietly successful        |   0 |  +3 |   0 |    none |    +3 |
+| Mixed bag                 |   0 |  -2 |   0 |    none |    −2 |
+| Bad sauna                 |   0 |  -2 |  -2 |      -2 |    −6 |
+| Worst case (cheap coach + |  -1 |  -2 |  -2 | -2 (-1) |    −8 |
+| brawl + 3-7 round injury) |     |     |     |         |       |
 
 ---
 
@@ -477,7 +476,7 @@ Three paths:
 
    Picks the highest-scoring uninjured player from
    `suosikki(2, 1..3, pv)` — the leadership ranking computed by `SUB
-   suoslis` (`ILEX5.BAS:7129-7130`) using the same
+suoslis` (`ILEX5.BAS:7129-7130`) using the same
    `(age + ldr^1.3) / 50` formula as the crisis meeting itself.
    **Only fires when `automat(pv) = 1`** (manager has opted into
    auto-lineup); otherwise the manager's manual choice stands.
@@ -532,22 +531,22 @@ Four paths, all defensive:
 
 Beyond the crisis meeting:
 
-| Site | What | How captain matters |
-| --- | --- | --- |
-| `ILEX5.BAS:669` | Per-team status panel | Lists "no captain" warning (`lay 16`) when `kapu(pv) = 0` |
-| `ILEX5.BAS:2123` | `suosikki` panel (favourites) | Prints `"C "` next to the captain's row in the leadership-rank list |
-| `ILEX5.BAS:5065` | Own roster screen | Prints `"C "` badge next to captain |
-| `ILEX5.BAS:5067` | Opponent roster screen | Prints `"C"` badge next to opponent's captain |
-| `ILES5.BAS:166` | Status-bar hotkey hint | `"C:KAPTEENI  "` when player is eligible |
-| `ILEX5.BAS:1947` | Status-bar hotkey hint (lineup) | Same as above in alt menu state |
-| `ILEX5.BAS:2453` | Roster screen `C` keybind | Manual captain assignment |
-| `ILEX5.BAS:894` | `SUB automa` | Auto-pick captain when `automat(pv) = 1` |
-| `ILEX5.BAS:2574` | `SUB ketjuchk` | Clear captaincy if captain injured |
-| `ILEX5.BAS:4882, 4889` | `SUB poispelaaja` | Clear/shift captaincy on roster removal |
-| `ILEZ5.BAS:1740, 1747` | `SUB poispelaaja` (between-seasons copy) | Same as above |
-| `ILEZ5.BAS:755` | `SUB klear` | Always clears captaincy on chain wipe |
-| `ILEX5.BAS:2771` | `SUB kriisipalaveri` | Captain quality drives meeting success |
-| `ILEX5.BAS:7254`, `MHM2K.BAS:1266` | Save / load | Persisted per managed team |
+| Site                               | What                                     | How captain matters                                                 |
+| ---------------------------------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| `ILEX5.BAS:669`                    | Per-team status panel                    | Lists "no captain" warning (`lay 16`) when `kapu(pv) = 0`           |
+| `ILEX5.BAS:2123`                   | `suosikki` panel (favourites)            | Prints `"C "` next to the captain's row in the leadership-rank list |
+| `ILEX5.BAS:5065`                   | Own roster screen                        | Prints `"C "` badge next to captain                                 |
+| `ILEX5.BAS:5067`                   | Opponent roster screen                   | Prints `"C"` badge next to opponent's captain                       |
+| `ILES5.BAS:166`                    | Status-bar hotkey hint                   | `"C:KAPTEENI  "` when player is eligible                            |
+| `ILEX5.BAS:1947`                   | Status-bar hotkey hint (lineup)          | Same as above in alt menu state                                     |
+| `ILEX5.BAS:2453`                   | Roster screen `C` keybind                | Manual captain assignment                                           |
+| `ILEX5.BAS:894`                    | `SUB automa`                             | Auto-pick captain when `automat(pv) = 1`                            |
+| `ILEX5.BAS:2574`                   | `SUB ketjuchk`                           | Clear captaincy if captain injured                                  |
+| `ILEX5.BAS:4882, 4889`             | `SUB poispelaaja`                        | Clear/shift captaincy on roster removal                             |
+| `ILEZ5.BAS:1740, 1747`             | `SUB poispelaaja` (between-seasons copy) | Same as above                                                       |
+| `ILEZ5.BAS:755`                    | `SUB klear`                              | Always clears captaincy on chain wipe                               |
+| `ILEX5.BAS:2771`                   | `SUB kriisipalaveri`                     | Captain quality drives meeting success                              |
+| `ILEX5.BAS:7254`, `MHM2K.BAS:1266` | Save / load                              | Persisted per managed team                                          |
 
 **No match-engine effect.** The captain is **not** read by `SUB ottpel`
 or any chain-strength calculation. Captaincy is purely a meta-state for
@@ -600,7 +599,7 @@ A faithful port maps cleanly to existing patterns:
      the same predicate as the menu hint (`canCrisisMeeting`,
      `selectors.ts:460-477`, but with new MHM 2000 conditions
      `morale ≤ -6 ∧ morale ≠ -66 ∧ !meetingHeldThisRound ∧
-     !bankrupt ∧ kiero ≠ 4`).
+!bankrupt ∧ kiero ≠ 4`).
   2. `crisisMeeting.resolving` — pure phase function consuming
      `(ctx, captainId, choice, RNG)` and returning a list of
      `EventEffect[]` (one per roll, each carrying its KR.MHM record id
@@ -611,7 +610,7 @@ A faithful port maps cleanly to existing patterns:
 - **Single-shot lock** — `roundFlags.crisisMeetingHeld: boolean`
   reset at round start (mirrors `kriisi = 0` at `ILEX5.BAS:241`).
 - **No-captain branch** — first thing in resolving: if `captain ===
-  undefined`, emit one shame event with `Δmo = -choice` and short-circuit.
+undefined`, emit one shame event with `Δmo = -choice` and short-circuit.
 
 KR.MHM has 35 records (decoded count = 35, indices 0..34); preserve
 verbatim including the `@1` placeholder for the captain (recs 8–13,

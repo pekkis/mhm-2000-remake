@@ -23,10 +23,9 @@
 
 import r from "@/services/random";
 import { victors } from "@/services/playoffs";
-import { leagueTier } from "@/services/team";
 import { entries, keys, pick, pickBy, values } from "remeda";
 import calendar, { type CalendarEntry } from "@/data/calendar";
-import { CRISIS_COST, CRISIS_MORALE_MAX } from "@/data/constants";
+import { CRISIS_MORALE_MAX } from "@/data/constants";
 import type { SnapshotFrom } from "xstate";
 import type { gameMachine } from "./game";
 import type {
@@ -457,10 +456,10 @@ export const canSellPlayer =
   };
 
 /**
- * True iff `manager` can hold a crisis meeting: calendar window is open,
- * team morale is low enough (≤ -3), and the manager can afford the cost
- * (PHL: full price, division: half). 1-1 with the disabled-button logic
- * in `CrisisActions.tsx`.
+ * True iff `manager` can hold a crisis meeting: calendar window is
+ * open, team morale is ≤ -6 (QB: `mo(u(pv)) <= -6`), not already
+ * held this round, and manager is not bankrupt. MHM 2000's meeting
+ * is free — no cost check.
  */
 export const canCrisisMeeting =
   (manager: string): ContextSelector<boolean> =>
@@ -477,15 +476,18 @@ export const canCrisisMeeting =
     if (!calendar[ctx.turn.round]?.crisisMeeting) {
       return false;
     }
+
+    // QB: kriisi = 0 reset per round; kriisi = 1 locks after use
+    if (m.crisisMeetingHeld) {
+      return false;
+    }
+
     const team = ctx.teams[m.team];
     if (team.morale > CRISIS_MORALE_MAX) {
       return false;
     }
-    const cost =
-      leagueTier(team.id, ctx.competitions) === 2
-        ? CRISIS_COST / 2
-        : CRISIS_COST;
-    return m.balance >= cost;
+
+    return true;
   };
 
 export const managerWithId =

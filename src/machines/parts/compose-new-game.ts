@@ -49,6 +49,7 @@ const buildHumanManager = (
     attributes: draft.attributes,
     difficulty: legacyDifficulty,
     pranksExecuted: 0,
+    crisisMeetingHeld: false,
     sponsor: undefined,
     completedActions: [],
     balance,
