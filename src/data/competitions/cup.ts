@@ -77,6 +77,8 @@ const cup: CompetitionDefinition = {
     phases: []
   },
 
+  seasonStart: (_context) => {},
+
   relegateTo: false,
   promoteTo: false,
 

@@ -67,6 +67,8 @@ const ehl: CompetitionDefinition = {
     phases: []
   },
 
+  seasonStart: (_context) => {},
+
   homeAndAwayTeamAdvantages: (phase) => {
     if (phase === 1) {
       return {

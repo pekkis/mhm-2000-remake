@@ -145,6 +145,8 @@ export const nhlChallengeMailHandler: MailHandler = (ctx) => {
       }
     }
 
+    ctx.competitions.tournaments.meta.foo = "bar";
+
     // Remove processed replies from the global mailbox.
     ctx.mail.mailbox = omitBy(
       ctx.mail.mailbox,

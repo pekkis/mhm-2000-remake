@@ -23,7 +23,8 @@ const stubCompetition = (
   weight: 0,
   phase,
   teams,
-  phases: []
+  phases: [],
+  meta: {}
 });
 
 /** Competitions where team 1 is in PHL and EHL-qualified. */

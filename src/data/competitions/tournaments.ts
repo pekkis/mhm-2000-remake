@@ -13,6 +13,11 @@ import type { GameContext } from "@/state/game-context";
 // import tournamentList from "@/data/tournaments";
 // import random from "@/services/random";
 
+// e.g. in the tournaments competition file or wherever the meta shape lives
+export type TournamentsCompetitionMeta = {
+  acceptedTeams: number[];
+};
+
 const tournaments: CompetitionDefinition = {
   data: {
     weight: 2000,
@@ -23,6 +28,8 @@ const tournaments: CompetitionDefinition = {
     phases: [],
     teams: []
   },
+
+  seasonStart: (_context) => {},
 
   relegateTo: false,
   promoteTo: false,

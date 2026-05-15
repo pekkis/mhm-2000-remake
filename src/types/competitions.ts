@@ -172,6 +172,7 @@ export type Competition = {
   phase: number;
   teams: number[];
   phases: Phase[];
+  meta: Record<string, unknown>;
 };
 
 // --- Competition Definitions (the imported data file, has functions) ---
@@ -193,9 +194,11 @@ export type HomeAndAwayTeamAdvantages = {
 };
 
 export type CompetitionDefinition = {
-  data: Competition;
+  data: Omit<Competition, "meta">;
   relegateTo: CompetitionId | false;
   promoteTo: CompetitionId | false;
+
+  seasonStart: (draft: Draft<GameContext>) => void;
 
   homeAndAwayTeamAdvantages: (phase: number) => HomeAndAwayTeamAdvantages;
 

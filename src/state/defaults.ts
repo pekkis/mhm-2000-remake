@@ -267,7 +267,7 @@ export const createDefaultGameContext = (): GameContext => {
         // nested arrays like `teams: number[]` are fresh refs, not aliases
         // back to the imported singleton. Same Stately Inspector dedup
         // gotcha as `managers` above — kill it preemptively.
-        structuredClone(def.data)
+        { ...structuredClone(def.data), meta: {} }
       ])
     ) as Record<CompetitionId, Competition>,
 

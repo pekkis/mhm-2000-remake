@@ -20,6 +20,8 @@ const division: CompetitionDefinition = {
     phases: []
   },
 
+  seasonStart: (_context) => {},
+
   homeAndAwayTeamAdvantages: (_phase) => {
     return {
       home: 1.0,

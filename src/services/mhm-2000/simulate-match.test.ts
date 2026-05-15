@@ -73,7 +73,7 @@ const sideFromTier = (
  * cup matches here.
  */
 const makeContext = (phaseType: "round-robin" | "playoffs"): MatchContext => {
-  const competition = competitionDefinitions.phl.data;
+  const competition = { ...competitionDefinitions.phl.data, meta: {} };
   const phase: Phase = {
     type: phaseType,
     name: "test-phase",
@@ -335,7 +335,7 @@ describe("simulateMatch", () => {
         colors: []
       };
       const tournamentContext: MatchContext = {
-        competition: competitionDefinitions.tournaments.data,
+        competition: { ...competitionDefinitions.tournaments.data, meta: {} },
         phase: {
           type: "tournament",
           name: "test-tournament",
@@ -434,7 +434,7 @@ describe("simulateMatch", () => {
         colors: []
       };
       const tournamentContext: MatchContext = {
-        competition: competitionDefinitions.tournaments.data,
+        competition: { ...competitionDefinitions.tournaments.data, meta: {} },
         phase: {
           type: "tournament",
           name: "test-tournament",

@@ -52,8 +52,8 @@ const makeContext = (
 ): MatchContext => {
   const competition =
     groupType === "tournament"
-      ? competitionDefinitions.tournaments.data
-      : competitionDefinitions.phl.data;
+      ? { ...competitionDefinitions.tournaments.data, meta: {} }
+      : { ...competitionDefinitions.phl.data, meta: {} };
 
   const phase: Phase = {
     type: groupType === "tournament" ? "tournament" : "round-robin",
