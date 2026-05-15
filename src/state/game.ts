@@ -63,6 +63,8 @@ export type HumanManager = BaseManager & {
   attributes: ManagerAttributes;
   balance: number;
   pranksExecuted: number;
+  /** QB `kriisi` — once-per-round lock. Reset at round start. */
+  crisisMeetingHeld: boolean;
   flags: Record<string, boolean>;
   tags: string[];
   sponsor: SponsorDeal | undefined;

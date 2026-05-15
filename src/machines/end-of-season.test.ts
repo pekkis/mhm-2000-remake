@@ -128,6 +128,7 @@ const buildContext = (
             stats: { games: {}, achievements: emptyAchievements() },
             balance: 0,
             pranksExecuted: 0,
+            crisisMeetingHeld: false,
             flags: {},
             sponsor: undefined,
             completedActions: [],

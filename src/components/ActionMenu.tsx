@@ -3,7 +3,6 @@ import { useSelector } from "@xstate/store-react";
 import Calendar from "./ui/Calendar";
 import Cluster from "./ui/Cluster";
 import { getEffective } from "@/services/effects";
-import { CRISIS_MORALE_MAX } from "@/data/constants";
 import Button from "./ui/Button";
 import RadioGroup from "./ui/RadioGroup";
 import Switch from "./ui/Switch";
@@ -13,7 +12,11 @@ import {
 } from "@/context/game-machine-context";
 import { AppMachineContext } from "@/context/app-machine-context";
 import { uiStore, type ThemePreference } from "@/stores/ui";
-import { activeManager, hasCompletedAction } from "@/machines/selectors";
+import {
+  activeManager,
+  hasCompletedAction,
+  canCrisisMeeting
+} from "@/machines/selectors";
 import Stack from "@/components/ui/Stack";
 
 const themeOptions: ReadonlyArray<{ value: ThemePreference; label: string }> = [
@@ -33,14 +36,15 @@ const intensityOptions: ReadonlyArray<{
 
 const ActionMenu = () => {
   const manager = useGameContext(activeManager);
-  const teams = useGameContext((ctx) => ctx.teams);
   const budgetDone = useGameContext(hasCompletedAction(manager.id, "budget"));
   const strategyDone = useGameContext(
     hasCompletedAction(manager.id, "strategy")
   );
   const sponsorDone = useGameContext(hasCompletedAction(manager.id, "sponsor"));
+  const canDoCrisis = useGameContext(canCrisisMeeting(manager.id));
   const appActor = AppMachineContext.useActorRef();
   const gameActor = GameMachineContext.useActorRef();
+  const teams = useGameContext((ctx) => ctx.teams);
   const team = getEffective(teams[manager.team!]);
   const theme = useSelector(uiStore, (s) => s.context.theme);
 
@@ -98,12 +102,20 @@ const ActionMenu = () => {
             Organisaatio
           </Link>
 
-          {team.morale <= CRISIS_MORALE_MAX && (
-            <Calendar when={(c) => c.crisisMeeting}>
-              <Link onClick={close} to="/kriisipalaveri">
-                Kriisipalaveri
-              </Link>
-            </Calendar>
+          {canDoCrisis && (
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                close();
+                gameActor.send({
+                  type: "START_CRISIS_MEETING",
+                  payload: { manager: manager.id }
+                });
+              }}
+            >
+              Kriisipalaveri
+            </a>
           )}
 
           <Calendar when={(c) => c.transferMarket}>

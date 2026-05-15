@@ -1,71 +1,110 @@
+import { useSelector } from "@xstate/react";
+import type { AnyActorRef } from "xstate";
 import Button from "./ui/Button";
-import StickyMenu from "./StickyMenu";
-import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
+import PageLayout from "@/components/page/PageLayout";
 import ManagerInfo from "./ManagerInfo";
-import Calendar from "./ui/Calendar";
+import StickyMenu from "./StickyMenu";
 import Heading from "@/components/ui/Heading";
 import Stack from "@/components/ui/Stack";
+import Markdown from "@/components/Markdown";
 import Paragraph from "./ui/Paragraph";
-import {
-  GameMachineContext,
-  useGameContext
-} from "@/context/game-machine-context";
+import { GameMachineContext } from "@/context/game-machine-context";
+import { crisisOptions, type CrisisOption } from "@/data/crisis";
+import crisisMeetingTexts from "@/data/mhm2000/crisis-meeting-texts";
+import type { CrisisMeetingScene } from "@/game/crisis-meeting";
 
-import crisis from "@/data/crisis";
-import { currency as c } from "@/services/format";
-import { getEffective } from "@/services/effects";
-import { activeManager, canCrisisMeeting } from "@/machines/selectors";
+/** Replace `{key}` placeholders with values from templateVars. */
+const renderText = (
+  textKey: number,
+  templateVars: Record<string, string>
+): string => {
+  let text = crisisMeetingTexts[textKey] ?? "";
+  for (const [key, val] of Object.entries(templateVars)) {
+    text = text.replaceAll(`{${key}}`, val);
+  }
+  return text;
+};
+
+const moraleDeltaLabel = (delta: number): string => {
+  if (delta > 0) {return `Moraali +${delta}`;}
+  if (delta < 0) {return `Moraali ${delta}`;}
+  return "Ei vaikutusta moraaliin";
+};
+
+const SceneView: React.FC<{ scene: CrisisMeetingScene }> = ({ scene }) => (
+  <Stack gap="sm">
+    <Markdown>{renderText(scene.textKey, scene.templateVars)}</Markdown>
+    <Paragraph size="sm" weight="bold">
+      {moraleDeltaLabel(scene.moraleDelta)}
+      {scene.injury && ` — loukkaantuminen ${scene.injury.rounds} kierrosta`}
+    </Paragraph>
+  </Stack>
+);
 
 const CrisisActions = () => {
-  const manager = useGameContext(activeManager);
-  const teams = useGameContext((ctx) => ctx.teams);
-  const competitions = useGameContext((ctx) => ctx.competitions);
-  const canDo = useGameContext(canCrisisMeeting(manager.id));
   const gameActor = GameMachineContext.useActorRef();
+  const crisisActor = gameActor.system.get("crisisMeeting") as AnyActorRef;
 
-  const team = getEffective(teams[manager.team!]);
-  const crisisInfo = crisis(team, competitions);
+  const snap = useSelector(crisisActor, (s) => ({
+    state: s.value as "choosing" | "narrating" | "done",
+    result: s.context.result as
+      | { scenes: CrisisMeetingScene[]; totalMoraleDelta: number }
+      | undefined
+  }));
+
+  const send = (event: Parameters<typeof crisisActor.send>[0]) =>
+    crisisActor.send(event);
 
   return (
-    <AdvancedHeaderedPage
-      escTo="/"
-      stickyMenu={<StickyMenu back />}
+    <PageLayout
+      stickyMenu={<StickyMenu />}
       managerInfo={<ManagerInfo details />}
     >
       <Stack gap="lg">
         <Heading level={2}>Kriisipalaveri</Heading>
 
-        <Calendar
-          when={(c) => c.crisisMeeting}
-          fallback={
-            <Paragraph>
-              Tässä vaiheessa kautta on auttamatta liian myöhäistä
-              kriisipalaveroida!
-            </Paragraph>
-          }
-        >
+        {snap.state === "choosing" && (
           <Stack gap="md">
             <Paragraph>
-              Kriisipalaveri auttaa joukkuetta unohtamaan tappioputken ja
-              keskittymään tulevaan. Se maksaa {c(crisisInfo.amount)}.
+              Valitse kriisipalaverin muoto. Suurempi riski tuo suuremmat
+              mahdollisuudet — mutta myös suuremmat tappiot.
             </Paragraph>
 
-            <Button
-              block
-              disabled={!canDo}
-              onClick={() =>
-                gameActor.send({
-                  type: "CRISIS_MEETING",
-                  payload: { manager: manager.id }
-                })
-              }
-            >
-              Pidä kriisipalaveri
+            {([1, 2, 3] as CrisisOption[]).map((option) => (
+              <Button
+                key={option}
+                block
+                onClick={() => send({ type: "CHOOSE_OPTION", option })}
+              >
+                {crisisOptions[option].title} —{" "}
+                {crisisOptions[option].description}
+              </Button>
+            ))}
+
+            <Button block secondary onClick={() => send({ type: "CANCEL" })}>
+              Peruuta
             </Button>
           </Stack>
-        </Calendar>
+        )}
+
+        {snap.state === "narrating" && snap.result && (
+          <Stack gap="lg">
+            {snap.result.scenes.map((scene, i) => (
+              <SceneView key={i} scene={scene} />
+            ))}
+
+            <Paragraph weight="bold">
+              Yhteenveto: moraali {snap.result.totalMoraleDelta >= 0 ? "+" : ""}
+              {snap.result.totalMoraleDelta}
+            </Paragraph>
+
+            <Button block onClick={() => send({ type: "ACKNOWLEDGE" })}>
+              OK
+            </Button>
+          </Stack>
+        )}
       </Stack>
-    </AdvancedHeaderedPage>
+    </PageLayout>
   );
 };
 

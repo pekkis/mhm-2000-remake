@@ -80,7 +80,7 @@ kausikorttimaar` season-ticket drive, gate revenue and ancillary
     before touching anything that touches `taso/ppiste/paikka`,
     attendance, season tickets, or gate revenue.
 - [CRISIS-MEETING.md](CRISIS-MEETING.md) — full decode of `SUB
-  kriisipalaveri` (three-tier morale recovery: locker-room talk / dry
+kriisipalaveri` (three-tier morale recovery: locker-room talk / dry
   sauna / wet sauna), the captain (`kapu()`) inventory across set/clear
   paths and call sites, the `mtaito(4)`-shifted success thresholds, the
   KR.MHM text catalog (35 records), and the off-by-one quirks worth
