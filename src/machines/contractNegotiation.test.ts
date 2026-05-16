@@ -83,7 +83,6 @@ function makeInput(
 ): ContractNegotiationInput {
   return {
     player: HAPPY_PLAYER,
-    mode: "roster",
     manager: makeManager(),
     budget: GENEROUS_BUDGET,
     alreadyNegotiated: false,
@@ -448,20 +447,26 @@ describe("signed contract includes clause when selected", () => {
   });
 });
 
-// ─── Market mode ─────────────────────────────────────────────────────────────
+// ─── Market player type ──────────────────────────────────────────────────────
 
-describe("mode='market' behaves identically to mode='roster'", () => {
-  it("reaches negotiating state in market mode", () => {
+describe("player.type='market' behaves identically to 'hired'", () => {
+  const MARKET_PLAYER: MarketPlayer = {
+    ...HAPPY_PLAYER,
+    type: "market",
+    tags: []
+  };
+
+  it("reaches negotiating state with market player", () => {
     const actor = createActor(contractNegotiationMachine, {
-      input: makeInput({ mode: "market" })
+      input: makeInput({ player: MARKET_PLAYER })
     });
     actor.start();
     expect(actor.getSnapshot().value).toBe("negotiating");
   });
 
-  it("QUIT produces cancelled in market mode", () => {
+  it("QUIT produces cancelled with market player", () => {
     const actor = createActor(contractNegotiationMachine, {
-      input: makeInput({ mode: "market" })
+      input: makeInput({ player: MARKET_PLAYER })
     });
     actor.start();
     actor.send({ type: "QUIT" });

@@ -1511,7 +1511,6 @@ export const gameMachine = setup({
                       }
                       return {
                         player,
-                        mode: "market" as const,
                         manager,
                         budget: team.budget,
                         alreadyNegotiated: player.tags.some(

@@ -9,19 +9,14 @@
  * QB `fat%` parameter:
  *   fat% = 1: negotiating with an existing player in a team's roster
  *   fat% = 2: signing a free agent from the market (`bel`)
- * We expose this as `mode: "roster" | "market"` — the machine logic is
- * identical; the parent handles the state mutation differently based on mode.
+ * We derive this from `player.type` ("hired" vs "market") — the machine
+ * logic is identical; the output effects differ based on player type.
  */
 
 import { setup, assign } from "xstate";
 import type { Random } from "random-js";
 import type { TeamBudget } from "@/data/mhm2000/budget";
-import type {
-  HiredPlayer,
-  MarketPlayer,
-  Player,
-  RegularContract
-} from "@/state/player";
+import type { Player, RegularContract } from "@/state/player";
 import type { HumanManager } from "@/state/game";
 import type { EventEffect } from "@/game/event-effects";
 import {
@@ -42,11 +37,8 @@ import {
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
-export type ContractNegotiationMode = "roster" | "market";
-
 export type ContractNegotiationInput = {
-  player: MarketPlayer;
-  mode: ContractNegotiationMode;
+  player: Player;
   manager: HumanManager;
   /** Team's current budget sliders — provides `valb(1..5, pv)`. */
   budget: TeamBudget;
@@ -93,8 +85,7 @@ type InternalNegotiationResult =
 // ─── Machine context ──────────────────────────────────────────────────────────
 
 export type ContractNegotiationContext = {
-  player: MarketPlayer | HiredPlayer;
-  mode: ContractNegotiationMode;
+  player: Player;
   manager: HumanManager;
   budget: TeamBudget;
   random: Random;
@@ -217,12 +208,12 @@ function buildOutputEffects(ctx: ContractNegotiationContext): EventEffect[] {
     return [];
   }
   if (result.outcome === "signed") {
-    if (ctx.mode === "market") {
+    if (ctx.player.type === "market") {
       return [
         {
           type: "signMarketPlayer",
           manager: ctx.manager.id,
-          player: ctx.player as MarketPlayer,
+          player: ctx.player,
           contract: result.contract,
           playerWasHappy: result.playerWasHappy
         }
@@ -233,7 +224,7 @@ function buildOutputEffects(ctx: ContractNegotiationContext): EventEffect[] {
       {
         type: "signRosterPlayer",
         manager: ctx.manager.id,
-        player: ctx.player as HiredPlayer,
+        player: ctx.player,
         contract: result.contract,
         playerWasHappy: result.playerWasHappy
       }
@@ -245,7 +236,7 @@ function buildOutputEffects(ctx: ContractNegotiationContext): EventEffect[] {
         type: "irritatePlayer",
         managerId: ctx.manager.id,
         playerId: ctx.player.id,
-        kind: ctx.mode === "market" ? "market" : "hired"
+        kind: ctx.player.type === "market" ? "market" : "hired"
       }
     ];
   }
@@ -308,7 +299,6 @@ export const contractNegotiationMachine = setup({
 
     return {
       player: input.player,
-      mode: input.mode,
       manager: input.manager,
       budget: input.budget,
       random: input.random,
