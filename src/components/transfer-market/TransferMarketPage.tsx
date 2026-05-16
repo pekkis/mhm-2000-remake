@@ -113,10 +113,11 @@ const TransferMarketBrowser: FC = () => {
                         disabled={alreadyNegotiated || !budgetDone}
                         onClick={() =>
                           gameActor.send({
-                            type: "NEGOTIATE_MARKET_PLAYER",
+                            type: "NEGOTIATE_PLAYER",
                             payload: {
                               managerId: manager.id,
-                              playerId: player.id
+                              playerId: player.id,
+                              kind: "market"
                             }
                           })
                         }

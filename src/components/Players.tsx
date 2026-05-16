@@ -213,6 +213,15 @@ const PlayerActions: FC<{ player: HiredPlayer; lineup: Lineup }> = ({
         disabled={isUnderContract(player)}
         title="Jatka sopimusta"
         onClick={() => {
+          game.send({
+            type: "NEGOTIATE_PLAYER",
+            payload: {
+              managerId: manager.id,
+              playerId: player.id,
+              kind: "roster"
+            }
+          });
+
           // invoke contract extension machine!
         }}
       >

@@ -267,6 +267,8 @@ export const contractNegotiationMachine = setup({
     return { ...result, playerLines: context.playerLines, effects };
   },
   context: ({ input }) => {
+    console.log("HEPS KUKKUU", input);
+
     const teamNeedsRating = computeTeamNeedsRating(input.budget, input.player);
     const baseSalary = computeSalary(input.player);
     const willingnessThreshold = computeWillingnessThreshold(

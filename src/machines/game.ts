@@ -10,7 +10,9 @@ import {
   hasCompletedAction,
   humanManagers,
   activeManager,
-  teamsManager
+  teamsManager,
+  managersTeam,
+  humanManagersTeam
 } from "@/machines/selectors";
 import calendar, { type TurnPhase } from "@/data/calendar";
 import competitionData from "@/data/competitions";
@@ -217,8 +219,12 @@ export type GameMachineEvents =
       effects: EventEffect[];
     }
   | {
-      type: "NEGOTIATE_MARKET_PLAYER";
-      payload: { managerId: string; playerId: string };
+      type: "NEGOTIATE_PLAYER";
+      payload: {
+        managerId: string;
+        playerId: string;
+        kind: "market" | "roster";
+      };
     }
   | {
       type: "AUTO_LINEUP";
@@ -1435,7 +1441,7 @@ export const gameMachine = setup({
               states: {
                 browsing: {
                   on: {
-                    NEGOTIATE_MARKET_PLAYER: {
+                    NEGOTIATE_PLAYER: {
                       guard: ({ context, event }) =>
                         hasCompletedAction(
                           event.payload.managerId,
@@ -1443,6 +1449,7 @@ export const gameMachine = setup({
                         )(context),
                       target: "negotiating"
                     },
+
                     START_SPONSOR_NEGOTIATION: {
                       guard: ({ context, event }) =>
                         !hasCompletedAction(event.manager, "sponsor")(context),
@@ -1489,16 +1496,19 @@ export const gameMachine = setup({
                     id: "contractNegotiation",
                     systemId: "contractNegotiation",
                     input: ({ context, event }) => {
-                      if (event.type !== "NEGOTIATE_MARKET_PLAYER") {
+                      if (event.type !== "NEGOTIATE_PLAYER") {
                         throw new Error("negotiating entered from wrong event");
                       }
                       const { managerId, playerId } = event.payload;
                       const manager = context.managers[managerId];
-                      const player = context.transferMarket.players[playerId];
-                      const team =
-                        manager?.team !== undefined
-                          ? context.teams[manager.team]
-                          : undefined;
+
+                      const team = humanManagersTeam(managerId)(context);
+
+                      const player =
+                        event.payload.kind === "market"
+                          ? context.transferMarket.players[playerId]
+                          : team.players[playerId];
+
                       if (
                         !manager ||
                         manager.kind !== "human" ||
@@ -1509,6 +1519,7 @@ export const gameMachine = setup({
                       ) {
                         throw new Error("negotiation preconditions not met");
                       }
+
                       return {
                         player,
                         manager,
