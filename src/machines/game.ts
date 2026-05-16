@@ -9,7 +9,8 @@ import {
   allRequiredActionsComplete,
   hasCompletedAction,
   humanManagers,
-  activeManager
+  activeManager,
+  teamsManager
 } from "@/machines/selectors";
 import calendar, { type TurnPhase } from "@/data/calendar";
 import competitionData from "@/data/competitions";
@@ -858,7 +859,11 @@ export const gameMachine = setup({
         // `CASE 1` of `SELECT CASE kiero(kr)`, so EHL/cup/playoff/
         // training/preseason rounds get NO drift.
         const entry = calendar[draft.turn.round];
-        if (entry?.readinessDrift) {
+        if (!entry) {
+          throw new Error("Grand error in turn handling");
+        }
+
+        if (entry.readinessDrift) {
           for (const team of draft.teams) {
             const strategy = team.strategy as StrategyId;
             const delta = strategies[strategy]?.incrementReadiness() ?? 0;
@@ -885,7 +890,7 @@ export const gameMachine = setup({
         // Iterates all 48 league teams (PHL + Div + Mut), sells one
         // batch per team, accumulates `seasonTickets`, and credits
         // revenue to the team's human manager (if any).
-        const roundTags = entry?.tags ?? [];
+        const roundTags = entry.tags;
         if (roundTags.includes(SEASON_TICKETS_TAG)) {
           for (const team of draft.teams) {
             const tier = leagueTier(team.id, draft.competitions);
@@ -893,7 +898,11 @@ export const gameMachine = setup({
               continue; // light team — not in the league ladder
             }
 
-            const rankings = team.previousRankings ?? [8, 8, 8];
+            const rankings = team.previousRankings;
+            if (!rankings) {
+              throw new Error("Rankings fail");
+            }
+
             const formAverage =
               (rankings[0] * 2 + rankings[1] + rankings[2]) / 4;
 
@@ -923,28 +932,20 @@ export const gameMachine = setup({
           }
         }
 
-        // Arena construction ticks — QB `SUB rstages` runs for every
-        // team every round. Only teams with an active arenaProject
-        // are affected (tickArenaProject no-ops otherwise).
-        // Build a teamIndex→managerId lookup for human managers so
-        // arena news can be routed as notifications.
-        const teamToManager = new Map<number, string>();
-        for (const mgr of values(humanManagers(draft))) {
-          if (mgr.team != null) {
-            teamToManager.set(mgr.team, mgr.id);
-          }
-        }
-
         for (const [i, team] of draft.teams.entries()) {
           const result = tickArenaProject(team, random);
-          const managerId = teamToManager.get(i);
-          if (managerId && result.news.length > 0) {
-            for (const message of result.news) {
-              notify({
-                manager: managerId,
-                message,
-                type: "arena"
-              });
+
+          const manager = teamsManager(i)(draft);
+          if (manager.kind === "human") {
+            if (result.news.length > 0) {
+              for (const message of result.news) {
+                // todo: mail
+                notify({
+                  manager: manager.id,
+                  message,
+                  type: "arena"
+                });
+              }
             }
           }
         }
