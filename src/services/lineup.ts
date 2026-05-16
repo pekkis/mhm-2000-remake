@@ -2,6 +2,7 @@ import type { HiredPlayer } from "@/state/player";
 import type { PlayerSpecialtyKey } from "@/data/player-specialties";
 import type { Lineup } from "@/state/lineup";
 import type { TeamStrength } from "@/data/levels";
+import { isHealthy, isUnderContract } from "@/services/player";
 
 /**
  * Lineup slot types for the position-penalty calculation.
@@ -578,7 +579,8 @@ export const excludedPlayers = (
 export const assignPlayerToLineup = (
   lineup: Lineup,
   target: LineupTarget,
-  playerId: string | null
+  playerId: string | null,
+  players: Record<string, HiredPlayer>
 ): boolean => {
   // Clearing a slot is always allowed.
   if (playerId === null) {
@@ -589,6 +591,12 @@ export const assignPlayerToLineup = (
   // If the player is already in the target slot, it's a no-op success.
   if (getSlot(lineup, target) === playerId) {
     return true;
+  }
+
+  // Guard: player must exist, be healthy, and under contract.
+  const player = players[playerId];
+  if (!player || !isHealthy(player) || !isUnderContract(player)) {
+    return false;
   }
 
   // Guard: same-unit conflict + goalie lock.
@@ -801,4 +809,103 @@ export const autoLineup = (
       f2: pkC[0]?.id
     }
   };
+};
+
+/**
+ * Check whether a slotted player is valid for lineup duty:
+ * healthy (no injury/suspension/strike/nationals) and under contract.
+ */
+const isValidForLineup = (
+  playerId: string | null,
+  players: Record<string, HiredPlayer>
+): boolean => {
+  if (!playerId) {
+    return true; // empty slot is always valid
+  }
+  const player = players[playerId];
+  return !!player && isHealthy(player) && isUnderContract(player);
+};
+
+/**
+ * Returns `true` if every slotted player in the lineup is healthy
+ * and under contract. Empty slots are fine.
+ */
+export const isLineupValid = (
+  lineup: Lineup,
+  players: Record<string, HiredPlayer>
+): boolean => {
+  const check = (id: string | null) => isValidForLineup(id, players);
+
+  if (!check(lineup.g)) {
+    return false;
+  }
+
+  for (const pair of lineup.defensivePairings) {
+    if (!check(pair.ld) || !check(pair.rd)) {
+      return false;
+    }
+  }
+  for (const line of lineup.forwardLines) {
+    if (!check(line.lw) || !check(line.c) || !check(line.rw)) {
+      return false;
+    }
+  }
+
+  const pp = lineup.powerplayTeam;
+  if (
+    !check(pp.lw) ||
+    !check(pp.c) ||
+    !check(pp.rw) ||
+    !check(pp.ld) ||
+    !check(pp.rd)
+  ) {
+    return false;
+  }
+
+  const pk = lineup.penaltyKillTeam;
+  if (!check(pk.f1) || !check(pk.f2) || !check(pk.ld) || !check(pk.rd)) {
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * Returns a new lineup with invalid players (injured, suspended,
+ * striking, absent, or out of contract) removed from all slots.
+ * Designed for use inside an immer `produce` — mutates in place.
+ */
+export const removeInvalidPlayersFromLineup = (
+  lineup: Lineup,
+  players: Record<string, HiredPlayer>
+): Lineup => {
+  const clean = (id: string | null): string | null =>
+    isValidForLineup(id, players) ? id : null;
+
+  lineup.g = clean(lineup.g);
+
+  for (const pair of lineup.defensivePairings) {
+    pair.ld = clean(pair.ld);
+    pair.rd = clean(pair.rd);
+  }
+  for (const line of lineup.forwardLines) {
+    line.lw = clean(line.lw);
+    line.c = clean(line.c);
+    line.rw = clean(line.rw);
+  }
+
+  const pp = lineup.powerplayTeam;
+  pp.lw = clean(pp.lw);
+  pp.c = clean(pp.c);
+  pp.rw = clean(pp.rw);
+  pp.ld = clean(pp.ld);
+  pp.rd = clean(pp.rd);
+
+  const pk = lineup.penaltyKillTeam;
+  pk.f1 = clean(pk.f1);
+  pk.f2 = clean(pk.f2);
+  pk.ld = clean(pk.ld);
+  pk.rd = clean(pk.rd);
+
+  return lineup;
 };

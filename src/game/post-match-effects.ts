@@ -76,8 +76,8 @@ export function rollPostMatchEffects(
         // QB: lax 115 (season-ending) / lax 116 (timed) prefix + I.MHM body
         const prefix =
           duration === -1
-            ? `**${playerName}** on loukkaantunut ja on sivussa loppukauden!`
-            : `**${playerName}** on loukkaantunut ja on sivussa ${duration} ottelua.`;
+            ? `Auts! **${playerName}** on poissa vahvuudesta koko loppukauden!`
+            : `Auts! **${playerName}** on poissa vahvuudesta **${duration}** kierrosta!`;
 
         effects.push({
           type: "addAnnouncement",
@@ -117,8 +117,8 @@ export function rollPostMatchEffects(
           // QB: lax 120 (positive) / lax 121 (negative) prefix + M.MHM body
           const prefix =
             mood.amount > 0
-              ? `**${playerName}** — hyviä uutisia pelaajasta:`
-              : `**${playerName}** — huonoja uutisia pelaajasta:`;
+              ? `**${playerName}** on loistavalla pelipäällä!`
+              : `**${playerName}** vaeltaa murheen alhossa...`;
 
           effects.push({
             type: "addAnnouncement",
@@ -152,7 +152,7 @@ export function rollPostMatchEffects(
         effects.push({
           type: "addAnnouncement",
           manager: managerId,
-          text: `**${playerName}** on saanut pelikiellon (${ban.duration} ottelua). ${ban.explanation}`
+          text: `Voi ei! **${playerName}** on pelikiellossa seuraavat **${ban.duration}** ottelua! ${ban.explanation}`
         });
       }
     }

@@ -46,7 +46,11 @@ import {
 } from "@/machines/crisisMeeting";
 import type { CompetitionId } from "@/types/competitions";
 import { values, entries } from "remeda";
-import { autoLineup, assignPlayerToLineup } from "@/services/lineup";
+import {
+  autoLineup,
+  assignPlayerToLineup,
+  removeInvalidPlayersFromLineup
+} from "@/services/lineup";
 import type { LineupTarget } from "@/services/lineup";
 import type { TeamBudget } from "@/data/mhm2000/budget";
 import type { TeamServiceIdentifier } from "@/data/mhm2000/team-services";
@@ -749,7 +753,12 @@ export const gameMachine = setup({
           if (team.kind !== "human") {
             return;
           }
-          assignPlayerToLineup(team.lineup, params.target, params.playerId);
+          assignPlayerToLineup(
+            team.lineup,
+            params.target,
+            params.playerId,
+            team.players
+          );
         })
     ),
 
@@ -1412,6 +1421,15 @@ export const gameMachine = setup({
               ]
             },
             action: {
+              entry: assign(({ context }) =>
+                produce(context, (draft) => {
+                  for (const team of values(draft.teams)) {
+                    if (team.kind === "human") {
+                      removeInvalidPlayersFromLineup(team.lineup, team.players);
+                    }
+                  }
+                })
+              ),
               initial: "browsing",
               onDone: "ai_action_check",
               states: {

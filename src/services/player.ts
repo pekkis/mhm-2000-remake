@@ -112,6 +112,22 @@ export const isHealthy: PlayerPredicate = (player) =>
       e.type === "nationals"
   );
 
+export const isUnderContract: PlayerPredicate = (player) => {
+  if (!player.contract) {
+    return false;
+  }
+
+  if (player.contract.type === "guest") {
+    return true;
+  }
+
+  if (player.contract.duration === 0) {
+    return false;
+  }
+
+  return true;
+};
+
 /**
  * QB `al 2` — player with no active performance modifier (`plus = 0
  * AND kest = 0`). Maps to no `skill` effect on the player.
