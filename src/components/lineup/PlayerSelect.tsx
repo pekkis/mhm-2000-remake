@@ -6,6 +6,7 @@ import {
   excludedPlayers
 } from "@/services/lineup";
 import type { LineupSlot, LineupTarget } from "@/services/lineup";
+import { isHealthy, isUnderContract } from "@/services/player";
 import type { HiredPlayer } from "@/state/player";
 import { use, type FC } from "react";
 import { values } from "remeda";
@@ -46,6 +47,45 @@ export const appearanceLevel = (count: number): AlertLevel | null => {
     return "warning";
   }
   return "danger";
+};
+
+/**
+ * Short Finnish status label for the first blocking effect on a player.
+ * Returns `null` if the player is healthy and under contract.
+ */
+const statusBadge = (
+  player: HiredPlayer
+): { label: string; level: AlertLevel } | null => {
+  if (!isUnderContract(player)) {
+    return { label: "Ei sop.", level: "danger" };
+  }
+
+  const blocking = player.effects.find(
+    (e) =>
+      e.type === "injury" ||
+      e.type === "suspension" ||
+      e.type === "strike" ||
+      e.type === "nationals"
+  );
+
+  if (!blocking) {
+    return null;
+  }
+
+  switch (blocking.type) {
+    case "injury":
+      return {
+        label:
+          blocking.duration === -1 ? "Loukk." : `Loukk. ${blocking.duration}`,
+        level: "danger"
+      };
+    case "suspension":
+      return { label: `Pelik. ${blocking.duration}`, level: "warning" };
+    case "strike":
+      return { label: "Lakko", level: "warning" };
+    case "nationals":
+      return { label: "Maaj.", level: "info" };
+  }
 };
 
 const PlayerInfo: FC<{ player: HiredPlayer; slot: LineupSlot }> = ({
@@ -109,15 +149,18 @@ export const PlayerSelect: FC<Props> = ({ slot, label, selected, target }) => {
         const count = appearances.get(player.id) ?? 0;
         const level = appearanceLevel(count);
         const isExcluded = excluded.has(player.id);
+        const unavailable = !isHealthy(player) || !isUnderContract(player);
+        const status = statusBadge(player);
 
         return (
           <option
             key={player.id}
             value={player.id}
             className={option}
-            disabled={isExcluded}
+            disabled={isExcluded || unavailable}
           >
             <PlayerInfo player={player} slot={slot} />
+            {status && <Badge level={status.level}>{status.label}</Badge>}
             {level && <Badge level={level}>{count}</Badge>}
           </option>
         );

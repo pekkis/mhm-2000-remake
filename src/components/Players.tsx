@@ -27,6 +27,7 @@ import { countries } from "@/data/countries";
 import type { HiredPlayer, Contract } from "@/state/player";
 import type { HumanTeam } from "@/state/game";
 import type { Lineup } from "@/state/lineup";
+import { isUnderContract } from "@/services/player";
 
 /**
  * WIP port of QB `SUB katsopel` (`ILEX5.BAS:2391`), reached via the
@@ -194,7 +195,6 @@ const PlayerActions: FC<{ player: HiredPlayer; lineup: Lineup }> = ({
       <Button
         terse
         secondary
-        title="TODO: kapteenin nimitys (kapu(pv) puuttuu HumanTeamilta)"
         onClick={() => {
           game.send({
             type: "SET_CAPTAIN",
@@ -210,8 +210,11 @@ const PlayerActions: FC<{ player: HiredPlayer; lineup: Lineup }> = ({
       <Button
         terse
         secondary
-        disabled
-        title="TODO: sopimusext SUB ei ole vielä portattu"
+        disabled={isUnderContract(player)}
+        title="Jatka sopimusta"
+        onClick={() => {
+          // invoke contract extension machine!
+        }}
       >
         Jatka sopimusta (e)
       </Button>

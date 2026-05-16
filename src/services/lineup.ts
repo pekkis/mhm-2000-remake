@@ -682,13 +682,12 @@ export const performanceModifier = (player: HiredPlayer): number =>
  * Availability gate for auto-lineup assignment.
  * Port of QB `inj = 0 AND svu > 0 AND kun >= 0` (ILEX5.BAS:828).
  *
- * `svu > 0` is implicit — HiredPlayer always has a contract.
- * A player is available when they carry no blocking effects
- * (injury, suspension, strike, national-team absence) and
- * their condition is non-negative.
+ * A player is available when they are under contract, carry no
+ * blocking effects (injury, suspension, strike, national-team
+ * absence), and their condition is non-negative.
  */
 export const isAvailable = (player: HiredPlayer): boolean =>
-  player.effects.every((e) => e.type === "skill") && player.condition >= 0;
+  isUnderContract(player) && isHealthy(player) && player.condition >= 0;
 
 type Pool = "regular" | "pp" | "pk";
 
