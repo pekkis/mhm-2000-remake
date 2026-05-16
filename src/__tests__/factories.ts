@@ -214,6 +214,9 @@ export const createHumanManager = (
   completedActions: [],
   stats: { games: {}, achievements: emptyAchievements() },
   mailbox: {},
+  options: {
+    automaticLineup: false
+  },
   ...overrides
 });
 

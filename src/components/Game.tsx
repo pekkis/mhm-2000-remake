@@ -20,6 +20,7 @@ import Stats from "./Stats";
 import Gala from "./Gala";
 import ConfirmBudget from "./ConfirmBudget";
 import SponsorNegotiationView from "./SponsorNegotiationView";
+import ContractNegotiationView from "./transfer-market/ContractNegotiationView";
 import { NotificationsContext } from "@/context/notifications-context";
 import type { ActorRefFrom } from "xstate";
 import type { notificationsMachine } from "@/machines/notifications";
@@ -51,6 +52,13 @@ const useUiPhase = (): string | undefined => {
       })
     ) {
       return "sponsorNegotiating";
+    }
+    if (
+      state.matches({
+        in_game: { executing_phases: { action: "negotiating" } }
+      })
+    ) {
+      return "negotiating";
     }
     if (state.matches({ in_game: { executing_phases: "action" } })) {
       return "action";
@@ -138,6 +146,9 @@ const Phase: FC<PhaseProps> = ({ phase }) => {
 
     case phase === "sponsorNegotiating":
       return <SponsorNegotiationView />;
+
+    case phase === "negotiating":
+      return <ContractNegotiationView />;
 
     case phase === "action":
       return (

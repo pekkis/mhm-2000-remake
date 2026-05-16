@@ -132,6 +132,9 @@ const buildContext = (
             flags: {},
             sponsor: undefined,
             completedActions: [],
+            options: {
+              automaticLineup: false
+            },
             mailbox: {}
           };
           return [m.id, human];

@@ -217,6 +217,17 @@ const ActionMenu = () => {
         label="Sopupeli"
       />
 
+      <Switch
+        checked={manager.options.automaticLineup}
+        onCheckedChange={(checked) =>
+          gameActor.send({
+            type: "SET_OPTION_AUTOMATIC_LINES",
+            payload: { manager: manager.id, option: checked }
+          })
+        }
+        label="Automaattiset ketjut"
+      />
+
       <Cluster gap="xs" justify="space-between">
         {themeOptions.map((opt) => (
           <Button

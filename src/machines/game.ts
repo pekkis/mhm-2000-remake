@@ -11,8 +11,8 @@ import {
   humanManagers,
   activeManager,
   teamsManager,
-  managersTeam,
-  humanManagersTeam
+  humanManagersTeam,
+  humanManagerById
 } from "@/machines/selectors";
 import calendar, { type TurnPhase } from "@/data/calendar";
 import competitionData from "@/data/competitions";
@@ -231,6 +231,10 @@ export type GameMachineEvents =
       payload: { manager: string };
     }
   | {
+      type: "SET_OPTION_AUTOMATIC_LINES";
+      payload: { manager: string; option: boolean };
+    }
+  | {
       type: "ASSIGN_PLAYER_TO_LINEUP";
       payload: {
         manager: string;
@@ -327,6 +331,14 @@ export const gameMachine = setup({
             team.opponentEffects = team.opponentEffects.filter(
               (e) => e.duration > 0
             );
+
+            if (team.kind === "human") {
+              for (const player of values(team.players)) {
+                player.tags = player.tags.filter(
+                  (t) => !t.startsWith("irritated:")
+                );
+              }
+            }
           }
           draft.betting.parlayBets = [];
           draft.news.news = [];
@@ -624,6 +636,22 @@ export const gameMachine = setup({
           }
           const team = draft.teams[m.team];
           team.fixMatch = params.fixMatch;
+        })
+    ),
+
+    executeSetOptionAutomaticLines: assign(
+      (
+        { context },
+        params: {
+          manager: string;
+          option: boolean;
+        }
+      ) =>
+        produce(context, (draft) => {
+          const manager = humanManagerById(params.manager)(draft);
+          manager.options.automaticLineup = params.option;
+
+          // wire automatic lineup assignment here
         })
     ),
 
@@ -1321,6 +1349,19 @@ export const gameMachine = setup({
         params: ({ event }) => event.payload
       }
     },
+    SET_OPTION_AUTOMATIC_LINES: {
+      actions: [
+        {
+          type: "executeSetOptionAutomaticLines",
+          params: ({ event }) => event.payload
+        },
+        {
+          type: "executeAutoLineup",
+          params: ({ event }) => event.payload
+        }
+      ]
+    },
+
     TRANSFER_TO_ARENA_FUND: {
       actions: {
         type: "executeTransferToArenaFund",

@@ -19,7 +19,6 @@ import {
 import type { MarketPlayer, Player } from "@/state/player";
 import type { FC } from "react";
 import { prop, sortBy, values } from "remeda";
-import ContractNegotiationView from "./ContractNegotiationView";
 import { Link } from "react-router-dom";
 
 const POSITION_ORDER: Record<Player["position"], number> = {
@@ -37,19 +36,7 @@ const playerSorter = sortBy<MarketPlayer[]>(
   [prop("initial"), "asc"]
 );
 
-const useActionSubState = () =>
-  GameMachineContext.useSelector((snap) => {
-    if (
-      snap.matches({
-        in_game: { executing_phases: { action: "negotiating" } }
-      })
-    ) {
-      return "negotiating";
-    }
-    return "browsing";
-  });
-
-const TransferMarketBrowser: FC = () => {
+const TransferMarketPage: FC = () => {
   const players = useGameContext(marketPlayers);
   const manager = useGameContext(activeManager);
   const gameActor = GameMachineContext.useActorRef();
@@ -134,15 +121,6 @@ const TransferMarketBrowser: FC = () => {
       </Stack>
     </AdvancedHeaderedPage>
   );
-};
-
-const TransferMarketPage: FC = () => {
-  const subState = useActionSubState();
-
-  if (subState === "negotiating") {
-    return <ContractNegotiationView />;
-  }
-  return <TransferMarketBrowser />;
 };
 
 export default TransferMarketPage;

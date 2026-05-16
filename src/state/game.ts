@@ -69,6 +69,10 @@ export type HumanManager = BaseManager & {
   tags: string[];
   sponsor: SponsorDeal | undefined;
   completedActions: SeasonAction[];
+
+  options: {
+    automaticLineup: boolean;
+  };
 };
 
 export type TeamEffect = {

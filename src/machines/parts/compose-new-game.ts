@@ -55,7 +55,10 @@ const buildHumanManager = (
     balance,
     flags: {},
     team: draft.team,
-    mailbox: {}
+    mailbox: {},
+    options: {
+      automaticLineup: false
+    }
   };
 };
 
