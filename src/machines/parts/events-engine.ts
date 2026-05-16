@@ -1,4 +1,4 @@
-import newEvents from "@/game/new-events";
+import eventsMap from "@/game/events";
 import type { DeclarativeEvent } from "@/types/event";
 import type { BaseEventFields, BaseEventCreationFields } from "@/types/base";
 import type { NotifyFn, SpawnEventFn } from "@/game/event-effects";
@@ -10,7 +10,7 @@ import { createUniqueId } from "@/services/id";
 // Heterogeneous registry lookup — `newEvents` is `as const` for per-event
 // payload typing at known keys; the interpreter looks events up by string
 // from `eventsMap`, so we widen here. See `new-events/index.ts` for why.
-export const eventRegistry = newEvents as unknown as Record<
+export const eventRegistry = eventsMap as Record<
   string,
   DeclarativeEvent<BaseEventFields, BaseEventCreationFields> | undefined
 >;
@@ -82,6 +82,7 @@ export function runInterpreter(
       body(draft, notify);
     })
   );
+
   for (const n of pending) {
     enqueue.sendTo("notifications", {
       type: "PUSH" as const,

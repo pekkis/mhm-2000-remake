@@ -66,7 +66,7 @@ import {
   runInterpreter,
   spawnEvent
 } from "@/machines/parts/events-engine";
-import eventsMap from "@/game/new-events/table";
+import eventsMap from "@/game/events/table";
 import { runGala } from "@/machines/parts/gala";
 import { runGameday } from "@/machines/parts/gameday";
 import { runSeasonStart } from "@/machines/parts/season-start";

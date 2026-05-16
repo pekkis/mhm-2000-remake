@@ -3,7 +3,7 @@ import { entries } from "remeda";
 import Markdown from "@/components/Markdown";
 import Button from "@/components/ui/Button";
 import Stack from "@/components/ui/Stack";
-import newEvents from "@/game/new-events";
+import newEvents from "@/game/events";
 import Box from "@/components/ui/Box";
 import type { StoredEvent } from "@/state/event";
 import type { DeclarativeEvent } from "@/types/event";
@@ -13,10 +13,8 @@ import type { BaseEventFields } from "@/types/base";
 // sites, but at the call site we look up by a runtime id, so we widen
 // to a string-keyed lookup of the loosest declarative-event shape.
 type AnyEvent = DeclarativeEvent<BaseEventFields & Record<string, unknown>>;
-const eventRegistry = newEvents as unknown as Record<
-  string,
-  AnyEvent | undefined
->;
+
+const eventRegistry = newEvents as Record<string, AnyEvent | undefined>;
 
 type EventResolverProps = {
   event: StoredEvent;
