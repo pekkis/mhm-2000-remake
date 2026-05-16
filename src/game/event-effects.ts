@@ -9,7 +9,7 @@ import type { NotificationData } from "@/machines/notification";
 import { computeStats } from "@/services/competition-type";
 import { humanManagerById, managersTeam } from "@/machines/selectors";
 import type { CountryIso } from "@/data/countries";
-import type { MarketPlayer } from "@/state/player";
+import type { HiredPlayer, MarketPlayer } from "@/state/player";
 import type { RegularContract } from "@/state/player";
 
 /**
@@ -161,9 +161,17 @@ export type EventEffect =
       playerWasHappy: boolean;
     }
   | {
-      type: "irritateMarketPlayer";
+      type: "signRosterPlayer";
+      manager: string;
+      player: HiredPlayer;
+      contract: RegularContract;
+      playerWasHappy: boolean;
+    }
+  | {
+      type: "irritatePlayer";
       managerId: string;
       playerId: string;
+      kind: "market" | "hired";
     }
 
   // injury
@@ -387,8 +395,31 @@ export function applyEffect(
       delete draft.transferMarket.players[effect.player.id];
       return;
     }
-    case "irritateMarketPlayer": {
-      const player = draft.transferMarket.players[effect.playerId];
+
+    case "signRosterPlayer": {
+      const m = humanManagerById(effect.manager)(draft);
+      if (!m || m.team === undefined) {
+        return;
+      }
+      const team = draft.teams[m.team];
+      if (!team || team.kind !== "human") {
+        return;
+      }
+
+      team.players[effect.player.id].contract = effect.contract;
+      return;
+    }
+
+    case "irritatePlayer": {
+      const team = managersTeam(effect.managerId)(draft);
+      if (team.kind === "ai") {
+        return;
+      }
+
+      const player =
+        effect.kind === "market"
+          ? draft.transferMarket.players[effect.playerId]
+          : team.players[effect.playerId];
       if (player) {
         player.tags.push(`irritated:${effect.managerId}`);
       }

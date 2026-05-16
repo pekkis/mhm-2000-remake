@@ -16,7 +16,12 @@
 import { setup, assign } from "xstate";
 import type { Random } from "random-js";
 import type { TeamBudget } from "@/data/mhm2000/budget";
-import type { MarketPlayer, Player, RegularContract } from "@/state/player";
+import type {
+  HiredPlayer,
+  MarketPlayer,
+  Player,
+  RegularContract
+} from "@/state/player";
 import type { HumanManager } from "@/state/game";
 import type { EventEffect } from "@/game/event-effects";
 import {
@@ -88,7 +93,7 @@ type InternalNegotiationResult =
 // ─── Machine context ──────────────────────────────────────────────────────────
 
 export type ContractNegotiationContext = {
-  player: MarketPlayer;
+  player: MarketPlayer | HiredPlayer;
   mode: ContractNegotiationMode;
   manager: HumanManager;
   budget: TeamBudget;
@@ -212,11 +217,23 @@ function buildOutputEffects(ctx: ContractNegotiationContext): EventEffect[] {
     return [];
   }
   if (result.outcome === "signed") {
+    if (ctx.mode === "market") {
+      return [
+        {
+          type: "signMarketPlayer",
+          manager: ctx.manager.id,
+          player: ctx.player as MarketPlayer,
+          contract: result.contract,
+          playerWasHappy: result.playerWasHappy
+        }
+      ];
+    }
+
     return [
       {
-        type: "signMarketPlayer",
+        type: "signRosterPlayer",
         manager: ctx.manager.id,
-        player: ctx.player,
+        player: ctx.player as HiredPlayer,
         contract: result.contract,
         playerWasHappy: result.playerWasHappy
       }
@@ -225,9 +242,10 @@ function buildOutputEffects(ctx: ContractNegotiationContext): EventEffect[] {
   if (result.outcome === "refused" || result.outcome === "playerWalked") {
     return [
       {
-        type: "irritateMarketPlayer",
+        type: "irritatePlayer",
         managerId: ctx.manager.id,
-        playerId: ctx.player.id
+        playerId: ctx.player.id,
+        kind: ctx.mode === "market" ? "market" : "hired"
       }
     ];
   }

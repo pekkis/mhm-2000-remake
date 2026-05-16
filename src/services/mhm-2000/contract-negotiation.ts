@@ -7,7 +7,7 @@
  */
 
 import type { TeamBudget } from "@/data/mhm2000/budget";
-import type { MarketPlayer } from "@/state/player";
+import type { HiredPlayer, MarketPlayer } from "@/state/player";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -141,7 +141,7 @@ export function computeNhlOptionThreshold(age: number, skill: number): number {
  * to compute acceptance probability.
  */
 export function computeAskingPrice(
-  player: MarketPlayer,
+  player: MarketPlayer | HiredPlayer,
   baseSalary: number,
   teamNeedsRating: number,
   duration: number,
