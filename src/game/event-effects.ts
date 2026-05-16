@@ -172,6 +172,19 @@ export type EventEffect =
       managerId: string;
       playerId: string;
       rounds: number;
+    }
+  | {
+      type: "playerSuspension";
+      managerId: string;
+      playerId: string;
+      rounds: number;
+    }
+  | {
+      type: "playerMood";
+      managerId: string;
+      playerId: string;
+      amount: number;
+      rounds: number;
     };
 
 /**
@@ -394,6 +407,49 @@ export function applyEffect(
         if (!alreadyInjured) {
           player.effects.push({
             type: "injury",
+            duration: effect.rounds
+          });
+        }
+      }
+
+      return;
+    }
+
+    case "playerSuspension": {
+      const team = managersTeam(effect.managerId)(draft);
+      if (team.kind === "ai") {
+        return;
+      }
+
+      const player = team.players[effect.playerId];
+      if (player) {
+        const alreadySuspended = player.effects.some(
+          (e) => e.type === "suspension"
+        );
+        if (!alreadySuspended) {
+          player.effects.push({
+            type: "suspension",
+            duration: effect.rounds
+          });
+        }
+      }
+
+      return;
+    }
+
+    case "playerMood": {
+      const team = managersTeam(effect.managerId)(draft);
+      if (team.kind === "ai") {
+        return;
+      }
+
+      const player = team.players[effect.playerId];
+      if (player) {
+        const alreadyMoodful = player.effects.some((e) => e.type === "skill");
+        if (!alreadyMoodful) {
+          player.effects.push({
+            type: "skill",
+            amount: effect.amount,
             duration: effect.rounds
           });
         }
