@@ -1471,7 +1471,14 @@ export const gameMachine = setup({
               entry: assign(({ context }) =>
                 produce(context, (draft) => {
                   for (const team of values(draft.teams)) {
-                    if (team.kind === "human") {
+                    if (team.kind !== "human" || !team.manager) continue;
+                    const manager = draft.managers[team.manager];
+                    if (
+                      manager?.kind === "human" &&
+                      manager.options.automaticLineup
+                    ) {
+                      team.lineup = autoLineup(values(team.players));
+                    } else {
                       removeInvalidPlayersFromLineup(team.lineup, team.players);
                     }
                   }
