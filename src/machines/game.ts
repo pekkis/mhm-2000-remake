@@ -11,7 +11,7 @@ import {
   humanManagers,
   activeManager
 } from "@/machines/selectors";
-import calendar from "@/data/calendar";
+import calendar, { type TurnPhase } from "@/data/calendar";
 import competitionData from "@/data/competitions";
 import { computeStats } from "@/services/competition-type";
 import strategies, {
@@ -1144,7 +1144,12 @@ export const gameMachine = setup({
   },
 
   guards: {
-    has_phase: ({ context }, params: { phase: string }) =>
+    has_seeds: ({ context }) => calendar[context.turn.round].seed.length > 0,
+
+    has_gamedays: ({ context }) =>
+      calendar[context.turn.round].gamedays.length > 0,
+
+    has_phase: ({ context }, params: { phase: TurnPhase }) =>
       calendar[context.turn.round]?.phases.includes(params.phase) ?? false,
     calendar_in_bounds: ({ context }) => context.turn.round < calendar.length,
     /**
@@ -1665,7 +1670,7 @@ export const gameMachine = setup({
             gameday_check: {
               always: [
                 {
-                  guard: { type: "has_phase", params: { phase: "gameday" } },
+                  guard: { type: "has_gamedays" },
                   target: "gameday"
                 },
                 { target: "calculations_check" }
@@ -1822,7 +1827,7 @@ export const gameMachine = setup({
             seed_check: {
               always: [
                 {
-                  guard: { type: "has_phase", params: { phase: "seed" } },
+                  guard: { type: "has_seeds" },
                   target: "seed"
                 },
                 { target: "gala_check" }
