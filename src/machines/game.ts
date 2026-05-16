@@ -321,6 +321,7 @@ export const gameMachine = setup({
           draft.news.news = [];
           draft.news.announcements = {};
           draft.turn.round += 1;
+          draft.turn.activeTeams = [];
 
           // QB ILEX5.BAS:241 — kriisi = 0 at round start
           for (const m of values(draft.managers)) {

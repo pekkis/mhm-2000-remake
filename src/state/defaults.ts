@@ -24,7 +24,7 @@ import { countries as countryList } from "@/data/countries";
 
 import type { GameContext } from "./game-context";
 import type { Country } from "./country";
-import type { Team } from "./game";
+import type { GameTurn, Team } from "./game";
 import type { Competition, CompetitionId } from "@/types/competitions";
 import { managerFromDefinition } from "@/services/manager";
 import { createUniqueId } from "@/services/id";
@@ -256,7 +256,12 @@ export const createDefaultGameContext = (): GameContext => {
 
   const ctx = {
     // game
-    turn: { season: 2000, round: 0, phase: undefined },
+    turn: {
+      season: 2000,
+      round: 0,
+      activeManagers: [],
+      activeTeams: []
+    } satisfies GameTurn,
     flags: {
       jarko: false,
       usa: false,

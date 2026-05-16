@@ -159,8 +159,16 @@ export type WorldChampionshipEntry = {
   random: number;
 };
 
+export type GameTurn = {
+  season: number;
+  round: number;
+
+  activeManagers: string[];
+  activeTeams: number[];
+};
+
 export type GameState = {
-  turn: { season: number; round: number; phase: string | undefined };
+  turn: GameTurn;
   flags: GameFlags;
   managers: Record<string, Manager>;
   competitions: Record<CompetitionId, Competition>;

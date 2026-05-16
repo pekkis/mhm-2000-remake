@@ -155,6 +155,11 @@ export function runGameday(draft: Draft<GameContext>): EventEffect[] {
 
         effects = effects.concat(generateEffectsFromMatchResult(result));
 
+        draft.turn.activeTeams.push(result.home.team.id);
+        draft.turn.activeTeams.push(result.away.team.id);
+        draft.turn.activeManagers.push(result.home.manager.id);
+        draft.turn.activeManagers.push(result.away.manager.id);
+
         const legacyResult = toGameResult(result);
 
         pairing.result = legacyResult;
