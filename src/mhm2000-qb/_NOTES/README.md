@@ -79,6 +79,19 @@ kausikorttimaar` season-ticket drive, gate revenue and ancillary
     income, sponsor box bonus, team-strength capacity floor. Read
     before touching anything that touches `taso/ppiste/paikka`,
     attendance, season tickets, or gate revenue.
+- [PRANKS.md](PRANKS.md) — full decode of the `jäynä` system: the
+  7-slot catalogue (`JAYNAT.M2K`), `SUB meanstuff` buy menu, `SUB
+  jaynacheck` human-team resolver, the `uutisia`-driven CPU
+  resolver block (`SUB muilutus` + `SUB skandal`), `SUB protesti`,
+  SOPUPELI's three-branch match-engine integration in `SUB ottpel`,
+  the `jaynax(slot, team)` queue dual-index quirk, calendar gating
+  (`kr <= 68`, last-round PROTESTI-only), `sattuma`/`uutisia`
+  random-event tie-ins (cases 33-34, 42, 92, 108-114, 132-135), and
+  hotseat multiplayer semantics (SOPUPELI grey-out for managed
+  targets, KYTTÄYSKEIKKA perp attribution, asymmetric human-vs-CPU
+  morale hits, per-turn `jaynteh = 0` reset). Includes the SUB-list
+  disambiguator that `plajaytajoukkueet`/`playoffplajays` are NOT
+  prank SUBs (the names just contain the "plajay" fragment).
 - [CRISIS-MEETING.md](CRISIS-MEETING.md) — full decode of `SUB
 kriisipalaveri` (three-tier morale recovery: locker-room talk / dry
   sauna / wet sauna), the captain (`kapu()`) inventory across set/clear
