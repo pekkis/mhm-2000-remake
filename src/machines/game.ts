@@ -337,6 +337,37 @@ export const gameMachine = setup({
                 player.tags = player.tags.filter(
                   (t) => !t.startsWith("irritated:")
                 );
+
+                player.effects = player.effects.map((effect) => {
+                  if (
+                    effect.type === "injury" ||
+                    effect.type === "suspension" ||
+                    effect.type === "skill"
+                  ) {
+                    return {
+                      ...effect,
+                      duration: effect.duration - 1
+                    };
+                  }
+
+                  return effect;
+                });
+
+                player.effects = player.effects.filter((effect) => {
+                  if (
+                    effect.type === "injury" ||
+                    effect.type === "suspension" ||
+                    effect.type === "skill"
+                  ) {
+                    if (effect.duration === 0) {
+                      return false;
+                    }
+
+                    return true;
+                  }
+
+                  return true;
+                });
               }
             }
           }
@@ -556,6 +587,24 @@ export const gameMachine = setup({
         }
         const team = draft.teams[m.team];
         if (team.kind !== "human") {
+          return;
+        }
+        team.lineup = autoLineup(values(team.players));
+      })
+    ),
+
+    /**
+     * If the active manager has `automaticLineup` enabled, rebuild
+     * the lineup. Chain after any roster-changing action.
+     */
+    autoLineupForActiveManager: assign(({ context }) =>
+      produce(context, (draft) => {
+        const m = activeManager(draft);
+        if (m.kind !== "human" || !m.options.automaticLineup) {
+          return;
+        }
+        const team = draft.teams[m.team!];
+        if (!team || team.kind !== "human") {
           return;
         }
         team.lineup = autoLineup(values(team.players));
@@ -1599,6 +1648,7 @@ export const gameMachine = setup({
                                 );
                               }
                             );
+                            enqueue({ type: "autoLineupForActiveManager" });
                           }
                         ),
                         target: "browsing"
@@ -1719,6 +1769,7 @@ export const gameMachine = setup({
                                 m.crisisMeetingHeld = true;
                               }
                             );
+                            enqueue({ type: "autoLineupForActiveManager" });
                           }
                         ),
                         target: "browsing"

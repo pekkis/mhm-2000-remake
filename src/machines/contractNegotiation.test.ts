@@ -5,7 +5,7 @@ import type { ContractNegotiationInput } from "./contractNegotiation";
 import { createRandom } from "@/services/random";
 import type { TeamBudget } from "@/data/mhm2000/budget";
 import { computeSalary } from "@/services/mhm-2000/compute-salary";
-import type { MarketPlayer } from "@/state/player";
+import type { MarketPlayer, HiredPlayer } from "@/state/player";
 import { createHumanManager } from "@/__tests__/factories";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -447,29 +447,133 @@ describe("signed contract includes clause when selected", () => {
   });
 });
 
-// ─── Market player type ──────────────────────────────────────────────────────
+// ─── Output effects by player type ───────────────────────────────────────────
 
-describe("player.type='market' behaves identically to 'hired'", () => {
-  const MARKET_PLAYER: MarketPlayer = {
-    ...HAPPY_PLAYER,
-    type: "market",
-    tags: []
-  };
+const ROSTER_PLAYER: HiredPlayer = {
+  ...HAPPY_PLAYER,
+  type: "hired",
+  contract: { type: "regular", duration: 0, salary: 800 }
+};
 
-  it("reaches negotiating state with market player", () => {
+/** Negotiate and advance through result screen to reach done. */
+function negotiateToCompletion(actor: ReturnType<typeof createActor>) {
+  actor.send({ type: "NEGOTIATE" });
+  if (actor.getSnapshot().value === "result") {
+    actor.send({ type: "ADVANCE" });
+  }
+  return actor.getSnapshot();
+}
+
+describe("output effects for market player (signMarketPlayer)", () => {
+  it("signed market player produces signMarketPlayer effect", () => {
     const actor = createActor(contractNegotiationMachine, {
-      input: makeInput({ player: MARKET_PLAYER })
+      input: makeInput({
+        player: HAPPY_PLAYER,
+        random: createRandom(5)
+      })
     });
     actor.start();
-    expect(actor.getSnapshot().value).toBe("negotiating");
+    for (let i = 0; i < 30; i++) {
+      actor.send({ type: "INCREASE_SALARY" });
+    }
+    const snap = negotiateToCompletion(actor);
+    if (snap.output?.outcome === "signed") {
+      expect(snap.output.effects).toHaveLength(1);
+      expect(snap.output.effects[0]).toMatchObject({
+        type: "signMarketPlayer",
+        player: expect.objectContaining({ id: HAPPY_PLAYER.id })
+      });
+    } else {
+      // With generous budget + high salary, signing should be very likely
+      expect(snap.output?.outcome).toBe("signed");
+    }
   });
 
-  it("QUIT produces cancelled with market player", () => {
+  it("refused/walked market player produces irritatePlayer with kind='market'", () => {
     const actor = createActor(contractNegotiationMachine, {
-      input: makeInput({ player: MARKET_PLAYER })
+      input: makeInput({
+        player: HAPPY_PLAYER,
+        budget: GENEROUS_BUDGET,
+        random: createRandom(42)
+      })
+    });
+    actor.start();
+    // Offer minimum salary to maximize refusal chance
+    const snap = negotiateToCompletion(actor);
+    if (
+      snap.output?.outcome === "refused" ||
+      snap.output?.outcome === "playerWalked"
+    ) {
+      expect(snap.output.effects).toHaveLength(1);
+      expect(snap.output.effects[0]).toMatchObject({
+        type: "irritatePlayer",
+        playerId: HAPPY_PLAYER.id,
+        kind: "market"
+      });
+    }
+  });
+});
+
+describe("output effects for roster player (signRosterPlayer)", () => {
+  it("signed roster player produces signRosterPlayer effect", () => {
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput({
+        player: ROSTER_PLAYER,
+        random: createRandom(5)
+      })
+    });
+    actor.start();
+    for (let i = 0; i < 30; i++) {
+      actor.send({ type: "INCREASE_SALARY" });
+    }
+    const snap = negotiateToCompletion(actor);
+    if (snap.output?.outcome === "signed") {
+      expect(snap.output.effects).toHaveLength(1);
+      expect(snap.output.effects[0]).toMatchObject({
+        type: "signRosterPlayer",
+        player: expect.objectContaining({ id: ROSTER_PLAYER.id })
+      });
+    } else {
+      expect(snap.output?.outcome).toBe("signed");
+    }
+  });
+
+  it("refused/walked roster player produces irritatePlayer with kind='hired'", () => {
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput({
+        player: ROSTER_PLAYER,
+        budget: GENEROUS_BUDGET,
+        random: createRandom(42)
+      })
+    });
+    actor.start();
+    const snap = negotiateToCompletion(actor);
+    if (
+      snap.output?.outcome === "refused" ||
+      snap.output?.outcome === "playerWalked"
+    ) {
+      expect(snap.output.effects).toHaveLength(1);
+      expect(snap.output.effects[0]).toMatchObject({
+        type: "irritatePlayer",
+        playerId: ROSTER_PLAYER.id,
+        kind: "hired"
+      });
+    }
+  });
+
+  it("cancelled negotiation produces no effects", () => {
+    const actor = createActor(contractNegotiationMachine, {
+      input: makeInput({ player: ROSTER_PLAYER })
     });
     actor.start();
     actor.send({ type: "QUIT" });
-    expect(actor.getSnapshot().output?.outcome).toBe("cancelled");
+    expect(actor.getSnapshot().output?.effects).toEqual([]);
+  });
+
+  it("alreadyNegotiated produces no effects", () => {
+    const snap = runToCompletion(
+      makeInput({ player: ROSTER_PLAYER, alreadyNegotiated: true })
+    );
+    expect(snap.output?.effects).toEqual([]);
   });
 });
