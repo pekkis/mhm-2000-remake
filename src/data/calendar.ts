@@ -10,13 +10,7 @@ export type Seed = {
   phase: number;
 };
 
-export type TurnPhase =
-  | "action"
-  | "prank"
-  | "event_creation"
-  | "event"
-  | "news"
-  | "gala";
+export type TurnPhase = "action" | "event" | "news" | "gala";
 
 export type CalendarEntry = {
   round: number;
@@ -50,19 +44,19 @@ const entries: RawCalendarEntry[] = [
       { competition: "cup", phase: 0 }
     ],
     gamedays: [],
-    crisisMeeting: true,
-    createRandomEvent: true,
-    pranks: true,
+    crisisMeeting: false,
+    createRandomEvent: false,
+    pranks: false,
     fitnessRecovery: false,
     readinessDrift: false,
-    transferMarket: true,
+    transferMarket: false,
     tags: []
   },
 
   // round 0 (KIERO.M2K row 1, type 99) — preseason: transfer market opens, mass börsi generation + cup draw
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -83,7 +77,7 @@ const entries: RawCalendarEntry[] = [
   // round 1 (KIERO.M2K row 2, type 99) — preseason: sponsorit (sponsor draw)
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -97,7 +91,7 @@ const entries: RawCalendarEntry[] = [
   // round 2 (KIERO.M2K row 3, type 99) — preseason filler
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -111,7 +105,7 @@ const entries: RawCalendarEntry[] = [
   // round 3 (KIERO.M2K row 4, type 99) — preseason filler
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -125,7 +119,7 @@ const entries: RawCalendarEntry[] = [
   // round 4 (KIERO.M2K row 5, type 99) — preseason filler
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -139,7 +133,7 @@ const entries: RawCalendarEntry[] = [
   // round 5 (KIERO.M2K row 6, type 99) — preseason filler
   {
     title: "Esikausi",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -153,7 +147,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 6 (KIERO.M2K row 7, type 4) — training match
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["practice"],
     seed: [],
     transferMarket: true,
@@ -171,7 +165,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 7 (KIERO.M2K row 8, type 4) — training match: valitsestrat (strategy selection)
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["practice"],
     seed: [],
     transferMarket: true,
@@ -189,7 +183,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 8 (KIERO.M2K row 9, type 4) — training match: tremaar (tactics refresh)
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["practice"],
     seed: [],
     transferMarket: true,
@@ -202,7 +196,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 9 (KIERO.M2K row 10, type 4) — training match: zreseasongala (season-opening gala)
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["practice"],
     seed: [],
     transferMarket: true,
@@ -222,7 +216,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 10 (KIERO.M2K row 11, type 1) — regular gameday 1
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -235,7 +229,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 11 (KIERO.M2K row 12, type 1) — regular gameday 2
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -248,7 +242,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 12 (KIERO.M2K row 13, type 3) — cup gameday
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [],
     transferMarket: true,
@@ -261,7 +255,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 13 (KIERO.M2K row 14, type 1) — regular gameday 3
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -274,7 +268,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 14 (KIERO.M2K row 15, type 3) — cup gameday (phase 0 leg 2) + cuparpo (R32 draw)
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [{ competition: "cup", phase: 1 }],
     transferMarket: true,
@@ -301,7 +295,7 @@ const entries: RawCalendarEntry[] = [
   // round 16 (KIERO.M2K row 17, type 96) — vapaa viikonloppu (free weekend)
   {
     title: "Vapaa viikonloppu",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -314,7 +308,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 17 (KIERO.M2K row 18, type 1) — regular gameday 4
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -327,7 +321,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 18 (KIERO.M2K row 19, type 1) — regular gameday 5
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -353,7 +347,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 20 (KIERO.M2K row 21, type 1) — regular gameday 6
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -366,7 +360,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 21 (KIERO.M2K row 22, type 1) — regular gameday 7 + tournament invitation window
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -379,7 +373,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 22 (KIERO.M2K row 23, type 1) — regular gameday 8 + tournament invitation window closes
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -405,7 +399,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 24 (KIERO.M2K row 25, type 1) — regular gameday 9
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -419,7 +413,7 @@ const entries: RawCalendarEntry[] = [
   // round 25 (KIERO.M2K row 26, type 97) — maajoukkuetauko (national team break)
   {
     title: "Maajoukkuetauko",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -432,7 +426,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 26 (KIERO.M2K row 27, type 1) — regular gameday 10
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [
       {
@@ -450,7 +444,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 27 (KIERO.M2K row 28, type 3) — cup gameday
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [],
     transferMarket: true,
@@ -463,7 +457,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 28 (KIERO.M2K row 29, type 1) — regular gameday 11
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -476,7 +470,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 29 (KIERO.M2K row 30, type 3) — cup gameday (phase 1 leg 2) + cuparpo (R16 draw)
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [{ competition: "cup", phase: 2 }],
     transferMarket: true,
@@ -502,7 +496,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 31 (KIERO.M2K row 32, type 1) — regular gameday 12
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -515,7 +509,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 32 (KIERO.M2K row 33, type 1) — regular gameday 13
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -528,7 +522,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 33 (KIERO.M2K row 34, type 1) — regular gameday 14
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -554,7 +548,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 35 (KIERO.M2K row 36, type 1) — regular gameday 15
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -568,7 +562,7 @@ const entries: RawCalendarEntry[] = [
   // round 36 (KIERO.M2K row 37, type 96) — vapaa viikonloppu
   {
     title: "Vapaa viikonloppu",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -581,7 +575,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 37 (KIERO.M2K row 38, type 1) — regular gameday 16
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -594,7 +588,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 38 (KIERO.M2K row 39, type 1) — regular gameday 17
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -620,7 +614,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 40 (KIERO.M2K row 41, type 1) — regular gameday 18
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -633,7 +627,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 41 (KIERO.M2K row 42, type 1) — regular gameday 19
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -646,7 +640,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 42 (KIERO.M2K row 43, type 1) — regular gameday 20
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [{ competition: "tournaments", phase: 0 }],
     transferMarket: true,
@@ -659,7 +653,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 43 (KIERO.M2K row 44, type 1) — regular gameday 21
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -672,7 +666,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 44 (KIERO.M2K row 45, type 3) — cup gameday
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [],
     transferMarket: true,
@@ -685,7 +679,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 45 (KIERO.M2K row 46, type 1) — regular gameday 22
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -700,7 +694,7 @@ const entries: RawCalendarEntry[] = [
   {
     title: "Kutsuturnaukset",
     seed: [],
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["tournaments"],
     transferMarket: true,
     crisisMeeting: true,
@@ -713,7 +707,7 @@ const entries: RawCalendarEntry[] = [
   // round 47 (KIERO.M2K row 48, type 97) — maajoukkuetauko
   {
     title: "Maajoukkuetauko",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [],
     transferMarket: true,
@@ -726,7 +720,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 48 (KIERO.M2K row 49, type 1) — regular gameday 23 + suunnitelma (budget / planning)
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -739,7 +733,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 49 (KIERO.M2K row 50, type 3) — cup gameday (phase 2 leg 2) + cuparpo (QF draw)
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [{ competition: "cup", phase: 3 }],
     transferMarket: true,
@@ -752,7 +746,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 50 (KIERO.M2K row 51, type 1) — regular gameday 24
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -765,7 +759,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 51 (KIERO.M2K row 52, type 1) — regular gameday 25
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -778,7 +772,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 52 (KIERO.M2K row 53, type 1) — regular gameday 26 + mmkisaalku (WCh starts)
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -791,7 +785,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 53 (KIERO.M2K row 54, type 1) — regular gameday 27
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -804,7 +798,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 54 (KIERO.M2K row 55, type 1) — regular gameday 28
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -831,7 +825,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 56 (KIERO.M2K row 57, type 1) — regular gameday 29 — last round with market open
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: true,
@@ -844,7 +838,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 57 (KIERO.M2K row 58, type 1) — regular gameday 30 — market just closed
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -857,7 +851,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 58 (KIERO.M2K row 59, type 3) — cup gameday
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [],
     transferMarket: false,
@@ -870,7 +864,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 59 (KIERO.M2K row 60, type 1) — regular gameday 31
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -883,7 +877,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 60 (KIERO.M2K row 61, type 3) — cup gameday (phase 3 leg 2) + cuparpo (SF draw)
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [{ competition: "cup", phase: 4 }],
     transferMarket: false,
@@ -896,7 +890,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 61 (KIERO.M2K row 62, type 1) — regular gameday 32
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -909,7 +903,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 62 (KIERO.M2K row 63, type 1) — regular gameday 33
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -923,7 +917,7 @@ const entries: RawCalendarEntry[] = [
   // round 63 (KIERO.M2K row 64, type 97) — maajoukkuetauko
   {
     title: "Maajoukkuetauko",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [],
     transferMarket: false,
@@ -936,7 +930,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 64 (KIERO.M2K row 65, type 1) — regular gameday 34
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -949,7 +943,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 65 (KIERO.M2K row 66, type 1) — regular gameday 35
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -962,7 +956,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 66 (KIERO.M2K row 67, type 1) — regular gameday 36
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -975,7 +969,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 67 (KIERO.M2K row 68, type 1) — regular gameday 37
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -988,7 +982,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 68 (KIERO.M2K row 69, type 1) — regular gameday 38
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1001,7 +995,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 69 (KIERO.M2K row 70, type 1) — regular gameday 39
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1014,7 +1008,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 70 (KIERO.M2K row 71, type 3) — cup gameday
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [],
     transferMarket: false,
@@ -1027,7 +1021,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 71 (KIERO.M2K row 72, type 1) — regular gameday 40
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1040,7 +1034,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 72 (KIERO.M2K row 73, type 3) — cup gameday (phase 4 leg 2) + cuparpo (Final draw)
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [{ competition: "cup", phase: 5 }],
     transferMarket: false,
@@ -1053,7 +1047,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 73 (KIERO.M2K row 74, type 1) — regular gameday 41
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1066,7 +1060,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 74 (KIERO.M2K row 75, type 1) — regular gameday 42
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1079,7 +1073,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 75 (KIERO.M2K row 76, type 1) — regular gameday 43
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1092,7 +1086,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 76 (KIERO.M2K row 77, type 1) — regular gameday 44 — last regular gameday
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1106,7 +1100,7 @@ const entries: RawCalendarEntry[] = [
   // round 77 (KIERO.M2K row 78, type 41) — QF draw
   {
     title: "Puolivälieräpläjäys",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [
       { competition: "phl", phase: 1 },
@@ -1123,7 +1117,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 78 (KIERO.M2K row 79, type 42) — QF game 1
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1136,7 +1130,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 79 (KIERO.M2K row 80, type 42) — QF game 2
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1149,7 +1143,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 80 (KIERO.M2K row 81, type 42) — QF game 3
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1162,7 +1156,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 81 (KIERO.M2K row 82, type 42) — QF game 4
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1175,7 +1169,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 82 (KIERO.M2K row 83, type 42) — QF game 5
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1189,7 +1183,7 @@ const entries: RawCalendarEntry[] = [
   // round 83 (KIERO.M2K row 84, type 43) — SF draw
   {
     title: "Välieräpläjäys",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [
       { competition: "phl", phase: 2 },
@@ -1206,7 +1200,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 84 (KIERO.M2K row 85, type 44) — SF game 1
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1219,7 +1213,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 85 (KIERO.M2K row 86, type 44) — SF game 2
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1232,7 +1226,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 86 (KIERO.M2K row 87, type 44) — SF game 3
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1245,7 +1239,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 87 (KIERO.M2K row 88, type 44) — SF game 4
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1258,7 +1252,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 88 (KIERO.M2K row 89, type 44) — SF game 5
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1272,7 +1266,7 @@ const entries: RawCalendarEntry[] = [
   // round 89 (KIERO.M2K row 90, type 45) — Final draw
   {
     title: "Finaalipläjäys",
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: [],
     seed: [
       { competition: "phl", phase: 3 },
@@ -1289,7 +1283,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 90 (KIERO.M2K row 91, type 46) — Final game 1
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1302,7 +1296,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 91 (KIERO.M2K row 92, type 46) — Final game 2
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1315,7 +1309,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 92 (KIERO.M2K row 93, type 46) — Final game 3
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1328,7 +1322,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 93 (KIERO.M2K row 94, type 46) — Final game 4
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1341,7 +1335,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 94 (KIERO.M2K row 95, type 46) — Final game 5
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["phl", "division", "mutasarja"],
     seed: [],
     transferMarket: false,
@@ -1354,7 +1348,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 95 (KIERO.M2K row 96, type 3) — PA Cup final, leg 1
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [],
     transferMarket: false,
@@ -1367,7 +1361,7 @@ const entries: RawCalendarEntry[] = [
   },
   // round 96 (KIERO.M2K row 97, type 3) — PA Cup final, leg 2 + cupjuhla (trophy ceremony)
   {
-    phases: ["action", "prank", "event_creation", "event", "news"],
+    phases: ["action", "event", "news"],
     gamedays: ["cup"],
     seed: [],
     transferMarket: false,

@@ -959,10 +959,9 @@ export const gameMachine = setup({
      * silently no-ops (the legacy generator-based path is gone).
      *
      * 1-1 port of the deleted `eventCreationPhase()` from
-     * `src/sagas/phase/event-creation.ts`,
-     * minus the `createRandomEvent` calendar gate — entry to this state
-     * is already guarded by `has_phase("event_creation")`, so the gate
-     * is redundant.
+     * `src/sagas/phase/event-creation.ts`.
+     * Entry to this state is guarded by the `createRandomEvent` calendar
+     * boolean via `has_event_creation`.
      *
      * No UI — runs on `entry` and the state auto-advances.
      */
@@ -1152,6 +1151,11 @@ export const gameMachine = setup({
 
     has_gamedays: ({ context }) =>
       calendar[context.turn.round].gamedays.length > 0,
+
+    has_pranks: ({ context }) => calendar[context.turn.round].pranks,
+
+    has_event_creation: ({ context }) =>
+      calendar[context.turn.round].createRandomEvent,
 
     has_phase: ({ context }, params: { phase: TurnPhase }) =>
       calendar[context.turn.round]?.phases.includes(params.phase) ?? false,
@@ -1656,7 +1660,7 @@ export const gameMachine = setup({
             prank_check: {
               always: [
                 {
-                  guard: { type: "has_phase", params: { phase: "prank" } },
+                  guard: "has_pranks",
                   target: "prank"
                 },
                 { target: "gameday_check" }
@@ -1723,10 +1727,7 @@ export const gameMachine = setup({
             event_creation_check: {
               always: [
                 {
-                  guard: {
-                    type: "has_phase",
-                    params: { phase: "event_creation" }
-                  },
+                  guard: "has_event_creation",
                   target: "event_creation"
                 },
                 { target: "event_check" }

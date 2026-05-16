@@ -829,13 +829,13 @@ describe("canCrisisMeeting selector", () => {
     ctx.teams = ctx.teams.map((t, i) =>
       i === 0 ? { ...t, manager: "mgr", morale: overrides.morale ?? -10 } : t
     );
-    ctx.turn = { ...ctx.turn, round: overrides.round ?? 0 };
+    ctx.turn = { ...ctx.turn, round: overrides.round ?? 1 };
     return ctx;
   };
 
   it("returns true when all conditions met", () => {
-    // round 0 has crisisMeeting: true (verified above), morale -10 <= -6
-    const ctx = buildCtx({ morale: -10, round: 0 });
+    // round 1 has crisisMeeting: true, morale -10 <= -6
+    const ctx = buildCtx({ morale: -10, round: 1 });
     expect(canCrisisMeeting("mgr")(ctx)).toBe(true);
   });
 
@@ -846,7 +846,7 @@ describe("canCrisisMeeting selector", () => {
 
   it("returns false at morale exactly -6 boundary", () => {
     // morale <= -6 is required. -6 should pass.
-    const ctx = buildCtx({ morale: -6 });
+    const ctx = buildCtx({ morale: -6, round: 1 });
     expect(canCrisisMeeting("mgr")(ctx)).toBe(true);
   });
 

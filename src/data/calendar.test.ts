@@ -95,8 +95,12 @@ describe("MHM 2000 calendar", () => {
   });
 
   describe("transfer market", () => {
-    it("is open for rounds 0..57 (meta + preseason + first half)", () => {
-      for (let i = 0; i <= 57; i++) {
+    it("meta round has no transfer market", () => {
+      expect(calendar[0].transferMarket).toBe(false);
+    });
+
+    it("is open for rounds 1..57 (preseason + first half)", () => {
+      for (let i = 1; i <= 57; i++) {
         expect(calendar[i].transferMarket).toBe(true);
       }
     });
@@ -109,9 +113,13 @@ describe("MHM 2000 calendar", () => {
   });
 
   describe("crisis meeting", () => {
-    it("is true for every round (per MHM 2000 spec)", () => {
-      for (const entry of calendar) {
-        expect(entry.crisisMeeting).toBe(true);
+    it("meta round has no crisis meeting", () => {
+      expect(calendar[0].crisisMeeting).toBe(false);
+    });
+
+    it("is true for every gameplay round (per MHM 2000 spec)", () => {
+      for (let i = 1; i < calendar.length; i++) {
+        expect(calendar[i].crisisMeeting).toBe(true);
       }
     });
   });
