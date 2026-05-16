@@ -74,6 +74,7 @@ import { createUniqueId } from "@/services/id";
 import { expireMails, mailHandlers } from "@/game/mail-handlers";
 import { runAiAction } from "@/game/ai-action";
 import { replyToMail } from "@/game/mail-reply";
+import { rollPostMatchEffects } from "@/game/post-match-effects";
 import type { GameContext } from "@/state/game-context";
 
 // Parlay payout multipliers moved to src/machines/bet.ts (where the
@@ -955,32 +956,49 @@ export const gameMachine = setup({
     }),
 
     /**
-     * Event creation phase — for each manager, roll one event from
-     * `eventsMap` (1-335). If the rolled event is registered in the
-     * new declarative registry, build its payload via `create(ctx, …)`
-     * and push it into `event.events`. If not yet ported, the roll
-     * silently no-ops (the legacy generator-based path is gone).
+     * Event creation phase. Two concerns, two gates:
      *
-     * 1-1 port of the deleted `eventCreationPhase()` from
-     * `src/sagas/phase/event-creation.ts`.
-     * Entry to this state is guarded by the `createRandomEvent` calendar
-     * boolean via `has_event_creation`.
+     * 1. **Post-match `dap` rolls** (injury / mood / suspension) — fire
+     *    for every human manager who played a match this turn. Gated by
+     *    `turn.activeManagers` (populated by `runGameday`). Fires on
+     *    ALL round types (runkosarja, EHL, cup, playoffs).
+     *    QB source: ILEX5.BAS:5634-5650 (`dap` CASE 1/2/3 in `sattuma`).
+     *
+     * 2. **Story event creation** — the big `dat%` lottery. Gated by the
+     *    `createRandomEvent` calendar boolean (regular season only).
+     *    Currently MHM 97 legacy; will be replaced with MHM 2000 events.
      *
      * No UI — runs on `entry` and the state auto-advances.
      */
     executeEventCreation: assign(({ context }) =>
       produce(context, (draft) => {
-        for (const manager of values(humanManagers(draft))) {
-          const eventNumber = cinteger(1, 335);
-          const eventName = eventsMap[eventNumber];
-
-          if (!eventName) {
+        // ── Post-match dap rolls (all round types with matches) ──
+        for (const managerId of draft.turn.activeManagers) {
+          const manager = draft.managers[managerId];
+          if (!manager || manager.kind !== "human") {
             continue;
           }
 
-          // `spawnEvent` no-ops if the event isn't registered yet
-          // (most of `eventsMap` until porting completes).
-          spawnEvent(draft, eventName, { manager: manager.id });
+          const effects = rollPostMatchEffects(draft, managerId, random);
+          applyEffects(draft, effects, spawnEvent, () => {});
+        }
+
+        // ── Story events (regular season only) ──
+        const entry = calendar[draft.turn.round];
+        if (entry?.createRandomEvent) {
+          for (const manager of values(humanManagers(draft))) {
+            // MHM 97 legacy, will be replaced with MHM 2000 events.
+            const eventNumber = cinteger(1, 335);
+            const eventName = eventsMap[eventNumber];
+
+            if (!eventName) {
+              continue;
+            }
+
+            // `spawnEvent` no-ops if the event isn't registered yet
+            // (most of `eventsMap` until porting completes).
+            spawnEvent(draft, eventName, { manager: manager.id });
+          }
         }
       })
     ),
@@ -1156,9 +1174,6 @@ export const gameMachine = setup({
       calendar[context.turn.round].gamedays.length > 0,
 
     has_pranks: ({ context }) => calendar[context.turn.round].pranks,
-
-    has_event_creation: ({ context }) =>
-      calendar[context.turn.round].createRandomEvent,
 
     has_phase: ({ context }, params: { phase: TurnPhase }) =>
       calendar[context.turn.round]?.phases.includes(params.phase) ?? false,
@@ -1724,18 +1739,9 @@ export const gameMachine = setup({
 
             calculations: {
               entry: "executeCalculations",
-              always: "event_creation_check"
+              always: "event_creation"
             },
 
-            event_creation_check: {
-              always: [
-                {
-                  guard: "has_event_creation",
-                  target: "event_creation"
-                },
-                { target: "event_check" }
-              ]
-            },
             event_creation: {
               entry: "executeEventCreation",
               always: "event_check"
