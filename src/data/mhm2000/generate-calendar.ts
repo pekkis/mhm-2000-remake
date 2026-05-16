@@ -33,15 +33,13 @@ import {
 const DEFAULT_PHASES = [
   "action",
   "prank",
-  "gameday",
-  "calculations",
   "event_creation",
   "event",
   "news",
   "seed"
 ];
 
-const EHL_PHASES = ["action", "gameday", "event", "news"];
+const EHL_PHASES = ["action", "event", "news"];
 
 const NO_GAMEDAY_PHASES = [
   "action",
@@ -226,6 +224,10 @@ const renderEntry = (raw: RawCalendarEntry): string => {
   lines.push(`    crisisMeeting: true,`);
   lines.push(`    createRandomEvent: ${tagsHasGameplay},`);
   lines.push(`    pranks: ${tagsHasGameplay},`);
+  const fitnessRecovery = raw.type !== 99 && raw.type !== 4;
+  const readinessDrift = raw.type === 1;
+  lines.push(`    fitnessRecovery: ${fitnessRecovery},`);
+  lines.push(`    readinessDrift: ${readinessDrift},`);
   lines.push(`    tags: ${stringArray(raw.tags)}`);
   lines.push(`  },`);
   return lines.join("\n");

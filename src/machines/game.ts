@@ -15,7 +15,6 @@ import calendar, { type TurnPhase } from "@/data/calendar";
 import competitionData from "@/data/competitions";
 import { computeStats } from "@/services/competition-type";
 import strategies, {
-  READINESS_TICK_TAG,
   SEASON_TICKETS_TAG,
   initialReadinessFor,
   type StrategyId
@@ -857,10 +856,9 @@ export const gameMachine = setup({
         // Per-team: strategy-driven readiness drift — ONLY on regular-
         // season runkosarja gamedays. QB: ILEX5.BAS:1574 sits inside
         // `CASE 1` of `SELECT CASE kiero(kr)`, so EHL/cup/playoff/
-        // training/preseason rounds get NO drift. Calendar entries
-        // mark eligible rounds with the `readiness-tick` tag.
-        const roundTags = calendar[draft.turn.round]?.tags ?? [];
-        if (roundTags.includes(READINESS_TICK_TAG)) {
+        // training/preseason rounds get NO drift.
+        const entry = calendar[draft.turn.round];
+        if (entry?.readinessDrift) {
           for (const team of draft.teams) {
             const strategy = team.strategy as StrategyId;
             const delta = strategies[strategy]?.incrementReadiness() ?? 0;
@@ -887,6 +885,7 @@ export const gameMachine = setup({
         // Iterates all 48 league teams (PHL + Div + Mut), sells one
         // batch per team, accumulates `seasonTickets`, and credits
         // revenue to the team's human manager (if any).
+        const roundTags = entry?.tags ?? [];
         if (roundTags.includes(SEASON_TICKETS_TAG)) {
           for (const team of draft.teams) {
             const tier = leagueTier(team.id, draft.competitions);
@@ -1673,7 +1672,7 @@ export const gameMachine = setup({
                   guard: { type: "has_gamedays" },
                   target: "gameday"
                 },
-                { target: "calculations_check" }
+                { target: "calculations" }
               ]
             },
             // Compound gameday state: the user previews the matches,
@@ -1684,7 +1683,7 @@ export const gameMachine = setup({
             // existing saga keeps doing the work.
             gameday: {
               initial: "preview",
-              onDone: "calculations_check",
+              onDone: "calculations",
               states: {
                 preview: {
                   on: { ADVANCE: "play" }
@@ -1711,18 +1710,6 @@ export const gameMachine = setup({
               }
             },
 
-            calculations_check: {
-              always: [
-                {
-                  guard: {
-                    type: "has_phase",
-                    params: { phase: "calculations" }
-                  },
-                  target: "calculations"
-                },
-                { target: "event_creation_check" }
-              ]
-            },
             calculations: {
               entry: "executeCalculations",
               always: "event_creation_check"

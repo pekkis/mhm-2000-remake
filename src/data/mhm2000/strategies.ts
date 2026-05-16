@@ -63,26 +63,6 @@ export type Strategy = {
 };
 
 /**
- * Calendar-entry tag marking a round on which `tre()` drifts.
- *
- * QB: the increment block in ILEX5.BAS:1574 sits inside `CASE 1` of the
- * `gameday` SUB's outer `SELECT CASE kiero(kr)` (ILEX5.BAS:1492). It runs
- * exclusively on `kiero(kr) = 1` rounds — PHL/Divisioona/Mutasarja
- * runkosarja gamedays. NOT on:
- *   - `kiero = 4`  training matches (preseason)
- *   - `kiero = 2`  EHL gamedays
- *   - `kiero = 3`  cup gamedays
- *   - `kiero = 22` EHL final tournament
- *   - `kiero = 41..47` playoffs / gala
- *   - `kiero = 96..99` free / national-team / invitation / preseason
- *
- * Every regular-season `kiero = 1` calendar entry in
- * `src/data/calendar.ts` carries this tag. The `executeCalculations`
- * action in `src/machines/game.ts` reads it as the gate.
- */
-export const READINESS_TICK_TAG = "readiness-tick";
-
-/**
  * Calendar-entry tag for preseason rounds where season-ticket batches
  * are sold. Matches QB `kausikorttimaar` being called 10 times during
  * the preseason loop (ILEX5.BAS:2507-2556).

@@ -12,7 +12,6 @@ import { rawCalendar } from "@/data/mhm2000/calendar";
  * then, **every KIERO index N maps to calendar index N+1**.
  *
  * If a test here fails, decide carefully:
- *   - Is the parser wrong?       → fix generate-calendar.ts
  *   - Is the decoded data wrong?  → fix mhm2000/calendar.ts
  *   - Is the test wrong?           → fix the test (only with QB evidence)
  */
