@@ -162,7 +162,8 @@ describe("MHM 2000 calendar", () => {
       const entry = calendar[99];
       expect(entry.title).toBe("Uusi kausi");
       expect(entry.gamedays).toEqual([]);
-      expect(entry.phases).toContain("end_of_season");
+      expect(entry.phases).toContain("action");
+      expect(entry.tags).toContain("season-rollover");
     });
   });
 

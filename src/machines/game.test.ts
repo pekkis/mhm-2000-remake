@@ -70,9 +70,9 @@ describe("gameMachine", () => {
   describe("in_game phase walk", () => {
     it("auto-runs start_of_season setup + seed on round 0 and lands in round 1 action", () => {
       const actor = createTestActor();
-      // Round 0 calendar: ["start_of_season", "seed"] — both are now
-      // non-interactive, so the machine cascades all the way through
-      // round_end and into round 1's action phase.
+      // Round 0 is the start-of-season meta round — the machine runs
+      // seasonStartSetup + seed as transient actions, then cascades
+      // through round_end into round 1's action phase.
       const snap = actor.getSnapshot();
       expect(snap.context.turn.round).toBe(1);
       expect(snap.matches({ in_game: { executing_phases: "action" } })).toBe(
@@ -119,8 +119,8 @@ describe("gameMachine", () => {
 
     it("seed phase populates competitions[*].phases", () => {
       const actor = createTestActor();
-      // Round 0 auto-runs start_of_season + seed, so competitions are
-      // already seeded by the time we reach round 1's action phase.
+      // Round 0 auto-runs start_of_season + seed (structural, not phase-driven),
+      // so competitions are already seeded by the time we reach round 1's action phase.
       const { competitions } = actor.getSnapshot().context;
       expect(competitions.phl.phases.length).toBeGreaterThan(0);
       expect(competitions.division.phases.length).toBeGreaterThan(0);

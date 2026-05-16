@@ -1143,6 +1143,11 @@ export const gameMachine = setup({
   },
 
   guards: {
+    is_start_of_season: ({ context }) => context.turn.round === 0,
+
+    is_end_of_season: ({ context }) =>
+      context.turn.round === calendar.length - 1,
+
     has_seeds: ({ context }) => calendar[context.turn.round].seed.length > 0,
 
     has_gamedays: ({ context }) =>
@@ -1797,10 +1802,7 @@ export const gameMachine = setup({
             start_of_season_check: {
               always: [
                 {
-                  guard: {
-                    type: "has_phase",
-                    params: { phase: "start_of_season" }
-                  },
+                  guard: "is_start_of_season",
                   target: "start_of_season"
                 },
                 { target: "seed_check" }
@@ -1842,10 +1844,7 @@ export const gameMachine = setup({
             end_of_season_check: {
               always: [
                 {
-                  guard: {
-                    type: "has_phase",
-                    params: { phase: "end_of_season" }
-                  },
+                  guard: "is_end_of_season",
                   target: "end_of_season"
                 },
                 { target: "round_end" }

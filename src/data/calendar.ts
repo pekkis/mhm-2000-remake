@@ -12,13 +12,11 @@ export type Seed = {
 
 export type TurnPhase =
   | "action"
-  | "start_of_season"
   | "prank"
   | "event_creation"
   | "event"
   | "news"
-  | "gala"
-  | "end_of_season";
+  | "gala";
 
 export type CalendarEntry = {
   round: number;
@@ -42,7 +40,7 @@ type RawCalendarEntry = Omit<CalendarEntry, "round">;
 
 const entries: RawCalendarEntry[] = [
   {
-    phases: ["start_of_season"],
+    phases: [],
     seed: [
       { competition: "phl", phase: 0 },
       { competition: "division", phase: 0 },
@@ -1397,7 +1395,7 @@ const entries: RawCalendarEntry[] = [
   // round 98 (KIERO.M2K row 99, type 48) — uusikausi (rollover marker)
   {
     title: "Uusi kausi",
-    phases: ["action", "end_of_season"],
+    phases: ["action"],
     gamedays: [],
     seed: [],
     transferMarket: false,
