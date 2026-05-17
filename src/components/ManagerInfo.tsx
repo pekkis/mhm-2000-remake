@@ -1,5 +1,4 @@
 import { amount } from "@/services/format";
-import { getEffective } from "@/services/effects";
 import Box from "./ui/Box";
 import TurnIndicator from "./game/TurnIndicator";
 import { useGameContext } from "@/context/game-machine-context";
@@ -19,7 +18,7 @@ const ManagerInfo = ({ details = false }: ManagerInfoProps) => {
   const teams = useGameContext((ctx) => ctx.teams);
   const turn = useGameContext((ctx) => ctx.turn);
 
-  const team = getEffective(teams[manager.team!]);
+  const team = teams[manager.team!];
 
   return (
     <Box p="md" bg="surfaceMuted">

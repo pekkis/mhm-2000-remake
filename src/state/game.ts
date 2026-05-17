@@ -75,12 +75,20 @@ export type HumanManager = BaseManager & {
   };
 };
 
-export type TeamEffect = {
-  parameter: string[];
-  amount: number | string;
+export type TeamGlobalEffect = {
+  kind: "global";
+  amount: number;
   duration: number;
-  extra?: Record<string, unknown>;
 };
+
+export type TeamInjuryEffect = {
+  kind: "injury";
+  amount: number;
+  position: "goalie" | "defence" | "attack";
+  duration: number;
+};
+
+export type TeamEffect = TeamGlobalEffect | TeamInjuryEffect;
 
 export type TeamBudget = Record<BudgetCategoryName, BudgetLevel>;
 
@@ -97,7 +105,6 @@ type BaseTeam = {
   strategy: number;
   readiness: number;
   effects: TeamEffect[];
-  opponentEffects: TeamEffect[];
   manager?: string;
   tags: string[];
   tier: number;

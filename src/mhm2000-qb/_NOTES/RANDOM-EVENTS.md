@@ -581,7 +581,6 @@ added (or modeled differently) for MHM 2000.
 | `leg(team) = 0/20`                     | cup-leg goal "head start" set                           | Sopu cup result manipulation; case 53-55 doesn't use it directly.                   |
 | `incurPenalty` (existing)              | round-robin penalty                                     | ✅                                                                                  |
 | `addTeamEffect`                        | strength buff/debuff                                    | ✅                                                                                  |
-| `addOpponentEffect`                    | opponent strength buff/debuff                           | ✅                                                                                  |
 
 ### 7.5 · Country / world
 

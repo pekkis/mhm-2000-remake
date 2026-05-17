@@ -15,7 +15,6 @@ import {
   useGameContext
 } from "@/context/game-machine-context";
 import { activeManager } from "@/machines/selectors";
-import { getEffective } from "@/services/effects";
 import { currency } from "@/services/format";
 import {
   arenaDesignMachine,
@@ -42,7 +41,7 @@ import type { ArenaLevel } from "@/data/mhm2000/teams";
 const ArenaInfo = () => {
   const manager = useGameContext(activeManager);
   const teams = useGameContext((ctx) => ctx.teams);
-  const team = getEffective(teams[manager.team!]);
+  const team = teams[manager.team!];
 
   const { arena, arenaFund } = team;
 
@@ -116,7 +115,7 @@ const FundTransfer = () => {
 const ProjectStatus = () => {
   const manager = useGameContext(activeManager);
   const teams = useGameContext((ctx) => ctx.teams);
-  const team = getEffective(teams[manager.team!]);
+  const team = teams[manager.team!];
 
   const project = team.arenaProject;
   if (!project) {
@@ -222,7 +221,7 @@ const DesignWizard = ({
 }) => {
   const manager = useGameContext(activeManager);
   const teams = useGameContext((ctx) => ctx.teams);
-  const team = getEffective(teams[manager.team!]);
+  const team = teams[manager.team!];
   const gameActor = GameMachineContext.useActorRef();
 
   const [state, send] = useMachine(arenaDesignMachine, {
@@ -411,7 +410,7 @@ const DesignWizard = ({
 const Arenas = () => {
   const manager = useGameContext(activeManager);
   const teams = useGameContext((ctx) => ctx.teams);
-  const team = getEffective(teams[manager.team!]);
+  const team = teams[manager.team!];
   const [wizardKind, setWizardKind] = useState<ProjectKind | null>(null);
 
   const hasProject = team.arenaProject !== undefined;

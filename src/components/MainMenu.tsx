@@ -17,7 +17,6 @@ import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
 import Stack from "@/components/ui/Stack";
 import { useHotkeys } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
-import { getEffective } from "@/services/effects";
 
 const MainMenu = () => {
   const manager = useGameContext(activeManager);
@@ -28,7 +27,7 @@ const MainMenu = () => {
   const gameActor = GameMachineContext.useActorRef();
   const navigate = useNavigate();
 
-  const effectiveTeam = getEffective(team);
+  const effectiveTeam = team;
 
   useHotkeys([
     ["a", () => navigate("/pelaajat")],

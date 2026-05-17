@@ -334,9 +334,6 @@ export const gameMachine = setup({
 
           for (const team of draft.teams) {
             team.effects = team.effects.filter((e) => e.duration > 0);
-            team.opponentEffects = team.opponentEffects.filter(
-              (e) => e.duration > 0
-            );
           }
           draft.betting.parlayBets = [];
           draft.news.news = [];
@@ -942,9 +939,6 @@ export const gameMachine = setup({
           for (const e of team.effects) {
             e.duration -= 1;
           }
-          for (const e of team.opponentEffects) {
-            e.duration -= 1;
-          }
         }
 
         decrementPlayerEffects(draft);
@@ -1489,7 +1483,9 @@ export const gameMachine = setup({
               entry: assign(({ context }) =>
                 produce(context, (draft) => {
                   for (const team of values(draft.teams)) {
-                    if (team.kind !== "human" || !team.manager) {continue;}
+                    if (team.kind !== "human" || !team.manager) {
+                      continue;
+                    }
                     const manager = draft.managers[team.manager];
                     if (
                       manager?.kind === "human" &&

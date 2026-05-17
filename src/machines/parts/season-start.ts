@@ -48,7 +48,6 @@ export function runSeasonStart(draft: Draft<GameContext>): void {
     }
 
     t.effects = [];
-    t.opponentEffects = [];
     t.seasonTickets = 0;
 
     const manager = draft.managers[t.manager];

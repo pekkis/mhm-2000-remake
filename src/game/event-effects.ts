@@ -97,7 +97,6 @@ export type EventEffect =
 
   // ── Team buffs / debuffs ──
   | { type: "addTeamEffect"; team: number; effect: TeamEffect }
-  | { type: "addOpponentEffect"; team: number; effect: TeamEffect }
 
   // ── Competition penalties ──
   | {
@@ -299,13 +298,6 @@ export function applyEffect(
       const t = draft.teams[effect.team];
       if (t) {
         t.effects.push(effect.effect);
-      }
-      return;
-    }
-    case "addOpponentEffect": {
-      const t = draft.teams[effect.team];
-      if (t) {
-        t.opponentEffects.push(effect.effect);
       }
       return;
     }

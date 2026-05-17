@@ -1,6 +1,5 @@
 import StickyMenu from "./StickyMenu";
 import AdvancedHeaderedPage from "@/components/page/AdvancedHeaderedPage";
-import { getEffective } from "@/services/effects";
 import {
   GameMachineContext,
   useGameContext
@@ -77,7 +76,7 @@ const DeveloperMenu = () => {
                       .toSorted((a, b) => teams[b].tier - teams[a].tier)
                       .map((t) => {
                         const team = teams[t];
-                        const e = getEffective(team);
+                        const e = team;
                         const manager = team.manager
                           ? managers[team.manager]
                           : undefined;

@@ -81,7 +81,6 @@ const buildContext = (
         strategy: 2,
         readiness: 0,
         effects: [],
-        opponentEffects: [],
         manager: t.manager,
         tags: [],
         tier: t.tier,

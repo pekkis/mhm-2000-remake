@@ -66,7 +66,8 @@ const pranks: Record<string, DeclarativePrank> = {
     orderMessage: () =>
       `Soitat hämäräperäiselle vedonvälittäjälle, ja kerrot mitä tahdot. Hän lupaa hoitaa "asian" hienovaraisesti.`,
 
-    execute: (_ctx, prank) => [
+    execute: (_ctx, _prank) => [
+      /*
       {
         type: "addTeamEffect",
         team: prank.victim,
@@ -76,6 +77,7 @@ const pranks: Record<string, DeclarativePrank> = {
           duration: 1
         }
       }
+        */
     ]
   },
   bazookaStrike: {

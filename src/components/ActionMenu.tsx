@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useSelector } from "@xstate/store-react";
 import Calendar from "./ui/Calendar";
 import Cluster from "./ui/Cluster";
-import { getEffective } from "@/services/effects";
 import Button from "./ui/Button";
 import RadioGroup from "./ui/RadioGroup";
 import Switch from "./ui/Switch";
@@ -45,7 +44,8 @@ const ActionMenu = () => {
   const appActor = AppMachineContext.useActorRef();
   const gameActor = GameMachineContext.useActorRef();
   const teams = useGameContext((ctx) => ctx.teams);
-  const team = getEffective(teams[manager.team!]);
+
+  const team = teams[manager.team!];
   const theme = useSelector(uiStore, (s) => s.context.theme);
 
   const canSave = GameMachineContext.useSelector((state) =>
