@@ -1,3 +1,12 @@
+import type { EventEffect } from "@/game/event-effects";
+import { resolvedEvent } from "@/game/events/registry";
+import { teamById, teamsManager } from "@/machines/selectors";
+import { attributeRoll } from "@/services/attribute-roll";
+import { random } from "@/services/random";
+import {
+  getRandomAiTeam,
+  teamHasActiveInjuryEffects
+} from "@/services/random-events";
 import type { DeclarativeEvent } from "@/types/event";
 
 /*
@@ -11,9 +20,14 @@ END IF
 
 const eventId = "ai_event_002";
 
-type EventFields = {};
+type EventData = {
+  teamId: number;
+  duration: number;
+};
 
-export const event_002: DeclarativeEvent<EventFields, { teamId: number }> = {
+export const event_002: DeclarativeEvent<EventData, {}> = {
+  type: "team",
+
   register: () => {
     return {
       eventId,
@@ -21,17 +35,50 @@ export const event_002: DeclarativeEvent<EventFields, { teamId: number }> = {
     };
   },
 
-  type: "team",
+  create: (context) => {
+    const team = getRandomAiTeam(context);
 
-  create: (_context, _params) => {
-    return null;
+    // tarka(3) = 0: no existing attack injury
+    if (teamHasActiveInjuryEffects(team, "attack")) {
+      return null;
+    }
+
+    // tarko(xx, 6, 20, 50) = 0: manager fails luck roll
+    const manager = teamsManager(team.id)(context);
+    if (attributeRoll(manager.attributes, "luck", 20, 50)) {
+      return null;
+    }
+
+    const duration = random.integer(3, 7);
+
+    return resolvedEvent({
+      teamId: team.id,
+      duration
+    });
   },
 
-  process: () => {
-    return [];
+  process: (data) => {
+    const effects: EventEffect[] = [
+      {
+        type: "addTeamEffect",
+        team: data.teamId,
+        effect: {
+          kind: "injury",
+          position: "attack",
+          amount: -10,
+          duration: data.duration
+        }
+      }
+    ];
+
+    return effects;
   },
 
-  render: () => {
-    return [];
+  render: (data, context) => {
+    const team = teamById(data.teamId)(context);
+
+    return [
+      `**${team.name}** kärsii **työlupa-ongelmista** muutaman ulkomaalaisvahvistuksensa kohdalla! Miehet eivät pelaa, joten joukkue heikentyy hetkellisesti.`
+    ];
   }
 };
