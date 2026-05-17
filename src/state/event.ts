@@ -1,4 +1,4 @@
-import type { BaseEventFields } from "@/types/base";
+import type { BaseEventFields } from "@/types/event";
 
 export type StoredEvent = BaseEventFields & Record<string, unknown>;
 

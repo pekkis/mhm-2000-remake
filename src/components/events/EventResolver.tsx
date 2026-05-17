@@ -6,8 +6,7 @@ import Stack from "@/components/ui/Stack";
 import newEvents from "@/game/events";
 import Box from "@/components/ui/Box";
 import type { StoredEvent } from "@/state/event";
-import type { DeclarativeEvent } from "@/types/event";
-import type { BaseEventFields } from "@/types/base";
+import type { BaseEventFields, DeclarativeEvent } from "@/types/event";
 
 // The registry is `as const` for nice per-event typing at definition
 // sites, but at the call site we look up by a runtime id, so we widen

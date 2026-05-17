@@ -4,13 +4,13 @@ import difficultyLevels from "@/data/difficulty-levels";
 import type { GameContext } from "@/state/game-context";
 import type { GameFlags, Team, TeamEffect } from "@/state/game";
 import type { CompetitionId } from "@/types/competitions";
-import type { BaseEventCreationFields } from "@/types/base";
 import type { NotificationData } from "@/machines/notification";
 import { computeStats } from "@/services/competition-type";
 import { humanManagerById, managersTeam } from "@/machines/selectors";
 import type { CountryIso } from "@/data/countries";
 import type { HiredPlayer, MarketPlayer } from "@/state/player";
 import type { RegularContract } from "@/state/player";
+import type { BaseEventCreationFields } from "@/types/event";
 
 /**
  * Look up the morale clamp for a team. Mirrors `getMoraleMinMax` in
