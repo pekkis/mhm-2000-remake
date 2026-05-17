@@ -44,6 +44,7 @@ import type {
 } from "@/state/game";
 import type { MarketPlayer } from "@/state/player";
 import type { GameContext } from "@/state/game-context";
+import { competitionFromTier } from "@/services/competition";
 
 // ---------------------------------------------------------------------------
 // Helper types
@@ -720,6 +721,16 @@ export const teamsWithTag =
   (tag: string): ContextSelector<Team[]> =>
   (ctx) => {
     return values(ctx.teams).filter((t) => t.tags.includes(tag));
+  };
+
+export const domesticTeamsByCompetitionTier =
+  (tier: 1 | 2 | 3): ContextSelector<Team[]> =>
+  (ctx) => {
+    const comp = competitionFromTier(tier);
+
+    return ctx.competitions[comp].teams.map((tid) => {
+      return ctx.teams[tid];
+    });
   };
 
 // human selectors
