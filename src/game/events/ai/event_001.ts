@@ -20,13 +20,6 @@ IF tarko(xx, 5, 20, 50) = 0 THEN potk xx
 END IF
 */
 
-/*
-arpo and arpol: src/services/random-events.ts
-tarko: src/services/attribute-roll.ts
-taut and teet: src/state/game.ts, TeamGlobalEffect and TeamInjuryEffect
-luz: src/mhm2000-qb/_NOTES/DATA-FILES.md, extract to render()
-*/
-
 const eventId = "ai_event_001";
 
 type EventData =

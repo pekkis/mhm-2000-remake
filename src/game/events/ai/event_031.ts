@@ -9,14 +9,15 @@ taut .75, 1
 
 const eventId = "ai_event_031";
 
-type EventFields = {
-  id: string;
-  resolved: boolean;
-  eventId: typeof eventId;
-};
+type EventFields = {};
 
-export const event_031: DeclarativeEvent<EventFields, { teamId: number }> = {
-  lotteryBalls: 2,
+export const event_031: DeclarativeEvent<EventFields, {}> = {
+  register: () => {
+    return {
+      eventId,
+      lotteryBalls: 2
+    };
+  },
 
   type: "team",
 
@@ -31,4 +32,3 @@ export const event_031: DeclarativeEvent<EventFields, { teamId: number }> = {
   render: () => {
     return [];
   }
-};

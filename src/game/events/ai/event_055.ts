@@ -18,14 +18,15 @@ SWAP top(tox(xx), d), top(tox(yy), d)
 
 const eventId = "ai_event_055";
 
-type EventFields = {
-  id: string;
-  resolved: boolean;
-  eventId: typeof eventId;
-};
+type EventFields = {};
 
-export const event_055: DeclarativeEvent<EventFields, { teamId: number }> = {
-  lotteryBalls: 2,
+export const event_055: DeclarativeEvent<EventFields, {}> = {
+  register: () => {
+    return {
+      eventId,
+      lotteryBalls: 2
+    };
+  },
 
   type: "team",
 
@@ -40,4 +41,3 @@ export const event_055: DeclarativeEvent<EventFields, { teamId: number }> = {
   render: () => {
     return [];
   }
-};

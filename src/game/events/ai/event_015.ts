@@ -8,14 +8,15 @@ IF tarko(xx, 6, 20, 50) = 0 THEN taut .85, INT(6 * RND) + 5: mor xx, -10: luz 16
 
 const eventId = "ai_event_015";
 
-type EventFields = {
-  id: string;
-  resolved: boolean;
-  eventId: typeof eventId;
-};
+type EventFields = {};
 
-export const event_015: DeclarativeEvent<EventFields, { teamId: number }> = {
-  lotteryBalls: 2,
+export const event_015: DeclarativeEvent<EventFields, {}> = {
+  register: () => {
+    return {
+      eventId,
+      lotteryBalls: 2
+    };
+  },
 
   type: "team",
 
@@ -30,4 +31,3 @@ export const event_015: DeclarativeEvent<EventFields, { teamId: number }> = {
   render: () => {
     return [];
   }
-};

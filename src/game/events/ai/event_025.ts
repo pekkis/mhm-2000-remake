@@ -9,14 +9,15 @@ taut .93, INT(3 * RND) + 1
 
 const eventId = "ai_event_025";
 
-type EventFields = {
-  id: string;
-  resolved: boolean;
-  eventId: typeof eventId;
-};
+type EventFields = {};
 
-export const event_025: DeclarativeEvent<EventFields, { teamId: number }> = {
-  lotteryBalls: 3,
+export const event_025: DeclarativeEvent<EventFields, {}> = {
+  register: () => {
+    return {
+      eventId,
+      lotteryBalls: 3
+    };
+  },
 
   type: "team",
 
@@ -31,4 +32,3 @@ export const event_025: DeclarativeEvent<EventFields, { teamId: number }> = {
   render: () => {
     return [];
   }
-};

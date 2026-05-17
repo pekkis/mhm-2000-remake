@@ -13,14 +13,15 @@ END IF
 
 const eventId = "ai_event_012";
 
-type EventFields = {
-  id: string;
-  resolved: boolean;
-  eventId: typeof eventId;
-};
+type EventFields = {};
 
-export const event_012: DeclarativeEvent<EventFields, { teamId: number }> = {
-  lotteryBalls: 1,
+export const event_012: DeclarativeEvent<EventFields, {}> = {
+  register: () => {
+    return {
+      eventId,
+      lotteryBalls: 1
+    };
+  },
 
   type: "team",
 
@@ -35,4 +36,3 @@ export const event_012: DeclarativeEvent<EventFields, { teamId: number }> = {
   render: () => {
     return [];
   }
-};

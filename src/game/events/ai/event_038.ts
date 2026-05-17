@@ -15,14 +15,15 @@ IF 100 * RND < 35 THEN luz 43 ELSE luz 41
 
 const eventId = "ai_event_038";
 
-type EventFields = {
-  id: string;
-  resolved: boolean;
-  eventId: typeof eventId;
-};
+type EventFields = {};
 
-export const event_038: DeclarativeEvent<EventFields, { teamId: number }> = {
-  lotteryBalls: 7,
+export const event_038: DeclarativeEvent<EventFields, {}> = {
+  register: () => {
+    return {
+      eventId,
+      lotteryBalls: 7
+    };
+  },
 
   type: "team",
 
@@ -37,4 +38,3 @@ export const event_038: DeclarativeEvent<EventFields, { teamId: number }> = {
   render: () => {
     return [];
   }
-};

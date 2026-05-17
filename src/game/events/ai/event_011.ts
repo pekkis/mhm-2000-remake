@@ -8,14 +8,15 @@ IF tarko(xx, 4, 20, 50) = 1 THEN mor xx, 55: luz 12
 
 const eventId = "ai_event_011";
 
-type EventFields = {
-  id: string;
-  resolved: boolean;
-  eventId: typeof eventId;
-};
+type EventFields = {};
 
-export const event_011: DeclarativeEvent<EventFields, { teamId: number }> = {
-  lotteryBalls: 3,
+export const event_011: DeclarativeEvent<EventFields, {}> = {
+  register: () => {
+    return {
+      eventId,
+      lotteryBalls: 3
+    };
+  },
 
   type: "team",
 
@@ -30,4 +31,3 @@ export const event_011: DeclarativeEvent<EventFields, { teamId: number }> = {
   render: () => {
     return [];
   }
-};

@@ -8,14 +8,15 @@ IF tarko(xx, 6, 20, 50) = 0 THEN luz 39 ELSE luz 40
 
 const eventId = "ai_event_037";
 
-type EventFields = {
-  id: string;
-  resolved: boolean;
-  eventId: typeof eventId;
-};
+type EventFields = {};
 
-export const event_037: DeclarativeEvent<EventFields, { teamId: number }> = {
-  lotteryBalls: 6,
+export const event_037: DeclarativeEvent<EventFields, {}> = {
+  register: () => {
+    return {
+      eventId,
+      lotteryBalls: 6
+    };
+  },
 
   type: "team",
 
@@ -30,4 +31,3 @@ export const event_037: DeclarativeEvent<EventFields, { teamId: number }> = {
   render: () => {
     return [];
   }
-};

@@ -8,14 +8,15 @@ IF lukka = 0 AND tarko(xx, 6, 20, 50) = 0 THEN pw(xx) = pw(xx) - INT(3 * RND) - 
 
 const eventId = "ai_event_013";
 
-type EventFields = {
-  id: string;
-  resolved: boolean;
-  eventId: typeof eventId;
-};
+type EventFields = {};
 
-export const event_013: DeclarativeEvent<EventFields, { teamId: number }> = {
-  lotteryBalls: 2,
+export const event_013: DeclarativeEvent<EventFields, {}> = {
+  register: () => {
+    return {
+      eventId,
+      lotteryBalls: 2
+    };
+  },
 
   type: "team",
 
@@ -30,4 +31,3 @@ export const event_013: DeclarativeEvent<EventFields, { teamId: number }> = {
   render: () => {
     return [];
   }
-};

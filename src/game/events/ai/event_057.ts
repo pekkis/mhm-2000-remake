@@ -8,14 +8,15 @@ jaynax(5, xx) = 1
 
 const eventId = "ai_event_057";
 
-type EventFields = {
-  id: string;
-  resolved: boolean;
-  eventId: typeof eventId;
-};
+type EventFields = {};
 
-export const event_057: DeclarativeEvent<EventFields, { teamId: number }> = {
-  lotteryBalls: 1,
+export const event_057: DeclarativeEvent<EventFields, {}> = {
+  register: () => {
+    return {
+      eventId,
+      lotteryBalls: 1
+    };
+  },
 
   type: "team",
 
@@ -30,4 +31,3 @@ export const event_057: DeclarativeEvent<EventFields, { teamId: number }> = {
   render: () => {
     return [];
   }
-};
