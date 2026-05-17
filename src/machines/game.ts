@@ -82,6 +82,10 @@ import { runAiAction } from "@/game/ai-action";
 import { replyToMail } from "@/game/mail-reply";
 import { rollPostMatchEffects } from "@/game/post-match-effects";
 import type { GameContext } from "@/state/game-context";
+import {
+  decrementPlayerEffects,
+  expirePlayerEffects
+} from "@/machines/parts/calculations/player-effects";
 
 // Parlay payout multipliers moved to src/machines/bet.ts (where the
 // payout is now computed). The bet actor reaches `resolved` and emits
@@ -326,50 +330,13 @@ export const gameMachine = setup({
       }
       enqueue.assign(
         produce(context, (draft) => {
+          expirePlayerEffects(draft);
+
           for (const team of draft.teams) {
             team.effects = team.effects.filter((e) => e.duration > 0);
             team.opponentEffects = team.opponentEffects.filter(
               (e) => e.duration > 0
             );
-
-            if (team.kind === "human") {
-              for (const player of values(team.players)) {
-                player.tags = player.tags.filter(
-                  (t) => !t.startsWith("irritated:")
-                );
-
-                player.effects = player.effects.map((effect) => {
-                  if (
-                    effect.type === "injury" ||
-                    effect.type === "suspension" ||
-                    effect.type === "skill"
-                  ) {
-                    return {
-                      ...effect,
-                      duration: effect.duration - 1
-                    };
-                  }
-
-                  return effect;
-                });
-
-                player.effects = player.effects.filter((effect) => {
-                  if (
-                    effect.type === "injury" ||
-                    effect.type === "suspension" ||
-                    effect.type === "skill"
-                  ) {
-                    if (effect.duration === 0) {
-                      return false;
-                    }
-
-                    return true;
-                  }
-
-                  return true;
-                });
-              }
-            }
           }
           draft.betting.parlayBets = [];
           draft.news.news = [];
@@ -980,6 +947,8 @@ export const gameMachine = setup({
           }
         }
 
+        decrementPlayerEffects(draft);
+
         // Season-ticket drive — QB `kausikorttimaar`. Runs on every
         // preseason round tagged `season_tickets` (10 batches total).
         // Iterates all 48 league teams (PHL + Div + Mut), sells one
@@ -1520,7 +1489,7 @@ export const gameMachine = setup({
               entry: assign(({ context }) =>
                 produce(context, (draft) => {
                   for (const team of values(draft.teams)) {
-                    if (team.kind !== "human" || !team.manager) continue;
+                    if (team.kind !== "human" || !team.manager) {continue;}
                     const manager = draft.managers[team.manager];
                     if (
                       manager?.kind === "human" &&
