@@ -13,7 +13,7 @@ IF tarko(xx, 5, 20, 50) = 0 THEN potk xx
 END IF
 */
 
-const eventId = "event_001";
+const eventId = "ai_event_001";
 
 type EventFields = {
   id: string;
