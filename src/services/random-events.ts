@@ -1,5 +1,6 @@
 import { domesticTeamsByCompetitionTier } from "@/machines/selectors";
 import { competitionFromTier } from "@/services/competition";
+import { defaultRandomService } from "@/services/random";
 import type { AITeam } from "@/state/game";
 import type { GameContext } from "@/state/game-context";
 import type { RoundRobinGroup } from "@/types/competitions";
@@ -142,3 +143,17 @@ export const createRandomEventsRandomizer = (random: Random) => {
     getRandomAiTeamFromLeagueByRanking
   };
 };
+
+const defaultRandomEventsRandomizer =
+  createRandomEventsRandomizer(defaultRandomService);
+
+export const getRandomAITeamWithNoEffects =
+  defaultRandomEventsRandomizer.getRandomAITeamWithNoEffects;
+
+export const getRandomAiTeam = defaultRandomEventsRandomizer.getRandomAiTeam;
+
+export const getRandomAiTeamFromLeagueByRanking =
+  defaultRandomEventsRandomizer.getRandomAiTeamFromLeagueByRanking;
+
+export const getRandomAiTeamFromLeagueByTier =
+  defaultRandomEventsRandomizer.getRandomAiTeamFromLeagueByTier;

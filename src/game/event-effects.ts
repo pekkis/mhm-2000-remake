@@ -87,6 +87,7 @@ export type EventEffect =
   | { type: "decrementBalance"; manager: string; amount: number }
   | { type: "setBalance"; manager: string; amount: number }
   | { type: "hireManager"; manager: string; team: number }
+  | { type: "fireManager"; team: number }
 
   // ── Team strength / morale / readiness / strategy ──
   | { type: "incrementMorale"; team: number; amount: number }

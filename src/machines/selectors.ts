@@ -733,4 +733,13 @@ export const domesticTeamsByCompetitionTier =
     });
   };
 
-// human selectors
+export const teamById =
+  (id: number): ContextSelector<Team> =>
+  (ctx) => {
+    const team = ctx.teams[id];
+    if (!team) {
+      throw new Error(`Team #${id} not found!`);
+    }
+
+    return team;
+  };

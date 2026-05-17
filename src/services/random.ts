@@ -28,6 +28,8 @@ if (appSeed !== undefined) {
 
 const defaultService = createRandomWithEngine(engine);
 
+export const random = defaultService;
+
 export default defaultService;
 
 export const cinteger = (min: number, max: number, random = defaultService) => {

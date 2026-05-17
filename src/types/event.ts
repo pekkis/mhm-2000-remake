@@ -47,29 +47,42 @@ export type BaseEventCreationFields = {};
  *   - looping through unresolved auto-resolve events on entry
  *   - waiting for `RESOLVE_EVENT` on interactive ones
  */
+
+export type EventRegistryMeta = {
+  lotteryBalls: number;
+  eventId: string;
+};
+
+export type EventResolutionMeta = {
+  resolved: boolean;
+};
+
 export type DeclarativeEvent<
-  TData extends BaseEventFields,
+  TData extends {},
   CData extends BaseEventCreationFields = BaseEventCreationFields
 > = {
   type: "manager" | "team";
 
-  lotteryBalls: number;
+  register: () => EventRegistryMeta;
 
   /**
    * Build the event payload from current ctx + creation seed.
    * Return `null` to skip event creation (e.g. preconditions not met).
    */
-  create: (ctx: GameContext, seed: CData) => Omit<TData, "id"> | null;
+  create: (
+    ctx: GameContext,
+    seed: CData
+  ) => [EventResolutionMeta, TData] | null;
 
   /** Pure markdown lines for the event card. */
-  render: (data: TData) => string[];
+  render: (data: TData, context: GameContext) => string[];
 
   /**
    * Player resolution options. Omit for events that have no player
    * choice — the interpreter will auto-resolve them on entry to the
    * event phase.
    */
-  options?: (data: TData) => Record<string, string>;
+  options?: (data: TData, context: GameContext) => Record<string, string>;
 
   /**
    * Resolve the event. Pure. May read `ctx`. May roll random.
@@ -87,5 +100,5 @@ export type DeclarativeEvent<
    * Pure: must not mutate anything. The interpreter walks the list
    * via `applyEffect()`.
    */
-  process: (ctx: GameContext, data: TData) => EventEffect[];
+  process: (data: TData, context: GameContext) => EventEffect[];
 };
