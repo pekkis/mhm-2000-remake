@@ -1,6 +1,6 @@
 import { domesticTeamsByCompetitionTier } from "@/machines/selectors";
 import { competitionFromTier } from "@/services/competition";
-import { defaultRandomService } from "@/services/random";
+import { random } from "@/services/random";
 import type { AITeam } from "@/state/game";
 import type { GameContext } from "@/state/game-context";
 import type { RoundRobinGroup } from "@/types/competitions";
@@ -136,16 +136,25 @@ export const createRandomEventsRandomizer = (random: Random) => {
     return random.pick(candidates);
   };
 
+  const teamHasActiveInjuryEffects = (
+    team: AITeam,
+    position: "goalie" | "defence" | "attack"
+  ): boolean => {
+    return team.effects.some((effect) => {
+      return effect.kind === "injury" && effect.position === position;
+    });
+  };
+
   return {
     getRandomAiTeam,
     getRandomAITeamWithNoEffects,
     getRandomAiTeamFromLeagueByTier,
-    getRandomAiTeamFromLeagueByRanking
+    getRandomAiTeamFromLeagueByRanking,
+    teamHasActiveInjuryEffects
   };
 };
 
-const defaultRandomEventsRandomizer =
-  createRandomEventsRandomizer(defaultRandomService);
+const defaultRandomEventsRandomizer = createRandomEventsRandomizer(random);
 
 export const getRandomAITeamWithNoEffects =
   defaultRandomEventsRandomizer.getRandomAITeamWithNoEffects;
@@ -157,3 +166,6 @@ export const getRandomAiTeamFromLeagueByRanking =
 
 export const getRandomAiTeamFromLeagueByTier =
   defaultRandomEventsRandomizer.getRandomAiTeamFromLeagueByTier;
+
+export const teamHasActiveInjuryEffects =
+  defaultRandomEventsRandomizer.teamHasActiveInjuryEffects;

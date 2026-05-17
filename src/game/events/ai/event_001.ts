@@ -123,20 +123,13 @@ export const event_001: DeclarativeEvent<EventData, {}> = {
 
     const currentManager = teamsManager(data.teamId)(context);
 
-    const lines = [
-      `**${manager.name} (${team.name})** on epäonnistunut uuden valmennusmenetelmänsä, niinkutsutun **ABCD-Ohjelman** kanssa totaalisesti! Fläppitauluja on kulunut, mutta koukerot eivät ole painuneet pelaajien mieliin. Yhteispeli on lamaantunut totaalisesti.`
+    return [
+      `**${manager.name} (${team.name})** on epäonnistunut uuden valmennusmenetelmänsä, niinkutsutun **ABCD-Ohjelman** kanssa totaalisesti! Fläppitauluja on kulunut, mutta koukerot eivät ole painuneet pelaajien mieliin. Yhteispeli on lamaantunut totaalisesti.`,
+      getManagerFiredBlurb({
+        current: currentManager,
+        team,
+        fired: manager
+      })
     ];
-
-    if (data.isFired) {
-      lines.push(
-        getManagerFiredBlurb({
-          current: currentManager,
-          team,
-          fired: manager
-        })
-      );
-    }
-
-    return lines;
   }
 };
