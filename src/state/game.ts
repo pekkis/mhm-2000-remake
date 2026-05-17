@@ -77,7 +77,7 @@ export type HumanManager = BaseManager & {
 
 export type TeamGlobalEffect = {
   kind: "global";
-  amount: number;
+  multiplier: number;
   duration: number;
 };
 

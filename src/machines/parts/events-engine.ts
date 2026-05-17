@@ -1,6 +1,9 @@
 import eventsMap from "@/game/events";
-import type { DeclarativeEvent } from "@/types/event";
-import type { BaseEventFields, BaseEventCreationFields } from "@/types/base";
+import type {
+  BaseEventCreationFields,
+  BaseEventFields,
+  DeclarativeEvent
+} from "@/types/event";
 import type { NotifyFn, SpawnEventFn } from "@/game/event-effects";
 import type { GameContext } from "@/state/game-context";
 import { produce, type Draft } from "immer";

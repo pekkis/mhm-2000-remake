@@ -1,6 +1,18 @@
 import type { GameContext } from "@/state/game-context";
-import type { BaseEventCreationFields, BaseEventFields } from "@/types/base";
 import type { EventEffect } from "@/game/event-effects";
+
+/**
+ * Base fields present on all stored event data.
+ * `id` is injected by the event reducer on EVENT_ADD.
+ */
+export type BaseEventFields = {
+  id: string;
+  eventId: string;
+  resolved: boolean;
+  processed?: boolean;
+};
+
+export type BaseEventCreationFields = {};
 
 /**
  * Declarative, saga-free event definition.
@@ -39,7 +51,9 @@ export type DeclarativeEvent<
   TData extends BaseEventFields,
   CData extends BaseEventCreationFields = BaseEventCreationFields
 > = {
-  type: "manager";
+  type: "manager" | "team";
+
+  lotteryBalls: number;
 
   /**
    * Build the event payload from current ctx + creation seed.
